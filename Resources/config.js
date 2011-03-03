@@ -27,9 +27,9 @@ var UPM = UPM || {};
 
 
 // Base url of the portal, which should be of the format
-// http[s]://server[:port][/context]
-// This URL is *not* expected to contain a trailing slash
-UPM.BASE_PORTAL_URL = 'http://localhost:8080/uPortal';
+// http[s]://server[:port][/context]. This URL is *not* expected to contain a 
+// trailing slash.
+UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080/uPortal' : 'http://localhost:8080/uPortal';
 
 // Default latitude and longitude for map.  This location
 // will be used for map initialization if the user's location

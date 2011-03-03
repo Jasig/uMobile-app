@@ -29,8 +29,6 @@ var win, portalWebView, createPortalView;
 
 win = Titanium.UI.currentWindow;
 
-Ti.API.info('Hello');
-
 createPortalView = function () {
     if (portalWebView) {
         win.remove(portalWebView);
