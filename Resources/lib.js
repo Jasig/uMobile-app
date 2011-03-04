@@ -43,6 +43,11 @@ UPM.getCredentials = function () {
     return credentials;
 };
 
+UPM.isUserLoggedIn = function () {
+	//This method should indicate whether a user is truly a valid user.
+	return true;
+};
+
 /**
  * Persist portal credentials in the local preferences database.
  */
@@ -109,3 +114,15 @@ UPM.getSearchPortletUrl = function () {
     return url;
 };
 
+UPM.getHomeNav = function () {
+	return [
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'},
+		{label:'map',url:'url',icon:'icons/tab-map.png'}
+	];
+};
