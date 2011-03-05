@@ -74,8 +74,7 @@ drawHomeGrid = function () {
 		// gridItem.addEventListener("click",handleGridItemClick);
 		numGridRows=(gridItem.top / ICON_HEIGHT) + 1;
 	}
-	Ti.API.info("Number of Grid Rows " + numGridRows);
-}
+};
 
 createPortalView = function () {
     if (portalView) {
