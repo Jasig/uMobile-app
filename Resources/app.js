@@ -19,6 +19,7 @@
 
 // library includes
 Titanium.include('lib.js');
+Titanium.include('skin.js');
 
 var windows;
 
