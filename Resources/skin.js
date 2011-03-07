@@ -16,37 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+Titanium.include('config.js');
 
-/**
- * portal_window.js contains setup information for the
- * search tab.
- */
+UPM.HOME_GRID_ITEM_WIDTH = 80;
+UPM.HOME_GRID_ITEM_HEIGHT = 80;
+UPM.HOME_GRID_ITEM_PADDING = 10;
+UPM.HOME_GRID_ICON_WIDTH = 32;
+UPM.HOME_GRID_ICON_HEIGHT = 32;
+UPM.HOME_GRID_NUM_COLUMNS = 3;
+UPM.HOME_GRID_BACKGROUND_COLOR = "#eee";
+UPM.HOME_GRID_TEXT_COLOR = "#000";
 
-// library includes
-Titanium.include('lib.js');
-
-
-var win, searchWebView, createSearchView;
-
-win = Titanium.UI.currentWindow;
-
-createSearchView = function () {
-    if (searchWebView) {
-        win.remove(searchWebView);
-    }
-    searchWebView = Titanium.UI.createWebView({ 
-        url: UPM.getSearchPortletUrl() 
-    });
-    win.add(searchWebView);
-};
-
-// initialize the search view
-createSearchView();
-
-// when user credentials are authenticated, replace the
-// existing web view with one referencing the new login URL
-Ti.App.addEventListener('credentialUpdate', function (input) {
-    createSearchView();
-});
-win.add(searchWebView);
-
+UPM.TITLEBAR_TEXT_COLOR = "#fff";
+UPM.TITLEBAR_BACKGROUND_COLOR = "#000";
+UPM.TITLEBAR_HEIGHT = 40;

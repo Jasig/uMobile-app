@@ -24,68 +24,128 @@
 
 // library includes
 Titanium.include('lib.js');
+Titanium.include('skin.js');
 
 var win = Titanium.UI.currentWindow;
 
-var credentials, usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton;
+var credentials, 
+    usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, 
+    titlebar, title, homeButton,
+    createTitleBar, createCredentialsForm;
+
 
 // get the current user credentials in order
 // to pre-populate the input fields
 credentials = UPM.getCredentials();
 
-// create the username label and input field
-usernameLabel = Titanium.UI.createLabel({
-    text:'Username',
-    height:35,
-    width:'auto',
-    top:10,
-    left:10
-});
-win.add(usernameLabel);
-usernameInput = Titanium.UI.createTextField({
-	height:35,
-	top:10,
-	left:100,
-	width:150,
-    value: credentials.username,
-	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
-});
-win.add(usernameInput);
+win.backgroundColor = UPM.HOME_GRID_BACKGROUND_COLOR;
 
-// create the password label and input field
-passwordLabel = Titanium.UI.createLabel({
-    text:'Password',
-    height:35,
-    width:'auto',
-    top:50,
-    left:10
-});
-win.add(passwordLabel);
-passwordInput = Titanium.UI.createTextField({
-	height:35,
-	top:50,
-	left:100,
-	width:150,
-    value: credentials.password,
-	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
-});
-win.add(passwordInput);
-
-// create the save button and configure it to persist
-// the new credentials when pressed
-saveButton = Titanium.UI.createButton({
-	height:35,
-	top:90,
-	left:10,
-    width:250,
-    title:'Update'
-});
-win.add(saveButton);
-saveButton.addEventListener('click', function (e) {
-    UPM.saveCredentials({ 
-        username: usernameInput.value, 
-        password: passwordInput.value 
+createTitleBar = function () {
+    titlebar = Titanium.UI.createView({
+        backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
+        top:0,
+        height: UPM.TITLEBAR_HEIGHT
     });
-    Ti.API.debug('Updated user credentials');
-    Ti.App.fireEvent('credentialUpdate', {});
-});
+    win.add(titlebar);
+    
+    title = Titanium.UI.createLabel({
+        textAlign: "center",
+        text: "Settings",
+        color: UPM.TITLEBAR_TEXT_COLOR,
+        font: { fontWeight: "bold" }
+    });
+    titlebar.add(title);
+    
+    homeButton = Titanium.UI.createImageView({
+        image: "icons/tab-home.png",
+        height: 18,
+        width: 18,
+        left: 10
+    });
+    titlebar.add(homeButton);
+    
+    homeButton.addEventListener('click', function (e) {
+        Ti.App.fireEvent(
+            'showWindow', 
+            {
+                oldWindow: 'settings',
+                newWindow: 'home',
+                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
+            }
+        );
+    });
+
+};
+
+createCredentialsForm = function () {
+    
+    // create the username label and input field
+    usernameLabel = Titanium.UI.createLabel({
+        text:'Username',
+        height:35,
+        width:'auto',
+        top:50,
+        left:10
+    });
+    win.add(usernameLabel);
+    usernameInput = Titanium.UI.createTextField({
+    	height:35,
+    	top:50,
+    	left:100,
+    	width:150,
+        value: credentials.username,
+    	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
+    });
+    win.add(usernameInput);
+    
+    // create the password label and input field
+    passwordLabel = Titanium.UI.createLabel({
+        text:'Password',
+        height:35,
+        width:'auto',
+        top:100,
+        left:10
+    });
+    win.add(passwordLabel);
+    passwordInput = Titanium.UI.createTextField({
+        height:35,
+        top:100,
+        left:100,
+        width:150,
+        value: credentials.password,
+        borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
+    });
+    win.add(passwordInput);
+    
+    // create the save button and configure it to persist
+    // the new credentials when pressed
+    saveButton = Titanium.UI.createButton({
+        height:35,
+        top:150,
+        left:10,
+        width:250,
+        title:'Update'
+    });
+    win.add(saveButton);
+    saveButton.addEventListener('click', function (e) {
+        UPM.saveCredentials({ 
+            username: usernameInput.value, 
+            password: passwordInput.value 
+        });
+        Ti.API.debug('Updated user credentials');
+        Ti.App.fireEvent('credentialUpdate', {});
+        Ti.App.fireEvent(
+            'showWindow', 
+            {
+                oldWindow: 'settings',
+                newWindow: 'home',
+                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
+            }
+        );
+    });
+
+};
+
+createTitleBar();
+createCredentialsForm();
+

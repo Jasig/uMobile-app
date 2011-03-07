@@ -81,7 +81,7 @@ UPM.getMainPortalUrl = function () {
     var credentials, url;
 
     // construct the base portal login URL
-    url = UPM.BASE_PORTAL_URL + '/Login';
+    url = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/Login';
     
     // get the currently-persisted credentials.  if they are non-null,
     // add the login information to the URL string
@@ -101,7 +101,7 @@ UPM.getSearchPortletUrl = function () {
     var credentials, url;
 
     // construct the base portal login URL
-    url = UPM.BASE_PORTAL_URL + '/Login?uP_fname=search';
+    url = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/Login?uP_fname=search';
     
     // get the currently-persisted credentials.  if they are non-null,
     // add the login information to the URL string
@@ -114,15 +114,14 @@ UPM.getSearchPortletUrl = function () {
     return url;
 };
 
-UPM.getHomeNav = function () {
-	return [
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'},
-		{label:'map',url:'url',icon:'icons/tab-map.png'}
-	];
+/**
+ * Establish a session on the uPortal server.
+ */
+UPM.establishSession = function(onload) {
+    
+    var authenticator = Titanium.Network.createHTTPClient();
+    authenticator.open("GET", UPM.getMainPortalUrl());
+    authenticator.onload = onload;
+    authenticator.send();
+
 };
