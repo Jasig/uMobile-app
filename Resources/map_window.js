@@ -26,12 +26,41 @@ Titanium.include('lib.js');
 Titanium.include('skin.js');
 
 
-var win, mapView, createTitleBar, createMapView;
+var win, 
+    mapView, 
+    createTitleBar, 
+    createMapView, 
+    mapService = {}, 
+    mapPoints = [], 
+    loadPointDetail, 
+    rawAnnotations = [], 
+    loadingIndicator;
 
 win = Titanium.UI.currentWindow;
 
+loadPointDetail = function (point) {
+    var pointDetailWindow, bar, animation, details = [], detailTable;
+    
+    pointDetailWindow = Titanium.UI.createWindow({
+        title : point.title
+    });
+
+    detailTable = Titanium.UI.createTableView();
+    if (point.abbreviation) {
+        detailTable.appendRow(Titanium.UI.createTableViewRow({title: point.abbreviation}));
+    }
+    pointDetailWindow.add(detailTable);
+    
+    pointDetailWindow.open({
+        modal:true,
+        modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
+        modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+    });
+    
+};
+
 createTitleBar = function () {
-    var bar, title, homeButton;
+    var bar, title, homeButton, searchField;
     
     // create the view container for the title bar
     bar = Titanium.UI.createView({
@@ -40,15 +69,24 @@ createTitleBar = function () {
         height: UPM.TITLEBAR_HEIGHT
     });    
     win.add(bar);
-
-    // add a title to the bar
-    title = Titanium.UI.createLabel({
-        textAlign: "center",
-        text: "Map",
-        color: UPM.TITLEBAR_TEXT_COLOR,
-        font: { fontWeight: "bold" }
+    searchField = Titanium.UI.createSearchBar({
+        backgroundColor : UPM.TITLEBAR_BACKGROUND_COLOR,
+        backgroundGraident : {
+            type : 'linear',
+            startPoint : 0,
+            endPoint : UPM.TITLEBAR_HEIGHT,
+            colors : ["#000","#000"]
+        },
+        barColor:UPM.TITLEBAR_BACKGROUND_COLOR,
+        height: UPM.TITLEBAR_HEIGHT,
+        top:0,
+        left:38
     });
-    bar.add(title);
+    bar.add(searchField);
+    searchField.addEventListener('change', function(e){
+        Ti.API.info(e.source.value);
+        mapService.search(e.source.value);
+    });
     
     // add a navigation button to allow users to return to the home screen
     homeButton = Titanium.UI.createImageView({
@@ -102,8 +140,8 @@ createMapView = function () {
        region:{
            latitude:UPM.DEFAULT_LATITUDE, 
            longitude:UPM.DEFAULT_LONGITUDE, 
-           latitudeDelta:0.002, 
-           longitudeDelta:0.002
+           latitudeDelta:0.01, 
+           longitudeDelta:0.01
        },
        regionFit:true,
        userLocation:true,
@@ -133,5 +171,63 @@ createMapView = function () {
 
 };
 
+mapService.search = function (query, opts) {
+    var searchBusy;
+    
+    //If a search isn't already executing
+    if(!searchBusy) {
+        searchBusy = true;
+        mapPoints = [];
+        for (var i=0, iLength = rawAnnotations.length; i<iLength; i++) {
+            if (rawAnnotations[i].title.search(query) != -1) {
+                mapPoints.push(Titanium.Map.createAnnotation(rawAnnotations[i]));
+            }
+        }
+        mapView.annotations = mapPoints;
+    }
+    searchBusy = false;
+};
+mapService.updateMapPoints = function (filters) {
+    //Default returns all points for an institution.
+    //Can be filtered by campus, admin-defined categories
+    if (!mapService.pointCache) {
+        request = Titanium.Network.createHTTPClient ({
+            connectionType : 'GET',
+            location : 'http://localhost:8080/uPortal/services/map-test-data.json',
+            onload : mapService.newPointsLoaded,
+            onerror : function (e) {
+                Ti.API.info("Error with map service" + this.responseText);
+            }
+        }); 
+        request.open("GET",'http://localhost:8080/uPortal/services/map-test-data.json');
+        request.send();
+    }
+};
+mapService.newPointsLoaded = function (e) {
+    var response = JSON.parse(e.source.responseText),
+        mapAnnotation;
+    for (var i = 0, iLength = response.buildings.length; i < iLength; i++) {
+        response.buildings[i].title = response.buildings[i].name;
+        response.buildings[i].leftView = Titanium.UI.createImageView({
+            // image : response.buildings[i].img
+            image : 'http://localhost:8080/uPortal/media/skins/icons/google.png', //temporary since images in feed are no good.
+            width : 32,
+            height :32
+        });
+        rawAnnotations.push(response.buildings[i]);
+        mapAnnotation = Titanium.Map.createAnnotation(response.buildings[i]);
+        mapAnnotation.addEventListener("click",function(e){
+            Ti.API.info("clicked a point" + e.source);
+            loadPointDetail(e.source);
+        });
+        mapPoints.push(mapAnnotation);
+        
+        // Ti.API.info("Building is: " + response.buildings[i].abbreviation);
+        
+    }
+    mapView.annotations = mapPoints;
+};
+
 createTitleBar();
 createMapView();
+mapService.updateMapPoints();
