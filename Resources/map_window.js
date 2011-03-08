@@ -193,7 +193,7 @@ mapService.updateMapPoints = function (filters) {
     if (!mapService.pointCache) {
         request = Titanium.Network.createHTTPClient ({
             connectionType : 'GET',
-            location : 'http://localhost:8080/uPortal/services/map-test-data.json',
+            location : UPM.MAP_SERVICE_URL,
             onload : mapService.newPointsLoaded,
             onerror : function (e) {
                 Ti.API.info("Error with map service" + this.responseText);
