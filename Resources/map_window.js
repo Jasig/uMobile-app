@@ -33,7 +33,7 @@ var win,
     mapService = {}, 
     mapPoints = [], 
     loadPointDetail, 
-    rawAnnotations = [], 
+    rawAnnotations = [],
     loadingIndicator;
 
 win = Titanium.UI.currentWindow;
@@ -71,7 +71,7 @@ createTitleBar = function () {
     win.add(bar);
     searchField = Titanium.UI.createSearchBar({
         backgroundColor : UPM.TITLEBAR_BACKGROUND_COLOR,
-        backgroundGraident : {
+        backgroundGradient : {
             type : 'linear',
             startPoint : 0,
             endPoint : UPM.TITLEBAR_HEIGHT,
@@ -107,31 +107,11 @@ createTitleBar = function () {
             }
         );
     });
-
+    
 };
 
 createMapView = function () {
     var annotations, buttonBar;
-    
-    // wire up some sample annotations
-    // TODO: we need real data here, as well as making some changes so that
-    // this code runs successfully on Android
-    annotations = [
-       Titanium.Map.createAnnotation({
-           latitude:47.661009,
-           longitude:-122.312894,
-           title:"UW Bookstore",
-           subtitle:'Books and t-shirts',
-           pincolor:Titanium.Map.ANNOTATION_PURPLE
-       }),
-       Titanium.Map.createAnnotation({
-           latitude:47.653233,
-           longitude:-122.305856,
-           title:"CSE Department",
-           subtitle:'Paul G. Allen Center',
-           pincolor:Titanium.Map.ANNOTATION_GREEN
-       })
-   ];
 
    // create the map view
    mapView = Titanium.Map.createView({
@@ -144,8 +124,7 @@ createMapView = function () {
            longitudeDelta:0.01
        },
        regionFit:true,
-       userLocation:true,
-       annotations:annotations
+       userLocation:true
    });
    win.add(mapView);
 
@@ -169,7 +148,19 @@ createMapView = function () {
        }
    });
 
+   loadingIndicator = Titanium.UI.createActivityIndicator({
+       color : "#fff",
+       backgroundColor : "#000",
+       opacity : 0.75,
+       message : "Map is loading"
+   });   
+   mapView.add(loadingIndicator);
+   loadingIndicator.show();
 };
+
+
+
+
 
 mapService.search = function (query, opts) {
     var searchBusy;
@@ -192,13 +183,15 @@ mapService.updateMapPoints = function (filters) {
     //Default returns all points for an institution.
     //Can be filtered by campus, admin-defined categories
     if (!mapService.pointCache) {
+        loadingIndicator.show();
         request = Titanium.Network.createHTTPClient ({
             connectionType : 'GET',
             onload : mapService.newPointsLoaded,
             onerror : function (e) {
                 Ti.API.info("Error with map service" + this.responseText);
+                loadingIndicator.message = "An error has occurred.";
             }
-        }); 
+        });
         request.open("GET", UPM.MAP_SERVICE_URL);
         request.send();
     }
@@ -206,26 +199,25 @@ mapService.updateMapPoints = function (filters) {
 mapService.newPointsLoaded = function (e) {
     var response = JSON.parse(e.source.responseText),
         mapAnnotation;
+
     for (var i = 0, iLength = response.buildings.length; i < iLength; i++) {
         response.buildings[i].title = response.buildings[i].name;
         response.buildings[i].leftView = Titanium.UI.createImageView({
             // image : response.buildings[i].img
-            image : 'http://localhost:8080/uPortal/media/skins/icons/google.png', //temporary since images in feed are no good.
+            image : UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/media/skins/icons/google.png', //temporary since images in feed are no good.
             width : 32,
             height :32
         });
         rawAnnotations.push(response.buildings[i]);
-        mapAnnotation = Titanium.Map.createAnnotation(response.buildings[i]);
+        /*mapAnnotation = Titanium.Map.createAnnotation(response.buildings[i]);
         mapAnnotation.addEventListener("click",function(e){
             Ti.API.info("clicked a point" + e.source);
             loadPointDetail(e.source);
         });
-        mapPoints.push(mapAnnotation);
-        
-        // Ti.API.info("Building is: " + response.buildings[i].abbreviation);
-        
+        mapPoints.push(mapAnnotation);*/
     }
-    mapView.annotations = mapPoints;
+    // mapView.annotations = mapPoints;
+    loadingIndicator.hide();
 };
 
 createTitleBar();
