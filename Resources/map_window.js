@@ -173,13 +173,14 @@ createMapView = function () {
 
 mapService.search = function (query, opts) {
     var searchBusy;
+    query = query.toLowerCase();
     
     //If a search isn't already executing
     if(!searchBusy) {
         searchBusy = true;
         mapPoints = [];
         for (var i=0, iLength = rawAnnotations.length; i<iLength; i++) {
-            if (rawAnnotations[i].title.search(query) != -1) {
+            if (rawAnnotations[i].title.toLowerCase().search(query) != -1) {
                 mapPoints.push(Titanium.Map.createAnnotation(rawAnnotations[i]));
             }
         }
@@ -193,13 +194,12 @@ mapService.updateMapPoints = function (filters) {
     if (!mapService.pointCache) {
         request = Titanium.Network.createHTTPClient ({
             connectionType : 'GET',
-            location : UPM.MAP_SERVICE_URL,
             onload : mapService.newPointsLoaded,
             onerror : function (e) {
                 Ti.API.info("Error with map service" + this.responseText);
             }
         }); 
-        request.open("GET",'http://localhost:8080/uPortal/services/map-test-data.json');
+        request.open("GET", UPM.MAP_SERVICE_URL);
         request.send();
     }
 };
