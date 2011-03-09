@@ -24,13 +24,13 @@
 // library includes
 Titanium.include('lib.js');
 Titanium.include('skin.js');
+Titanium.include('js/MapService.js');
 
 
 var win, 
     mapView, 
     createTitleBar, 
-    createMapView, 
-    mapService = {}, 
+    createMapView,
     mapPoints = [], 
     loadPointDetail, 
     rawAnnotations = [],
@@ -40,6 +40,7 @@ win = Titanium.UI.currentWindow;
 
 loadPointDetail = function (point) {
     var pointDetailWindow, bar, animation, details = [], detailTable;
+    Ti.API.info('loadPointDetail()');
     
     pointDetailWindow = Titanium.UI.createWindow({
         title : point.title
@@ -85,7 +86,7 @@ createTitleBar = function () {
     bar.add(searchField);
     searchField.addEventListener('change', function(e){
         Ti.API.info(e.source.value);
-        mapService.search(e.source.value);
+        MapService.search(e.source.value);
     });
     
     // add a navigation button to allow users to return to the home screen
@@ -127,99 +128,46 @@ createMapView = function () {
        userLocation:true
    });
    win.add(mapView);
+   
+   //Initialize the MapService, which manages the data for points on the map, 
+   //including retrieval of data and searching array of points
+   MapService.init(mapView);
 
    // create controls for zoomin / zoomout
-   buttonBar = Titanium.UI.createButtonBar({
-       labels:['+', '-'], 
-       backgroundColor:'#336699', 
-       style:Titanium.UI.iPhone.SystemButtonStyle.BAR,
-       top: Ti.Platform.displayCaps.platformHeight - 130,
-       width: 100,
-       height: 25
-   });
-   mapView.add(buttonBar);
+   // included in Android by default
+   if(Titanium.Platform.osname === "iphone") {
+       buttonBar = Titanium.UI.createButtonBar({
+           labels:['+', '-'], 
+           backgroundColor:'#336699', 
+           style:Titanium.UI.iPhone.SystemButtonStyle.BAR,
+           top: Ti.Platform.displayCaps.platformHeight - 130,
+           width: 100,
+           height: 25
+       });
+       mapView.add(buttonBar);
 
-   // add event listeners for the zoom buttons
-   buttonBar.addEventListener('click', function (e) {
-       if (e.index == 0) {
-           mapView.zoom(1);
-       } else {
-           mapView.zoom(-1);
-       }
-   });
+       // add event listeners for the zoom buttons
+       buttonBar.addEventListener('click', function (e) {
+           if (e.index == 0) {
+               mapView.zoom(1);
+           } else {
+               mapView.zoom(-1);
+           }
+       });
+   }
 
-   loadingIndicator = Titanium.UI.createActivityIndicator({
+/*  We'll worry about loading indicators later on. 
+    loadingIndicator = Titanium.UI.createActivityIndicator({
        color : "#fff",
        backgroundColor : "#000",
        opacity : 0.75,
        message : "Map is loading"
    });   
    mapView.add(loadingIndicator);
-   loadingIndicator.show();
+   loadingIndicator.show();*/
 };
 
 
-
-
-
-mapService.search = function (query, opts) {
-    var searchBusy;
-    query = query.toLowerCase();
-    
-    //If a search isn't already executing
-    if(!searchBusy) {
-        searchBusy = true;
-        mapPoints = [];
-        for (var i=0, iLength = rawAnnotations.length; i<iLength; i++) {
-            if (rawAnnotations[i].title.toLowerCase().search(query) != -1) {
-                mapPoints.push(Titanium.Map.createAnnotation(rawAnnotations[i]));
-            }
-        }
-        mapView.annotations = mapPoints;
-    }
-    searchBusy = false;
-};
-mapService.updateMapPoints = function (filters) {
-    //Default returns all points for an institution.
-    //Can be filtered by campus, admin-defined categories
-    if (!mapService.pointCache) {
-        loadingIndicator.show();
-        request = Titanium.Network.createHTTPClient ({
-            connectionType : 'GET',
-            onload : mapService.newPointsLoaded,
-            onerror : function (e) {
-                Ti.API.info("Error with map service" + this.responseText);
-                loadingIndicator.message = "An error has occurred.";
-            }
-        });
-        request.open("GET", UPM.MAP_SERVICE_URL);
-        request.send();
-    }
-};
-mapService.newPointsLoaded = function (e) {
-    var response = JSON.parse(e.source.responseText),
-        mapAnnotation;
-
-    for (var i = 0, iLength = response.buildings.length; i < iLength; i++) {
-        response.buildings[i].title = response.buildings[i].name;
-        response.buildings[i].leftView = Titanium.UI.createImageView({
-            // image : response.buildings[i].img
-            image : UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/media/skins/icons/google.png', //temporary since images in feed are no good.
-            width : 32,
-            height :32
-        });
-        rawAnnotations.push(response.buildings[i]);
-        /*mapAnnotation = Titanium.Map.createAnnotation(response.buildings[i]);
-        mapAnnotation.addEventListener("click",function(e){
-            Ti.API.info("clicked a point" + e.source);
-            loadPointDetail(e.source);
-        });
-        mapPoints.push(mapAnnotation);*/
-    }
-    // mapView.annotations = mapPoints;
-    loadingIndicator.hide();
-};
 
 createTitleBar();
 createMapView();
-mapService.updateMapPoints();

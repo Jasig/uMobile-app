@@ -27,14 +27,10 @@
 			<orientation>Ti.UI.LANDSCAPE_RIGHT</orientation>
 		</orientations>
 	</iphone>
-	<android xmlns:android="http://schemas.android.com/apk/res/android">
-		<manifest>
-			<uses-permission android:name="android.permission.INTERNET" />
-		</manifest>
-	</android>
 	<modules>
 	</modules>
-	<property name="ti.android.google.map.api.key">0escd7sb9r7ANiGsleMWaKbpiwLO1Hm8Bl38jjg</property>
+	<!--<property name="ti.android.google.map.api.key.development">0escd7sb9r7ANiGsleMWaKbpiwLO1Hm8Bl38jjg</property>-->
+	<property name="ti.android.google.map.api.key.development">0ZnKXkWA2dIAu2EM-OV4ZD2lJY3sEWE5TSgjJNg</property>
 	<!--<property name="ti.android.google.map.api.key.production">GET_ME_FROM_GOOGLE</property>-->
 	
 </ti:app>
