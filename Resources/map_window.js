@@ -84,7 +84,7 @@ createTitleBar = function () {
         left:38
     });
     bar.add(searchField);
-    searchField.addEventListener('change', function(e){
+    searchField.addEventListener('return', function(e){
         Ti.API.info(e.source.value);
         MapService.search(e.source.value);
     });
