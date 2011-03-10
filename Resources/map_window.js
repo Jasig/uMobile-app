@@ -25,138 +25,167 @@
 Titanium.include('lib.js');
 Titanium.include('skin.js');
 Titanium.include('js/MapService.js');
+Titanium.include('js/views/MapDetailTop.js');
 
+var MapWindowController = (function() {
+    var win, 
+        mapView, 
+        createTitleBar, 
+        searchField,
+        createMapView,
+        mapPoints = [], 
+        loadPointDetail, 
+        rawAnnotations = [],
+        loadingIndicator;
 
-var win, 
-    mapView, 
-    createTitleBar, 
-    createMapView,
-    mapPoints = [], 
-    loadPointDetail, 
-    rawAnnotations = [],
-    loadingIndicator;
+    win = Titanium.UI.currentWindow;
+    this.init = function () {
+        this.createTitleBar();
+        this.createMapView();
+    };
+    this.loadPointDetail = function (point) {
+        var pointDetailWindow, bar, animation, details = [], detailTable;
+        Ti.API.info('loadPointDetail()');
 
-win = Titanium.UI.currentWindow;
+        pointDetailWindow = Titanium.UI.createWindow({
+            title : point.title
+        });
 
-loadPointDetail = function (point) {
-    var pointDetailWindow, bar, animation, details = [], detailTable;
-    Ti.API.info('loadPointDetail()');
-    
-    pointDetailWindow = Titanium.UI.createWindow({
-        title : point.title
-    });
+        detailTable = Titanium.UI.createTableView();
+        if (point.abbreviation) {
+            detailTable.appendRow(Titanium.UI.createTableViewRow({title: point.abbreviation}));
+        }
+        pointDetailWindow.add(detailTable);
 
-    detailTable = Titanium.UI.createTableView();
-    if (point.abbreviation) {
-        detailTable.appendRow(Titanium.UI.createTableViewRow({title: point.abbreviation}));
-    }
-    pointDetailWindow.add(detailTable);
-    
-    pointDetailWindow.open({
-        modal:true,
-        modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
-        modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-    });
-    
-};
+        pointDetailWindow.open({
+            modal:true,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
+            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+        });
+    };
+    this.createTitleBar = function () {
+        var bar, title, homeButton;
 
-createTitleBar = function () {
-    var bar, title, homeButton, searchField;
-    
-    // create the view container for the title bar
-    bar = Titanium.UI.createView({
-        backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
-        top: 0,
-        height: UPM.TITLEBAR_HEIGHT
-    });    
-    win.add(bar);
-    searchField = Titanium.UI.createSearchBar({
-        backgroundColor : UPM.TITLEBAR_BACKGROUND_COLOR,
-        backgroundGradient : {
-            type : 'linear',
-            startPoint : 0,
-            endPoint : UPM.TITLEBAR_HEIGHT,
-            colors : ["#000","#000"]
-        },
-        barColor:UPM.TITLEBAR_BACKGROUND_COLOR,
-        height: UPM.TITLEBAR_HEIGHT,
-        top:0,
-        left:38
-    });
-    bar.add(searchField);
-    searchField.addEventListener('return', function(e){
-        Ti.API.info(e.source.value);
-        MapService.search(e.source.value);
-        searchField.blur();
-    });
-    
-    // add a navigation button to allow users to return to the home screen
-    homeButton = Titanium.UI.createImageView({
-        image: "icons/tab-home.png",
-        height: 18,
-        width: 18,
-        left: 10
-    });
-    bar.add(homeButton);
+        // create the view container for the title bar
+        bar = Titanium.UI.createView({
+            backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
+            top: 0,
+            height: UPM.TITLEBAR_HEIGHT
+        });    
+        win.add(bar);
+        searchField = Titanium.UI.createSearchBar({
+            backgroundColor : UPM.TITLEBAR_BACKGROUND_COLOR,
+            backgroundGradient : {
+                type : 'linear',
+                startPoint : 0,
+                endPoint : UPM.TITLEBAR_HEIGHT,
+                colors : ["#000","#000"]
+            },
+            barColor:UPM.TITLEBAR_BACKGROUND_COLOR,
+            height: UPM.TITLEBAR_HEIGHT,
+            top:0,
+            left:38
+        });
+        bar.add(searchField);
+        searchField.addEventListener('return', function(e){
+            searchField.blur();
+            MapService.search(e.source.value);
+        });
 
-    // add an event listener for the home button
-    homeButton.addEventListener('singletap', function (e) {
-        searchField.blur();
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'settings',
-                newWindow: 'home'
-            }
-        );
-    });
-    
-};
+        // add a navigation button to allow users to return to the home screen
+        homeButton = Titanium.UI.createImageView({
+            image: "icons/tab-home.png",
+            height: 18,
+            width: 18,
+            left: 10
+        });
+        bar.add(homeButton);
 
-createMapView = function () {
-    var annotations, buttonBar;
+        // add an event listener for the home button
+        homeButton.addEventListener('click', function (e) {
+            searchField.blur();
+            Ti.App.fireEvent(
+                'showWindow', 
+                {
+                    oldWindow: 'settings',
+                    newWindow: 'home'
+                }
+            );
+        });
+    };
+    this.createMapView = function () {
+        var annotations, buttonBar;
 
-   // create the map view
-   mapView = Titanium.Map.createView({
-       top: UPM.TITLEBAR_HEIGHT,
-       mapType: Titanium.Map.STANDARD_TYPE,
-       region:{
-           latitude:UPM.DEFAULT_LATITUDE, 
-           longitude:UPM.DEFAULT_LONGITUDE, 
-           latitudeDelta:0.01, 
-           longitudeDelta:0.01
-       },
-       regionFit:true,
-       userLocation:true
-   });
-   win.add(mapView);
-   
-   //Initialize the MapService, which manages the data for points on the map, 
-   //including retrieval of data and searching array of points
-   MapService.init(mapView);
-
-   // create controls for zoomin / zoomout
-   // included in Android by default
-   if(Titanium.Platform.osname === "iphone") {
-       buttonBar = Titanium.UI.createButtonBar({
-           labels:['+', '-'], 
-           backgroundColor:'#336699', 
-           style:Titanium.UI.iPhone.SystemButtonStyle.BAR,
-           top: Ti.Platform.displayCaps.platformHeight - 130,
-           width: 100,
-           height: 25
+       // create the map view
+       mapView = Titanium.Map.createView({
+           top: UPM.TITLEBAR_HEIGHT,
+           mapType: Titanium.Map.STANDARD_TYPE,
+           region:{
+               latitude:UPM.DEFAULT_LATITUDE, 
+               longitude:UPM.DEFAULT_LONGITUDE, 
+               latitudeDelta:0.01, 
+               longitudeDelta:0.01
+           },
+           regionFit:true,
+           userLocation:true
        });
-       mapView.add(buttonBar);
-
-       // add event listeners for the zoom buttons
-       buttonBar.addEventListener('singletap', function (e) {
-           if (e.index == 0) {
-               mapView.zoom(1);
-           } else {
-               mapView.zoom(-1);
-           }
+       win.add(mapView);
+       mapView.addEventListener('click',function(e){
+           searchField.blur();
        });
-   }
+       mapView.addEventListener('loaddetail',this.loadDetail);
+
+       //Initialize the MapService, which manages the data for points on the map, 
+       //including retrieval of data and searching array of points
+       MapService.init(mapView);
+
+       // create controls for zoomin / zoomout
+       // included in Android by default
+       if(Titanium.Platform.osname === "iphone") {
+           buttonBar = Titanium.UI.createButtonBar({
+               labels:['+', '-'], 
+               backgroundColor:'#336699', 
+               style:Titanium.UI.iPhone.SystemButtonStyle.BAR,
+               top: Ti.Platform.displayCaps.platformHeight - 130,
+               width: 100,
+               height: 25
+           });
+           mapView.add(buttonBar);
+
+           // add event listeners for the zoom buttons
+           buttonBar.addEventListener('click', function (e) {
+               if (e.index == 0) {
+                   mapView.zoom(1);
+               } else {
+                   mapView.zoom(-1);
+               }
+           });
+       }
+    };
+    this.loadDetail = function(e) {
+        var locationDetailWin,
+            locationDetailMap,
+            locationDetail;
+        
+        Ti.API.info("loadDetail method called with parent: " + JSON.stringify(e));
+        
+        locationDetailWin = Titanium.UI.createWindow({
+           title: "Location Detail",
+           backgroundColor: "#fff"
+        });
+        
+        locationDetailWin.open();
+        locationDetailWin.add(new MapDetailTop({
+            details: e,
+            top: 50
+        }));
+    };
+    this.init();
+})();
+
+
+
+
 
 /*  We'll worry about loading indicators later on. 
     loadingIndicator = Titanium.UI.createActivityIndicator({
@@ -167,9 +196,6 @@ createMapView = function () {
    });   
    mapView.add(loadingIndicator);
    loadingIndicator.show();*/
-};
 
 
 
-createTitleBar();
-createMapView();

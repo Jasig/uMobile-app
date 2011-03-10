@@ -1,6 +1,7 @@
 var MapService = {
     map : {},
-    mapPoints : []
+    mapPoints : [],
+    annotationEvents: {}
 };
 MapService.init = function (mapView) {
     
@@ -30,8 +31,6 @@ MapService.search = function (query, opts) {
             if (MapService.mapPoints[i].title.toLowerCase().search(query) != -1) {
                 //|| MapService.mapPoints[i].searchText.toLowerCase().search(query) != -1
                 MapService.map.addAnnotation(Titanium.Map.createAnnotation(MapService.mapPoints[i]));
-            } else {
-                Ti.API.debug("NOT Valid. index: " + MapService.mapPoints[i].title.toLowerCase().search(query) + " & i: " + i + " & title: " + MapService.mapPoints[i].title);
             }
         }
         searchBusy = false;
@@ -67,6 +66,7 @@ MapService.newPointsLoaded = function (e) {
     Ti.API.debug("newPointsLoaded()");
 
     for (var i = 0, iLength = response.buildings.length; i < iLength; i++) {
+        var btnRight;
         response.buildings[i].title = response.buildings[i].name;
         response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
         response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
@@ -74,12 +74,33 @@ MapService.newPointsLoaded = function (e) {
         // response.buildings[i].myid = response.buildings[i].abbreviation;
         // leftButton: '../images/appcelerator_small.png',
 
-        Ti.API.info(response.buildings[i].title);
+        btnRight = Titanium.UI.createImageView({
+            image: 'images/btnCircleRightArrow.png',
+            width: 30,
+            height: 30,
+            _parent: response.buildings[i]
+            
+        });
+        btnRight.addEventListener('touchstart', MapService.annotationEvents.touchStart);
+        btnRight.addEventListener('touchend', MapService.annotationEvents.touchEnd);
+        btnRight.addEventListener('singletap',MapService.annotationEvents.singleTap);
+        response.buildings[i].rightView = btnRight;
         	
         MapService.mapPoints.push(response.buildings[i]);
     }
     Ti.API.info("First point in array is: " + JSON.stringify(MapService.mapPoints[0]));
-    MapService.map.fireEvent("pointsLoaded");
+    
+    MapService.map.fireEvent("pointsloaded");
+};
+MapService.annotationEvents.touchStart = function(e){
+    e.source.image = 'images/btnCircleRightArrow-press.png';
+};
+MapService.annotationEvents.touchEnd = function(e){
+    e.source.image = 'images/btnCircleRightArrow.png';
+};
+MapService.annotationEvents.singleTap = function(e){
+    MapService.map.fireEvent("loaddetail",e.source._parent);
+    Ti.API.info("loaddetail event fired with parent: " + e.source._parent);
 };
 
 /*  Artifact from newPointsLoaded method
