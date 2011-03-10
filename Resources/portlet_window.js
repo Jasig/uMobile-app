@@ -46,7 +46,7 @@ var homeButton = Titanium.UI.createImageView({
 portletBar.add(homeButton);
 win.add(portletBar);
 
-homeButton.addEventListener('click', function() {
+homeButton.addEventListener('singletap', function() {
     Ti.App.fireEvent(
         'showWindow', 
         {

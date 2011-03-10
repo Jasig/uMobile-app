@@ -64,7 +64,7 @@ createTitleBar = function () {
     });
     titlebar.add(homeButton);
     
-    homeButton.addEventListener('click', function (e) {
+    homeButton.addEventListener('singletap', function (e) {
         Ti.App.fireEvent(
             'showWindow', 
             {
@@ -127,7 +127,7 @@ createCredentialsForm = function () {
         title:'Update'
     });
     win.add(saveButton);
-    saveButton.addEventListener('click', function (e) {
+    saveButton.addEventListener('singletap', function (e) {
         UPM.saveCredentials({ 
             username: usernameInput.value, 
             password: passwordInput.value 

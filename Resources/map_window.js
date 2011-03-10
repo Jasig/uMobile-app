@@ -100,7 +100,7 @@ createTitleBar = function () {
     bar.add(homeButton);
 
     // add an event listener for the home button
-    homeButton.addEventListener('click', function (e) {
+    homeButton.addEventListener('singletap', function (e) {
         searchField.blur();
         Ti.App.fireEvent(
             'showWindow', 
@@ -149,7 +149,7 @@ createMapView = function () {
        mapView.add(buttonBar);
 
        // add event listeners for the zoom buttons
-       buttonBar.addEventListener('click', function (e) {
+       buttonBar.addEventListener('singletap', function (e) {
            if (e.index == 0) {
                mapView.zoom(1);
            } else {

@@ -70,7 +70,7 @@ createPortalView = function () {
 	
     win.add(portalView);
     
-    settingsButton.addEventListener('click', function (e) {
+    settingsButton.addEventListener('singletap', function (e) {
         Ti.App.fireEvent(
             'showWindow', 
             {
@@ -187,9 +187,9 @@ drawHomeGrid = function(portlets) {
         });
         gridItem.add(gridItemIcon);
         
-        //Place the item in the scrollview and listen for clicks
+        //Place the item in the scrollview and listen for singletaps
         portalView.add(gridItem);
-        gridItem.addEventListener("click", getShowPortletFunc(portlet));
+        gridItem.addEventListener("singletap", getShowPortletFunc(portlet));
         
     }
 };
