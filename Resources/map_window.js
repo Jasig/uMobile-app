@@ -27,7 +27,7 @@ Titanium.include('skin.js');
 Titanium.include('js/MapService.js');
 Titanium.include('js/views/MapDetailTop.js');
 
-var MapWindowController = (function() {
+var MapWindowController = function() {
     var win, 
         mapView, 
         createTitleBar, 
@@ -39,6 +39,7 @@ var MapWindowController = (function() {
         loadingIndicator;
 
     win = Titanium.UI.currentWindow;
+    
     this.init = function () {
         this.createTitleBar();
         this.createMapView();
@@ -181,9 +182,9 @@ var MapWindowController = (function() {
         }));
     };
     this.init();
-})();
+};
 
-
+controller = new MapWindowController();
 
 
 
