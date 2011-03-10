@@ -87,6 +87,7 @@ createTitleBar = function () {
     searchField.addEventListener('return', function(e){
         Ti.API.info(e.source.value);
         MapService.search(e.source.value);
+        searchField.blur();
     });
     
     // add a navigation button to allow users to return to the home screen
@@ -100,6 +101,7 @@ createTitleBar = function () {
 
     // add an event listener for the home button
     homeButton.addEventListener('click', function (e) {
+        searchField.blur();
         Ti.App.fireEvent(
             'showWindow', 
             {
