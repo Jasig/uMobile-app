@@ -1,8 +1,9 @@
 var MapDetailTop = function (opts) {
     var detailView,
-        mapIconBlob,
-        locationTitle,
-        locationAddress,
+        mapIcon,
+        mapIconContainer,
+        directionsButton,
+        locationAddressLabel,
         MAP_HEIGHT = 75,
         MAP_WIDTH = 75,
         MAP_HORIZ_PADDING = 10,
@@ -16,6 +17,7 @@ var MapDetailTop = function (opts) {
         height: 'auto'
     });
     
+    //Create a wrapper for the map icon, to give it rounded corners and a border
     mapIconContainer = Titanium.UI.createView({
         width: MAP_WIDTH,
         height: MAP_HEIGHT,
@@ -25,6 +27,8 @@ var MapDetailTop = function (opts) {
         borderRadius: 10,
         borderColor: "#333"
     });
+    
+    //Load a map view thumbnail for the current location
     mapIcon = Titanium.Map.createView({
         location: {
             latitude: opts.details.latitude,
@@ -42,7 +46,8 @@ var MapDetailTop = function (opts) {
     mapIconContainer.add(mapIcon);
     detailView.add(mapIconContainer);
     
-    locationAddress = Titanium.UI.createLabel({
+    //Add a label for the address next to the map thumbnail
+    locationAddressLabel = Titanium.UI.createLabel({
         text: opts.details.address,
         width: 'auto',
         left: (MAP_HORIZ_PADDING * 2) + mapIcon.width,
@@ -52,9 +57,25 @@ var MapDetailTop = function (opts) {
         },
         color: "#333",
         textAlign: "left",
-        height: 'auto'
+        height: 36
     });
-    detailView.add(locationAddress);
+    detailView.add(locationAddressLabel);
+    
+    //Add "Get Directions" button
+    directionsButton = Titanium.UI.createButton({
+        title: "Get Directions",
+        width: Ti.Platform.displayCaps.platformWidth - (MAP_HORIZ_PADDING * 3) - mapIcon.width,
+        height:25,
+        top: mapIconContainer.height + mapIconContainer.top - 25,
+        left: (MAP_HORIZ_PADDING * 2 ) + mapIcon.width
+    });
+    Ti.API.debug("bottom of map is: " + mapIconContainer.bottom);
+
+    detailView.add(directionsButton);
+    directionsButton.addEventListener("click", function(e){
+        Ti.Platform.openURL('http://maps.google.com/maps?daddr='+ opts.details.address +','+ opts.details.zip +'&ie=UTF8&t=h&z=16');
+        Ti.API.info("Clicked directions button");
+    });
 
     return detailView;
 };

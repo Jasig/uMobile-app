@@ -54,6 +54,7 @@ windows.map = Titanium.UI.createWindow({
     url: 'map_window.js',
     title: 'Map'
 });
+// windows.map.open();
 
 
 //

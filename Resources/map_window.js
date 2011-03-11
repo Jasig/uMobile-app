@@ -45,26 +45,7 @@ var MapWindowController = function() {
         this.createTitleBar();
         this.createMapView();
     };
-    this.loadPointDetail = function (point) {
-        var pointDetailWindow, bar, animation, details = [], detailTable;
-        Ti.API.info('loadPointDetail()');
-
-        pointDetailWindow = Titanium.UI.createWindow({
-            title : point.title
-        });
-
-        detailTable = Titanium.UI.createTableView();
-        if (point.abbreviation) {
-            detailTable.appendRow(Titanium.UI.createTableViewRow({title: point.abbreviation}));
-        }
-        pointDetailWindow.add(detailTable);
-
-        pointDetailWindow.open({
-            modal:true,
-            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
-            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-        });
-    };
+    
     this.createTitleBar = function () {
         var bar, title, homeButton;
 
@@ -169,34 +150,46 @@ var MapWindowController = function() {
             locationDetailTitleBar,
             locationDetailMap,
             locationDetail,
-            locationPhotos;
+            locationPhotos,
+            titleBackButton;
         
-        Ti.API.info("loadDetail method called with parent: " + JSON.stringify(e));
-        
+        //Create and open the window for the map detail
         locationDetailWin = Titanium.UI.createWindow({
-           title: "Location Detail",
            backgroundColor: "#fff"
         });
-        
         locationDetailWin.open();
         
+        //Create a scrollable view to contain the contents of the detail view
         locationDetailScroll = Titanium.UI.createScrollView({
             contentWidth:'auto',
             contentHeight:'auto'
         });
         locationDetailWin.add(locationDetailScroll);
         
+        //Create a back button to be added to the title bar to take the user back to the map
+        titleBackButton = Titanium.UI.createButton({
+            title: "Map"
+        });
+        titleBackButton.addEventListener("click",function(e){
+            locationDetailWin.close();
+        });
+        
+        //Create the title bar for the top of the detail view
         locationDetailTitleBar = new GenericTitleBar({
-            title: e.title
+            title: e.title,
+            settingsButton: true,
+            backButton: titleBackButton
         });
         locationDetailScroll.add(locationDetailTitleBar);
         
+        //Create the top area of the detail view, containing the map icon, address, and directions link.
         topDetailView = new MapDetailTop({
             details: e,
             top: 50
         });
         locationDetailScroll.add(topDetailView);
         
+        //Display a photo of the location, if one is available.
         if(e.img){
             Ti.API.info(e.img);
             locationPhoto = Titanium.UI.createImageView({

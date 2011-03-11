@@ -30,7 +30,7 @@ var UPM = UPM || {};
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
 // trailing slash.
 UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-// UPM.BASE_PORTAL_URL = 'http://172.16.67.50:8080';
+// UPM.BASE_PORTAL_URL = 'http://172.16.67.77:8080';
 UPM.PORTAL_CONTEXT = '/uPortal';
 UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + '/uPortal/services/mapData.json';
 
@@ -53,5 +53,9 @@ UPM.GLOBAL_STYLES = {
     titleBarGradient: {
         type:'linear',
         colors:['#333','#000']
+    },
+    titleBarButtonGradient: {
+        type:'linear',
+        colors:['#666','#444','#333']
     }
 };
