@@ -26,6 +26,7 @@ Titanium.include('lib.js');
 Titanium.include('skin.js');
 Titanium.include('js/MapService.js');
 Titanium.include('js/views/MapDetailTop.js');
+Titanium.include('js/views/GenericTitleBar.js');
 
 var MapWindowController = function() {
     var win, 
@@ -165,8 +166,10 @@ var MapWindowController = function() {
     };
     this.loadDetail = function(e) {
         var locationDetailWin,
+            locationDetailTitleBar,
             locationDetailMap,
-            locationDetail;
+            locationDetail,
+            locationPhotos;
         
         Ti.API.info("loadDetail method called with parent: " + JSON.stringify(e));
         
@@ -176,10 +179,38 @@ var MapWindowController = function() {
         });
         
         locationDetailWin.open();
-        locationDetailWin.add(new MapDetailTop({
+        
+        locationDetailScroll = Titanium.UI.createScrollView({
+            contentWidth:'auto',
+            contentHeight:'auto'
+        });
+        locationDetailWin.add(locationDetailScroll);
+        
+        locationDetailTitleBar = new GenericTitleBar({
+            title: e.title
+        });
+        locationDetailScroll.add(locationDetailTitleBar);
+        
+        topDetailView = new MapDetailTop({
             details: e,
             top: 50
-        }));
+        });
+        locationDetailScroll.add(topDetailView);
+        
+        if(e.img){
+            Ti.API.info(e.img);
+            locationPhoto = Titanium.UI.createImageView({
+                image: e.img.replace(/\/thumbnail\//,'/photo/'),
+                width: Titanium.Platform.displayCaps.platformWidth - 20,
+                left: 10,
+                top: topDetailView.height + topDetailView.top + 10,
+                backgroundColor: "#eee",
+                borderRadius: 10,
+                borderWidth: 10,
+                borderColor: "#eee"
+            });
+            locationDetailScroll.add(locationPhoto);
+        }
     };
     this.init();
 };

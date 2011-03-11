@@ -212,7 +212,7 @@ var getPortletsForUser = function(onload) {
         }
         drawHomeGrid(layout);
     };  
-       
+
     // Send the HTTP request  
     loader.send();
 

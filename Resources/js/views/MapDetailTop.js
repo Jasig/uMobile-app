@@ -3,16 +3,17 @@ var MapDetailTop = function (opts) {
         mapIconBlob,
         locationTitle,
         locationAddress,
-        MAP_HEIGHT = 100,
-        MAP_WIDTH = 100,
+        MAP_HEIGHT = 75,
+        MAP_WIDTH = 75,
         MAP_HORIZ_PADDING = 10,
         MAP_VERT_PADDING = 10;
     
     detailView = Titanium.UI.createView({
         top: opts.top || 0,
         left: opts.left || 0,
-        backgroundColor: opts.backgroundColor || '#000',
-        height: opts.height || MAP_HEIGHT + (MAP_VERT_PADDING * 2)
+        backgroundColor: opts.backgroundColor || '#fff',
+        // height: opts.height || MAP_HEIGHT + (MAP_VERT_PADDING * 2)
+        height: 'auto'
     });
     
     mapIconContainer = Titanium.UI.createView({
@@ -20,9 +21,9 @@ var MapDetailTop = function (opts) {
         height: MAP_HEIGHT,
         left: MAP_HORIZ_PADDING,
         top: MAP_VERT_PADDING,
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 10,
-        borderColor: "#fff"
+        borderColor: "#333"
     });
     mapIcon = Titanium.Map.createView({
         location: {
@@ -41,31 +42,17 @@ var MapDetailTop = function (opts) {
     mapIconContainer.add(mapIcon);
     detailView.add(mapIconContainer);
     
-    locationTitle = Titanium.UI.createLabel({
-        text: opts.details.title,
-        left: (MAP_HORIZ_PADDING * 2) + MAP_WIDTH,
-        top: MAP_VERT_PADDING,
-        font: {
-            fontSize: 24
-        },
-        color: "#fff",
-        textAlign: "left",
-        height: 36,
-        width: 'auto'
-    });
-    detailView.add(locationTitle);
-    
     locationAddress = Titanium.UI.createLabel({
         text: opts.details.address,
         width: 'auto',
         left: (MAP_HORIZ_PADDING * 2) + mapIcon.width,
-        top: MAP_VERT_PADDING + locationTitle.height,
+        top: MAP_VERT_PADDING,
         font: {
             fontSize: 18
         },
-        color: "#eee",
+        color: "#333",
         textAlign: "left",
-        height: 24
+        height: 'auto'
     });
     detailView.add(locationAddress);
 
