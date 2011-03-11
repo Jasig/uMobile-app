@@ -74,7 +74,6 @@ var MapDetailTop = function (opts) {
     detailView.add(directionsButton);
     directionsButton.addEventListener("click", function(e){
         Ti.Platform.openURL('http://maps.google.com/maps?daddr='+ opts.details.address +','+ opts.details.zip +'&ie=UTF8&t=h&z=16');
-        Ti.API.info("Clicked directions button");
     });
 
     return detailView;

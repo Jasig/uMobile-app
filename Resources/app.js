@@ -20,22 +20,37 @@
 // library includes
 Titanium.include('lib.js');
 Titanium.include('skin.js');
+Titanium.include('js/MapService.js');
+Titanium.include('js/views/GenericTitleBar.js');
+Titanium.include('js/views/MapDetailTop.js');
+Titanium.include('config.js');
 
-var windows;
 
+
+var windows = {},
+    facade = {
+        UPM: UPM,
+        views: {
+            MapDetailTop: MapDetailTop,
+            GenericTitleBar: GenericTitleBar
+        },
+        models: {
+            mapServiceInstance: new MapService()
+        },
+        controllers: {}
+    };
 
 Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
-
-windows = {};
 
 //
 // MAIN PORTAL VIEW
 //
 windows.home = Titanium.UI.createWindow({
     url: 'portal_window.js',
-    navBarHidden: true
+    navBarHidden: true,
+    app: facade
 });
-windows.home.open();
+// windows.home.open();
 
 
 //
@@ -43,7 +58,8 @@ windows.home.open();
 //
 windows.portlet = Titanium.UI.createWindow({
  url: 'portlet_window.js',
- navBarHidden: true
+ navBarHidden: true,
+ app: facade
 });
 
 
@@ -52,9 +68,10 @@ windows.portlet = Titanium.UI.createWindow({
 //
 windows.map = Titanium.UI.createWindow({
     url: 'map_window.js',
-    title: 'Map'
+    title: 'Map',
+    app: facade
 });
-// windows.map.open();
+windows.map.open();
 
 
 //
@@ -62,7 +79,8 @@ windows.map = Titanium.UI.createWindow({
 //
 windows.settings = Titanium.UI.createWindow({
     url: 'settings_window.js',
-    navBarHidden: true
+    navBarHidden: true,
+    app: facade
 });
 
 Ti.App.addEventListener('showWindow', function (e) {

@@ -1,4 +1,4 @@
-Ti.include('config.js');
+// Ti.include('config.js');
 
 var GenericTitleBar = function (opts) {
     var title,
@@ -10,7 +10,7 @@ var GenericTitleBar = function (opts) {
         left: opts.left || 0,
         height: opts.height || 50,
         width: Titanium.Platform.displayCaps.platformWidth,
-        backgroundGradient: UPM.GLOBAL_STYLES.titleBarGradient
+        backgroundGradient: opts.app.UPM.GLOBAL_STYLES.titleBarGradient
     });
     if (opts.title) {
         //Places the title in the center of the titlebar...
@@ -35,7 +35,7 @@ var GenericTitleBar = function (opts) {
         //TODO: These styles should be moved into JSS
         backButton.style = 0;
         backButton.color = "#fff";
-        backButton.backgroundGradient = UPM.GLOBAL_STYLES.titleBarButtonGradient;
+        backButton.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarButtonGradient;
         backButton.borderWidth = 1;
         backButton.borderRadius = 5;
         backButton.borderColor = "#000";
