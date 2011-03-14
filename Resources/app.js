@@ -64,6 +64,16 @@ windows.portlet = Titanium.UI.createWindow({
 
 
 //
+//MAP VIEW
+//
+windows.directory = Titanium.UI.createWindow({
+ url: 'directory_window.js',
+ title: 'Directory',
+ app: facade
+});
+
+
+//
 // MAP VIEW
 //
 windows.map = Titanium.UI.createWindow({
