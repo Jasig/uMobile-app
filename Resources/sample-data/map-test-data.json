@@ -1,0 +1,686 @@
+{ "buildings": [ 
+{ "abbreviation": "ARG", "accuracy": "6", "address": "North Frontage Road", "alternateName": "", "latitude": "41.3068877", "longitude": "-72.9424517", "name": "Air Rights Garage", "searchText": "arg~air rights garage~north frontage road~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ARG.jpg" },
+    
+{ "abbreviation": "ALW", "accuracy": "8", "address": "31 Hillhouse Avenue", "alternateName": "", "latitude": "41.3137919", "longitude": "-72.9234645", "name": "Allwin Hall", "searchText": "alw~allwin hall~31 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ALW.jpg" },
+    
+{ "abbreviation": "AMISB", "accuracy": "8", "address": "10 Amistad Street", "alternateName": "Amistad Street Building", "latitude": "41.3005410", "longitude": "-72.9298077", "name": "10 Amistad Street", "searchText": "amisb~10 amistad street~10 amistad street~amistad street building", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/AMISB.jpg" },
+    
+{ "abbreviation": "AMISG", "accuracy": "8", "address": "10 Amistad Street", "alternateName": "", "latitude": "41.3005410", "longitude": "-72.9298077", "name": "Amistad Street Garage", "searchText": "amisg~amistad street garage~10 amistad street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/AMISG.jpg" },
+    
+{ "abbreviation": "TAC", "accuracy": "8", "address": "300 Cedar Street", "alternateName": "", "latitude": "41.3016969", "longitude": "-72.9334607", "name": "Anlyan Center", "searchText": "tac~anlyan center~300 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TAC.jpg" },
+    
+{ "abbreviation": "ARMORY", "accuracy": "8", "address": "70 Central Avenue", "alternateName": "", "latitude": "41.3125760", "longitude": "-72.9635699", "name": "Armory", "searchText": "armory~armory~70 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/ARMORY.jpg" },
+    
+{ "abbreviation": "ARNOLD", "accuracy": "8", "address": "304 Elm Street", "alternateName": "", "latitude": "41.3112273", "longitude": "-72.9314304", "name": "Arnold Hall", "searchText": "arnold~arnold hall~304 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ARNOLD.jpg" },
+    
+{ "abbreviation": "ARTTURF", "accuracy": "8", "address": "256 Derby Avenue", "alternateName": "", "latitude": "41.3100858", "longitude": "-72.9595585", "name": "Artificial Turf Field", "searchText": "artturf~artificial turf field~256 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/photo/nail/ARTTURF.jpg" },
+    
+{ "abbreviation": "AUDUGAR", "accuracy": "8", "address": "78 Audubon Street", "alternateName": "", "latitude": "41.3111324", "longitude": "-72.9207514", "name": "Audubon Court Garage", "searchText": "audugar~audubon court garage~78 audubon street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/AUDUGAR.jpg" },
+    
+{ "abbreviation": "BASS", "accuracy": "8", "address": "266 Whitney Avenue", "alternateName": "", "latitude": "41.3180281", "longitude": "-72.9214311", "name": "Bass Center", "searchText": "bass~bass center~266 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BASS.jpg" },
+    
+{ "abbreviation": "BASSLB", "accuracy": "8", "address": "110 Wall Street", "alternateName": "CCL", "latitude": "41.3110330", "longitude": "-72.9269560", "name": "Bass Library", "searchText": "basslb~bass library~110 wall street~ccl", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BASSLB.jpg" },
+    
+{ "abbreviation": "BATTELL", "accuracy": "8", "address": "400 College Street", "alternateName": "", "latitude": "41.3094471", "longitude": "-72.9269999", "name": "Battell Chapel", "searchText": "battell~battell chapel~400 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BATTELL.jpg" },
+    
+{ "abbreviation": "BCT", "accuracy": "8", "address": "15 Prospect Street", "alternateName": "", "latitude": "41.3125160", "longitude": "-72.9250570", "name": "Becton Center &amp; Davies Auditorium", "searchText": "bct~becton center &amp; davies auditorium~15 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BCT.jpg" },
+    
+{ "abbreviation": "BRBL", "accuracy": "8", "address": "121 Wall Street", "alternateName": "", "latitude": "41.3115250", "longitude": "-72.9271390", "name": "Beinecke Rare Book &amp; Manuscript Library", "searchText": "brbl~beinecke rare book &amp; manuscript library~121 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BRBL.jpg" },
+    
+{ "abbreviation": "BELLAMY", "accuracy": "8", "address": "354 Canner Street", "alternateName": "", "latitude": "41.3253814", "longitude": "-72.9206784", "name": "Bellamy Hall ", "searchText": "bellamy~bellamy hall ~354 canner street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BELLAMY.jpg" },
+    
+{ "abbreviation": "BK", "accuracy": "8", "address": "205 Elm Street", "alternateName": "", "latitude": "41.3101056", "longitude": "-72.9285542", "name": "Berkeley College", "searchText": "bk~berkeley college~205 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BK.jpg" },
+    
+{ "abbreviation": "BETHOBSV", "accuracy": "6", "address": "Hilltop Road, Bethany, CT", "alternateName": "", "latitude": "41.4244741", "longitude": "-72.9759596", "name": "Bethany Observatory", "searchText": "bethobsv~bethany observatory~hilltop road, bethany, ct~", "zip": "06524", "img": "http://business.yale.edu/map/thumbnail/BETHOBSV.jpg" },
+    
+{ "abbreviation": "BETTS", "accuracy": "8", "address": "393 Prospect Street", "alternateName": "", "latitude": "41.3229654", "longitude": "-72.9233527", "name": "Betts House", "searchText": "betts~betts house~393 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BETTS.jpg" },
+    
+{ "abbreviation": "BM", "accuracy": "8", "address": "300 College Street", "alternateName": "", "latitude": "41.3082085", "longitude": "-72.9279775", "name": "Bingham Hall", "searchText": "bm~bingham hall~300 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BM.jpg" },
+    
+{ "abbreviation": "BB", "accuracy": "8", "address": "330 Cedar Street", "alternateName": "", "latitude": "41.3024044", "longitude": "-72.9338542", "name": "Boardman Building", "searchText": "bb~boardman building~330 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BB.jpg" },
+    
+{ "abbreviation": "BCMM", "accuracy": "8", "address": "295 Congress Avenue", "alternateName": "", "latitude": "41.3020574", "longitude": "-72.9329622", "name": "Boyer Center", "searchText": "bcmm~boyer center~295 congress avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BCMM.jpg" },
+    
+{ "abbreviation": "BML", "accuracy": "8", "address": "310 Cedar Street", "alternateName": "", "latitude": "41.3019865", "longitude": "-72.9336171", "name": "Brady Memorial Laboratory", "searchText": "bml~brady memorial laboratory~310 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BML.jpg" },
+    
+{ "abbreviation": "BR", "accuracy": "8", "address": "74 High Street", "alternateName": "", "latitude": "41.3089860", "longitude": "-72.9296490", "name": "Branford College", "searchText": "br~branford college~74 high street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BR.jpg" },
+    
+{ "abbreviation": "BRWY29", "accuracy": "5", "address": "29-45 Broadway", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "29-45 Broadway", "searchText": "brwy29~29-45 broadway~29-45 broadway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BRWY29.jpg" },
+    
+{ "abbreviation": "BRWY35", "accuracy": "8", "address": "35 Broadway", "alternateName": "", "latitude": "41.3113057", "longitude": "-72.9306495", "name": "35 Broadway", "searchText": "brwy35~35 broadway~35 broadway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BRWY35.jpg" },
+    
+{ "abbreviation": "BRWYPKG", "accuracy": "", "address": "Broadway &amp; Elm Street", "alternateName": "", "latitude": "", "longitude": "", "name": "Broadway Parking Lot", "searchText": "", "zip": "", "img": "http://business.yale.edu/map/thumbnail/BRWYPKG.jpg" },
+    
+{ "abbreviation": "CC", "accuracy": "8", "address": "189 Elm Street", "alternateName": "", "latitude": "41.3096960", "longitude": "-72.9274390", "name": "Calhoun College", "searchText": "cc~calhoun college~189 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CC.jpg" },
+    
+{ "abbreviation": "CHDC", "accuracy": "8", "address": "150 Highland Street", "alternateName": "", "latitude": "41.3283430", "longitude": "-72.9196724", "name": "Calvin Hill Day Care Center", "searchText": "chdc~calvin hill day care center~150 highland street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHDC.jpg" },
+    
+{ "abbreviation": "CPP", "accuracy": "8", "address": "120 Tower Parkway", "alternateName": "", "latitude": "41.3129161", "longitude": "-72.9292055", "name": "Central Power Plant", "searchText": "cpp~central power plant~120 tower parkway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CPP.jpg" },
+    
+{ "abbreviation": "CHAPEL1201", "accuracy": "8", "address": "1201 Chapel Street", "alternateName": "", "latitude": "41.3091103", "longitude": "-72.9344119", "name": "1201 Chapel Street", "searchText": "chapel1201~1201 chapel street~1201 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHAPEL1201.jpg" },
+    
+{ "abbreviation": "CHAPEL1203", "accuracy": "8", "address": "1203 Chapel Street", "alternateName": "", "latitude": "41.3091351", "longitude": "-72.9345226", "name": "1203 Chapel Street", "searchText": "chapel1203~1203 chapel street~1203 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHAPEL1203.jpg" },
+    
+{ "abbreviation": "CYPG", "accuracy": "8", "address": "150 York Street", "alternateName": "", "latitude": "41.3142348", "longitude": "-72.9292219", "name": "Chapel-York Garage", "searchText": "cypg~chapel-york garage~150 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CYPG.jpg" },
+    
+{ "abbreviation": "CHURCH1", "accuracy": "8", "address": "1 Church Street", "alternateName": "", "latitude": "41.3028000", "longitude": "-72.9281039", "name": "1 Church Street", "searchText": "church1~1 church street~1 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH1.jpg" },
+    
+{ "abbreviation": "CHURCH55", "accuracy": "8", "address": "55 Church Street", "alternateName": "", "latitude": "41.3047323", "longitude": "-72.9266872", "name": "55 Church Street", "searchText": "church55~55 church street~55 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH55.jpg" },
+    
+{ "abbreviation": "CHURCH129", "accuracy": "8", "address": "129 Church Street", "alternateName": "", "latitude": "41.3063190", "longitude": "-72.9257870", "name": "129 Church Street", "searchText": "church129~129 church street~129 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH129.jpg" },
+    
+{ "abbreviation": "CHURCH157", "accuracy": "8", "address": "157 Church Street", "alternateName": "", "latitude": "40.7148864", "longitude": "-74.0079445", "name": "157 Church Street", "searchText": "church157~157 church street~157 church street~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/CHURCH157.jpg" },
+    
+{ "abbreviation": "CHURCH195", "accuracy": "8", "address": "195 Church Street", "alternateName": "", "latitude": "41.3080426", "longitude": "-72.9240484", "name": "195 Church Street", "searchText": "church195~195 church street~195 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH195.jpg" },
+    
+{ "abbreviation": "CHURCH246", "accuracy": "8", "address": "246 Church Street", "alternateName": "", "latitude": "41.3099255", "longitude": "-72.9231362", "name": "246 Church Street", "searchText": "church246~246 church street~246 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH246.jpg" },
+    
+{ "abbreviation": "CHURCH250", "accuracy": "8", "address": "250 Church Street", "alternateName": "", "latitude": "41.3099034", "longitude": "-72.9229672", "name": "250 Church Street", "searchText": "church250~250 church street~250 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH250.jpg" },
+    
+{ "abbreviation": "CHURCH258", "accuracy": "8", "address": "258 Church Street", "alternateName": "", "latitude": "41.3099674", "longitude": "-72.9229207", "name": "258 Church Street / 96 Grove Street", "searchText": "church258~258 church street / 96 grove street~258 church street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CHURCH258.jpg" },
+    
+{ "abbreviation": "CSS002", "accuracy": "5", "address": "2 Church Street South", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "2 Church Street South", "searchText": "css002~2 church street south~2 church street south~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CSS002.jpg" },
+    
+{ "abbreviation": "CSS100", "accuracy": "8", "address": "100 Church Street South", "alternateName": "", "latitude": "41.2996183", "longitude": "-72.9299095", "name": "100 Church Street South", "searchText": "css100~100 church street south~100 church street south~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CSS100.jpg" },
+    
+{ "abbreviation": "CRB", "accuracy": "8", "address": "175 Prospect Street", "alternateName": "", "latitude": "41.3165108", "longitude": "-72.9242519", "name": "Class of 1954 Chemistry Research Building", "searchText": "crb~class of 1954 chemistry research building~175 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRB.jpg" },
+    
+{ "abbreviation": "ESC", "accuracy": "8", "address": "21 Sachem Street", "alternateName": "", "latitude": "41.3157517", "longitude": "-72.9221916", "name": "Class of 1954 Environmental Science Center", "searchText": "esc~class of 1954 environmental science center~21 sachem street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ESC.jpg" },
+    
+{ "abbreviation": "CB", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Clinic Building", "searchText": "cb~clinic building~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CB.jpg" },
+    
+{ "abbreviation": "CLP", "accuracy": "8", "address": "37-55 College Street", "alternateName": "47 College Street", "latitude": "41.3035467", "longitude": "-72.9314513", "name": "College Place", "searchText": "clp~college place~37-55 college street~47 college street", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CLP.jpg" },
+    
+{ "abbreviation": "COLL127", "accuracy": "8", "address": "127 College Street", "alternateName": "", "latitude": "41.3044934", "longitude": "-72.9306519", "name": "127 College Street", "searchText": "coll127~127 college street~127 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/COLL127.jpg" },
+    
+{ "abbreviation": "COLL135", "accuracy": "8", "address": "135 College Street", "alternateName": "", "latitude": "41.3046080", "longitude": "-72.9304936", "name": "135 College Street", "searchText": "coll135~135 college street~135 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/COLL135.jpg" },
+    
+{ "abbreviation": "COLL153", "accuracy": "8", "address": "153 College Street", "alternateName": "", "latitude": "41.3048032", "longitude": "-72.9303252", "name": "153 College Street", "searchText": "coll153~153 college street~153 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/COLL153.jpg" },
+    
+{ "abbreviation": "COLL451", "accuracy": "8", "address": "451 College Street", "alternateName": "", "latitude": "41.3103332", "longitude": "-72.9263249", "name": "451 College Street", "searchText": "coll451~451 college street~451 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/COLL451.jpg" },
+    
+{ "abbreviation": "COLL493", "accuracy": "8", "address": "493 College Street", "alternateName": "", "latitude": "41.3110248", "longitude": "-72.9258462", "name": "493 College Street", "searchText": "coll493~493 college street~493 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/COLL493.jpg" },
+    
+{ "abbreviation": "UC", "accuracy": "8", "address": "168 Grove Street", "alternateName": "University Commons", "latitude": "41.3117073", "longitude": "-72.9255341", "name": "Commons", "searchText": "uc~commons~168 grove street~university commons", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/UC.jpg" },
+    
+{ "abbreviation": "CONG270", "accuracy": "8", "address": "270 Congress Avenue", "alternateName": "", "latitude": "41.3021433", "longitude": "-72.9325723", "name": "270 Congress Avenue", "searchText": "cong270~270 congress avenue~270 congress avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CONG270.jpg" },
+    
+{ "abbreviation": "YPI1", "accuracy": "8", "address": "301 Cedar Street", "alternateName": "Yale Psychiatric Institute", "latitude": "41.3015895", "longitude": "-72.9333625", "name": "Congress Place", "searchText": "ypi1~congress place~301 cedar street~yale psychiatric institute", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YPI1.jpg" },
+    
+{ "abbreviation": "C", "accuracy": "8", "address": "1017 Chapel Street", "alternateName": "", "latitude": "41.3073826", "longitude": "-72.9288708", "name": "Connecticut Hall", "searchText": "c~connecticut hall~1017 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/C.jpg" },
+    
+{ "abbreviation": "CMHC", "accuracy": "8", "address": "34 Park Street", "alternateName": "", "latitude": "41.3168344", "longitude": "-72.9545251", "name": "Connecticut Mental Health Center", "searchText": "cmhc~connecticut mental health center~34 park street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CMHC.jpg" },
+    
+{ "abbreviation": "COXE", "accuracy": "8", "address": "257 Derby Avenue", "alternateName": "", "latitude": "41.3100872", "longitude": "-72.9597742", "name": "Coxe Cage", "searchText": "coxe~coxe cage~257 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/COXE.jpg" },
+    
+{ "abbreviation": "CRWN270", "accuracy": "8", "address": "270 Crown Street", "alternateName": "", "latitude": "41.3063480", "longitude": "-72.9307090", "name": "270 Crown Street", "searchText": "crwn270~270 crown street~270 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRWN270.jpg" },
+    
+{ "abbreviation": "CRWN295", "accuracy": "8", "address": "295-297 Crown Street", "alternateName": "", "latitude": "41.3068652", "longitude": "-72.9316063", "name": "295-297 Crown Street", "searchText": "crwn295~295-297 crown street~295-297 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRWN295.jpg" },
+    
+{ "abbreviation": "CRWN301", "accuracy": "8", "address": "301 Crown Street", "alternateName": "", "latitude": "41.3069596", "longitude": "-72.9318351", "name": "301 Crown Street", "searchText": "crwn301~301 crown street~301 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRWN301.jpg" },
+    
+{ "abbreviation": "CRWN305", "accuracy": "8", "address": "305 Crown Street", "alternateName": "", "latitude": "41.3070840", "longitude": "-72.9320420", "name": "305 Crown Street", "searchText": "crwn305~305 crown street~305 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRWN305.jpg" },
+    
+{ "abbreviation": "CRWN341", "accuracy": "8", "address": "341 Crown Street", "alternateName": "", "latitude": "41.3074821", "longitude": "-72.9330951", "name": "341 Crown Street", "searchText": "crwn341~341 crown street~341 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRWN341.jpg" },
+    
+{ "abbreviation": "CRWN353", "accuracy": "8", "address": "353 Crown Street", "alternateName": "", "latitude": "41.3076942", "longitude": "-72.9336040", "name": "353 Crown Street", "searchText": "crwn353~353 crown street~353 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CRWN353.jpg" },
+    
+{ "abbreviation": "CHTC", "accuracy": "8", "address": "253 Derby Avenue", "alternateName": "", "latitude": "41.3101533", "longitude": "-72.9593624", "name": "Cullman-Heyman Tennis Center", "searchText": "chtc~cullman-heyman tennis center~253 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/CHTC.jpg" },
+    
+{ "abbreviation": "CURTIS", "accuracy": "8", "address": "350 Canner Street", "alternateName": "", "latitude": "41.3253730", "longitude": "-72.9205612", "name": "Curtis Hall", "searchText": "curtis~curtis hall~350 canner street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CURTIS.jpg" },
+    
+{ "abbreviation": "DCB", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Dana Clinic Building", "searchText": "dcb~dana clinic building~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/DCB.jpg" },
+    
+{ "abbreviation": "DC", "accuracy": "8", "address": "248 York Street", "alternateName": "", "latitude": "41.3100425", "longitude": "-72.9304671", "name": "Davenport College", "searchText": "dc~davenport college~248 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/DC.jpg" },
+    
+{ "abbreviation": "DAV132", "accuracy": "8", "address": "132 Davenport Avenue", "alternateName": "", "latitude": "41.3027699", "longitude": "-72.9375095", "name": "132 Davenport Avenue", "searchText": "dav132~132 davenport avenue~132 davenport avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/DAV132.jpg" },
+    
+{ "abbreviation": "DEWCUYL", "accuracy": "8", "address": "256 Derby Avenue", "alternateName": "", "latitude": "41.3100858", "longitude": "-72.9595585", "name": "DeWitt Cuyler Complex", "searchText": "dewcuyl~dewitt cuyler complex~256 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/DEWCUYL.jpg" },
+    
+{ "abbreviation": "DEWITTFD", "accuracy": "8", "address": "70 Central Avenue", "alternateName": "", "latitude": "41.3125760", "longitude": "-72.9635699", "name": "DeWitt Family Field", "searchText": "dewittfd~dewitt family field~70 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/DEWITTFD.jpg" },
+    
+{ "abbreviation": "DNC", "accuracy": "8", "address": "15 Mansfield Street", "alternateName": "", "latitude": "41.3154261", "longitude": "-72.9255694", "name": "Donaldson Commons", "searchText": "dnc~donaldson commons~15 mansfield street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/DNC.jpg" },
+    
+{ "abbreviation": "DL", "accuracy": "8", "address": "10 Hillhouse Avenue", "alternateName": "", "latitude": "41.3120246", "longitude": "-72.9241991", "name": "Dunham Laboratory", "searchText": "dl~dunham laboratory~10 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/DL.jpg" },
+    
+{ "abbreviation": "D", "accuracy": "8", "address": "198 Elm Street", "alternateName": "", "latitude": "41.3102920", "longitude": "-72.9295210", "name": "Durfee Hall", "searchText": "d~durfee hall~198 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/D.jpg" },
+    
+{ "abbreviation": "TD", "accuracy": "8", "address": "345 Temple Street", "alternateName": "", "latitude": "41.3103689", "longitude": "-72.9242367", "name": "Timothy Dwight College", "searchText": "td~timothy dwight college~345 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TD.jpg" },
+    
+{ "abbreviation": "DW", "accuracy": "8", "address": "67 High Street", "alternateName": "", "latitude": "41.3090840", "longitude": "-72.9294527", "name": "Dwight Hall &amp; Memorial Chapel", "searchText": "dw~dwight hall &amp; memorial chapel~67 high street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/DW.jpg" },
+    
+{ "abbreviation": "EDG32", "accuracy": "8", "address": "32 Edgewood Avenue", "alternateName": "", "latitude": "41.3103982", "longitude": "-72.9338953", "name": "32 Edgewood Avenue", "searchText": "edg32~32 edgewood avenue~32 edgewood avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EDG32.jpg" },
+    
+{ "abbreviation": "EDG36", "accuracy": "8", "address": "36 Edgewood Avenue", "alternateName": "", "latitude": "41.3086960", "longitude": "-72.9317310", "name": "36 Edgewood Avenue", "searchText": "edg36~36 edgewood avenue~36 edgewood avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EDG36.jpg" },
+    
+{ "abbreviation": "JE", "accuracy": "8", "address": "68 High Street", "alternateName": "", "latitude": "41.3089060", "longitude": "-72.9303570", "name": "Jonathan Edwards College", "searchText": "je~jonathan edwards college~68 high street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/JE.jpg" },
+    
+{ "abbreviation": "EDWARDS309", "accuracy": "5", "address": "309 Edwards Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "309 Edwards Street", "searchText": "edwards309~309 edwards street~309 edwards street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EDWARDS309.jpg" },
+    
+{ "abbreviation": "EDWARDS340", "accuracy": "8", "address": "340 Edwards Street", "alternateName": "", "latitude": "41.3200277", "longitude": "-72.9217762", "name": "340 Edwards Street", "searchText": "edwards340~340 edwards street~340 edwards street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EDWARDS340.jpg" },
+    
+{ "abbreviation": "CSB", "accuracy": "8", "address": "350 Edwards Street", "alternateName": "Chemical Safety Building", "latitude": "41.3201069", "longitude": "-72.9222928", "name": "350 Edwards Street", "searchText": "csb~350 edwards street~350 edwards street~chemical safety building", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/CSB.jpg" },
+    
+{ "abbreviation": "EDWARDS360", "accuracy": "8", "address": "360 Edwards Street", "alternateName": "", "latitude": "41.3201862", "longitude": "-72.9228094", "name": "360 Edwards Street", "searchText": "edwards360~360 edwards street~360 edwards street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EDWARDS360.jpg" },
+    
+{ "abbreviation": "EDWARDS380", "accuracy": "5", "address": "380 Edwards Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "380 Edwards Street", "searchText": "edwards380~380 edwards street~380 edwards street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EDWARDS380.jpg" },
+    
+{ "abbreviation": "EAL", "accuracy": "8", "address": "270 Whitney Avenue", "alternateName": "", "latitude": "41.3179468", "longitude": "-72.9197057", "name": "Electron Accelerator Laboratory", "searchText": "eal~electron accelerator laboratory~270 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EAL.jpg" },
+    
+{ "abbreviation": "COLL459", "accuracy": "5", "address": "459 College Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Elizabethan Club", "searchText": "coll459~elizabethan club~459 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/COLL459.jpg" },
+    
+{ "abbreviation": "ELM143", "accuracy": "8", "address": "143 Elm Street", "alternateName": "", "latitude": "41.3088844", "longitude": "-72.9256345", "name": "143 Elm Street", "searchText": "elm143~143 elm street~143 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ELM143.jpg" },
+    
+{ "abbreviation": "ELM149", "accuracy": "8", "address": "149 Elm Street", "alternateName": "Yale Visitor Center", "latitude": "41.3090870", "longitude": "-72.9258303", "name": "149 Elm Street", "searchText": "elm149~149 elm street~149 elm street~yale visitor center", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ELM149.jpg" },
+    
+{ "abbreviation": "ESPLAPT", "accuracy": "8", "address": "386 Prospect Street", "alternateName": "", "latitude": "41.3223115", "longitude": "-72.9234045", "name": "Esplanade Apartments", "searchText": "esplapt~esplanade apartments~386 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ESPLAPT.jpg" },
+    
+{ "abbreviation": "EVN", "accuracy": "8", "address": "56 Hillhouse Avenue", "alternateName": "", "latitude": "41.3167310", "longitude": "-72.9245000", "name": "Evans Hall", "searchText": "evn~evans hall~56 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EVN.jpg" },
+    
+{ "abbreviation": "F", "accuracy": "5", "address": "380 College Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Farnam Hall", "searchText": "f~farnam hall~380 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/F.jpg" },
+    
+{ "abbreviation": "FMB", "accuracy": "8", "address": "310 Cedar Street", "alternateName": "", "latitude": "41.3019865", "longitude": "-72.9336171", "name": "Farnam Memorial Building", "searchText": "fmb~farnam memorial building~310 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/FMB.jpg" },
+    
+{ "abbreviation": "FARNGRDN", "accuracy": "8", "address": "335 Prospect Street", "alternateName": "", "latitude": "41.3209837", "longitude": "-72.9233280", "name": "Farnam Gardens", "searchText": "farngrdn~farnam gardens~335 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/FARNGRDN.jpg" },
+    
+{ "abbreviation": "FIELDA", "accuracy": "8", "address": "45 Yale Avenue", "alternateName": "", "latitude": "41.3108549", "longitude": "-72.9579951", "name": "Intramural Practice Field A", "searchText": "fielda~intramural practice field a~45 yale avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDA.jpg" },
+    
+{ "abbreviation": "FIELDB", "accuracy": "8", "address": "55 Central Avenue", "alternateName": "", "latitude": "41.3121949", "longitude": "-72.9634115", "name": "Varsity Practice Field B", "searchText": "fieldb~varsity practice field b~55 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDB.jpg" },
+    
+{ "abbreviation": "FIELDC", "accuracy": "8", "address": "50 Central Avenue", "alternateName": "", "latitude": "41.3123148", "longitude": "-72.9634943", "name": "Intramural Field C", "searchText": "fieldc~intramural field c~50 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDC.jpg" },
+    
+{ "abbreviation": "FIELDD", "accuracy": "8", "address": "80 Central Avenue", "alternateName": "", "latitude": "41.3127066", "longitude": "-72.9636078", "name": "Intramural Field D", "searchText": "fieldd~intramural field d~80 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDD.jpg" },
+    
+{ "abbreviation": "FIELDE", "accuracy": "8", "address": "85 Central Avenue", "alternateName": "", "latitude": "41.3124877", "longitude": "-72.9634963", "name": "Varsity Practice Field E", "searchText": "fielde~varsity practice field e~85 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDE.jpg" },
+    
+{ "abbreviation": "FIELDF", "accuracy": "8", "address": "95 Central Avenue", "alternateName": "", "latitude": "41.3126504", "longitude": "-72.9635435", "name": "Varsity Practice Field F", "searchText": "fieldf~varsity practice field f~95 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDF.jpg" },
+    
+{ "abbreviation": "FIELDX", "accuracy": "8", "address": "254 Derby Avenue", "alternateName": "", "latitude": "41.3101189", "longitude": "-72.9593526", "name": "Varsity Field X", "searchText": "fieldx~varsity field x~254 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/FIELDX.jpg" },
+    
+{ "abbreviation": "FIELDY", "accuracy": "8", "address": "252 Derby Avenue", "alternateName": "", "latitude": "41.3101520", "longitude": "-72.9591467", "name": "Varsity Field Y", "searchText": "fieldy~varsity field y~252 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/FIELDY.jpg" },
+    
+{ "abbreviation": "FIELDH", "accuracy": "8", "address": "60 Central Avenue", "alternateName": "", "latitude": "41.3124454", "longitude": "-72.9635321", "name": "Field Hockey Field", "searchText": "fieldh~field hockey field~60 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDH.jpg" },
+    
+{ "abbreviation": "FIELDS", "accuracy": "8", "address": "50 Central Avenue", "alternateName": "", "latitude": "41.3123148", "longitude": "-72.9634943", "name": "Varsity Softball Field", "searchText": "fields~varsity softball field~50 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDS.jpg" },
+    
+{ "abbreviation": "FIELDCF", "accuracy": "8", "address": "256 Derby Avenue", "alternateName": "", "latitude": "41.3100858", "longitude": "-72.9595585", "name": "Clinton Frank Field", "searchText": "fieldcf~clinton frank field~256 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/FIELDCF.jpg" },
+    
+{ "abbreviation": "JOHNFD", "accuracy": "8", "address": "70 Central Avenue", "alternateName": "", "latitude": "41.3125760", "longitude": "-72.9635699", "name": "Johnson Field", "searchText": "johnfd~johnson field~70 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/JOHNFD.jpg" },
+    
+{ "abbreviation": "FIELDAT", "accuracy": "8", "address": "80 Central Avenue", "alternateName": "", "latitude": "41.3127066", "longitude": "-72.9636078", "name": "Anthony Thompson Field", "searchText": "fieldat~anthony thompson field~80 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/FIELDAT.jpg" },
+    
+{ "abbreviation": "FISHER", "accuracy": "8", "address": "352 Canner Street", "alternateName": "", "latitude": "41.3253753", "longitude": "-72.9205964", "name": "Fisher Hall", "searchText": "fisher~fisher hall~352 canner street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/FISHER.jpg" },
+    
+{ "abbreviation": "FMP", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Fitkin Memorial Pavilion", "searchText": "fmp~fitkin memorial pavilion~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/FMP.jpg" },
+    
+{ "abbreviation": "FMPA", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Fitkin Amphitheater", "searchText": "fmpa~fitkin amphitheater~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/FMPA.jpg" },
+    
+{ "abbreviation": "FND", "accuracy": "8", "address": "135 Prospect Street", "alternateName": "", "latitude": "41.3157640", "longitude": "-72.9243440", "name": "Founders Hall", "searchText": "fnd~founders hall~135 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/FND.jpg" },
+    
+{ "abbreviation": "GALESBH", "accuracy": "8", "address": "4 Riverside Place, Gales Ferry, CT", "alternateName": "", "latitude": "41.4293547", "longitude": "-72.0924931", "name": "Gales Ferry Boathouse", "searchText": "galesbh~gales ferry boathouse~4 riverside place, gales ferry, ct~", "zip": "06335", "img": "http://business.yale.edu/map/thumbnail/GALESBH.jpg" },
+    
+{ "abbreviation": "GEORGE300", "accuracy": "8", "address": "300 George Street", "alternateName": "", "latitude": "41.3053162", "longitude": "-72.9311029", "name": "300 George Street", "searchText": "george300~300 george street~300 george street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/GEORGE300.jpg" },
+    
+{ "abbreviation": "JWG", "accuracy": "8", "address": "260 Whitney Avenue", "alternateName": "", "latitude": "41.3177079", "longitude": "-72.9198226", "name": "Gibbs Laboratories", "searchText": "jwg~gibbs laboratories~260 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/JWG.jpg" },
+    
+{ "abbreviation": "GILDER", "accuracy": "8", "address": "280 Roosevelt Drive, Derby, CT", "alternateName": "", "latitude": "41.3281849", "longitude": "-73.1041740", "name": "Gilder Boathouse", "searchText": "gilder~gilder boathouse~280 roosevelt drive, derby, ct~", "zip": "06418", "img": "http://business.yale.edu/map/thumbnail/GILDER.jpg" },
+    
+{ "abbreviation": "GCOURSE", "accuracy": "8", "address": "200 Conrad Drive", "alternateName": "", "latitude": "41.3216810", "longitude": "-72.9785633", "name": "Golf Course at Yale", "searchText": "gcourse~golf course at yale~200 conrad drive~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/GCOURSE.jpg" },
+    
+{ "abbreviation": "GML", "accuracy": "8", "address": "370 Prospect Street", "alternateName": "", "latitude": "41.3221953", "longitude": "-72.9234669", "name": "Greeley Memorial Laboratory", "searchText": "gml~greeley memorial laboratory~370 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/GML.jpg" },
+    
+{ "abbreviation": "GMLGH", "accuracy": "8", "address": "370 Prospect Street", "alternateName": "", "latitude": "41.3221953", "longitude": "-72.9234669", "name": "Greeley Greenhouse", "searchText": "gmlgh~greeley greenhouse~370 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/GMLGH.jpg" },
+    
+{ "abbreviation": "GRN", "accuracy": "5", "address": "1156 Chapel Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Green Hall", "searchText": "grn~green hall~1156 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/GRN.jpg" },
+    
+{ "abbreviation": "GBCC", "accuracy": "8", "address": "391 Prospect Street", "alternateName": "", "latitude": "41.3229544", "longitude": "-72.9233528", "name": "Greenberg Conference Center", "searchText": "gbcc~greenberg conference center~391 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/GBCC.jpg" },
+    
+{ "abbreviation": "GSG", "accuracy": "", "address": "65 Grove Street", "alternateName": "", "latitude": "", "longitude": "", "name": "Grove Street Garage", "searchText": "", "zip": "", "img": "http://business.yale.edu/map/thumbnail/GSG.jpg" },
+    
+{ "abbreviation": "GBFS", "accuracy": "8", "address": "276 Old Quarry Road, Guilford, CT", "alternateName": "", "latitude": "41.2604795", "longitude": "-72.7301903", "name": "Guilford Biological Field Station", "searchText": "gbfs~guilford biological field station~276 old quarry road, guilford, ct~", "zip": "06437", "img": "http://business.yale.edu/map/thumbnail/GBFS.jpg" },
+    
+{ "abbreviation": "HHH", "accuracy": "8", "address": "420 Temple Street", "alternateName": "", "latitude": "41.3127321", "longitude": "-72.9224748", "name": "Helen Hadley Hall", "searchText": "hhh~helen hadley hall~420 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HHH.jpg" },
+    
+{ "abbreviation": "HGS", "accuracy": "8", "address": "320 York Street", "alternateName": "", "latitude": "41.3120209", "longitude": "-72.9290473", "name": "Hall of Graduate Studies", "searchText": "hgs~hall of graduate studies~320 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HGS.jpg" },
+    
+{ "abbreviation": "WLH", "accuracy": "8", "address": "100 Wall Street", "alternateName": "", "latitude": "41.3106844", "longitude": "-72.9260371", "name": "Harkness Hall", "searchText": "wlh~harkness hall~100 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WLH.jpg" },
+    
+{ "abbreviation": "ESH", "accuracy": "8", "address": "367 Cedar Street", "alternateName": "", "latitude": "41.3042640", "longitude": "-72.9339620", "name": "Harkness Memorial Hall", "searchText": "esh~harkness memorial hall~367 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ESH.jpg" },
+    
+{ "abbreviation": "MHMA", "accuracy": "8", "address": "333 Cedar Street", "alternateName": "", "latitude": "41.3031280", "longitude": "-72.9340830", "name": "Harkness Memorial Auditorium", "searchText": "mhma~harkness memorial auditorium~333 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MHMA.jpg" },
+    
+{ "abbreviation": "HARKNESS", "accuracy": "8", "address": "74 High Street", "alternateName": "", "latitude": "35.7092764", "longitude": "-89.0881099", "name": "Harkness Tower", "searchText": "harkness~harkness tower~74 high street~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/HARKNESS.jpg" },
+    
+{ "abbreviation": "NIHB", "accuracy": "6", "address": "230 South Frontage Road", "alternateName": "Child Study Center", "latitude": "41.3070371", "longitude": "-72.9388826", "name": "Harris Building", "searchText": "nihb~harris building~230 south frontage road~child study center", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/NIHB.jpg" },
+    
+{ "abbreviation": "HEN", "accuracy": "8", "address": "165 Elm Street", "alternateName": "", "latitude": "41.3091989", "longitude": "-72.9263990", "name": "Hendrie Hall", "searchText": "hen~hendrie hall~165 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HEN.jpg" },
+    
+{ "abbreviation": "HLH15", "accuracy": "8", "address": "15 Hillhouse Avenue", "alternateName": "Yale Collection of Musical Instruments", "latitude": "41.3113254", "longitude": "-72.9244594", "name": "15 Hillhouse Avenue", "searchText": "hlh15~15 hillhouse avenue~15 hillhouse avenue~yale collection of musical instruments", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH15.jpg" },
+    
+{ "abbreviation": "HLH17", "accuracy": "8", "address": "17 Hillhouse Avenue", "alternateName": "", "latitude": "41.3113313", "longitude": "-72.9244570", "name": "17 Hillhouse Avenue", "searchText": "hlh17~17 hillhouse avenue~17 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH17.jpg" },
+    
+{ "abbreviation": "HLH24", "accuracy": "8", "address": "24 Hillhouse Avenue", "alternateName": "", "latitude": "41.3113569", "longitude": "-72.9244872", "name": "24 Hillhouse Avenue", "searchText": "hlh24~24 hillhouse avenue~24 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH24.jpg" },
+    
+{ "abbreviation": "HLH27", "accuracy": "8", "address": "27 Hillhouse Avenue", "alternateName": "", "latitude": "41.3135274", "longitude": "-72.9235770", "name": "27 Hillhouse Avenue", "searchText": "hlh27~27 hillhouse avenue~27 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH27.jpg" },
+    
+{ "abbreviation": "HLH28", "accuracy": "8", "address": "28 Hillhouse Avenue", "alternateName": "", "latitude": "41.3135363", "longitude": "-72.9236141", "name": "28 Hillhouse Avenue", "searchText": "hlh28~28 hillhouse avenue~28 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH28.jpg" },
+    
+{ "abbreviation": "HLH30", "accuracy": "8", "address": "30 Hillhouse Avenue", "alternateName": "", "latitude": "41.3137566", "longitude": "-72.9235203", "name": "30 Hillhouse Avenue", "searchText": "hlh30~30 hillhouse avenue~30 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH30.jpg" },
+    
+{ "abbreviation": "HLH33", "accuracy": "8", "address": "33 Hillhouse Avenue", "alternateName": "", "latitude": "41.3139241", "longitude": "-72.9234082", "name": "33 Hillhouse Avenue", "searchText": "hlh33~33 hillhouse avenue~33 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH33.jpg" },
+    
+{ "abbreviation": "HLH35", "accuracy": "8", "address": "35 Hillhouse Avenue", "alternateName": "", "latitude": "41.3157880", "longitude": "-72.9227610", "name": "35 Hillhouse Avenue", "searchText": "hlh35~35 hillhouse avenue~35 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH35.jpg" },
+    
+{ "abbreviation": "HLH37", "accuracy": "8", "address": "37 Hillhouse Avenue", "alternateName": "", "latitude": "41.3141885", "longitude": "-72.9232957", "name": "37 Hillhouse Avenue", "searchText": "hlh37~37 hillhouse avenue~37 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH37.jpg" },
+    
+{ "abbreviation": "HLH43", "accuracy": "8", "address": "43 Hillhouse Avenue", "alternateName": "President's House", "latitude": "41.3144871", "longitude": "-72.9231713", "name": "43 Hillhouse Avenue", "searchText": "hlh43~43 hillhouse avenue~43 hillhouse avenue~president&amp;#39;s house", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH43.jpg" },
+    
+{ "abbreviation": "HLH46", "accuracy": "8", "address": "46 Hillhouse Avenue", "alternateName": "", "latitude": "41.3144957", "longitude": "-72.9232085", "name": "46 Hillhouse Avenue", "searchText": "hlh46~46 hillhouse avenue~46 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH46.jpg" },
+    
+{ "abbreviation": "HLH51", "accuracy": "8", "address": "51 Hillhouse Avenue", "alternateName": "", "latitude": "41.3149307", "longitude": "-72.9229963", "name": "51 Hillhouse Avenue", "searchText": "hlh51~51 hillhouse avenue~51 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH51.jpg" },
+    
+{ "abbreviation": "JEH", "accuracy": "8", "address": "315 Cedar Street", "alternateName": "", "latitude": "41.3022000", "longitude": "-72.9333620", "name": "Hope Memorial Building", "searchText": "jeh~hope memorial building~315 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/JEH.jpg" },
+    
+{ "abbreviation": "HRCH", "accuracy": "8", "address": "55 Hillhouse Avenue", "alternateName": "", "latitude": "41.3151743", "longitude": "-72.9229083", "name": "Horchow Hall", "searchText": "hrch~horchow hall~55 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HRCH.jpg" },
+    
+{ "abbreviation": "HAG", "accuracy": "8", "address": "790 Howard Avenue", "alternateName": "", "latitude": "41.3024278", "longitude": "-72.9358781", "name": "Howard Avenue Garage", "searchText": "hag~howard avenue garage~790 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HAG.jpg" },
+    
+{ "abbreviation": "HSG", "accuracy": "8", "address": "67-81 Howe Street", "alternateName": "", "latitude": "41.3102249", "longitude": "-72.9347970", "name": "Howe Street Garage", "searchText": "hsg~howe street garage~67-81 howe street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HSG.jpg" },
+    
+{ "abbreviation": "HRT", "accuracy": "8", "address": "15 York Street", "alternateName": "Hunter Radiation Therapy Center", "latitude": "41.3135752", "longitude": "-72.9303174", "name": "Hunter Building", "searchText": "hrt~hunter building~15 york street~hunter radiation therapy center", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HRT.jpg" },
+    
+{ "abbreviation": "INFONH", "accuracy": "8", "address": "1000 Chapel Street", "alternateName": "", "latitude": "39.6502542", "longitude": "-75.7324535", "name": "Info New Haven", "searchText": "infonh~info new haven~1000 chapel street~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/INFONH.jpg" },
+    
+{ "abbreviation": "IR", "accuracy": "8", "address": "73 Sachem Street", "alternateName": "", "latitude": "41.3162080", "longitude": "-72.9253289", "name": "Ingalls Rink", "searchText": "ir~ingalls rink~73 sachem street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/IR.jpg" },
+    
+{ "abbreviation": "IVY", "accuracy": "8", "address": "164-182 Highland Street; 567-605 Prospect Street", "alternateName": "", "latitude": "41.0877266", "longitude": "-85.1346998", "name": "Ivy Manor Apartments", "searchText": "ivy~ivy manor apartments~164-182 highland street; 567-605 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/IVY.jpg" },
+    
+{ "abbreviation": "K", "accuracy": "8", "address": "2 Hillhouse Avenue", "alternateName": "", "latitude": "41.3112933", "longitude": "-72.9245133", "name": "Kirtland Hall", "searchText": "k~kirtland hall~2 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/K.jpg" },
+    
+{ "abbreviation": "KBT", "accuracy": "8", "address": "219 Prospect Street", "alternateName": "", "latitude": "41.3172060", "longitude": "-72.9225790", "name": "Kline Biology Tower", "searchText": "kbt~kline biology tower~219 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/KBT.jpg" },
+    
+{ "abbreviation": "KCL", "accuracy": "8", "address": "255 Prospect Street", "alternateName": "", "latitude": "41.3189875", "longitude": "-72.9235627", "name": "Kline Chemistry Laboratory", "searchText": "kcl~kline chemistry laboratory~255 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/KCL.jpg" },
+    
+{ "abbreviation": "KGL", "accuracy": "8", "address": "210 Whitney Avenue", "alternateName": "", "latitude": "41.3166453", "longitude": "-72.9203381", "name": "Kline Geology Laboratory", "searchText": "kgl~kline geology laboratory~210 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/KGL.jpg" },
+    
+{ "abbreviation": "KRN", "accuracy": "8", "address": "195 Prospect Street", "alternateName": "", "latitude": "41.3169583", "longitude": "-72.9240923", "name": "Kroon Hall", "searchText": "krn~kroon hall~195 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/KRN.jpg" },
+    
+{ "abbreviation": "LMP", "accuracy": "5", "address": "15 York Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Laboratory for Medicine &amp; Pediatrics", "searchText": "lmp~laboratory for medicine &amp; pediatrics~15 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LMP.jpg" },
+    
+{ "abbreviation": "LSOG", "accuracy": "8", "address": "375 Congress Avenue", "alternateName": "", "latitude": "41.3015952", "longitude": "-72.9344535", "name": "Laboratory for Surgery, Obstetrics &amp; Gynecology", "searchText": "lsog~laboratory for surgery, obstetrics &amp; gynecology~375 congress avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LSOG.jpg" },
+    
+{ "abbreviation": "LEPH", "accuracy": "8", "address": "60 College Street", "alternateName": "", "latitude": "41.3034435", "longitude": "-72.9315672", "name": "Laboratory of Epidemiology &amp; Public Health", "searchText": "leph~laboratory of epidemiology &amp; public health~60 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LEPH.jpg" },
+    
+{ "abbreviation": "LANMAN", "accuracy": "8", "address": "70 Tower Parkway", "alternateName": "", "latitude": "41.3133830", "longitude": "-72.9305640", "name": "Lanman Center", "searchText": "lanman~lanman center~70 tower parkway~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/LANMAN.jpg" },
+    
+{ "abbreviation": "LWR", "accuracy": "8", "address": "206 Elm Street", "alternateName": "", "latitude": "41.3100660", "longitude": "-72.9285980", "name": "Lanman-Wright Hall", "searchText": "lwr~lanman-wright hall~206 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LWR.jpg" },
+    
+{ "abbreviation": "LAPHAM", "accuracy": "8", "address": "251 Derby Avenue", "alternateName": "", "latitude": "41.3101864", "longitude": "-72.9591565", "name": "Lapham Field House", "searchText": "lapham~lapham field house~251 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/LAPHAM.jpg" },
+    
+{ "abbreviation": "LH", "accuracy": "8", "address": "310 Cedar Street", "alternateName": "", "latitude": "41.3019865", "longitude": "-72.9336171", "name": "Lauder Hall", "searchText": "lh~lauder hall~310 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LH.jpg" },
+    
+{ "abbreviation": "L", "accuracy": "5", "address": "358 College Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Lawrance Hall", "searchText": "l~lawrance hall~358 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/L.jpg" },
+    
+{ "abbreviation": "LOM", "accuracy": "8", "address": "12 Hillhouse Avenue", "alternateName": "", "latitude": "41.3126290", "longitude": "-72.9241130", "name": "Leet Oliver Memorial Hall", "searchText": "lom~leet oliver memorial hall~12 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LOM.jpg" },
+    
+{ "abbreviation": "LGH", "accuracy": "8", "address": "435 College Street", "alternateName": "", "latitude": "41.3100448", "longitude": "-72.9265273", "name": "Leigh Hall", "searchText": "lgh~leigh hall~435 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LGH.jpg" },
+    
+{ "abbreviation": "LEITOBSV", "accuracy": "8", "address": "355 Prospect Street", "alternateName": "", "latitude": "41.3216969", "longitude": "-72.9233441", "name": "Leitner Observatory", "searchText": "leitobsv~leitner observatory~355 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LEITOBSV.jpg" },
+    
+{ "abbreviation": "WL", "accuracy": "8", "address": "154 Main Street, Farmington, CT", "alternateName": "", "latitude": "41.7156149", "longitude": "-72.8364107", "name": "Lewis Walpole Library", "searchText": "wl~lewis walpole library~154 main street, farmington, ct~", "zip": "06034", "img": "http://business.yale.edu/map/thumbnail/WL.jpg" },
+    
+{ "abbreviation": "LSF", "accuracy": "8", "address": "147 Leeder Hill Road, Hamden, CT", "alternateName": "", "latitude": "41.3453820", "longitude": "-72.9216469", "name": "Library Shelving Facility", "searchText": "lsf~library shelving facility~147 leeder hill road, hamden, ct~", "zip": "06517", "img": "http://business.yale.edu/map/thumbnail/LSF.jpg" },
+    
+{ "abbreviation": "LC", "accuracy": "8", "address": "63 High Street", "alternateName": "", "latitude": "41.3085590", "longitude": "-72.9295740", "name": "Linsly-Chittenden Hall", "searchText": "lc~linsly-chittenden hall~63 high street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LC.jpg" },
+    
+{ "abbreviation": "LLCI", "accuracy": "8", "address": "15 York Street", "alternateName": "", "latitude": "41.3135752", "longitude": "-72.9303174", "name": "Lippard Laboratory", "searchText": "llci~lippard laboratory~15 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LLCI.jpg" },
+    
+{ "abbreviation": "LSG", "accuracy": "5", "address": "57 Lock Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Lock Street Garage", "searchText": "lsg~lock street garage~57 lock street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LSG.jpg" },
+    
+{ "abbreviation": "LORIA", "accuracy": "8", "address": "190 York Street", "alternateName": "", "latitude": "41.3087204", "longitude": "-72.9313625", "name": "Loria Center", "searchText": "loria~loria center~190 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LORIA.jpg" },
+    
+{ "abbreviation": "LOT37V", "accuracy": "6", "address": "Trumbull Street", "alternateName": "", "latitude": "38.9626711", "longitude": "-88.6129010", "name": "Lot 37", "searchText": "lot37v~lot 37~trumbull street~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/LOT37V.jpg" },
+    
+{ "abbreviation": "LUCE", "accuracy": "8", "address": "34 Hillhouse Avenue", "alternateName": "", "latitude": "41.3143860", "longitude": "-72.9241190", "name": "Luce Hall", "searchText": "luce~luce hall~34 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/LUCE.jpg" },
+    
+{ "abbreviation": "MRC", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "MRC/PET", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Magnetic Resonance Center", "searchText": "mrc~magnetic resonance center~789 howard avenue~mrc/pet", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MRC.jpg" },
+    
+{ "abbreviation": "MEC", "accuracy": "8", "address": "55 Prospect Street", "alternateName": "", "latitude": "41.3132899", "longitude": "-72.9251430", "name": "Malone Center", "searchText": "mec~malone center~55 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MEC.jpg" },
+    
+{ "abbreviation": "MANS227", "accuracy": "8", "address": "227 Mansfield Street", "alternateName": "", "latitude": "41.3213849", "longitude": "-72.9259059", "name": "227 Mansfield Street", "searchText": "mans227~227 mansfield street~227 mansfield street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MANS227.jpg" },
+    
+{ "abbreviation": "MANS279", "accuracy": "8", "address": "279 Mansfield Street", "alternateName": "", "latitude": "41.3227726", "longitude": "-72.9256857", "name": "279 Mansfield Street", "searchText": "mans279~279 mansfield street~279 mansfield street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MANS279.jpg" },
+    
+{ "abbreviation": "MANSAPTA", "accuracy": "8", "address": "291-309 Mansfield Street", "alternateName": "", "latitude": "41.3235802", "longitude": "-72.9253696", "name": "Mansfield Street Apartments", "searchText": "mansapta~mansfield street apartments~291-309 mansfield street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MANSAPTA.jpg" },
+    
+{ "abbreviation": "MARQUAND", "accuracy": "", "address": "Sterling Divinity Quadrangle, 409 Prospect Street ", "alternateName": "", "latitude": "", "longitude": "", "name": "Marquand Chapel", "searchText": "", "zip": "", "img": "http://business.yale.edu/map/thumbnail/MARQUAND.jpg" },
+    
+{ "abbreviation": "MRSH", "accuracy": "8", "address": "360 Prospect Street", "alternateName": "", "latitude": "41.3216359", "longitude": "-72.9234349", "name": "Marsh Hall", "searchText": "mrsh~marsh hall~360 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MRSH.jpg" },
+    
+{ "abbreviation": "MRSHGDN", "accuracy": "7", "address": "Prospect Street &amp; Hillside Place", "alternateName": "", "latitude": "41.3207975", "longitude": "-72.9233495", "name": "Marsh Botanical Garden", "searchText": "mrshgdn~marsh botanical garden~prospect street &amp; hillside place~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/MRSHGDN.jpg" },
+    
+{ "abbreviation": "MBG1", "accuracy": "8", "address": "227–269 Mansfield Street", "alternateName": "", "latitude": "41.3225127", "longitude": "-72.9257875", "name": "Marsh Garden Greenhouses ", "searchText": "mbg1~marsh garden greenhouses ~227–269 mansfield street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MBG1.jpg" },
+    
+{ "abbreviation": "ML", "accuracy": "8", "address": "9 Hillhouse Avenue", "alternateName": "", "latitude": "41.3113075", "longitude": "-72.9244667", "name": "Mason Laboratory", "searchText": "ml~mason laboratory~9 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ML.jpg" },
+    
+{ "abbreviation": "EM", "accuracy": "5", "address": "1037 Chapel Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "McClellan Hall", "searchText": "em~mcclellan hall~1037 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/EM.jpg" },
+    
+{ "abbreviation": "YCYC", "accuracy": "9", "address": "179 Clark Avenue, Branford, CT", "alternateName": "Yale Corinthian Yacht Club", "latitude": "41.2746000", "longitude": "-72.8173000", "name": "McNay Family Sailing Center", "searchText": "ycyc~mcnay family sailing center~179 clark avenue, branford, ct~yale corinthian yacht club", "zip": "06405", "img": "http://business.yale.edu/map/thumbnail/YCYC.jpg" },
+    
+{ "abbreviation": "MEMORIAL", "accuracy": "7", "address": "College and Grove Streets", "alternateName": "", "latitude": "36.3291613", "longitude": "-78.5929107", "name": "Memorial Hall", "searchText": "memorial~memorial hall~college and grove streets~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/MEMORIAL.jpg" },
+    
+{ "abbreviation": "MC", "accuracy": "8", "address": "304 York Street", "alternateName": "", "latitude": "41.3117743", "longitude": "-72.9292269", "name": "Morse College", "searchText": "mc~morse college~304 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MC.jpg" },
+    
+{ "abbreviation": "MUDD", "accuracy": "8", "address": "38 Mansfield Street", "alternateName": "", "latitude": "41.3160950", "longitude": "-72.9257342", "name": "Mudd Library", "searchText": "mudd~mudd library~38 mansfield street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/MUDD.jpg" },
+    
+{ "abbreviation": "JMDW", "accuracy": "8", "address": "100 John Murphy Drive ", "alternateName": "", "latitude": "41.3123526", "longitude": "-72.9058052", "name": "John Murphy Drive Warehouse", "searchText": "jmdw~john murphy drive warehouse~100 john murphy drive ~", "zip": "06513", "img": "http://business.yale.edu/map/thumbnail/JMDW.jpg" },
+    
+{ "abbreviation": "OBT", "accuracy": "8", "address": "41 Broadway", "alternateName": "", "latitude": "41.3113888", "longitude": "-72.9307290", "name": "Off Broadway Theater", "searchText": "obt~off broadway theater~41 broadway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/OBT.jpg" },
+    
+{ "abbreviation": "OML", "accuracy": "8", "address": "165 Prospect Street", "alternateName": "", "latitude": "41.3162842", "longitude": "-72.9243133", "name": "Osborn Memorial Laboratories", "searchText": "oml~osborn memorial laboratories~165 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/OML.jpg" },
+    
+{ "abbreviation": "OEC", "accuracy": "8", "address": "124 Scott Road, East Lyme, CT", "alternateName": "", "latitude": "41.3690436", "longitude": "-72.2480817", "name": "Outdoor Education Center", "searchText": "oec~outdoor education center~124 scott road, east lyme, ct~", "zip": "06333", "img": "http://business.yale.edu/map/thumbnail/OEC.jpg" },
+    
+{ "abbreviation": "PARK205", "accuracy": "8", "address": "205 Park Street", "alternateName": "Drama Annex", "latitude": "41.3092448", "longitude": "-72.9332819", "name": "205 Park Street", "searchText": "park205~205 park street~205 park street~drama annex", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PARK205.jpg" },
+    
+{ "abbreviation": "PARK211", "accuracy": "8", "address": "211 Park Street", "alternateName": "", "latitude": "41.3094164", "longitude": "-72.9331510", "name": "211 Park Street", "searchText": "park211~211 park street~211 park street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PARK211.jpg" },
+    
+{ "abbreviation": "PARK215", "accuracy": "8", "address": "215 Park Street", "alternateName": "", "latitude": "41.3095308", "longitude": "-72.9330638", "name": "215 Park Street", "searchText": "park215~215 park street~215 park street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PARK215.jpg" },
+    
+{ "abbreviation": "PARK217", "accuracy": "8", "address": "217 Park Street", "alternateName": "Yale Cabaret", "latitude": "41.3095880", "longitude": "-72.9330202", "name": "217 Park Street", "searchText": "park217~217 park street~217 park street~yale cabaret", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PARK217.jpg" },
+    
+{ "abbreviation": "PWG", "accuracy": "8", "address": "70 Tower Parkway", "alternateName": "", "latitude": "41.3133830", "longitude": "-72.9305640", "name": "Payne Whitney Gymnasium", "searchText": "pwg~payne whitney gymnasium~70 tower parkway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PWG.jpg" },
+    
+{ "abbreviation": "PM", "accuracy": "8", "address": "170 Whitney Avenue", "alternateName": "", "latitude": "41.3151110", "longitude": "-72.9208520", "name": "Peabody Museum of Natural History", "searchText": "pm~peabody museum of natural history~170 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PM.jpg" },
+    
+{ "abbreviation": "PHELPS", "accuracy": "8", "address": "344 College Street", "alternateName": "", "latitude": "41.3082646", "longitude": "-72.9279331", "name": "Phelps Hall &amp; Gate", "searchText": "phelps~phelps hall &amp; gate~344 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PHELPS.jpg" },
+    
+{ "abbreviation": "PL", "accuracy": "8", "address": "290 Congress Avenue", "alternateName": "", "latitude": "30.2650776", "longitude": "-97.7439512", "name": "Pierce Laboratory", "searchText": "pl~pierce laboratory~290 congress avenue~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/PL.jpg" },
+    
+{ "abbreviation": "PC", "accuracy": "8", "address": "261 Park Street", "alternateName": "", "latitude": "41.3097351", "longitude": "-72.9325045", "name": "Pierson College", "searchText": "pc~pierson college~261 park street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PC.jpg" },
+    
+{ "abbreviation": "PSPG", "accuracy": "5", "address": "280 Whitney Avenue", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "Pierson-Sage Garage", "searchText": "pspg~pierson-sage garage~280 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PSPG.jpg" },
+    
+{ "abbreviation": "PCC", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Primary Care Center", "searchText": "pcc~primary care center~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PCC.jpg" },
+    
+{ "abbreviation": "PROSPL8", "accuracy": "8", "address": "8 Prospect Place", "alternateName": "", "latitude": "41.3148692", "longitude": "-72.9253127", "name": "8 Prospect Place", "searchText": "prospl8~8 prospect place~8 prospect place~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROSPL8.jpg" },
+    
+{ "abbreviation": "PROS77", "accuracy": "8", "address": "77 Prospect Street", "alternateName": "", "latitude": "41.3138471", "longitude": "-72.9249966", "name": "77 Prospect Street", "searchText": "pros77~77 prospect street~77 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS77.jpg" },
+    
+{ "abbreviation": "PROS88", "accuracy": "8", "address": "88 Prospect Street", "alternateName": "", "latitude": "41.3137616", "longitude": "-72.9250668", "name": "88 Prospect Street", "searchText": "pros88~88 prospect street~88 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS88.jpg" },
+    
+{ "abbreviation": "PROS100", "accuracy": "8", "address": "100 Prospect Street", "alternateName": "", "latitude": "41.3138932", "longitude": "-72.9250312", "name": "100 Prospect Street", "searchText": "pros100~100 prospect street~100 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS100.jpg" },
+    
+{ "abbreviation": "PROS140", "accuracy": "8", "address": "140 Prospect Street", "alternateName": "", "latitude": "41.3148168", "longitude": "-72.9247689", "name": "140 Prospect Street", "searchText": "pros140~140 prospect street~140 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS140.jpg" },
+    
+{ "abbreviation": "PROS202", "accuracy": "8", "address": "202 Prospect Street", "alternateName": "", "latitude": "41.3171458", "longitude": "-72.9241279", "name": "202 Prospect Street", "searchText": "pros202~202 prospect street~202 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS202.jpg" },
+    
+{ "abbreviation": "PROS204", "accuracy": "8", "address": "204 Prospect Street", "alternateName": "", "latitude": "41.3173609", "longitude": "-72.9241240", "name": "204 Prospect Street", "searchText": "pros204~204 prospect street~204 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS204.jpg" },
+    
+{ "abbreviation": "PROS210", "accuracy": "8", "address": "210 Prospect Street", "alternateName": "", "latitude": "41.3173616", "longitude": "-72.9240694", "name": "210 Prospect Street", "searchText": "pros210~210 prospect street~210 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS210.jpg" },
+    
+{ "abbreviation": "PROS230", "accuracy": "8", "address": "230 Prospect Street", "alternateName": "", "latitude": "41.3177216", "longitude": "-72.9239681", "name": "230 Prospect Street", "searchText": "pros230~230 prospect street~230 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS230.jpg" },
+    
+{ "abbreviation": "PROS238", "accuracy": "8", "address": "238 Prospect Street", "alternateName": "", "latitude": "41.3181396", "longitude": "-72.9238500", "name": "238 Prospect Street", "searchText": "pros238~238 prospect street~238 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS238.jpg" },
+    
+{ "abbreviation": "PROS242", "accuracy": "8", "address": "242 Prospect Street", "alternateName": "", "latitude": "41.3183486", "longitude": "-72.9237910", "name": "242 Prospect Street", "searchText": "pros242~242 prospect street~242 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS242.jpg" },
+    
+{ "abbreviation": "PROS254", "accuracy": "8", "address": "254 Prospect Street", "alternateName": "", "latitude": "41.3189756", "longitude": "-72.9236139", "name": "254 Prospect Street", "searchText": "pros254~254 prospect street~254 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS254.jpg" },
+    
+{ "abbreviation": "PROS276", "accuracy": "8", "address": "276 Prospect Street", "alternateName": "", "latitude": "41.3191534", "longitude": "-72.9235357", "name": "276 Prospect Street", "searchText": "pros276~276 prospect street~276 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS276.jpg" },
+    
+{ "abbreviation": "PROS282", "accuracy": "8", "address": "282 Prospect Street", "alternateName": "", "latitude": "41.3202817", "longitude": "-72.9233647", "name": "282 Prospect Street", "searchText": "pros282~282 prospect street~282 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS282.jpg" },
+    
+{ "abbreviation": "PROS300", "accuracy": "8", "address": "300 Prospect Street", "alternateName": "", "latitude": "41.3202952", "longitude": "-72.9233638", "name": "300 Prospect Street", "searchText": "pros300~300 prospect street~300 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS300.jpg" },
+    
+{ "abbreviation": "PROS301", "accuracy": "8", "address": "301 Prospect Street", "alternateName": "", "latitude": "41.3202798", "longitude": "-72.9233178", "name": "301 Prospect Street", "searchText": "pros301~301 prospect street~301 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS301.jpg" },
+    
+{ "abbreviation": "PROS310", "accuracy": "8", "address": "310 Prospect Street", "alternateName": "", "latitude": "41.3204110", "longitude": "-72.9233619", "name": "310 Prospect Street", "searchText": "pros310~310 prospect street~310 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS310.jpg" },
+    
+{ "abbreviation": "PROS314", "accuracy": "8", "address": "314 Prospect Street", "alternateName": "", "latitude": "41.3204578", "longitude": "-72.9233632", "name": "314 Prospect Street", "searchText": "pros314~314 prospect street~314 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS314.jpg" },
+    
+{ "abbreviation": "PROS406", "accuracy": "", "address": "406 Prospect Street", "alternateName": "", "latitude": "", "longitude": "", "name": "406 Prospect Street", "searchText": "", "zip": "", "img": "http://business.yale.edu/map/thumbnail/PROS406.jpg" },
+    
+{ "abbreviation": "PROS459", "accuracy": "8", "address": "459 Prospect Street", "alternateName": "", "latitude": "41.3248262", "longitude": "-72.9231500", "name": "459 Prospect Street", "searchText": "pros459~459 prospect street~459 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROS459.jpg" },
+    
+{ "abbreviation": "PROSGDN", "accuracy": "8", "address": "470 Prospect Street", "alternateName": "", "latitude": "41.3252403", "longitude": "-72.9230239", "name": "Prospect Garden Apartments", "searchText": "prosgdn~prospect garden apartments~470 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PROSGDN.jpg" },
+    
+{ "abbreviation": "PSG", "accuracy": "8", "address": "200 Prospect Street", "alternateName": "Science Hill Garage", "latitude": "41.3169386", "longitude": "-72.9241840", "name": "Prospect-Sachem Garage", "searchText": "psg~prospect-sachem garage~200 prospect street~science hill garage", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/PSG.jpg" },
+    
+{ "abbreviation": "SOCCLAX", "accuracy": "8", "address": "75 Central Avenue", "alternateName": "Soccer-Lacrosse Stadium, SOCC-LAX", "latitude": "41.3123251", "longitude": "-72.9634492", "name": "Reese Stadium", "searchText": "socclax~reese stadium~75 central avenue~soccer-lacrosse stadium, socc-lax", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/SOCCLAX.jpg" },
+    
+{ "abbreviation": "RAH", "accuracy": "8", "address": "232 York Street", "alternateName": "", "latitude": "41.3096593", "longitude": "-72.9307179", "name": "Rose Alumni House", "searchText": "rah~rose alumni house~232 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/RAH.jpg" },
+    
+{ "abbreviation": "ROSE", "accuracy": "8", "address": "101 Ashmun Street", "alternateName": "", "latitude": "41.3158529", "longitude": "-72.9290726", "name": "Rose Center", "searchText": "rose~rose center~101 ashmun street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ROSE.jpg" },
+    
+{ "abbreviation": "RSN", "accuracy": "8", "address": "109-111 Grove Street", "alternateName": "", "latitude": "41.3108452", "longitude": "-72.9234087", "name": "Rosenfeld Hall", "searchText": "rsn~rosenfeld hall~109-111 grove street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/RSN.jpg" },
+    
+{ "abbreviation": "RKZ", "accuracy": "8", "address": "115 Prospect Street", "alternateName": "", "latitude": "41.3145795", "longitude": "-72.9247918", "name": "Rosenkranz Hall", "searchText": "rkz~rosenkranz hall~115 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/RKZ.jpg" },
+    
+{ "abbreviation": "RDH", "accuracy": "8", "address": "180 York Street", "alternateName": "Art &amp; Architecture Building", "latitude": "41.3084903", "longitude": "-72.9315239", "name": "Rudolph Hall", "searchText": "rdh~rudolph hall~180 york street~art &amp; architecture building", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/RDH.jpg" },
+    
+{ "abbreviation": "SACH10", "accuracy": "8", "address": "10 Sachem Street", "alternateName": "158 Whitney Avenue", "latitude": "41.3154590", "longitude": "-72.9211564", "name": "10 Sachem Street", "searchText": "sach10~10 sachem street~10 sachem street~158 whitney avenue", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SACH10.jpg" },
+    
+{ "abbreviation": "SACH41", "accuracy": "8", "address": "41 Sachem Street", "alternateName": "Science Hill Southwest Service Node", "latitude": "41.3157532", "longitude": "-72.9224057", "name": "41 Sachem Street", "searchText": "sach41~41 sachem street~41 sachem street~science hill southwest service node", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SACH41.jpg" },
+    
+{ "abbreviation": "SACH80", "accuracy": "8", "address": "80 Sachem Street", "alternateName": "", "latitude": "41.3161695", "longitude": "-72.9250572", "name": "80 Sachem Street", "searchText": "sach80~80 sachem street~80 sachem street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SACH80.jpg" },
+    
+{ "abbreviation": "SB", "accuracy": "8", "address": "205 Prospect Street", "alternateName": "Sage-Bowers Hall", "latitude": "41.3171660", "longitude": "-72.9238610", "name": "Sage Hall", "searchText": "sb~sage hall~205 prospect street~sage-bowers hall", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SB.jpg" },
+    
+{ "abbreviation": "STRO175", "accuracy": "8", "address": "175 St. Ronan Street", "alternateName": "", "latitude": "41.3213032", "longitude": "-72.9198074", "name": "175 St. Ronan Street", "searchText": "stro175~175 st. ronan street~175 st. ronan street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/STRO175.jpg" },
+    
+{ "abbreviation": "STM", "accuracy": "5", "address": "268 Park Street", "alternateName": "", "latitude": "41.3212912", "longitude": "-72.9283391", "name": "St. Thomas More Chapel &amp; Golden Center", "searchText": "stm~st. thomas more chapel &amp; golden center~268 park street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/STM.jpg" },
+    
+{ "abbreviation": "SY", "accuracy": "8", "address": "242 Elm Street", "alternateName": "", "latitude": "41.3104896", "longitude": "-72.9295286", "name": "Saybrook College", "searchText": "sy~saybrook college~242 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SY.jpg" },
+    
+{ "abbreviation": "SCIPK25", "accuracy": "8", "address": "150 Munson Street", "alternateName": "", "latitude": "41.3214912", "longitude": "-72.9295438", "name": "25 Science Park", "searchText": "scipk25~25 science park~150 munson street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SCIPK25.jpg" },
+    
+{ "abbreviation": "SEAMCO", "accuracy": "8", "address": "464 Congress Avenue", "alternateName": "", "latitude": "41.3010595", "longitude": "-72.9361366", "name": "Seamco Building", "searchText": "seamco~seamco building~464 congress avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SEAMCO.jpg" },
+    
+{ "abbreviation": "SSS", "accuracy": "8", "address": "1 Prospect Street", "alternateName": "", "latitude": "41.3117681", "longitude": "-72.9255244", "name": "Sheffield-Sterling-Strathcona", "searchText": "sss~sheffield-sterling-strathcona~1 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SSS.jpg" },
+    
+{ "abbreviation": "SM", "accuracy": "8", "address": "505 College Street", "alternateName": "", "latitude": "41.3111910", "longitude": "-72.9257230", "name": "Silliman College", "searchText": "sm~silliman college~505 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SM.jpg" },
+    
+{ "abbreviation": "WALL80", "accuracy": "8", "address": "80 Wall Street", "alternateName": "", "latitude": "41.3102274", "longitude": "-72.9249854", "name": "Slifka Center", "searchText": "wall80~slifka center~80 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WALL80.jpg" },
+    
+{ "abbreviation": "SPL", "accuracy": "8", "address": "217 Prospect Street", "alternateName": "", "latitude": "41.3174291", "longitude": "-72.9240027", "name": "Sloane Physics Laboratory", "searchText": "spl~sloane physics laboratory~217 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SPL.jpg" },
+    
+{ "abbreviation": "SCH", "accuracy": "", "address": "20 York Street", "alternateName": "", "latitude": "", "longitude": "", "name": "Smilow Cancer Hospital", "searchText": "", "zip": "Entrance to the Smilow Cancer Hospital is through Yale-New Haven Hospital.", "img": "http://business.yale.edu/map/thumbnail/SCH.jpg" },
+    
+{ "abbreviation": "SMILOW", "accuracy": "", "address": "251 Derby Avenue", "alternateName": "", "latitude": "", "longitude": "", "name": "Smilow Field Center", "searchText": "", "zip": "Not shown on this map; see Athletic fields.", "img": "http://business.yale.edu/map/thumbnail/SMILOW.jpg" },
+    
+{ "abbreviation": "NSB", "accuracy": "8", "address": "333 Cedar Street", "alternateName": "", "latitude": "41.3031280", "longitude": "-72.9340830", "name": "Nathan Smith Building", "searchText": "nsb~nathan smith building~333 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/NSB.jpg" },
+    
+{ "abbreviation": "SMH", "accuracy": "8", "address": "470 College Street", "alternateName": "", "latitude": "41.3103970", "longitude": "-72.9265810", "name": "Sprague Hall", "searchText": "smh~sprague hall~470 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SMH.jpg" },
+    
+{ "abbreviation": "STN", "accuracy": "8", "address": "52 Hillhouse Avenue", "alternateName": "", "latitude": "41.3158008", "longitude": "-72.9227223", "name": "Steinbach Hall", "searchText": "stn~steinbach hall~52 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/STN.jpg" },
+    
+{ "abbreviation": "SCL", "accuracy": "8", "address": "225 Prospect Street", "alternateName": "", "latitude": "41.3175120", "longitude": "-72.9231690", "name": "Sterling Chemistry Laboratory", "searchText": "scl~sterling chemistry laboratory~225 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SCL.jpg" },
+    
+{ "abbreviation": "SDQ", "accuracy": "8", "address": "409 Prospect Street", "alternateName": "", "latitude": "41.3235920", "longitude": "-72.9232980", "name": "Sterling Divinity Quadrangle", "searchText": "sdq~sterling divinity quadrangle~409 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SDQ.jpg" },
+    
+{ "abbreviation": "SHM", "accuracy": "8", "address": "333 Cedar Street", "alternateName": "", "latitude": "41.3031280", "longitude": "-72.9340830", "name": "Sterling Hall of Medicine", "searchText": "shm~sterling hall of medicine~333 cedar street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SHM.jpg" },
+    
+{ "abbreviation": "SLB", "accuracy": "8", "address": "127 Wall Street", "alternateName": "", "latitude": "41.3116140", "longitude": "-72.9281370", "name": "Sterling Law Building", "searchText": "slb~sterling law building~127 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SLB.jpg" },
+    
+{ "abbreviation": "SML", "accuracy": "8", "address": "120 High Street", "alternateName": "", "latitude": "41.3109892", "longitude": "-72.9281202", "name": "Sterling Memorial Library", "searchText": "sml~sterling memorial library~120 high street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SML.jpg" },
+    
+{ "abbreviation": "SPP", "accuracy": "8", "address": "309 Congress Avenue", "alternateName": "", "latitude": "41.3019916", "longitude": "-72.9331946", "name": "Sterling Power Plant", "searchText": "spp~sterling power plant~309 congress avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/SPP.jpg" },
+    
+{ "abbreviation": "ES", "accuracy": "8", "address": "302 York Street", "alternateName": "", "latitude": "41.3117111", "longitude": "-72.9292747", "name": "Ezra Stiles College", "searchText": "es~ezra stiles college~302 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ES.jpg" },
+    
+{ "abbreviation": "STOECK", "accuracy": "8", "address": "469 College Street", "alternateName": "", "latitude": "41.3106576", "longitude": "-72.9260972", "name": "Stoeckel Hall", "searchText": "stoeck~stoeckel hall~469 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/STOECK.jpg" },
+    
+{ "abbreviation": "ST", "accuracy": "8", "address": "1071 Chapel Street", "alternateName": "", "latitude": "41.3079413", "longitude": "-72.9302709", "name": "Street Hall", "searchText": "st~street hall~1071 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/ST.jpg" },
+    
+{ "abbreviation": "TMC40", "accuracy": "8", "address": "40 Temple Street", "alternateName": "Temple Medical Center", "latitude": "41.3039498", "longitude": "-72.9289463", "name": "40 Temple Street", "searchText": "tmc40~40 temple street~40 temple street~temple medical center", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TMC40.jpg" },
+    
+{ "abbreviation": "TMC60", "accuracy": "8", "address": "60 Temple Street", "alternateName": "Temple Medical Center", "latitude": "41.3042314", "longitude": "-72.9287230", "name": "60 Temple Street", "searchText": "tmc60~60 temple street~60 temple street~temple medical center", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TMC60.jpg" },
+    
+{ "abbreviation": "TEMP142", "accuracy": "8", "address": "142 Temple Street", "alternateName": "", "latitude": "41.3056525", "longitude": "-72.9276963", "name": "142 Temple Street", "searchText": "temp142~142 temple street~142 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP142.jpg" },
+    
+{ "abbreviation": "TEMP302", "accuracy": "8", "address": "302 Temple Street", "alternateName": "Yale Press", "latitude": "41.3091103", "longitude": "-72.9252183", "name": "302 Temple Street", "searchText": "temp302~302 temple street~302 temple street~yale press", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP302.jpg" },
+    
+{ "abbreviation": "TEMP320", "accuracy": "8", "address": "320 Temple Street", "alternateName": "", "latitude": "41.3087850", "longitude": "-72.9254330", "name": "320 Temple Street", "searchText": "temp320~320 temple street~320 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP320.jpg" },
+    
+{ "abbreviation": "TEMP370", "accuracy": "8", "address": "370 Temple Street", "alternateName": "", "latitude": "41.3111755", "longitude": "-72.9237138", "name": "370 Temple Street", "searchText": "temp370~370 temple street~370 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP370.jpg" },
+    
+{ "abbreviation": "TEMP405", "accuracy": "8", "address": "405 Temple Street", "alternateName": "", "latitude": "41.3122375", "longitude": "-72.9228746", "name": "405 Temple Street", "searchText": "temp405~405 temple street~405 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP405.jpg" },
+    
+{ "abbreviation": "TEMP421", "accuracy": "8", "address": "421 Temple Street", "alternateName": "", "latitude": "41.3125919", "longitude": "-72.9226150", "name": "421 Temple Street", "searchText": "temp421~421 temple street~421 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP421.jpg" },
+    
+{ "abbreviation": "TEMP432", "accuracy": "8", "address": "432-434 Temple Street", "alternateName": "", "latitude": "41.3128485", "longitude": "-72.9224807", "name": "432-434 Temple Street", "searchText": "temp432~432-434 temple street~432-434 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP432.jpg" },
+    
+{ "abbreviation": "TEMP433", "accuracy": "8", "address": "433 Temple Street", "alternateName": "", "latitude": "41.3128577", "longitude": "-72.9224203", "name": "433 Temple Street", "searchText": "temp433~433 temple street~433 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP433.jpg" },
+    
+{ "abbreviation": "TEMP442", "accuracy": "8", "address": "442 Temple Street", "alternateName": "", "latitude": "41.3129994", "longitude": "-72.9223701", "name": "442 Temple Street", "searchText": "temp442~442 temple street~442 temple street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TEMP442.jpg" },
+    
+{ "abbreviation": "TSG", "accuracy": "7", "address": "Temple &amp; Crown Streets", "alternateName": "", "latitude": "41.3052985", "longitude": "-72.9279229", "name": "Temple Street Garage", "searchText": "tsg~temple street garage~temple &amp; crown streets~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/TSG.jpg" },
+    
+{ "abbreviation": "RTH", "accuracy": "8", "address": "20 Tower Parkway", "alternateName": "", "latitude": "41.3129361", "longitude": "-72.9321451", "name": "Ray Tompkins House", "searchText": "rth~ray tompkins house~20 tower parkway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/RTH.jpg" },
+    
+{ "abbreviation": "TE", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Tompkins East", "searchText": "te~tompkins east~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TE.jpg" },
+    
+{ "abbreviation": "TMP", "accuracy": "8", "address": "789 Howard Avenue", "alternateName": "", "latitude": "41.3023930", "longitude": "-72.9358059", "name": "Tompkins Memorial Pavilion", "searchText": "tmp~tompkins memorial pavilion~789 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TMP.jpg" },
+    
+{ "abbreviation": "NRH", "accuracy": "8", "address": "100 Tower Parkway", "alternateName": "New Residence Hall; Swing Space", "latitude": "41.3135400", "longitude": "-72.9292360", "name": "100 Tower Parkway", "searchText": "nrh~100 tower parkway~100 tower parkway~new residence hall; swing space", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/NRH.jpg" },
+    
+{ "abbreviation": "TC", "accuracy": "8", "address": "241 Elm Street", "alternateName": "", "latitude": "41.3103691", "longitude": "-72.9291602", "name": "Trumbull College", "searchText": "tc~trumbull college~241 elm street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TC.jpg" },
+    
+{ "abbreviation": "TRUM87", "accuracy": "8", "address": "87 Trumbull Street", "alternateName": "", "latitude": "41.3135405", "longitude": "-72.9236058", "name": "87 Trumbull Street", "searchText": "trum87~87 trumbull street~87 trumbull street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/TRUM87.jpg" },
+    
+{ "abbreviation": "HLH38", "accuracy": "8", "address": "38 Hillhouse Avenue", "alternateName": "", "latitude": "41.3144420", "longitude": "-72.9236200", "name": "Undergraduate Admissions", "searchText": "hlh38~undergraduate admissions~38 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/HLH38.jpg" },
+    
+{ "abbreviation": "UT", "accuracy": "8", "address": "222 York Street", "alternateName": "", "latitude": "41.3094257", "longitude": "-72.9308707", "name": "University Theatre", "searchText": "ut~university theatre~222 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/UT.jpg" },
+    
+{ "abbreviation": "V", "accuracy": "8", "address": "1035 Chapel Street", "alternateName": "", "latitude": "41.3074541", "longitude": "-72.9290500", "name": "Vanderbilt Hall", "searchText": "v~vanderbilt hall~1035 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/V.jpg" },
+    
+{ "abbreviation": "WALL53", "accuracy": "8", "address": "53 Wall Street", "alternateName": "Whitney Humanities Center", "latitude": "41.3097703", "longitude": "-72.9238668", "name": "53 Wall Street", "searchText": "wall53~53 wall street~53 wall street~whitney humanities center", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WALL53.jpg" },
+    
+{ "abbreviation": "WALL66", "accuracy": "8", "address": "66 Wall Street", "alternateName": "", "latitude": "41.3099181", "longitude": "-72.9242777", "name": "66 Wall Street", "searchText": "wall66~66 wall street~66 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WALL66.jpg" },
+    
+{ "abbreviation": "WALL81", "accuracy": "8", "address": "81 Wall Street", "alternateName": "", "latitude": "41.3104425", "longitude": "-72.9254028", "name": "81 Wall Street", "searchText": "wall81~81 wall street~81 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WALL81.jpg" },
+    
+{ "abbreviation": "WALL82", "accuracy": "8", "address": "82-90 Wall Street", "alternateName": "", "latitude": "41.3104559", "longitude": "-72.9255113", "name": "82-90 Wall Street", "searchText": "wall82~82-90 wall street~82-90 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WALL82.jpg" },
+    
+{ "abbreviation": "WARNER", "accuracy": "8", "address": "1 Hillhouse Avenue", "alternateName": "", "latitude": "41.3112837", "longitude": "-72.9244765", "name": "Warner House", "searchText": "warner~warner house~1 hillhouse avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WARNER.jpg" },
+    
+{ "abbreviation": "WTS", "accuracy": "8", "address": "60 Sachem Street", "alternateName": "", "latitude": "41.3157953", "longitude": "-72.9227969", "name": "Watson Center", "searchText": "wts~watson center~60 sachem street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WTS.jpg" },
+    
+{ "abbreviation": "AKW", "accuracy": "8", "address": "51 Prospect Street", "alternateName": "", "latitude": "41.3132167", "longitude": "-72.9251623", "name": "Watson Hall", "searchText": "akw~watson hall~51 prospect street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/AKW.jpg" },
+    
+{ "abbreviation": "WEIR", "accuracy": "8", "address": "66 High Street", "alternateName": "", "latitude": "41.3084038", "longitude": "-72.9299922", "name": "Weir Hall", "searchText": "weir~weir hall~66 high street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WEIR.jpg" },
+    
+{ "abbreviation": "W", "accuracy": "8", "address": "330 College Street", "alternateName": "", "latitude": "41.3082467", "longitude": "-72.9279472", "name": "Welch Hall", "searchText": "w~welch hall~330 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/W.jpg" },
+    
+{ "abbreviation": "WHITAPT", "accuracy": "8", "address": "375-407 Canner; 511-543 Prospect", "alternateName": "", "latitude": "41.3255702", "longitude": "-72.9226870", "name": "Whitehall Apartments", "searchText": "whitapt~whitehall apartments~375-407 canner; 511-543 prospect~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WHITAPT.jpg" },
+    
+{ "abbreviation": "WHIT55", "accuracy": "8", "address": "55 Whitney Avenue", "alternateName": "", "latitude": "41.3120530", "longitude": "-72.9219620", "name": "55 Whitney Avenue", "searchText": "whit55~55 whitney avenue~55 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WHIT55.jpg" },
+    
+{ "abbreviation": "WHIT70", "accuracy": "8", "address": "70 Whitney Avenue", "alternateName": "", "latitude": "41.3123903", "longitude": "-72.9220139", "name": "70 Whitney Avenue", "searchText": "whit70~70 whitney avenue~70 whitney avenue~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/WHIT70.jpg" },
+    
+{ "abbreviation": "WHIT121", "accuracy": "8", "address": "121 Whitney Avenue", "alternateName": "", "latitude": "41.3139841", "longitude": "-72.9215132", "name": "121 Whitney Avenue", "searchText": "whit121~121 whitney avenue~121 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WHIT121.jpg" },
+    
+{ "abbreviation": "WHIT221", "accuracy": "8", "address": "221 Whitney Avenue", "alternateName": "", "latitude": "41.3170147", "longitude": "-72.9201089", "name": "221 Whitney Avenue", "searchText": "whit221~221 whitney avenue~221 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WHIT221.jpg" },
+    
+{ "abbreviation": "WHIT221R", "accuracy": "8", "address": "221R Whitney Avenue", "alternateName": "", "latitude": "41.3170147", "longitude": "-72.9201089", "name": "Whitney Avenue Garage", "searchText": "whit221r~whitney avenue garage~221r whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WHIT221R.jpg" },
+    
+{ "abbreviation": "WGS", "accuracy": "8", "address": "2 Whitney Avenue", "alternateName": "", "latitude": "41.3105115", "longitude": "-72.9225946", "name": "Whitney Grove Square", "searchText": "wgs~whitney grove square~2 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WGS.jpg" },
+    
+{ "abbreviation": "WINC344", "accuracy": "8", "address": "344 Winchester Avenue", "alternateName": "", "latitude": "41.3234525", "longitude": "-72.9283979", "name": "344 Winchester Avenue", "searchText": "winc344~344 winchester avenue~344 winchester avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WINC344.jpg" },
+    
+{ "abbreviation": "WWW", "accuracy": "8", "address": "25 York Street", "alternateName": "", "latitude": "41.3049013", "longitude": "-72.9341806", "name": "Winchester Building", "searchText": "www~winchester building~25 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WWW.jpg" },
+    
+{ "abbreviation": "WOOD", "accuracy": "8", "address": "105 Wall Street", "alternateName": "", "latitude": "41.3109674", "longitude": "-72.9266445", "name": "Woodbridge Hall", "searchText": "wood~woodbridge hall~105 wall street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WOOD.jpg" },
+    
+{ "abbreviation": "WOOL", "accuracy": "8", "address": "500 College Street", "alternateName": "", "latitude": "41.3111487", "longitude": "-72.9258147", "name": "Woolsey Hall", "searchText": "wool~woolsey hall~500 college street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WOOL.jpg" },
+    
+{ "abbreviation": "WNSL", "accuracy": "8", "address": "272 Whitney Avenue", "alternateName": "", "latitude": "41.3179998", "longitude": "-72.9196796", "name": "Wright Laboratory", "searchText": "wnsl~wright laboratory~272 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WNSL.jpg" },
+    
+{ "abbreviation": "WNSLW", "accuracy": "8", "address": "268 Whitney Avenue", "alternateName": "", "latitude": "41.3178938", "longitude": "-72.9197318", "name": "Wright Laboratory West", "searchText": "wnslw~wright laboratory west~268 whitney avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/WNSLW.jpg" },
+    
+{ "abbreviation": "YALEBKSTORE", "accuracy": "8", "address": "77 Broadway", "alternateName": "", "latitude": "41.3118710", "longitude": "-72.9311437", "name": "Yale Bookstore", "searchText": "yalebkstore~yale bookstore~77 broadway~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YALEBKSTORE.jpg" },
+    
+{ "abbreviation": "YALEBOWL", "accuracy": "8", "address": "81 Central Avenue", "alternateName": "", "latitude": "41.3124227", "longitude": "-72.9634775", "name": "Yale Bowl", "searchText": "yalebowl~yale bowl~81 central avenue~", "zip": "06515", "img": "http://business.yale.edu/map/thumbnail/YALEBOWL.jpg" },
+    
+{ "abbreviation": "BAC", "accuracy": "8", "address": "1080 Chapel Street", "alternateName": "YCBA", "latitude": "41.3080312", "longitude": "-72.9305950", "name": "Yale Center for British Art", "searchText": "bac~yale center for british art~1080 chapel street~ycba", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/BAC.jpg" },
+    
+{ "abbreviation": "YSFPFARM", "accuracy": "8", "address": "345 Edwards Street", "alternateName": "", "latitude": "42.3353758", "longitude": "-122.8786924", "name": "Yale Farm", "searchText": "ysfpfarm~yale farm~345 edwards street~", "zip": "", "img": "http://business.yale.edu/map/thumbnail/YSFPFARM.jpg" },
+    
+{ "abbreviation": "YALEFLD", "accuracy": "8", "address": "250 Derby Avenue", "alternateName": "", "latitude": "41.3101851", "longitude": "-72.9589408", "name": "Yale Field", "searchText": "yalefld~yale field~250 derby avenue~", "zip": "06516", "img": "http://business.yale.edu/map/thumbnail/YALEFLD.jpg" },
+    
+{ "abbreviation": "YHC", "accuracy": "8", "address": "55 Lock Street", "alternateName": "", "latitude": "41.3154485", "longitude": "-72.9279658", "name": "Yale Health Center", "searchText": "yhc~yale health center~55 lock street~yhp~yale health plan", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YHC.jpg" },
+    
+{ "abbreviation": "YNHH", "accuracy": "", "address": "20 York Street", "alternateName": "Y-NHH", "latitude": "", "longitude": "", "name": "Yale-New Haven Hospital", "searchText": "", "zip": "", "img": "http://business.yale.edu/map/thumbnail/YNHH.jpg" },
+    
+{ "abbreviation": "YNHPH", "accuracy": "8", "address": "184 Liberty Street", "alternateName": "", "latitude": "41.3016795", "longitude": "-72.9327789", "name": "Yale-New Haven Psychiatric Hospital", "searchText": "ynhph~yale-new haven psychiatric hospital~184 liberty street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YNHPH.jpg" },
+    
+{ "abbreviation": "YPB", "accuracy": "8", "address": "800 Howard Avenue", "alternateName": "", "latitude": "41.3026081", "longitude": "-72.9359205", "name": "Yale Physicians Building", "searchText": "ypb~yale physicians building~800 howard avenue~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YPB.jpg" },
+    
+{ "abbreviation": "YRT", "accuracy": "8", "address": "1120 Chapel Street", "alternateName": "", "latitude": "41.3083882", "longitude": "-72.9314854", "name": "Yale Repertory Theatre", "searchText": "yrt~yale repertory theatre~1120 chapel street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YRT.jpg" },
+    
+{ "abbreviation": "YUAG", "accuracy": "8", "address": "1111 Chapel Street", "alternateName": "YUAG", "latitude": "41.3083249", "longitude": "-72.9312276", "name": "Yale University Art Gallery", "searchText": "yuag~yale university art gallery~1111 chapel street~yuag", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YUAG.jpg" },
+    
+{ "abbreviation": "YKCRWN", "accuracy": "8", "address": "139-143 York Street; 313-319 Crown Street", "alternateName": "", "latitude": "41.2066643", "longitude": "-73.1838028", "name": "York-Crown Apartments", "searchText": "ykcrwn~york-crown apartments~139-143 york street; 313-319 crown street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YKCRWN.jpg" },
+    
+{ "abbreviation": "YKSPL094", "accuracy": "9", "address": "94 York Square Place", "alternateName": "", "latitude": "41.3141675", "longitude": "-72.9297002", "name": "94 York Square Place", "searchText": "ykspl094~94 york square place~94 york square place~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YKSPL094.jpg" },
+    
+{ "abbreviation": "YKSPL104", "accuracy": "9", "address": "104 York Square Place", "alternateName": "", "latitude": "41.3143087", "longitude": "-72.9293772", "name": "104 York Square Place", "searchText": "ykspl104~104 york square place~104 york square place~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YKSPL104.jpg" },
+    
+{ "abbreviation": "YORK100", "accuracy": "8", "address": "100 York Street", "alternateName": "", "latitude": "41.3064828", "longitude": "-72.9329993", "name": "100 York Street", "searchText": "york100~100 york street~100 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK100.jpg" },
+    
+{ "abbreviation": "YORK123", "accuracy": "8", "address": "123 York Street", "alternateName": "", "latitude": "41.3060750", "longitude": "-72.9318940", "name": "123 York Street", "searchText": "york123~123 york street~123 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK123.jpg" },
+    
+{ "abbreviation": "YORK129", "accuracy": "8", "address": "129 York Street", "alternateName": "", "latitude": "41.3064320", "longitude": "-72.9329650", "name": "129 York Street", "searchText": "york129~129 york street~129 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK129.jpg" },
+    
+{ "abbreviation": "YORK149", "accuracy": "8", "address": "149 York Street", "alternateName": "", "latitude": "41.3142034", "longitude": "-72.9292167", "name": "149 York Street", "searchText": "york149~149 york street~149 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK149.jpg" },
+    
+{ "abbreviation": "YORK202", "accuracy": "8", "address": "202 York Street", "alternateName": "Yale Daily News Building", "latitude": "41.3091320", "longitude": "-72.9315110", "name": "202 York Street", "searchText": "york202~202 york street~202 york street~yale daily news building", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK202.jpg" },
+    
+{ "abbreviation": "GPSCY", "accuracy": "8", "address": "204 York Street", "alternateName": "GPSCY", "latitude": "41.3093610", "longitude": "-72.9319560", "name": "204 York Street", "searchText": "gpscy~204 york street~204 york street~gpscy", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/GPSCY.jpg" },
+    
+{ "abbreviation": "YORK212", "accuracy": "8", "address": "212 York Street", "alternateName": "", "latitude": "41.3092047", "longitude": "-72.9310229", "name": "212 York Street", "searchText": "york212~212 york street~212 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK212.jpg" },
+    
+{ "abbreviation": "YORK220", "accuracy": "8", "address": "220 York Street", "alternateName": "", "latitude": "41.3093684", "longitude": "-72.9309082", "name": "220 York Street", "searchText": "york220~220 york street~220 york street~", "zip": "06511", "img": "http://business.yale.edu/map/thumbnail/YORK220.jpg" },
+    
+{ "abbreviation": "W-A21", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-A21", "searchText": "w-a21~west-a21~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-A21.jpg" },
+    
+{ "abbreviation": "W-A42", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-A42", "searchText": "w-a42~west-a42~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-A42.jpg" },
+    
+{ "abbreviation": "W-B22", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B22", "searchText": "w-b22~west-b22~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B22.jpg" },
+    
+{ "abbreviation": "W-B24", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B24", "searchText": "w-b24~west-b24~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B24.jpg" },
+    
+{ "abbreviation": "W-B25", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B25", "searchText": "w-b25~west-b25~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B25.jpg" },
+    
+{ "abbreviation": "W-B27", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B27", "searchText": "w-b27~west-b27~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B27.jpg" },
+    
+{ "abbreviation": "W-B31", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B31", "searchText": "w-b31~west-b31~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B31.jpg" },
+    
+{ "abbreviation": "W-B36", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B36", "searchText": "w-b36~west-b36~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B36.jpg" },
+    
+{ "abbreviation": "W-B45", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B45", "searchText": "w-b45~west-b45~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B45.jpg" },
+    
+{ "abbreviation": "W-B46", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-B46", "searchText": "w-b46~west-b46~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-B46.jpg" },
+    
+{ "abbreviation": "W-C23", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-C23", "searchText": "w-c23~west-c23~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-C23.jpg" },
+    
+{ "abbreviation": "W-C27", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-C27", "searchText": "w-c27~west-c27~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-C27.jpg" },
+    
+{ "abbreviation": "W-C28", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-C28", "searchText": "w-c28~west-c28~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-C28.jpg" },
+    
+{ "abbreviation": "W-C32", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-C32", "searchText": "w-c32~west-c32~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-C32.jpg" },
+    
+{ "abbreviation": "W-D18", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-D18", "searchText": "w-d18~west-d18~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-D18.jpg" },
+    
+{ "abbreviation": "W-D21", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-D21", "searchText": "w-d21~west-d21~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-D21.jpg" },
+    
+{ "abbreviation": "W-D24", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-D24", "searchText": "w-d24~west-d24~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-D24.jpg" },
+    
+{ "abbreviation": "W-D37", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-D37", "searchText": "w-d37~west-d37~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-D37.jpg" },
+    
+{ "abbreviation": "W-E29", "accuracy": "8", "address": "West Campus, 117 Frontage Rd, Orange, CT", "alternateName": "", "latitude": "41.2518649", "longitude": "-72.9965746", "name": "West-E29", "searchText": "w-e29~west-e29~west campus, 117 frontage rd, orange, ct~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-E29.jpg" },
+    
+{ "abbreviation": "W-E35", "accuracy": "6", "address": "West Campus, 137 Frontage Road", "alternateName": "", "latitude": "31.0768084", "longitude": "-97.4169846", "name": "West-E35", "searchText": "w-e35~west-e35~west campus, 137 frontage road~", "zip": "06477", "img": "http://business.yale.edu/map/thumbnail/W-E35.jpg" }
+] }
+    
