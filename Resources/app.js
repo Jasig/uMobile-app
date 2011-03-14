@@ -50,7 +50,7 @@ windows.home = Titanium.UI.createWindow({
     navBarHidden: true,
     app: facade
 });
-// windows.home.open();
+windows.home.open();
 
 
 //
@@ -71,7 +71,7 @@ windows.map = Titanium.UI.createWindow({
     title: 'Map',
     app: facade
 });
-windows.map.open();
+// windows.map.open();
 
 
 //

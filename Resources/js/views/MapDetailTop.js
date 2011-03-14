@@ -64,8 +64,12 @@ var MapDetailTop = function (opts) {
     //Add "Get Directions" button
     directionsButton = Titanium.UI.createButton({
         title: "Get Directions",
-        width: Ti.Platform.displayCaps.platformWidth - (MAP_HORIZ_PADDING * 3) - mapIcon.width,
+        width: 100,
         height:25,
+        color: "#333",
+        font: {
+            fontSize: 14
+        },
         top: mapIconContainer.height + mapIconContainer.top - 25,
         left: (MAP_HORIZ_PADDING * 2 ) + mapIcon.width
     });

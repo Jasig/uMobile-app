@@ -57,5 +57,9 @@ UPM.GLOBAL_STYLES = {
     titleBarButtonGradient: {
         type:'linear',
         colors:['#666','#444','#333']
+    },
+    textFieldGradient: {
+        type:'linear',
+        colors:['#ccc','#fff']
     }
 };

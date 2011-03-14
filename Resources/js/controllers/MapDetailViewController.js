@@ -9,7 +9,7 @@ var MapDetailViewController = function () {
         //Create a scrollable view to contain the contents of the detail view
         locationDetailScroll = Titanium.UI.createScrollView({
             // contentWidth:'auto',
-            // contentHeight:'auto'
+            // contentHeight:50
         });
         win.add(locationDetailScroll);
         
@@ -37,14 +37,25 @@ var MapDetailViewController = function () {
         });
         locationDetailScroll.add(topDetailView);
         
+        var bb1 = Titanium.UI.createTabbedBar({
+            labels:['One', 'Two', 'Three'],
+            backgroundColor:'#336699',
+            top:150,
+            style:Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
+            height:40,
+            width:200
+        });
+        locationDetailScroll.add(bb1);
+        
         //Display a photo of the location, if one is available.
         if(win.data.img){
             Ti.API.info(win.data.img);
             locationPhoto = Titanium.UI.createImageView({
                 image: win.data.img.replace(/\/thumbnail\//,'/photo/'),
                 width: Titanium.Platform.displayCaps.platformWidth - 20,
+                height:225,
                 left: 10,
-                top: topDetailView.height + topDetailView.top + 10,
+                top: topDetailView.height + topDetailView.top + 50,
                 backgroundColor: "#eee",
                 borderRadius: 10,
                 borderWidth: 10,

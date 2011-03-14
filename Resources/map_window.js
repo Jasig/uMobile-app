@@ -52,17 +52,15 @@ var MapWindowController = function() {
             height: win.app.UPM.TITLEBAR_HEIGHT
         });    
         win.add(bar);
-        searchField = Titanium.UI.createSearchBar({
-            backgroundColor : win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
-            backgroundGradient : {
-                type : 'linear',
-                startPoint : 0,
-                endPoint : win.app.UPM.TITLEBAR_HEIGHT,
-                colors : ["#000","#000"]
-            },
-            barColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
-            height: win.app.UPM.TITLEBAR_HEIGHT,
-            top:0,
+        searchField = Titanium.UI.createTextField({
+            backgroundGradient: win.app.UPM.GLOBAL_STYLES.textFieldGradient,
+            paddingLeft: 10,
+            height: 30,
+            width: Ti.Platform.displayCaps.platformWidth - 43,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: "#333",
+            clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
             left:38
         });
         bar.add(searchField);

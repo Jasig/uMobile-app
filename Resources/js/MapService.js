@@ -33,9 +33,15 @@ var MapService = function () {
                 if (mapPoints[i].title.toLowerCase().search(query) != -1) {
                     //|| MapService.mapPoints[i].searchText.toLowerCase().search(query) != -1
                     _annotation = Titanium.Map.createAnnotation(mapPoints[i]);
-                    _annotation.addEventListener("click", function(e) {
-                        Ti.API.info("Source of click event is: " + e.source);
-                    });
+//                  if(Titanium.Platform.osname === 'android') {
+//                         _annotation.addEventListener("click", function(e) {
+//                             Ti.API.info("Source of click event is: " + JSON.stringify(e));                            
+//                             if (e.clicksource === 'title') {
+//                                 annotationEvents.singleTap(e);
+//                             }
+//                         });
+//                         
+//                     }
                     map.addAnnotation(_annotation);
                 }
             }
