@@ -92,7 +92,7 @@ getShowPortletFunc = function (portlet) {
                 'showWindow', 
                 {
                     oldWindow: 'home',
-                    newWindow: 'map'
+                    newWindow: portlet.window
                 }
             );
         }
