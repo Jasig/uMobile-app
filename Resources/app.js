@@ -57,9 +57,9 @@ windows.home.open();
 // PORTLET VIEW
 //
 windows.portlet = Titanium.UI.createWindow({
- url: 'portlet_window.js',
- navBarHidden: true,
- app: facade
+    url: 'portlet_window.js',
+    navBarHidden: true,
+    app: facade
 });
 
 
@@ -84,21 +84,32 @@ windows.settings = Titanium.UI.createWindow({
 });
 
 Ti.App.addEventListener('showWindow', function (e) {
-    var opts = {};
-    if (e.transition) {
-        opts.transition = e.transition;
-    }
-    windows[e.oldWindow].close(opts);
-    windows[e.newWindow].open();
+    windows[e.oldWindow].hide();
+    
+    if (windows[e.newWindow].initialized) {
+        windows[e.newWindow].show();
+    } 
+    
+    else {
+        windows[e.newWindow].open();
+    }        
+
 });
 
 Ti.App.addEventListener('showPortlet', function (portlet) {
 
-    windows.portlet.addEventListener('open', function(e) {
-        Titanium.App.fireEvent('includePortlet', portlet);
-    });
+    windows.home.hide();
+    Ti.API.info("Showing portlet window " + portlet.title);
     
-    // transition to the portlet window
-    windows.home.close();
-    windows.portlet.open();
+    if (windows.portlet.initialized) {
+        Titanium.App.fireEvent('includePortlet', portlet);
+        windows.portlet.show();
+    } 
+    
+    else {
+        windows.portlet.addEventListener('open', function(e) {
+            Titanium.App.fireEvent('includePortlet', portlet);
+        });
+        windows.portlet.open();
+    }
 });

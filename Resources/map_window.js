@@ -84,7 +84,7 @@ var MapWindowController = function() {
             Ti.App.fireEvent(
                 'showWindow', 
                 {
-                    oldWindow: 'settings',
+                    oldWindow: 'map',
                     newWindow: 'home'
                 }
             );

@@ -192,6 +192,7 @@ drawHomeGrid = function(portlets) {
         gridItem.addEventListener("singletap", getShowPortletFunc(portlet));
         
     }
+    win.initialized = true;
 };
 
 createPortalView();
