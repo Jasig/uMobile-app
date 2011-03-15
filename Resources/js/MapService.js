@@ -34,7 +34,11 @@ var MapService = function () {
             for (var i=0, iLength = mapPoints.length; i<iLength; i++) {
                 if (mapPoints[i].title.toLowerCase().search(query) != -1) {
                     //|| MapService.mapPoints[i].searchText.toLowerCase().search(query) != -1
-                    _annotation = Titanium.Map.createAnnotation(mapPoints[i]);
+                    _annotation = Titanium.Map.createAnnotation({
+                        title: mapPoints[i].title,
+                        latitude: mapPoints[i].latitude,
+                        longitude: mapPoints[i].longitude
+                    });
                     map.addAnnotation(_annotation);
                 }
             }
