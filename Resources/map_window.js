@@ -23,6 +23,7 @@
 
 var MapWindowController = function() {
     var win, 
+        self = {},
         mapView, 
         createTitleBar, 
         searchField,
@@ -35,39 +36,53 @@ var MapWindowController = function() {
 
     win = Titanium.UI.currentWindow;
     
-    this.init = function () {
+    self.init = function () {
         //Initializes when the map window is loaded, is passed an instance of the MapService proxy.
         mapService = win.app.models.mapServiceInstance;
-        this.createTitleBar();
-        this.createMapView();
+        self.createTitleBar();
+        self.createMapView();
     };
     
-    this.createTitleBar = function () {
-        var bar, title, homeButton;
+    self.createTitleBar = function () {
+        var bar, title, homeButton, searchSubmit;
 
+        searchSubmit = function(e) {
+            searchField.blur();
+            mapService.search(searchField.value);
+        };
+        
         // Create the view container for the title bar
-        bar = Titanium.UI.createView({
-            backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
-            top: 0,
-            height: win.app.UPM.TITLEBAR_HEIGHT
-        });    
+        bar = win.app.views.GenericTitleBar({
+            homeButton: true,
+            app: win.app
+        });
         win.add(bar);
         searchField = Titanium.UI.createTextField({
             backgroundGradient: win.app.UPM.GLOBAL_STYLES.textFieldGradient,
             paddingLeft: 10,
             height: 30,
             width: Ti.Platform.displayCaps.platformWidth - 43,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: "#333",
             clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
             left:38
         });
+        if(Titanium.Platform.osname === "android") {
+            var btnSearch = Ti.UI.createButton({
+                width: 30,
+                right: 10,
+                title: 'Go'
+                
+            });
+            bar.add(btnSearch);
+            btnSearch.addEventListener('click',searchSubmit);
+            searchField.width = Ti.Platform.displayCaps.platformWidth - 83;
+        }
+       if(Titanium.Platform.osname === "iphone") {
+            searchField.borderRadius = 10;
+            searchField.borderWidth = 1;
+            searchField.borderColor = "#333";
+        }
         bar.add(searchField);
-        searchField.addEventListener('return', function(e){
-            searchField.blur();
-            mapService.search(e.source.value);
-        });
+        searchField.addEventListener('return', searchSubmit);
 
         // add a navigation button to allow users to return to the home screen
         homeButton = Titanium.UI.createImageView({
@@ -90,7 +105,7 @@ var MapWindowController = function() {
             );
         });
     };
-    this.createMapView = function () {
+    self.createMapView = function () {
         var annotations, buttonBar;
 
        // create the map view
@@ -103,14 +118,14 @@ var MapWindowController = function() {
                latitudeDelta:0.01, 
                longitudeDelta:0.01
            },
-           regionFit:true,
+           regionFit:false,
            userLocation:true
        });
        win.add(mapView);
        mapView.addEventListener('touchstart',function(e){
            searchField.blur();
        });
-       mapView.addEventListener('loaddetail',this.loadDetail);
+       mapView.addEventListener('loaddetail',self.loadDetail);
 
        //Initialize the MapService, which manages the data for points on the map, 
        //including retrieval of data and searching array of points
@@ -118,6 +133,20 @@ var MapWindowController = function() {
        Ti.API.info('win.app = ' + win.app);
        Ti.API.info('mapService = ' + mapService);
        mapService.init(mapView,win.app);
+       
+       mapView.addEventListener("click", function(e) {
+            var _annotation;
+            Ti.API.info("Map clicked, and source of click event is: " + JSON.stringify(e));
+            if(e.clicksource === 'title' && e.title) {
+                _annotation = mapService.getAnnotationByTitle(e.title);
+                mapView.fireEvent('loaddetail',_annotation);
+            }
+            else {
+                Ti.API.info("Clicksource: " + e.clicksource);
+                Ti.API.info("Title: " + e.title);
+                Ti.API.info("Result of search: " + mapService.getAnnotationByTitle(e.title));
+            }
+        });
 
        // create controls for zoomin / zoomout
        // included in Android by default
@@ -142,7 +171,7 @@ var MapWindowController = function() {
            });
        }
     };
-    this.loadDetail = function(e) {
+    self.loadDetail = function(e) {
         var locationDetailWin;
         
         //Create and open the window for the map detail
@@ -155,7 +184,8 @@ var MapWindowController = function() {
         locationDetailWin.open();
 
     };
-    this.init();
+    self.init();
+    return self;
 },
 controller = new MapWindowController();
 

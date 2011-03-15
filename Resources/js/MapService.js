@@ -18,6 +18,8 @@ var MapService = function () {
         map.addEventListener("points-loaded",function(e){
             Ti.API.debug("Points loaded event");
         });
+               
+               
         this.loadMapPoints();
     };
     this.search = function (query, opts) {
@@ -33,21 +35,19 @@ var MapService = function () {
                 if (mapPoints[i].title.toLowerCase().search(query) != -1) {
                     //|| MapService.mapPoints[i].searchText.toLowerCase().search(query) != -1
                     _annotation = Titanium.Map.createAnnotation(mapPoints[i]);
-//                  if(Titanium.Platform.osname === 'android') {
-//                         _annotation.addEventListener("click", function(e) {
-//                             Ti.API.info("Source of click event is: " + JSON.stringify(e));                            
-//                             if (e.clicksource === 'title') {
-//                                 annotationEvents.singleTap(e);
-//                             }
-//                         });
-//                         
-//                     }
                     map.addAnnotation(_annotation);
                 }
             }
             searchBusy = false;
         } else if (query === '') {
             map.removeAllAnnotations();
+        }
+    };
+    this.getAnnotationByTitle = function(t) {
+        for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
+            if (mapPoints[i].title === t) {
+                return mapPoints[i];
+            }
         }
     };
     this.loadMapPoints = function (filters) {
@@ -81,9 +81,8 @@ var MapService = function () {
             response.buildings[i].title = response.buildings[i].name;
             response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
             response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
-            response.buildings[i].pincolor = Titanium.Map.ANNOTATION_PURPLE;
+            // response.buildings[i].pincolor = Titanium.Map.ANNOTATION_PURPLE;
             // response.buildings[i].myid = response.buildings[i].abbreviation;
-            // leftButton: '../images/appcelerator_small.png',
 
             btnRight = Titanium.UI.createImageView({
                 image: 'images/btnCircleRightArrow.png',
@@ -109,8 +108,14 @@ var MapService = function () {
         e.source.image = 'images/btnCircleRightArrow.png';
     };
     annotationEvents.singleTap = function(e){
-        map.fireEvent("loaddetail",e.source._parent);
-        Ti.API.info("loaddetail event fired with parent: " + e.source._parent);
+        if(e.source._parent) {
+            map.fireEvent("loaddetail",e.source._parent);
+            Ti.API.info("loaddetail event fired with parent: " + e.source._parent);        
+        } 
+        else {
+            Ti.API.info("loaddetail event didn't fire." + JSON.stringify(e));
+        }
+
     };
     return this;
 };
