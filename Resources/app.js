@@ -48,7 +48,8 @@ Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
 windows.home = Titanium.UI.createWindow({
     url: 'portal_window.js',
     navBarHidden: true,
-    app: facade
+    app: facade,
+    key: 'home'
 });
 windows.home.open();
 
@@ -59,7 +60,8 @@ windows.home.open();
 windows.portlet = Titanium.UI.createWindow({
     url: 'portlet_window.js',
     navBarHidden: true,
-    app: facade
+    app: facade,
+    key: 'portlet'
 });
 
 
@@ -67,9 +69,10 @@ windows.portlet = Titanium.UI.createWindow({
 //MAP VIEW
 //
 windows.directory = Titanium.UI.createWindow({
- url: 'directory_window.js',
- title: 'Directory',
- app: facade
+    url: 'directory_window.js',
+    title: 'Directory',
+    app: facade,
+    key: 'directory'
 });
 
 
@@ -79,7 +82,8 @@ windows.directory = Titanium.UI.createWindow({
 windows.map = Titanium.UI.createWindow({
     url: 'map_window.js',
     title: 'Map',
-    app: facade
+    app: facade,
+    key: 'map'
 });
 // windows.map.open();
 
@@ -90,7 +94,8 @@ windows.map = Titanium.UI.createWindow({
 windows.settings = Titanium.UI.createWindow({
     url: 'settings_window.js',
     navBarHidden: true,
-    app: facade
+    app: facade,
+    key: 'settings'
 });
 
 Ti.App.addEventListener('showWindow', function (e) {

@@ -68,7 +68,7 @@ var GenericTitleBar = function (opts) {
             Ti.App.fireEvent(
                 'showWindow', 
                 {
-                    oldWindow: 'portlet',
+                    oldWindow: opts.windowKey,
                     newWindow: 'home'
                 }
             );

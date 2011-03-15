@@ -41,6 +41,7 @@ var MapWindowController = function() {
         mapService = win.app.models.mapServiceInstance;
         self.createTitleBar();
         self.createMapView();
+        win.initialized = true;
     };
     
     self.createTitleBar = function () {
@@ -54,7 +55,8 @@ var MapWindowController = function() {
         // Create the view container for the title bar
         bar = win.app.views.GenericTitleBar({
             homeButton: true,
-            app: win.app
+            app: win.app,
+            windowKey: 'map'
         });
         win.add(bar);
         searchField = Titanium.UI.createTextField({
@@ -84,26 +86,6 @@ var MapWindowController = function() {
         bar.add(searchField);
         searchField.addEventListener('return', searchSubmit);
 
-        // add a navigation button to allow users to return to the home screen
-        homeButton = Titanium.UI.createImageView({
-            image: "icons/tab-home.png",
-            height: 18,
-            width: 18,
-            left: 10
-        });
-        bar.add(homeButton);
-
-        // add an event listener for the home button
-        homeButton.addEventListener('click', function (e) {
-            searchField.blur();
-            Ti.App.fireEvent(
-                'showWindow', 
-                {
-                    oldWindow: 'map',
-                    newWindow: 'home'
-                }
-            );
-        });
     };
     self.createMapView = function () {
         var annotations, buttonBar;

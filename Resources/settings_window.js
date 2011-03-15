@@ -148,4 +148,5 @@ createCredentialsForm = function () {
 
 createTitleBar();
 createCredentialsForm();
+win.initialized = true;
 
