@@ -46,6 +46,11 @@ UPM.LOCAL_MODULES = [
          title: 'map',
          iconUrl: 'icons/map.png',
          window: 'map'
+     },
+     {
+         title: 'directory',
+         iconUrl: 'icons/directory.png',
+         window: 'directory'
      }
 ];
 
