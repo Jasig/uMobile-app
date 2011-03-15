@@ -113,9 +113,9 @@ var MapWindowController = function() {
            top: win.app.UPM.TITLEBAR_HEIGHT,
            mapType: Titanium.Map.STANDARD_TYPE,
            region:{
-               latitude: win.app.UPM.DEFAULT_LATITUDE, 
-               longitude: win.app.UPM.DEFAULT_LONGITUDE, 
-               latitudeDelta:0.01, 
+               latitude: win.app.UPM.DEFAULT_LATITUDE,
+               longitude: win.app.UPM.DEFAULT_LONGITUDE,
+               latitudeDelta:0.01,
                longitudeDelta:0.01
            },
            regionFit:false,
@@ -129,9 +129,6 @@ var MapWindowController = function() {
 
        //Initialize the MapService, which manages the data for points on the map, 
        //including retrieval of data and searching array of points
-       Ti.API.info('mapView = ' + mapView);
-       Ti.API.info('win.app = ' + win.app);
-       Ti.API.info('mapService = ' + mapService);
        mapService.init(mapView,win.app);
        
        mapView.addEventListener("click", function(e) {

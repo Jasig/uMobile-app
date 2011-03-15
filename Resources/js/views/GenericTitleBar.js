@@ -6,12 +6,13 @@ var GenericTitleBar = function (opts) {
         homeButton,
         settingsButton,
         titleBar = Titanium.UI.createView({
-        top: opts.top || 0,
-        left: opts.left || 0,
-        height: opts.height || opts.app.UPM.TITLEBAR_HEIGHT,
-        width: Titanium.Platform.displayCaps.platformWidth,
-        backgroundGradient: opts.app.UPM.GLOBAL_STYLES.titleBarGradient
-    });
+            top: opts.top || 0,
+            left: opts.left || 0,
+            height: opts.height || opts.app.UPM.TITLEBAR_HEIGHT,
+            width: Titanium.Platform.displayCaps.platformWidth,
+            backgroundColor: "#000",
+            backgroundGradient: opts.app.UPM.GLOBAL_STYLES.titleBarGradient
+        });
     if (opts.title) {
         //Places the title in the center of the titlebar...
         

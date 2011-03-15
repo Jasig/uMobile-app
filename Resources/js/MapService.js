@@ -5,20 +5,13 @@ var MapService = function () {
         app;
         
     this.init = function (mapView,facade) {
-
         //mapView object passed in from controller, for simplicity of callbacks on resource-intensive events ()
-
         if (mapView) {
             map = mapView;
         }
         if (facade) {
             app = facade;
-        }
-
-        map.addEventListener("points-loaded",function(e){
-            Ti.API.debug("Points loaded event");
-        });
-               
+        }      
                
         this.loadMapPoints();
     };
@@ -28,6 +21,7 @@ var MapService = function () {
 
         //If a search isn't already executing
        if(!searchBusy && query != '') {
+           Ti.API.info("Starting to search...");
             searchBusy = true;
 
             map.removeAllAnnotations();
@@ -35,9 +29,10 @@ var MapService = function () {
                 if (mapPoints[i].title.toLowerCase().search(query) != -1) {
                     //|| MapService.mapPoints[i].searchText.toLowerCase().search(query) != -1
                     _annotation = Titanium.Map.createAnnotation({
-                        title: mapPoints[i].title,
+                        title: mapPoints[i].title || "Title Not Available",
                         latitude: mapPoints[i].latitude,
-                        longitude: mapPoints[i].longitude
+                        longitude: mapPoints[i].longitude,
+                        pincolor:Titanium.Map.ANNOTATION_RED
                     });
                     map.addAnnotation(_annotation);
                 }
@@ -57,7 +52,6 @@ var MapService = function () {
     this.loadMapPoints = function (filters) {
         //Default returns all points for an institution.
         //Can be filtered by campus, admin-defined categories
-
         Ti.API.info("loadMapPoints()");
 
         request = Titanium.Network.createHTTPClient ({
