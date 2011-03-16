@@ -127,7 +127,7 @@ drawHomeGrid = function(portlets) {
 
     for (var i=0, iLength=portlets.length; i<iLength; i++) {
         
-        var portlet, top, left, gridItem, gridItemLabel, gridItemIcon;
+        var portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
         
         portlet = portlets[i];
         Ti.API.debug("Adding portlet with title " + portlet.title + " to the home view");
@@ -185,6 +185,34 @@ drawHomeGrid = function(portlets) {
             width: win.app.UPM.HOME_GRID_ICON_WIDTH
         });
         gridItem.add(gridItemIcon);
+        
+        // TODO: hook up to actual badge icon service
+        if (portlet.title == 'Blackboard') {
+            Ti.API.info("blackboard");
+            gridBadgeBackground = Titanium.UI.createImageView({
+                image: "../../icons/badgeBackground.png",
+                top: win.app.UPM.HOME_GRID_ITEM_PADDING+5, //Magic number, consider constant or another approach
+                right: win.app.UPM.HOME_GRID_ITEM_PADDING+5,
+                height: 20,
+                width: 20
+            });
+            gridItem.add(gridBadgeBackground);
+            gridBadgeNumber = Titanium.UI.createLabel({
+                textAlign: "center",
+                color: "#fff",
+                text: "1",
+                height: 16,
+                width: 16,
+                font: { 
+                    fontSize: 12,
+                    fontWeight: "bold"
+                },
+                top: win.app.UPM.HOME_GRID_ITEM_PADDING+6, //Magic number, consider constant or another approach
+                right: win.app.UPM.HOME_GRID_ITEM_PADDING+7,
+                touchEnabled: false
+            });
+            gridItem.add(gridBadgeNumber);
+        }
         
         //Place the item in the scrollview and listen for singletaps
         portalView.add(gridItem);
