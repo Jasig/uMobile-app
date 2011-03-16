@@ -126,7 +126,7 @@ createCredentialsForm = function () {
         title: win.app.localDictionary.update
     });
     win.add(saveButton);
-    saveButton.addEventListener('singletap', function (e) {
+    saveButton.addEventListener('click', function (e) {
         win.app.UPM.saveCredentials({ 
             username: usernameInput.value, 
             password: passwordInput.value 
