@@ -17,28 +17,27 @@
  * under the License.
  */
 
-Titanium.include("lib.js");
-Titanium.include('skin.js');
 
-var win, portletView;
-
+var win, 
+    portletView,
+    pathToRoot = '../../';
 
 win = Titanium.UI.currentWindow;
 
 var portletBar = Titanium.UI.createView({
-    backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
+    backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
     top:0,
-    height: UPM.TITLEBAR_HEIGHT
+    height: win.app.UPM.TITLEBAR_HEIGHT
 });
 var portletTitle = Titanium.UI.createLabel({
     textAlign: "center",
-    text: "uMobile",
-    color: UPM.TITLEBAR_TEXT_COLOR,
+    text: win.app.localDictionary.uMobile,
+    color: win.app.UPM.TITLEBAR_TEXT_COLOR,
     font: { fontWeight: "bold" }
 });
 portletBar.add(portletTitle);
 var homeButton = Titanium.UI.createImageView({
-    image: "icons/tab-home.png",
+    image: pathToRoot + "icons/tab-home.png",
     width: 18,
     height: 18,
     left: 10
@@ -66,8 +65,8 @@ Ti.App.addEventListener('includePortlet', function(portlet) {
 
     Ti.API.info("Showing portlet " + portlet.url);
     portletView = Titanium.UI.createWebView({ 
-        url: UPM.BASE_PORTAL_URL + portlet.url,
-        top: UPM.TITLEBAR_HEIGHT
+        url: win.app.UPM.BASE_PORTAL_URL + portlet.url,
+        top: win.app.UPM.TITLEBAR_HEIGHT
     });
     portletTitle.text = portlet.title;
     

@@ -22,9 +22,7 @@
  * user settings tab.
  */
 
-// library includes
-Titanium.include('lib.js');
-Titanium.include('skin.js');
+//TODO: Move everything into a controller function
 
 var win = Titanium.UI.currentWindow;
 
@@ -36,28 +34,29 @@ var credentials,
 
 // get the current user credentials in order
 // to pre-populate the input fields
-credentials = UPM.getCredentials();
+credentials = win.app.UPM.getCredentials();
 
-win.backgroundColor = UPM.HOME_GRID_BACKGROUND_COLOR;
+win.backgroundColor = win.app.UPM.HOME_GRID_BACKGROUND_COLOR;
 
+// TODO: Remove this block of code and use GenericTitleBar instead 
 createTitleBar = function () {
     titlebar = Titanium.UI.createView({
-        backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
+        backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
         top:0,
-        height: UPM.TITLEBAR_HEIGHT
+        height: win.app.UPM.TITLEBAR_HEIGHT
     });
     win.add(titlebar);
     
     title = Titanium.UI.createLabel({
         textAlign: "center",
         text: win.app.localDictionary.settings,
-        color: UPM.TITLEBAR_TEXT_COLOR,
+        color: win.app.UPM.TITLEBAR_TEXT_COLOR,
         font: { fontWeight: "bold" }
     });
     titlebar.add(title);
     
     homeButton = Titanium.UI.createImageView({
-        image: "icons/tab-home.png",
+        image: "../../icons/tab-home.png",
         height: 18,
         width: 18,
         left: 10
@@ -128,7 +127,7 @@ createCredentialsForm = function () {
     });
     win.add(saveButton);
     saveButton.addEventListener('singletap', function (e) {
-        UPM.saveCredentials({ 
+        win.app.UPM.saveCredentials({ 
             username: usernameInput.value, 
             password: passwordInput.value 
         });

@@ -23,8 +23,6 @@
  */
 
 // library includes
-Titanium.include('lib.js');
-Titanium.include('skin.js');
 
 var win, 
     portalView,
@@ -32,7 +30,8 @@ var win,
     portalGridView,
     createPortalView,
     drawHomeGrid,
-    getShowPortletFunc;
+    getShowPortletFunc,
+    pathToRoot = '../../';
 
 win = Titanium.UI.currentWindow;
 
@@ -44,12 +43,12 @@ createPortalView = function () {
 
     Ti.API.debug("Creating a new portal home view");
 	portalView = Titanium.UI.createScrollView({
-		backgroundColor: UPM.HOME_GRID_BACKGROUND_COLOR
+		backgroundColor: win.app.UPM.HOME_GRID_BACKGROUND_COLOR
 	});
 	
 	var bar = Titanium.UI.createView({
-	    backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
-        height: UPM.TITLEBAR_HEIGHT,
+	    backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
+        height: win.app.UPM.TITLEBAR_HEIGHT,
         top: 0
     });
 	var title = Titanium.UI.createLabel({
@@ -62,7 +61,7 @@ createPortalView = function () {
 	var settingsButton = Titanium.UI.createImageView({
 	    height: 18,
 	    width: 18,
-	    image: "icons/tab-settings.png",
+	    image: pathToRoot + "icons/tab-settings.png",
 	    left: Ti.Platform.displayCaps.platformWidth - 28
 	});
 	bar.add(settingsButton);
@@ -133,8 +132,8 @@ drawHomeGrid = function(portlets) {
         portlet = portlets[i];
         Ti.API.debug("Adding portlet with title " + portlet.title + " to the home view");
         
-        var completeWidth = UPM.HOME_GRID_ITEM_WIDTH + 2 * UPM.HOME_GRID_ITEM_PADDING;
-        var completeHeight = UPM.HOME_GRID_ITEM_WIDTH + 2 * UPM.HOME_GRID_ITEM_PADDING;
+        var completeWidth = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
+        var completeHeight = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
 
         // calculate the appropriate number of columns based on the device
         // width and desired item size
@@ -144,15 +143,15 @@ drawHomeGrid = function(portlets) {
         var leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
 
         // Calculate the position for this grid item
-        top = UPM.TITLEBAR_HEIGHT + UPM.HOME_GRID_ITEM_PADDING + Math.floor(i / numColumns) * completeHeight;
-        left = leftPadding + UPM.HOME_GRID_ITEM_PADDING + (i % numColumns) * completeWidth;
+        top = win.app.UPM.TITLEBAR_HEIGHT + win.app.UPM.HOME_GRID_ITEM_PADDING + Math.floor(i / numColumns) * completeHeight;
+        left = leftPadding + win.app.UPM.HOME_GRID_ITEM_PADDING + (i % numColumns) * completeWidth;
         
         // Create the container for the grid item
         gridItem = Titanium.UI.createView({
             top: top,
             left: left,
-            height:UPM.HOME_GRID_ITEM_HEIGHT,
-            width:UPM.HOME_GRID_ITEM_WIDTH
+            height: win.app.UPM.HOME_GRID_ITEM_HEIGHT,
+            width: win.app.UPM.HOME_GRID_ITEM_WIDTH
         });
         
         //Add a label to the grid item
@@ -164,26 +163,26 @@ drawHomeGrid = function(portlets) {
             font: { 
                 fontSize: 12
             },
-            top: (UPM.HOME_GRID_ITEM_HEIGHT - 20), //Magic number, consider constant or another approach
-            color: UPM.HOME_GRID_TEXT_COLOR,
+            top: (win.app.UPM.HOME_GRID_ITEM_HEIGHT - 20), //Magic number, consider constant or another approach
+            color: win.app.UPM.HOME_GRID_TEXT_COLOR,
             touchEnabled: false
         });
         gridItem.add(gridItemLabel);
         
         var iconUrl;
         if (!portlet.url && portlet.iconUrl) {
-            iconUrl = portlet.iconUrl;
+            iconUrl = pathToRoot + portlet.iconUrl;
         } else if (portlet.iconUrl) {
-            iconUrl = UPM.BASE_PORTAL_URL + portlet.iconUrl;
+            iconUrl = win.app.UPM.BASE_PORTAL_URL + portlet.iconUrl;
         } else {
-            iconUrl = UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
+            iconUrl = win.app.UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
         }
         
         //Add an icon to the grid item
         gridItemIcon = Titanium.UI.createImageView({
             image: iconUrl,
-            height: UPM.HOME_GRID_ICON_HEIGHT,
-            width: UPM.HOME_GRID_ICON_WIDTH
+            height: win.app.UPM.HOME_GRID_ICON_HEIGHT,
+            width: win.app.UPM.HOME_GRID_ICON_WIDTH
         });
         gridItem.add(gridItemIcon);
         
@@ -201,15 +200,15 @@ var getPortletsForUser = function(onload) {
     var loader = Titanium.Network.createHTTPClient();
 
     // Sets the HTTP request method, and the URL to get data from  
-    var jsonUrl = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + "/api/layoutDoc.json";
+    var jsonUrl = win.app.UPM.BASE_PORTAL_URL + win.app.UPM.PORTAL_CONTEXT + "/api/layoutDoc.json";
     Ti.API.info(jsonUrl);
     loader.open("GET", jsonUrl);
     
     // Runs the function when the data is ready for us to process  
     loader.onload = function() { 
         var layout = eval('('+this.responseText+')').layout;
-        for (var i = 0; i < UPM.LOCAL_MODULES.length; i++) {
-            layout.push(UPM.LOCAL_MODULES[i]);
+        for (var i = 0; i < win.app.UPM.LOCAL_MODULES.length; i++) {
+            layout.push(win.app.UPM.LOCAL_MODULES[i]);
         }
         drawHomeGrid(layout);
     };  
@@ -219,9 +218,9 @@ var getPortletsForUser = function(onload) {
 
 };
 
-UPM.establishSession(getPortletsForUser);
+win.app.UPM.establishSession(getPortletsForUser);
 
 Ti.App.addEventListener('credentialUpdate', function(e){
     createPortalView();
-    UPM.establishSession(getPortletsForUser);
+    win.app.UPM.establishSession(getPortletsForUser);
 });

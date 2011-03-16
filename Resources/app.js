@@ -36,8 +36,7 @@ var windows = {},
         },
         models: {
             mapServiceInstance: new MapService()
-        },
-        controllers: {}
+        }
     };
 
 Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
@@ -46,7 +45,7 @@ Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
 // MAIN PORTAL VIEW
 //
 windows.home = Titanium.UI.createWindow({
-    url: 'portal_window.js',
+    url: 'js/controllers/PortalWindowController.js',
     navBarHidden: true,
     app: facade,
     key: 'home'
@@ -58,7 +57,7 @@ windows.home.open();
 // PORTLET VIEW
 //
 windows.portlet = Titanium.UI.createWindow({
-    url: 'portlet_window.js',
+    url: 'js/controllers/PortletWindowController.js',
     navBarHidden: true,
     app: facade,
     key: 'portlet'
@@ -69,7 +68,7 @@ windows.portlet = Titanium.UI.createWindow({
 //MAP VIEW
 //
 windows.directory = Titanium.UI.createWindow({
-    url: 'directory_window.js',
+    url: 'js/controllers/DirectoryWindowController.js',
     title: facade.localDictionary.directory,
     app: facade,
     key: 'directory'
@@ -80,7 +79,7 @@ windows.directory = Titanium.UI.createWindow({
 // MAP VIEW
 //
 windows.map = Titanium.UI.createWindow({
-    url: 'map_window.js',
+    url: 'js/controllers/MapWindowController.js',
     title: facade.localDictionary.map,
     app: facade,
     key: 'map'
@@ -92,7 +91,7 @@ windows.map = Titanium.UI.createWindow({
 //  SETTINGS VIEW
 //
 windows.settings = Titanium.UI.createWindow({
-    url: 'settings_window.js',
+    url: 'js/controllers/SettingsWindowController.js',
     navBarHidden: true,
     app: facade,
     key: 'settings'

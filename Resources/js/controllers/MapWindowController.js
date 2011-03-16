@@ -32,7 +32,8 @@ var MapWindowController = function() {
         loadPointDetail, 
         rawAnnotations = [],
         loadingIndicator,
-        mapService;
+        mapService,
+        pathToRoot = '../../';
 
     win = Titanium.UI.currentWindow;
     
@@ -65,6 +66,7 @@ var MapWindowController = function() {
             height: 30,
             width: Ti.Platform.displayCaps.platformWidth - 43,
             clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
             left:38
         });
         if(Titanium.Platform.osname === "android") {
