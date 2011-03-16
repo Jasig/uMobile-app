@@ -18,7 +18,7 @@ var MapDetailViewController = function () {
         //Create a back button to be added to the title bar to take the user back to the map
         Ti.API.debug("Creating titleBackButton in MapDetailViewController");
         titleBackButton = Titanium.UI.createButton({
-            title: "Map"
+            title: win.app.localDictionary.map
         });
         
         Ti.API.debug("adding event listener to titleBackButton in MapDetailViewController");
@@ -40,6 +40,7 @@ var MapDetailViewController = function () {
         //Create the top area of the detail view, containing the map icon, address, and directions link.
         topDetailView = new win.app.views.MapDetailTop({
             details: win.data,
+            app: win.app,
             top: 50
         });
         locationDetailScroll.add(topDetailView);

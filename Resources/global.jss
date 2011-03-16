@@ -1,6 +1,3 @@
 titleBar {
 	
 }
-searchBar {
-
-}

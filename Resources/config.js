@@ -34,6 +34,8 @@ UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:808
 UPM.PORTAL_CONTEXT = '/uPortal';
 UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + '/uPortal/services/mapData.json';
 
+Titanium.App.Properties.setString('locale','en_US');
+
 // Default latitude and longitude for map.  This location
 // will be used for map initialization if the user's location
 // cannot be determined or if the user declines to grant 

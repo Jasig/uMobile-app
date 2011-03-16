@@ -35,7 +35,7 @@ var MapDetailTop = function (opts) {
     Ti.API.debug("Creating directionsButton in MapDetailTop");
     //Add "Get Directions" button
     directionsButton = Titanium.UI.createButton({
-        title: "Get Directions",
+        title: opts.app.localDictionary.getDirections,
         width: 150,
         height:30,
         color: "#333",

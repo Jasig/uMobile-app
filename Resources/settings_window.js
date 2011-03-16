@@ -50,7 +50,7 @@ createTitleBar = function () {
     
     title = Titanium.UI.createLabel({
         textAlign: "center",
-        text: "Settings",
+        text: win.app.localDictionary.settings,
         color: UPM.TITLEBAR_TEXT_COLOR,
         font: { fontWeight: "bold" }
     });
@@ -81,7 +81,7 @@ createCredentialsForm = function () {
     
     // create the username label and input field
     usernameLabel = Titanium.UI.createLabel({
-        text:'Username',
+        text: win.app.localDictionary.username,
         height:35,
         width:'auto',
         top:50,
@@ -100,7 +100,7 @@ createCredentialsForm = function () {
     
     // create the password label and input field
     passwordLabel = Titanium.UI.createLabel({
-        text:'Password',
+        text:win.app.localDictionary.password,
         height:35,
         width:'auto',
         top:100,
@@ -124,7 +124,7 @@ createCredentialsForm = function () {
         top:150,
         left:10,
         width:250,
-        title:'Update'
+        title: win.app.localDictionary.update
     });
     win.add(saveButton);
     saveButton.addEventListener('singletap', function (e) {
