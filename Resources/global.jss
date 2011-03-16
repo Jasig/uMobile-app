@@ -1,3 +1,7 @@
 titleBar {
 	
 }
+
+win {
+	backgroundColor: '#fff';
+}

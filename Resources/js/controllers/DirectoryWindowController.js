@@ -29,24 +29,38 @@ Titanium.include('skin.js');*/
 var DirectoryWindowController = function () {
     var win = Titanium.UI.currentWindow,
         app = win.app,
-        title, 
-        homeButton,
-        createTitleBar,
-        titleBar;
+        titleBar,
+        searchField,
+        searchSubmit,
+        self = {};
+        
+    self.init = function () {
+        win.backgroundColor('#fff');
+    };
+    searchSubmit = function(e) {
+        searchField.blur();
+        Ti.API.info("Directory Search submitted.");
+    };
         
     titleBar = new win.app.views.GenericTitleBar({
         app: app,
-        title: "Directory",
+        title: app.localDictionary.directory,
         homeButton: true,
-        settingsButton: true,
-        windowKey: win.windowKey
+        settingsButton: false,
+        windowKey: win.key
     });
     win.add(titleBar);
     
+    searchField = Titanium.UI.createTextField({
+        height: 30,
+        width: Ti.Platform.displayCaps.platformWidth - 43,
+        clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+        left:38
+    });
+    searchField.addEventListener('return', searchSubmit);
+    titleBar.add(searchField);
+    
+    return self;
 },
 controller = new DirectoryWindowController();
-
-
-
-
-

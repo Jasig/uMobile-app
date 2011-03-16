@@ -49,10 +49,10 @@ var GenericTitleBar = function (opts) {
         
         //Manually add gradient changes for button toggle
         backButton.addEventListener("touchstart",function(e){
-            e.source.backgroundGradient = UPM.GLOBAL_STYLES.titleBarGradient;
+            e.source.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarGradient;
         });
         backButton.addEventListener("touchend",function(e){
-            e.source.backgroundGradient = UPM.GLOBAL_STYLES.titleBarButtonGradient;
+            e.source.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarButtonGradient;
         });
     }
     if (opts.homeButton && !opts.backButton) {

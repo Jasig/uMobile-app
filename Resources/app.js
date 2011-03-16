@@ -21,7 +21,7 @@
 Titanium.include('config.js');
 Titanium.include('lib.js');
 Titanium.include('skin.js');
-Titanium.include('js/MapService.js');
+Titanium.include('js/models/MapProxy.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/MapDetailTop.js');
 Titanium.include('localization.js');
@@ -29,7 +29,7 @@ Titanium.include('localization.js');
 var windows = {},
     facade = {
         UPM: UPM,
-        localDictionary: localDictionary[Titanium.App.Properties.getString('locale')], //Returns a localized object of all application strings.
+        localDictionary: localDictionary[Titanium.App.Properties.getString('locale')], //Returns a localized object of all application strings, based on locale property set in config.js.
         views: {
             MapDetailTop: MapDetailTop,
             GenericTitleBar: GenericTitleBar
@@ -65,7 +65,7 @@ windows.portlet = Titanium.UI.createWindow({
 
 
 //
-//MAP VIEW
+//Directory VIEW
 //
 windows.directory = Titanium.UI.createWindow({
     url: 'js/controllers/DirectoryWindowController.js',

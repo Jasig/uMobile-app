@@ -60,15 +60,16 @@ var MapWindowController = function() {
             windowKey: 'map'
         });
         win.add(bar);
+        
         searchField = Titanium.UI.createTextField({
             backgroundGradient: win.app.UPM.GLOBAL_STYLES.textFieldGradient,
-            paddingLeft: 10,
             height: 30,
             width: Ti.Platform.displayCaps.platformWidth - 43,
             clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
             borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
             left:38
         });
+        
         if(Titanium.Platform.osname === "android") {
             var btnSearch = Ti.UI.createButton({
                 width: 30,
@@ -158,7 +159,7 @@ var MapWindowController = function() {
         //Create and open the window for the map detail
         locationDetailWin = Titanium.UI.createWindow({
            backgroundColor: "#fff",
-           url: "js/controllers/MapDetailViewController.js",
+           url: pathToRoot + "js/controllers/MapDetailViewController.js",
            data: e,
            app: win.app
         });
