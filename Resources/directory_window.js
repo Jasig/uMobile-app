@@ -23,50 +23,30 @@
  */
 
 // library includes
-Titanium.include('lib.js');
-Titanium.include('skin.js');
+/*Titanium.include('lib.js');
+Titanium.include('skin.js');*/
 
-var win = Titanium.UI.currentWindow;
-
-var titlebar, title, homeButton,
-    createTitleBar;
-
-createTitleBar = function () {
-    titlebar = Titanium.UI.createView({
-        backgroundColor: UPM.TITLEBAR_BACKGROUND_COLOR,
-        top:0,
-        height: UPM.TITLEBAR_HEIGHT
+var DirectoryWindowController = function () {
+    var win = Titanium.UI.currentWindow,
+        app = win.app,
+        title, 
+        homeButton,
+        createTitleBar,
+        titleBar;
+        
+    titleBar = new win.app.views.GenericTitleBar({
+        app: app,
+        title: "Directory",
+        homeButton: true,
+        settingsButton: true,
+        windowKey: win.windowKey
     });
-    win.add(titlebar);
+    win.add(titleBar);
     
-    title = Titanium.UI.createLabel({
-        textAlign: "center",
-        text: "Directory",
-        color: UPM.TITLEBAR_TEXT_COLOR,
-        font: { fontWeight: "bold" }
-    });
-    titlebar.add(title);
-    
-    homeButton = Titanium.UI.createImageView({
-        image: "icons/tab-home.png",
-        height: 18,
-        width: 18,
-        left: 10
-    });
-    titlebar.add(homeButton);
-    
-    homeButton.addEventListener('singletap', function (e) {
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'directory',
-                newWindow: 'home',
-                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
-            }
-        );
-    });
+},
+controller = new DirectoryWindowController();
 
-};
 
-createTitleBar();
+
+
 

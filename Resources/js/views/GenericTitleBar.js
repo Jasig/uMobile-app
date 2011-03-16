@@ -1,6 +1,8 @@
 // Ti.include('config.js');
 
 var GenericTitleBar = function (opts) {
+    //Required: opts.app, opts.windowKey
+    //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
     var title,
         backButton,
         homeButton,
