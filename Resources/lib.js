@@ -125,3 +125,16 @@ UPM.establishSession = function(onload) {
     authenticator.send();
 
 };
+UPM.getResourcePath = function (file) {
+    if(Titanium.Platform.osname === ('iphone' || 'ipad')) {
+        Ti.API.info("getResourcePath is iOS");
+        return file;
+    } 
+    else if (Titanium.Platform.osname === 'android') {
+        Ti.API.info("getResourcePath is Android");
+        return Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + "/" + file);
+    }
+    else {
+        return file;
+    }
+};

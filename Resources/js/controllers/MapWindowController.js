@@ -32,14 +32,13 @@ var MapWindowController = function() {
         loadPointDetail, 
         rawAnnotations = [],
         loadingIndicator,
-        mapService,
-        pathToRoot = '../../';
+        mapService;
 
     win = Titanium.UI.currentWindow;
     
     self.init = function () {
         //Initializes when the map window is loaded, is passed an instance of the MapService proxy.
-        mapService = win.app.models.mapServiceInstance;
+        mapService = win.app.models.mapService;
         self.createTitleBar();
         self.createMapView();
         win.initialized = true;
@@ -114,7 +113,7 @@ var MapWindowController = function() {
 
        //Initialize the MapService, which manages the data for points on the map, 
        //including retrieval of data and searching array of points
-       mapService.init(mapView,win.app);
+       mapService.init(mapView);
        
        mapView.addEventListener("click", function(e) {
             var _annotation;
@@ -159,7 +158,7 @@ var MapWindowController = function() {
         //Create and open the window for the map detail
         locationDetailWin = Titanium.UI.createWindow({
            backgroundColor: "#fff",
-           url: pathToRoot + "js/controllers/MapDetailViewController.js",
+           url: win.app.UPM.getResourcePath("/js/controllers/MapDetailViewController.js"),
            data: e,
            app: win.app
         });

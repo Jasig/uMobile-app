@@ -1,17 +1,15 @@
-var MapService = function () {
-    var map,
+var MapService = function (facade) {
+    var app=facade,
+        map,
         mapPoints = [],
-        annotationEvents = {},
-        app;
+        annotationEvents = {};
         
-    this.init = function (mapView,facade) {
+    this.init = function (mapView) {
         //mapView object passed in from controller, for simplicity of callbacks on resource-intensive events ()
+        Ti.API.info(app);
         if (mapView) {
             map = mapView;
         }
-        if (facade) {
-            app = facade;
-        }      
                
         this.loadMapPoints();
     };

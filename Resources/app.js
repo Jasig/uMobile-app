@@ -21,23 +21,29 @@
 Titanium.include('config.js');
 Titanium.include('lib.js');
 Titanium.include('skin.js');
+Titanium.include('localization.js');
 Titanium.include('js/models/MapProxy.js');
+Titanium.include('js/models/DirectoryPersonVO.js');
+Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/MapDetailTop.js');
-Titanium.include('localization.js');
 
 var windows = {},
-    facade = {
-        UPM: UPM,
-        localDictionary: localDictionary[Titanium.App.Properties.getString('locale')], //Returns a localized object of all application strings, based on locale property set in config.js.
-        views: {
-            MapDetailTop: MapDetailTop,
-            GenericTitleBar: GenericTitleBar
-        },
-        models: {
-            mapServiceInstance: new MapService()
-        }
-    };
+    facade = {};
+    
+facade = {
+    UPM: UPM,
+    localDictionary: localDictionary[Titanium.App.Properties.getString('locale')] //Returns a localized object of all application strings, based on locale property set in config.js.
+};
+facade.models = {
+    mapService: new MapService(facade),
+    directoryProxy: new DirectoryProxy(facade),
+    DirectoryPersonVO: DirectoryPersonVO
+};
+facade.views = {
+    MapDetailTop: MapDetailTop,
+    GenericTitleBar: GenericTitleBar
+};
 
 Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
 

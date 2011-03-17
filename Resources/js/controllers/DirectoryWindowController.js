@@ -29,17 +29,23 @@ Titanium.include('skin.js');*/
 var DirectoryWindowController = function () {
     var win = Titanium.UI.currentWindow,
         app = win.app,
+        self = {},
+        directoryProxy = app.models.directoryProxy,
         titleBar,
         searchField,
         searchSubmit,
-        self = {};
+        proxySearching,
+        proxySearchComplete,
+        proxySearchError;
         
     self.init = function () {
         win.backgroundColor('#fff');
     };
+    
     searchSubmit = function(e) {
         searchField.blur();
         Ti.API.info("Directory Search submitted.");
+        directoryProxy.search(searchField.value);
     };
         
     titleBar = new win.app.views.GenericTitleBar({
@@ -61,6 +67,23 @@ var DirectoryWindowController = function () {
     searchField.addEventListener('return', searchSubmit);
     titleBar.add(searchField);
     
+    //Proxy events
+
+    proxySearching = function (e) {
+        Ti.API.info("Searching...");
+    };
+    proxySearchComplete = function (e) {
+        Ti.API.info("Search Complete");
+    };
+    proxySearchError = function (e) {
+        Ti.API.info("Directory Proxy Search Error");
+    };
+    
+    Titanium.addEventListener('DirectoryProxySearching', proxySearching);
+    Titanium.addEventListener('DirectoryProxySearchComplete',proxySearchComplete);
+    Titanium.addEventListener('DirectoryProxySearchError',proxySearchError);
+
+    Ti.API.info(JSON.stringify(new app.models.DirectoryPersonVO("Jeff",{mail:['jcross@unicon.net'],username:'jeffbcross',"user.login.id":'jeffbcross',displayName:'Jeff Cross'})));
     return self;
 },
 controller = new DirectoryWindowController();

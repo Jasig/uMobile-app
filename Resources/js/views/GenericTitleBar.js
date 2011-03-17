@@ -59,7 +59,7 @@ var GenericTitleBar = function (opts) {
         //Expects homeButton to be a boolean indicating whether or not to show the home button
         //There shouldn't be a home button and back button, as then the bar just gets too cluttered. Back button wins in a fight.
         homeButton = Titanium.UI.createImageView({
-            image: "icons/tab-home.png",
+            image: opts.app.UPM.getResourcePath("icons/tab-home.png"),
             width: 18,
             height: 18,
             left: 10
@@ -81,7 +81,7 @@ var GenericTitleBar = function (opts) {
         settingsButton = Titanium.UI.createImageView({
     	    height: 18,
     	    width: 18,
-    	    image: "icons/tab-settings.png",
+    	    image: opts.app.UPM.getResourcePath("icons/tab-settings.png"),
     	    left: Ti.Platform.displayCaps.platformWidth - 28
     	});
     	titleBar.add(settingsButton);
@@ -97,6 +97,6 @@ var GenericTitleBar = function (opts) {
             );
         });
     }
-    
+
     return titleBar;
 };
