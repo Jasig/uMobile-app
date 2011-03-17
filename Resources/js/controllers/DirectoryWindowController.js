@@ -32,58 +32,116 @@ var DirectoryWindowController = function () {
         self = {},
         directoryProxy = app.models.directoryProxy,
         titleBar,
-        searchField,
+        searchBar,
+        contentScrollView,
+        peopleListTable,
         searchSubmit,
-        proxySearching,
-        proxySearchComplete,
-        proxySearchError;
+        blurSearch,
+        onProxySearching,
+        onProxySearchComplete,
+        onProxySearchError,
+        displaySearchResults;
         
     self.init = function () {
-        win.backgroundColor('#fff');
-    };
-    
-    searchSubmit = function(e) {
-        searchField.blur();
-        Ti.API.info("Directory Search submitted.");
-        directoryProxy.search(searchField.value);
-    };
+        win.backgroundColor = '#fff';
+        titleBar = new win.app.views.GenericTitleBar({
+            app: app,
+            title: app.localDictionary.directory,
+            homeButton: true,
+            settingsButton: false,
+            windowKey: win.key
+        });
+        win.add(titleBar);
+
+/*        searchField = Titanium.UI.createTextField({
+            height: 30,
+            width: Ti.Platform.displayCaps.platformWidth - 43,
+            clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+            left:38,
+            hintText: app.localDictionary.directorySearchHintText
+        });
+        searchField.addEventListener('return', onSearchSubmit);
+        titleBar.add(searchField);*/
         
-    titleBar = new win.app.views.GenericTitleBar({
-        app: app,
-        title: app.localDictionary.directory,
-        homeButton: true,
-        settingsButton: false,
-        windowKey: win.key
-    });
-    win.add(titleBar);
+        searchBar = Titanium.UI.createSearchBar({
+            top: titleBar.size.height,
+            height:50,
+            backgroundGradient: app.UPM.GLOBAL_STYLES.titleBarGradient,
+            clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+            hintText: app.localDictionary.directorySearchHintText
+        });
+        win.add(searchBar);
+        searchBar.addEventListener('return',onSearchSubmit);
+        searchBar.focus();
+        
+        contentScrollView = Titanium.UI.createScrollView({
+            top: searchBar.size.height + searchBar.top,
+            height: Ti.Platform.displayCaps.platformHeight - titleBar.height
+        });
+        win.add(contentScrollView);
+        contentScrollView.addEventListener('touchstart', blurSearch);
+        
+/*        defaultTable = Titanium.UI.createTableView({
+            
+        });*/
+        
+        peopleListTable = Titanium.UI.createTableView();
+        contentScrollView.add(peopleListTable);
+        peopleListTable.hide();
+    };
     
-    searchField = Titanium.UI.createTextField({
-        height: 30,
-        width: Ti.Platform.displayCaps.platformWidth - 43,
-        clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-        left:38
-    });
-    searchField.addEventListener('return', searchSubmit);
-    titleBar.add(searchField);
+    displaySearchResults = function () {
+        Ti.API.debug("displaySearchResults function called in DirectoryWindowController");
+        _people = directoryProxy.getPeople();
+        if(_people.length > 0) {
+            peopleListTable.show();
+            for (var i=0, iLength=_people.length; i<iLength; i++) {
+                peopleListTable.appendRow(Titanium.UI.createTableViewRow({
+                    title: _people[i].name
+                }));
+            }
+        }
+        else {
+            peopleListTable.hide();
+        }
+    };
+    
+    blurSearch = function () {
+        searchBar.blur();
+    };
+    
+    // Controller Events
+    
+    onSearchSubmit = function(e) {
+        searchBar.blur();
+        Ti.API.info("Directory Search submitted.");
+        directoryProxy.search(searchBar.value);
+    };    
     
     //Proxy events
 
-    proxySearching = function (e) {
+    onProxySearching = function (e) {
         Ti.API.info("Searching...");
     };
-    proxySearchComplete = function (e) {
-        Ti.API.info("Search Complete");
+    
+    onProxySearchComplete = function (e) {
+        Ti.API.info("Directory Search Complete");
+        displaySearchResults();
     };
-    proxySearchError = function (e) {
+    
+    onProxySearchError = function (e) {
         Ti.API.info("Directory Proxy Search Error");
     };
     
-    Titanium.addEventListener('DirectoryProxySearching', proxySearching);
-    Titanium.addEventListener('DirectoryProxySearchComplete',proxySearchComplete);
-    Titanium.addEventListener('DirectoryProxySearchError',proxySearchError);
+    Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
+    Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
+    Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
+    Titanium.App.addEventListener('showWindow', blurSearch);
+    
 
-    Ti.API.info(JSON.stringify(new app.models.DirectoryPersonVO("Jeff",{mail:['jcross@unicon.net'],username:'jeffbcross',"user.login.id":'jeffbcross',displayName:'Jeff Cross'})));
+    self.init();
+
     return self;
 },
 controller = new DirectoryWindowController();

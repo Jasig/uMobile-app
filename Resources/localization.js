@@ -18,5 +18,6 @@ localDictionary.en_US = {
     password: "Password",
     
     //Directory Window
-    directory: "Directory"
+    directory: "Directory",
+    directorySearchHintText: "Search: John Doe, John.Doe@myschool.edu, or 555 555 5555"
 };

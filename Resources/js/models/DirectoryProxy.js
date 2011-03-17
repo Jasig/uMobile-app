@@ -23,18 +23,32 @@ var DirectoryProxy = function (facade,opts) {
         Ti.App.fireEvent('DirectoryProxySearching');
     };
     
-    xhrOnLoad = function () {
+    self.getPeople = function (index) {
+        //If no index is provided, return all people. Otherwise, provide one Person.
+        if(!index) {
+            return people;
+        }
+        else {
+            return people[index];
+        }
+    };
+    
+    xhrOnLoad = function (e) {
+        //When the search is complete, reset the main people array
+        people = [];
+        var _people = JSON.parse(xhr.responseText).people;
+        for (var i=0, iLength=_people.length; i<iLength; i++) {
+            var _person = new app.models.DirectoryPersonVO(_people[i].name,_people[i].attributes);
+            people.push(_person);
+        }
         Ti.App.fireEvent('DirectoryProxySearchComplete');
-        Ti.API.info(xhr.responseText);
     };
     
     xhrOnError = function (e) {
         Ti.App.fireEvent('DirectoryProxySearchError');
     };
     
-    self.getPeople = function () {
-        return people;
-    };
+
     
     init();
     
