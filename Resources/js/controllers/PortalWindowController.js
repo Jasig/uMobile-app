@@ -30,7 +30,10 @@ var win,
     portalGridView,
     createPortalView,
     drawHomeGrid,
+    drawAndroidGrid,
+    drawiOSGrid,
     getShowPortletFunc,
+    getIconUrl,
     pathToRoot = '../../';
 
 win = Titanium.UI.currentWindow;
@@ -119,33 +122,43 @@ var sortPortlets = function(a, b) {
 
 };
 
-drawHomeGrid = function(portlets) {
+getIconUrl = function (p) {
+    var _iconUrl;
     
-    Ti.API.debug("Preparing to add " + portlets.length + " portlets to the home view");
+    if (!p.url && p.iconUrl) {
+        _iconUrl = pathToRoot + p.iconUrl;
+    } 
+    else if (p.iconUrl) {
+        _iconUrl = win.app.UPM.BASE_PORTAL_URL + p.iconUrl;
+    } 
+    else {
+        _iconUrl = win.app.UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
+    }
     
-    portlets.sort(sortPortlets);
+    return _iconUrl;
+};
 
-    for (var i=0, iLength=portlets.length; i<iLength; i++) {
-        
-        var portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
-        
-        portlet = portlets[i];
-        Ti.API.debug("Adding portlet with title " + portlet.title + " to the home view");
-        
+drawAndroidGrid = function (portlets) {
+    for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
+        var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
+        Ti.API.info(JSON.stringify(portlets));
+        _portlet = portlets[i];
+        // Ti.API.debug("Adding portlet with title " + _portlet.title + " to the home view");
+
         var completeWidth = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
         var completeHeight = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
 
         // calculate the appropriate number of columns based on the device
         // width and desired item size
         var numColumns = Math.floor(Ti.Platform.displayCaps.platformWidth / completeWidth);
-        
+
         // calculate extra left padding to add to center the item grid
         var leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
 
         // Calculate the position for this grid item
         top = win.app.UPM.TITLEBAR_HEIGHT + win.app.UPM.HOME_GRID_ITEM_PADDING + Math.floor(i / numColumns) * completeHeight;
         left = leftPadding + win.app.UPM.HOME_GRID_ITEM_PADDING + (i % numColumns) * completeWidth;
-        
+
         // Create the container for the grid item
         gridItem = Titanium.UI.createView({
             top: top,
@@ -153,11 +166,11 @@ drawHomeGrid = function(portlets) {
             height: win.app.UPM.HOME_GRID_ITEM_HEIGHT,
             width: win.app.UPM.HOME_GRID_ITEM_WIDTH
         });
-        
+
         //Add a label to the grid item
         gridItemLabel = Titanium.UI.createLabel({
             textAlign: "center",
-            text: portlet.title.toLowerCase(),
+            text: _portlet.title.toLowerCase(),
             shadowColor: "#fff",
             shadowOffset: { x:0 , y:1 },
             font: { 
@@ -168,26 +181,17 @@ drawHomeGrid = function(portlets) {
             touchEnabled: false
         });
         gridItem.add(gridItemLabel);
-        
-        var iconUrl;
-        if (!portlet.url && portlet.iconUrl) {
-            iconUrl = pathToRoot + portlet.iconUrl;
-        } else if (portlet.iconUrl) {
-            iconUrl = win.app.UPM.BASE_PORTAL_URL + portlet.iconUrl;
-        } else {
-            iconUrl = win.app.UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
-        }
-        
+
         //Add an icon to the grid item
         gridItemIcon = Titanium.UI.createImageView({
-            image: iconUrl,
+            image: getIconUrl(_portlet),
             height: win.app.UPM.HOME_GRID_ICON_HEIGHT,
             width: win.app.UPM.HOME_GRID_ICON_WIDTH
         });
         gridItem.add(gridItemIcon);
-        
+
         // TODO: hook up to actual badge icon service
-        if (portlet.title == 'Blackboard') {
+        if (_portlet.title == 'Blackboard') {
             Ti.API.info("blackboard");
             gridBadgeBackground = Titanium.UI.createImageView({
                 image: "../../icons/badgeBackground.png",
@@ -213,14 +217,101 @@ drawHomeGrid = function(portlets) {
             });
             gridItem.add(gridBadgeNumber);
         }
-        
+
         //Place the item in the scrollview and listen for singletaps
         portalView.add(gridItem);
-        gridItem.addEventListener("singletap", getShowPortletFunc(portlet));
+        gridItem.addEventListener("singletap", getShowPortletFunc(_portlet));
+    }
+};
+
+drawiOSGrid = function (portlets) {
+    var dashboardItems = [], dashboard;
+    
+    //Create the dashboard item to be placed  on the home screen
+    for (var i=0, iLength=portlets.length; i<iLength; i++) {
+        var _portlet, _dashboardItem, _iconContainer;
+        _portlet = portlets[i];
+
+        //Get the icon image for the portlet, or default.
+        _dashboardItem = Titanium.UI.createDashboardItem({
+            canDelete: false
+        });
+
+        _iconContainer = Titanium.UI.createView({
+            width: 70,
+            height: 70,
+            borderRadius: 10,
+            backgroundColor: '#eee',
+            touchEnabled: true
+        });
+        _dashboardItem.add(_iconContainer);
         
+        var _imageView = Titanium.UI.createImageView({
+            image: getIconUrl(_portlet),
+            width: 57,
+            height: 57
+        });
+        _iconContainer.add(_imageView);
+        _dashboardItem.add(Titanium.UI.createLabel({
+            text: _portlet.title.toLowerCase(),
+            textAlign: 'center',
+            top: 45,
+            height: 15,
+            font: {
+                fontSize: 13
+            }
+        }));
+                
+        _dashboardItem.addEventListener("click", function(e){
+            Ti.API.info("DashboardItem clicked");
+            // getShowPortletFunc(_portlet);
+        });
+        
+        dashboardItems.push(_dashboardItem);
+    }
+    
+    //Create the dashboard to layout the dashboard items in the home screen
+    dashboard = Titanium.UI.createDashboardView({
+        backgroundColor: '#fff',
+        height: Ti.Platform.displayCaps.platformHeight - win.app.UPM.TITLEBAR_HEIGHT,
+        top: win.app.UPM.TITLEBAR_HEIGHT,
+        data: dashboardItems
+    });
+    var doneButton = Titanium.UI.createButton({
+        title: win.app.localDictionary.doneEditing,
+        height: 30,
+        width: Ti.Platform.displayCaps.platformWidth - 20,
+        top: Ti.Platform.displayCaps.platformHeight - 100
+    });
+    dashboard.add(doneButton);
+    doneButton.hide();
+    win.add(dashboard);
+    
+    dashboard.addEventListener('edit',function(e){
+        doneButton.show();
+    });
+    dashboard.addEventListener('commit',function(e){
+        doneButton.hide();
+    });
+    doneButton.addEventListener('click',function(e){
+        dashboard.stopEditing();
+    });
+};
+
+drawHomeGrid = function (portlets) {
+    portlets.sort(sortPortlets);
+
+    if (Ti.Platform.osname === ('iphone' || 'ipad')) {
+        // drawiOSGrid(portlets); //Temporarily drawing it the old way until this question is resolved: http://developer.appcelerator.com/question/117405/events-not-working-in-dashboarditem-after-adding-views. 
+        // Can resort to listening for click events on the whole dashboard view, and determining what to do based on the clicksource.
+        drawAndroidGrid(portlets);
+    }
+    else if (Ti.Platform.osname === ('iphone' || 'ipad')) {
+        drawAndroidGrid(portlets);
     }
     win.initialized = true;
 };
+
 
 createPortalView();
 

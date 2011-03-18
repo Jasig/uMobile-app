@@ -7,6 +7,7 @@ localDictionary.en_US = {
     go: "Go",
     update: "Update",
     home: "Home",
+    doneEditing: "Done Editing",
     
     //Map Window & Map Detail Window
     map: "Map",

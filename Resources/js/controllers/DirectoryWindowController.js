@@ -25,7 +25,7 @@
 // library includes
 /*Titanium.include('lib.js');
 Titanium.include('skin.js');*/
-
+Ti.API.info("Directory Window Opened");
 var DirectoryWindowController = function () {
     var win = Titanium.UI.currentWindow,
         app = win.app,
@@ -43,6 +43,7 @@ var DirectoryWindowController = function () {
         displaySearchResults;
         
     self.init = function () {
+        Ti.API.debug("DirectoryWindowController.init()");
         win.backgroundColor = '#fff';
         titleBar = new win.app.views.GenericTitleBar({
             app: app,
@@ -52,17 +53,6 @@ var DirectoryWindowController = function () {
             windowKey: win.key
         });
         win.add(titleBar);
-
-/*        searchField = Titanium.UI.createTextField({
-            height: 30,
-            width: Ti.Platform.displayCaps.platformWidth - 43,
-            clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
-            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-            left:38,
-            hintText: app.localDictionary.directorySearchHintText
-        });
-        searchField.addEventListener('return', onSearchSubmit);
-        titleBar.add(searchField);*/
         
         searchBar = Titanium.UI.createSearchBar({
             top: titleBar.size.height,
@@ -144,4 +134,7 @@ var DirectoryWindowController = function () {
 
     return self;
 },
-controller = new DirectoryWindowController();
+controller;
+if(!controller) {
+    controller = new DirectoryWindowController();
+} 
