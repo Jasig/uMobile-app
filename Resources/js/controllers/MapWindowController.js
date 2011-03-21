@@ -21,7 +21,7 @@
  * map tab.
  */
 
-var MapWindowController = function() {
+(function() {
     var win, 
         self = {},
         mapView, 
@@ -163,12 +163,10 @@ var MapWindowController = function() {
            app: win.app
         });
         locationDetailWin.open();
-
     };
     self.init();
     return self;
-},
-controller = new MapWindowController();
+})();
 
 
 

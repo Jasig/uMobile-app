@@ -56,10 +56,11 @@ Ti.API.info("Directory Window Opened");
         onProxySearching,
         onProxySearchComplete,
         onProxySearchError;
-        
+    
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
         win.backgroundColor = '#fff';
+        win.initialized = true;
         titleBar = new win.app.views.GenericTitleBar({
             app: app,
             title: app.localDictionary.directory,

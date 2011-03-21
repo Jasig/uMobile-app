@@ -1,4 +1,4 @@
-var MapDetailViewController = function () {   
+(function () {   
     var win = Titanium.UI.currentWindow,
         locationDetailTitleBar,
         locationDetailMap,
@@ -64,5 +64,4 @@ var MapDetailViewController = function () {
     };
     
     this.init();
-},
-controller = new MapDetailViewController();
+})();

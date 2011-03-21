@@ -11,13 +11,13 @@ var DirectoryProxy = function (facade,opts) {
     init = function () {
         //Generate the HTTP request to be used each time a search is performed
         xhrSearch = Titanium.Network.createHTTPClient({
-            onload: xhrSearchOnLoad,
-            onerror: xhrSearchOnError
+            onload: onXhrSearchLoad,
+            onerror: onXhrSearchError
         });
     };
     
     self.search = function (query) {
-        xhrSearch.open('GET',app.UPM.DIRECTORY_SERVICE_URL);
+        xhrSearch.open('GET',app.UPM.DIRECTORY_SERVICE_URL + query);
         xhrSearch.send();
         Ti.API.info('Query: ' + app.UPM.DIRECTORY_SERVICE_URL);
         Ti.App.fireEvent('DirectoryProxySearching');
@@ -39,7 +39,7 @@ var DirectoryProxy = function (facade,opts) {
         return app.UPM.directoryContacts;
     };
     
-    xhrSearchOnLoad = function (e) {
+    onXhrSearchLoad = function (e) {
         //When the search is complete, reset the main people array
         people = [];
         var _people = JSON.parse(xhrSearch.responseText).people;
@@ -50,7 +50,7 @@ var DirectoryProxy = function (facade,opts) {
         Ti.App.fireEvent('DirectoryProxySearchComplete');
     };
     
-    xhrSearchOnError = function (e) {
+    onXhrSearchError = function (e) {
         Ti.App.fireEvent('DirectoryProxySearchError');
     };
     

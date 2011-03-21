@@ -33,7 +33,7 @@ UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:808
 // UPM.BASE_PORTAL_URL = 'http://172.16.67.63:8080';
 UPM.PORTAL_CONTEXT = '/uPortal';
 UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/services/mapData.json';
-UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/services/directory-test-data.json';
+UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/api/people.json?searchTerms[]=given&given=';
 
 Titanium.App.Properties.setString('locale','en_US');
 
