@@ -1,5 +1,10 @@
 var DirectoryPersonVO = function (name,attributes) {
     var person = {};
+    
+    //A person has the following attributes:
+    //Required: name
+    //Optional: email (array of email addresses), username, userLoginId, displayName, phone
+    
     person.name = name || '';
     if (attributes.mail) {
         person.email = [];
@@ -15,6 +20,9 @@ var DirectoryPersonVO = function (name,attributes) {
     }
     if (attributes.displayName) {
         person.displayName = attributes.displayName;
+    }
+    if(attributes.phone) {
+        person.phone = attributes.phone;
     }
     return person;
 };

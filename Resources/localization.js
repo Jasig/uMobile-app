@@ -5,6 +5,7 @@ localDictionary.en_US = {
     uMobile: "uMobile",
     search: "Search",
     go: "Go",
+    back: "Back",
     update: "Update",
     home: "Home",
     doneEditing: "Done Editing",
@@ -25,5 +26,6 @@ localDictionary.en_US = {
     directorySearchHintText: "John Doe, Jdoe@myschool.edu, 555 555 5555",
     phoneDirectory: "Phone Directory",
     phoneDirectoryNumber: "(555) 555-5555",
-    emergencyContacts: "Emergency Contacts"
+    emergencyContacts: "Emergency Contacts",
+    contactDetail: "Contact Detail"
 };

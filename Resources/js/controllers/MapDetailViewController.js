@@ -18,7 +18,7 @@
         //Create a back button to be added to the title bar to take the user back to the map
         Ti.API.debug("Creating titleBackButton in MapDetailViewController");
         titleBackButton = Titanium.UI.createButton({
-            title: win.app.localDictionary.map
+            title: win.app.localDictionary.back
         });
         
         Ti.API.debug("adding event listener to titleBackButton in MapDetailViewController");

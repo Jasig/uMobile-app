@@ -23,6 +23,8 @@
  * may differ between deploying institutions.
  */
  
+Ti.include('js/models/DirectoryPersonVO.js');
+
 var UPM = UPM || {};
 
 
@@ -69,16 +71,10 @@ UPM.GLOBAL_STYLES = {
     textFieldGradient: {
         type:'linear',
         colors:['#ccc','#fff']
-    }
+    },
+    windowBackgroundColor: "#fff"
 };
 
-UPM.directoryEmergencyContacts = [
-    {
-        name:"Campus Police",
-        phone: "888 555 5555"
-    },
-    {
-        name:"Campus Ambulance",
-        phone: "888 555 5555"
-    }
-];
+UPM.directoryEmergencyContacts = [];
+UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Police",{phone: '555 555 5555'}));
+UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Ambulance",{phone: '555 555 5555'}));

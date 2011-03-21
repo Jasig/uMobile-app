@@ -44,8 +44,10 @@ Ti.API.info("Directory Window Opened");
         emergencyContactSection,
         phoneDirectorySection,
         phoneDirectoryRow,
+        contactDetailWindow,
         //Methods
         searchSubmit,
+        openContactDetail,
         blurSearch,
         displaySearchResults,
         //Event Handlers
@@ -53,6 +55,7 @@ Ti.API.info("Directory Window Opened");
         onPhoneDirectoryClick,
         onSearchSubmit,
         onSearchChange,
+        onContactRowClick,
         onProxySearching,
         onProxySearchComplete,
         onProxySearchError;
@@ -61,6 +64,8 @@ Ti.API.info("Directory Window Opened");
         Ti.API.debug("DirectoryWindowController.init()");
         win.backgroundColor = '#fff';
         win.initialized = true;
+        
+        //Create a title bar from the generic title bar partial view
         titleBar = new win.app.views.GenericTitleBar({
             app: app,
             title: app.localDictionary.directory,
@@ -70,6 +75,7 @@ Ti.API.info("Directory Window Opened");
         });
         win.add(titleBar);
         
+        //Create and add a search bar at the top of the table to search for contacts
         searchBar = Titanium.UI.createSearchBar({
             top: titleBar.size.height,
             height:50,
@@ -88,13 +94,21 @@ Ti.API.info("Directory Window Opened");
         defaultTableData = [];
         
         //Create a section to display emergency contact numbers
-        emergencyContactSection = Titanium.UI.createTableViewSection();
-        emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
-        var tempEmergencyContactRow = Titanium.UI.createTableViewRow({
-            title: "Hard-coded contact"
-        });
-        emergencyContactSection.add(tempEmergencyContactRow);
-        defaultTableData.push(emergencyContactSection);
+        if(directoryProxy.getEmergencyContacts) {
+            emergencyContactSection = Titanium.UI.createTableViewSection();
+            emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
+            for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
+                var _contact = directoryProxy.getEmergencyContacts()[i],
+                _emergencyContactRow = Titanium.UI.createTableViewRow({
+                    title: _contact.name,
+                    hasChild: true,
+                    data: _contact
+                });
+                emergencyContactSection.add(_emergencyContactRow);
+                _emergencyContactRow.addEventListener('click',onContactRowClick);
+            }
+            defaultTableData.push(emergencyContactSection);            
+        }
         
         //Create the section and one row to display the phone number for the phone directory
         phoneDirectorySection = Titanium.UI.createTableViewSection();
@@ -116,6 +130,15 @@ Ti.API.info("Directory Window Opened");
         peopleListTable.addEventListener('touchstart', blurSearch);
         peopleListTable.addEventListener('move', blurSearch);
         
+        //Create the contact detail window but don't show it yet.
+        contactDetailWindow = Titanium.UI.createWindow({
+            url: win.app.UPM.getResourcePath('/js/controllers/DirectoryDetailController.js'),
+            app: app,
+            key: 'directorydetailcontroller',
+            initialized: false,
+            update: function(){}
+        });
+        
         initialized = true;
     };
     
@@ -128,10 +151,13 @@ Ti.API.info("Directory Window Opened");
         if(_people.length > 0) {
             // peopleListTable.show();
             for (var i=0, iLength=_people.length; i<iLength; i++) {
-                _peopleTableData.push(Titanium.UI.createTableViewRow({
+                var _contactRow = Titanium.UI.createTableViewRow({
                     title: _people[i].name,
-                    hasChild: true
-                }));
+                    hasChild: true,
+                    data: _people[i]
+                });
+                _peopleTableData.push(_contactRow);
+                _contactRow.addEventListener('click',onContactRowClick);
             }
             peopleListTable.setData(_peopleTableData);
         }
@@ -149,12 +175,27 @@ Ti.API.info("Directory Window Opened");
         }
     };
     
+    openContactDetail = function (person) {
+        Ti.API.info("openContactDetail" + JSON.stringify(person));
+        contactDetailWindow.contact = person;
+        if (contactDetailWindow.initialized) {
+            Ti.API.debug('contactDetailWindow is initialized');
+            contactDetailWindow.update(person);
+            contactDetailWindow.show();
+        }
+        else {
+            Ti.API.debug('contactDetailWindow is not initialized');
+            contactDetailWindow.open();
+        }
+
+    };
+    
     blurSearch = function () {
         searchBar.blur();
     };
     
     // Controller Events
-    
+    // Search Events
     onPhoneDirectoryClick = function (e) {
         Ti.API.debug("Clicked the phone directory button");
         Ti.Platform.openURL('tel:' + app.localDictionary.phoneDirectoryNumber);
@@ -175,6 +216,12 @@ Ti.API.info("Directory Window Opened");
             directoryProxy.clear();
             displaySearchResults();
         }
+    };
+    
+    //Contact Events
+    onContactRowClick = function (e) {
+        Ti.API.debug("Contact clicked:" + JSON.stringify(e.source.data));
+        openContactDetail(e.source.data);
     };
     
     //Proxy events

@@ -260,12 +260,7 @@ drawiOSGrid = function (portlets) {
                 fontSize: 13
             }
         }));
-                
-        _dashboardItem.addEventListener("click", function(e){
-            Ti.API.info("DashboardItem clicked");
-            // getShowPortletFunc(_portlet);
-        });
-        
+                        
         dashboardItems.push(_dashboardItem);
     }
     
