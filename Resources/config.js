@@ -71,3 +71,14 @@ UPM.GLOBAL_STYLES = {
         colors:['#ccc','#fff']
     }
 };
+
+UPM.directoryEmergencyContacts = [
+    {
+        name:"Campus Police",
+        phone: "888 555 5555"
+    },
+    {
+        name:"Campus Ambulance",
+        phone: "888 555 5555"
+    }
+];

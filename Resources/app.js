@@ -35,11 +35,13 @@ facade = {
     UPM: UPM,
     localDictionary: localDictionary[Titanium.App.Properties.getString('locale')] //Returns a localized object of all application strings, based on locale property set in config.js.
 };
+
 facade.models = {
     mapService: new MapService(facade),
     directoryProxy: new DirectoryProxy(facade),
     DirectoryPersonVO: DirectoryPersonVO
 };
+
 facade.views = {
     MapDetailTop: MapDetailTop,
     GenericTitleBar: GenericTitleBar
@@ -56,6 +58,7 @@ windows.home = Titanium.UI.createWindow({
     app: facade,
     key: 'home'
 });
+
 windows.home.open();
 
 
@@ -79,7 +82,7 @@ windows.directory = Titanium.UI.createWindow({
     app: facade,
     key: 'directory'
 });
-
+// windows.directory.open();
 
 //
 // MAP VIEW

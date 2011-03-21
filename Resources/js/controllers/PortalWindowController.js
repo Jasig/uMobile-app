@@ -141,7 +141,6 @@ getIconUrl = function (p) {
 drawAndroidGrid = function (portlets) {
     for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
         var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
-        Ti.API.info(JSON.stringify(portlets));
         _portlet = portlets[i];
         // Ti.API.debug("Adding portlet with title " + _portlet.title + " to the home view");
 

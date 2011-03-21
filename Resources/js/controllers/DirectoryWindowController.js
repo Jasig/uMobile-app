@@ -22,25 +22,40 @@
  * user settings tab.
  */
 
-// library includes
-/*Titanium.include('lib.js');
-Titanium.include('skin.js');*/
 Ti.API.info("Directory Window Opened");
-var DirectoryWindowController = function () {
+
+(function () {
     var win = Titanium.UI.currentWindow,
         app = win.app,
         self = {},
         directoryProxy = app.models.directoryProxy,
+        // Data and variables
+        peopleResult = [],
+        defaultTableData,
+        initialized = false,
+        //UI Elements
+        peopleGroup,
         titleBar,
         searchBar,
+        noSearchResultsSection,
+        noSearchResultsRow,
         contentScrollView,
         peopleListTable,
+        emergencyContactSection,
+        phoneDirectorySection,
+        phoneDirectoryRow,
+        //Methods
         searchSubmit,
         blurSearch,
+        displaySearchResults,
+        //Event Handlers
+        onSearchCancel,
+        onPhoneDirectoryClick,
+        onSearchSubmit,
+        onSearchChange,
         onProxySearching,
         onProxySearchComplete,
-        onProxySearchError,
-        displaySearchResults;
+        onProxySearchError;
         
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
@@ -57,43 +72,79 @@ var DirectoryWindowController = function () {
         searchBar = Titanium.UI.createSearchBar({
             top: titleBar.size.height,
             height:50,
-            backgroundGradient: app.UPM.GLOBAL_STYLES.titleBarGradient,
-            clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+            barColor: "#333",
+            // clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+            showCancel: true,
             hintText: app.localDictionary.directorySearchHintText
         });
         win.add(searchBar);
+        searchBar.addEventListener('cancel', onSearchCancel);
         searchBar.addEventListener('return',onSearchSubmit);
-        searchBar.focus();
+        searchBar.addEventListener('change', onSearchChange);
+
+        //Create an array to hold the initial data passed into the Directory
+        //Initial Data includes phone directory and emergency contacts
+        defaultTableData = [];
         
-        contentScrollView = Titanium.UI.createScrollView({
-            top: searchBar.size.height + searchBar.top,
-            height: Ti.Platform.displayCaps.platformHeight - titleBar.height
+        //Create a section to display emergency contact numbers
+        emergencyContactSection = Titanium.UI.createTableViewSection();
+        emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
+        var tempEmergencyContactRow = Titanium.UI.createTableViewRow({
+            title: "Hard-coded contact"
         });
-        win.add(contentScrollView);
-        contentScrollView.addEventListener('touchstart', blurSearch);
+        emergencyContactSection.add(tempEmergencyContactRow);
+        defaultTableData.push(emergencyContactSection);
         
-/*        defaultTable = Titanium.UI.createTableView({
+        //Create the section and one row to display the phone number for the phone directory
+        phoneDirectorySection = Titanium.UI.createTableViewSection();
+        phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
+        phoneDirectoryRow = Titanium.UI.createTableViewRow({
+            title: app.localDictionary.phoneDirectoryNumber
+        });
+        phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
+        phoneDirectorySection.add(phoneDirectoryRow);
+        defaultTableData.push(phoneDirectorySection);
             
-        });*/
+        //Create the main table
+        peopleListTable = Titanium.UI.createTableView({
+            data: defaultTableData,
+            top: searchBar.size.height + searchBar.top,
+            style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+        });
+        win.add(peopleListTable);
+        peopleListTable.addEventListener('touchstart', blurSearch);
+        peopleListTable.addEventListener('move', blurSearch);
         
-        peopleListTable = Titanium.UI.createTableView();
-        contentScrollView.add(peopleListTable);
-        peopleListTable.hide();
+        initialized = true;
     };
     
     displaySearchResults = function () {
-        Ti.API.debug("displaySearchResults function called in DirectoryWindowController");
+        var _peopleTableData = [], _people;
+                
+        //Get array of people from search results from proxy
         _people = directoryProxy.getPeople();
+
         if(_people.length > 0) {
-            peopleListTable.show();
+            // peopleListTable.show();
             for (var i=0, iLength=_people.length; i<iLength; i++) {
-                peopleListTable.appendRow(Titanium.UI.createTableViewRow({
-                    title: _people[i].name
+                _peopleTableData.push(Titanium.UI.createTableViewRow({
+                    title: _people[i].name,
+                    hasChild: true
                 }));
             }
+            peopleListTable.setData(_peopleTableData);
         }
         else {
-            peopleListTable.hide();
+            Ti.API.debug("Not more than 0 results");
+            if(defaultTableData[0].headerTitle != app.localDictionary.noSearchResults) {
+                noSearchResultsSection = Titanium.UI.createTableViewSection();
+                noSearchResultsSection.headerTitle = app.localDictionary.noSearchResults;
+
+                defaultTableData.splice(0,0,noSearchResultsSection);
+                
+                                
+            }
+            peopleListTable.setData(defaultTableData);
         }
     };
     
@@ -103,11 +154,27 @@ var DirectoryWindowController = function () {
     
     // Controller Events
     
+    onPhoneDirectoryClick = function (e) {
+        Ti.API.debug("Clicked the phone directory button");
+        Ti.Platform.openURL('tel:' + app.localDictionary.phoneDirectoryNumber);
+    };
+    
     onSearchSubmit = function(e) {
         searchBar.blur();
-        Ti.API.info("Directory Search submitted.");
         directoryProxy.search(searchBar.value);
-    };    
+    };
+    
+    onSearchCancel = function (e) {
+        directoryProxy.clear();
+        blurSearch();
+        displaySearchResults();
+    };
+    onSearchChange = function (e) {
+        if(searchBar.value == '') {
+            directoryProxy.clear();
+            displaySearchResults();
+        }
+    };
     
     //Proxy events
 
@@ -124,17 +191,15 @@ var DirectoryWindowController = function () {
         Ti.API.info("Directory Proxy Search Error");
     };
     
+    //Listene for events, mostly fired from models.DirectoryProxy
     Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
     Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
     Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
     Titanium.App.addEventListener('showWindow', blurSearch);
     
-
-    self.init();
+    if(initialized === false) {
+        self.init();        
+    }
 
     return self;
-},
-controller;
-if(!controller) {
-    controller = new DirectoryWindowController();
-} 
+})();

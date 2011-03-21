@@ -2,25 +2,28 @@ var DirectoryProxy = function (facade,opts) {
     var app=facade,
         self = {},
         init,
-        xhr,
-        xhrOnLoad,
-        xhrOnError,
+        xhrSearch,
+        xhrSearchOnLoad,
+        xhrSearchOnError,
         person,
         people = [];
 
     init = function () {
         //Generate the HTTP request to be used each time a search is performed
-        xhr = Titanium.Network.createHTTPClient({
-            onload: xhrOnLoad,
-            onerror: xhrOnError
+        xhrSearch = Titanium.Network.createHTTPClient({
+            onload: xhrSearchOnLoad,
+            onerror: xhrSearchOnError
         });
     };
     
     self.search = function (query) {
-        xhr.open('GET',app.UPM.DIRECTORY_SERVICE_URL);
-        xhr.send();
+        xhrSearch.open('GET',app.UPM.DIRECTORY_SERVICE_URL);
+        xhrSearch.send();
         Ti.API.info('Query: ' + app.UPM.DIRECTORY_SERVICE_URL);
         Ti.App.fireEvent('DirectoryProxySearching');
+    };
+    self.clear = function () {
+        people = [];
     };
     
     self.getPeople = function (index) {
@@ -32,11 +35,14 @@ var DirectoryProxy = function (facade,opts) {
             return people[index];
         }
     };
+    self.getEmergencyContacts = function () {
+        return app.UPM.directoryContacts;
+    };
     
-    xhrOnLoad = function (e) {
+    xhrSearchOnLoad = function (e) {
         //When the search is complete, reset the main people array
         people = [];
-        var _people = JSON.parse(xhr.responseText).people;
+        var _people = JSON.parse(xhrSearch.responseText).people;
         for (var i=0, iLength=_people.length; i<iLength; i++) {
             var _person = new app.models.DirectoryPersonVO(_people[i].name,_people[i].attributes);
             people.push(_person);
@@ -44,7 +50,7 @@ var DirectoryProxy = function (facade,opts) {
         Ti.App.fireEvent('DirectoryProxySearchComplete');
     };
     
-    xhrOnError = function (e) {
+    xhrSearchOnError = function (e) {
         Ti.App.fireEvent('DirectoryProxySearchError');
     };
     
