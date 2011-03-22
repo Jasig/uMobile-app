@@ -9,6 +9,8 @@ localDictionary.en_US = {
     update: "Update",
     home: "Home",
     doneEditing: "Done Editing",
+    searching: "Searching",
+    errorPerformingSearch: "There was an error while performing your search request.",
     searchResults: "Search Results",
     noSearchResults: "No Search Results",
     
@@ -26,6 +28,9 @@ localDictionary.en_US = {
     directorySearchHintText: "John Doe, Jdoe@myschool.edu, 555 555 5555",
     phoneDirectory: "Phone Directory",
     phoneDirectoryNumber: "(555) 555-5555",
+    phoneNumber: "Phone Number",
     emergencyContacts: "Emergency Contacts",
-    contactDetail: "Contact Detail"
+    contactDetail: "Contact Detail",
+    emailAddress: "Email Address",
+    emailAddresses: "Email Addresses"
 };

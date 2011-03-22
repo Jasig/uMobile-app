@@ -24,6 +24,7 @@ var DirectoryProxy = function (facade,opts) {
     };
     self.clear = function () {
         people = [];
+        xhrSearch.abort();
     };
     
     self.getPeople = function (index) {

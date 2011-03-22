@@ -139,10 +139,11 @@ getIconUrl = function (p) {
 };
 
 drawAndroidGrid = function (portlets) {
+    Ti.API.debug("Preparing to iterate through portlets in drawAndroidGrid");
     for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
+        Ti.API.debug("Portlet iteration " + i + ", " + portlets[i].title);
         var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
         _portlet = portlets[i];
-        // Ti.API.debug("Adding portlet with title " + _portlet.title + " to the home view");
 
         var completeWidth = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
         var completeHeight = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
@@ -189,6 +190,7 @@ drawAndroidGrid = function (portlets) {
         });
         gridItem.add(gridItemIcon);
 
+        
         // TODO: hook up to actual badge icon service
         if (_portlet.title == 'Blackboard') {
             Ti.API.info("blackboard");
@@ -217,6 +219,7 @@ drawAndroidGrid = function (portlets) {
             gridItem.add(gridBadgeNumber);
         }
 
+        Ti.API.debug("Placing the portlet in the portalView");
         //Place the item in the scrollview and listen for singletaps
         portalView.add(gridItem);
         gridItem.addEventListener("singletap", getShowPortletFunc(_portlet));
@@ -300,7 +303,8 @@ drawHomeGrid = function (portlets) {
         // Can resort to listening for click events on the whole dashboard view, and determining what to do based on the clicksource.
         drawAndroidGrid(portlets);
     }
-    else if (Ti.Platform.osname === ('iphone' || 'ipad')) {
+    else if (Ti.Platform.osname === 'android') {
+        Ti.API.debug('OS is Android, calling drawAndroidGrid');
         drawAndroidGrid(portlets);
     }
     win.initialized = true;
@@ -319,6 +323,7 @@ var getPortletsForUser = function(onload) {
     
     // Runs the function when the data is ready for us to process  
     loader.onload = function() { 
+        Ti.API.debug("Layout data loaded in getPortletsForUser");
         var layout = eval('('+this.responseText+')').layout;
         for (var i = 0; i < win.app.UPM.LOCAL_MODULES.length; i++) {
             layout.push(win.app.UPM.LOCAL_MODULES[i]);

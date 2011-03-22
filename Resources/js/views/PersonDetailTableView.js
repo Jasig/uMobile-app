@@ -1,14 +1,16 @@
-var PersonDetailTableView = function (p, opts) {
-    var self,
+var PersonDetailTableView = function (opts) {
+    var self = Titanium.UI.createTableView(),
         app = opts.app,
-        person = p,
+        person,
         //Event Handlers
         onEmailSelect;
-    
-    self = Titanium.UI.createTableView({
-        top: opts.top || 0,
-        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-    });
+    self.construct = function () {
+        self.top = opts.top || 0;
+        self.backgroundColor = app.UPM.GLOBAL_STYLES.tableBackgroundColor;
+        if (Titanium.Platform.osname === 'iphone') {
+            self.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+        }  
+    };
     
     self.update = function (p) {
         var newData = [],
@@ -56,12 +58,11 @@ var PersonDetailTableView = function (p, opts) {
         Ti.API.debug("checking username");
         if (person.username) {
             usernameSection = Titanium.UI.createTableViewSection({
-                // headerTitle: app.localDictionary.username
-                headerTitle: "Username"
+                headerTitle: app.localDictionary.username
             });
             usernameSection.add(Titanium.UI.createTableViewRow({
-                // title: person.username
-                title: "Username"
+                title: person.username
+                // title: 'username'
             }));
             newData.push(usernameSection);
         }
@@ -70,11 +71,18 @@ var PersonDetailTableView = function (p, opts) {
     };
     
     onEmailSelect = function (e) {
-        var emailDialog = Ti.UI.createEmailDialog({
-            toRecipients: [e.source.title]
-        });
-        emailDialog.open();
+        if(Ti.Platform.osname == 'iphone') {
+            var emailDialog = Ti.UI.createEmailDialog({
+                toRecipients: [e.source.title]
+            });
+            emailDialog.open();
+        }
+        else {
+            Ti.Platform.openURL('mailto:' + e.source.title);            
+        }
     };
+    
+    self.construct();
     
     return self;
 };

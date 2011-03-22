@@ -31,8 +31,8 @@ var UPM = UPM || {};
 // Base url of the portal, which should be of the format
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
 // trailing slash.
-UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-// UPM.BASE_PORTAL_URL = 'http://172.16.67.63:8080';
+// UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+UPM.BASE_PORTAL_URL = 'http://172.16.67.40:8080';
 UPM.PORTAL_CONTEXT = '/uPortal';
 UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/services/mapData.json';
 UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/api/people.json?searchTerms[]=given&given=';
@@ -72,7 +72,14 @@ UPM.GLOBAL_STYLES = {
         type:'linear',
         colors:['#ccc','#fff']
     },
-    windowBackgroundColor: "#fff"
+    primaryBarColor: "#000",
+    secondaryBarColor: "#333",
+    windowBackgroundColor: "#fff",
+    tableBackgroundColor: "#fff",
+    // detailTopBackgroundColor is used in backgrounds of the header of detail views of content such as directory contacts and map locations.
+    detailTopBackgroundColor: "#333",
+    // detailTopTitleColor is used for the text color of the header of detail views of content such as directory contacts and map locations.
+    detailTopTitleColor: "#fff"
 };
 
 UPM.directoryEmergencyContacts = [];

@@ -1,12 +1,11 @@
-(function(){
-    var win =Ti.UI.currentWindow,
-        app = win.app,
-        self = {},
-        contact = win.contact, //Should be a DirectoryPersonVO object
+var DirectoryDetailController = function (facade) {
+    var app = facade,
+        self = Titanium.UI.createView(),
         //UI Components
         titleBar,
         nameLabel,
         phoneLabel,
+        attributeTable,
         //Methods
         updateValues,
         //Controller Event Handlers
@@ -15,78 +14,56 @@
         onWinHide,
         onWinClose;
     
-    self.init = function () {
+    self.construct = function () {
         Ti.API.debug("Initializing DirectoryDetailController");
-        win.backgroundColor = app.UPM.GLOBAL_STYLES.windowBackgroundColor;
-        win.initialized = true;
-        win.addEventListener('focus',onWinShow);
-        win.addEventListener('hide',onWinHide);
-        win.addEventListener('close',onWinClose);
-        
-        win.update = updateValues;
+        self.backgroundColor = app.UPM.GLOBAL_STYLES.detailTopBackgroundColor;
+        self.initialized = true;
+        self.update = updateValues;
         
         titleBackButton = Titanium.UI.createButton({
-            title: win.app.localDictionary.back
+            title: app.localDictionary.back
         });
 
         titleBackButton.addEventListener("click",function(e){
-            win.hide();
+            self.hide();
         });
         //Create a title bar with generic title, plus a button to go back to the directory.
         titleBar = new app.views.GenericTitleBar({
-            key: win.key,
+            key: 'directory',
             app: app,
             title: app.localDictionary.contactDetail,
             backButton: titleBackButton
         });
-        win.add(titleBar);
+        self.add(titleBar);
 
         nameLabel = Titanium.UI.createLabel({
-            top: app.UPM.TITLEBAR_HEIGHT + 10,
-            height: 24,
+            top: app.UPM.TITLEBAR_HEIGHT,
+            left: 10,
+            height: 85,
+            color: app.UPM.GLOBAL_STYLES.detailTopTitleColor,
             font: {
                 fontSize: 24,
                 fontWeight: 'bold'
             }
         });
-        win.add(nameLabel);
-
-        phoneLabel = Titanium.UI.createLabel({
-            height: 24,
-            top: 100,
-            font: {
-                fontSize: 24
-            }
+        self.add(nameLabel);
+        
+        attributeTable = new app.views.PersonDetailTableView({
+            app: app,
+            top: 125
         });
-        win.add(phoneLabel);
-        updateValues(win.contact);
-
+        self.add(attributeTable);
     };
     
-    updateValues = function (person) {
-        Ti.API.info("Updating values..." + JSON.stringify(person));
-        if(person.phone){
-            phoneLabel.text = person.phone;
-            phoneLabel.show();
-        }
-        else {
-            phoneLabel.hide();
-        }
+    updateValues = function (person) {        
+        Ti.API.info("updateValues: " + JSON.stringify(person));
         nameLabel.text = person.name;
+        attributeTable.update(person);
     };
 
-    onWinShow = function (e) {
-        //TODO: remove if not needed
-        Ti.API.info("onWinShow in DirectoryDetailController");
-    };
-    onWinHide = function (e) {
-        phoneLabel.text = '';
-    };
-    onWinClose = function (e) {
-        //TODO: remove if not needed
-    };
-
-    if (!win.initialized) {
-        self.init();
+    if (!self.initialized) {
+        self.construct();
     }
-})();
+    
+    return self;
+};

@@ -33,6 +33,7 @@ Ti.API.info("Directory Window Opened");
         peopleResult = [],
         defaultTableData,
         initialized = false,
+        viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
         //UI Elements
         peopleGroup,
         titleBar,
@@ -44,7 +45,8 @@ Ti.API.info("Directory Window Opened");
         emergencyContactSection,
         phoneDirectorySection,
         phoneDirectoryRow,
-        contactDetailWindow,
+        contactDetailView,
+        activityIndicator,
         //Methods
         searchSubmit,
         openContactDetail,
@@ -62,8 +64,9 @@ Ti.API.info("Directory Window Opened");
     
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
-        win.backgroundColor = '#fff';
+        win.backgroundColor = app.UPM.GLOBAL_STYLES.windowBackgroundColor;
         win.initialized = true;
+        viewBottom = 0;
         
         //Create a title bar from the generic title bar partial view
         titleBar = new win.app.views.GenericTitleBar({
@@ -74,17 +77,20 @@ Ti.API.info("Directory Window Opened");
             windowKey: win.key
         });
         win.add(titleBar);
+        viewBottom += app.UPM.TITLEBAR_HEIGHT;
+
         
         //Create and add a search bar at the top of the table to search for contacts
         searchBar = Titanium.UI.createSearchBar({
-            top: titleBar.size.height,
+            top: viewBottom,
             height:50,
-            barColor: "#333",
-            // clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ALWAYS,
+            barColor: app.UPM.GLOBAL_STYLES.secondaryBarColor,
             showCancel: true,
             hintText: app.localDictionary.directorySearchHintText
         });
         win.add(searchBar);
+        viewBottom += 50;
+        
         searchBar.addEventListener('cancel', onSearchCancel);
         searchBar.addEventListener('return',onSearchSubmit);
         searchBar.addEventListener('change', onSearchChange);
@@ -123,21 +129,28 @@ Ti.API.info("Directory Window Opened");
         //Create the main table
         peopleListTable = Titanium.UI.createTableView({
             data: defaultTableData,
-            top: searchBar.size.height + searchBar.top,
-            style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+            top: viewBottom
         });
+        if (Titanium.Platform.osname === 'iphone') {
+            peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+        }
         win.add(peopleListTable);
         peopleListTable.addEventListener('touchstart', blurSearch);
         peopleListTable.addEventListener('move', blurSearch);
         
-        //Create the contact detail window but don't show it yet.
-        contactDetailWindow = Titanium.UI.createWindow({
-            url: win.app.UPM.getResourcePath('/js/controllers/DirectoryDetailController.js'),
-            app: app,
-            key: 'directorydetailcontroller',
-            initialized: false,
-            update: function(){}
+        //Create the contact detail view but don't show it yet.
+        contactDetailView = new app.controllers.DirectoryDetailController(app);
+        contactDetailView.top = 0;
+        contactDetailView.height = Ti.Platform.displayCaps.platformHeight;
+        contactDetailView.width = Ti.Platform.displayCaps.platformWidth;
+        win.add(contactDetailView);
+        contactDetailView.hide();
+        
+        activityIndicator = Titanium.UI.createActivityIndicator({
+            height:50,
+            width: 100
         });
+        win.add(activityIndicator);
         
         initialized = true;
     };
@@ -176,18 +189,10 @@ Ti.API.info("Directory Window Opened");
     };
     
     openContactDetail = function (person) {
-        Ti.API.info("openContactDetail" + JSON.stringify(person));
-        contactDetailWindow.contact = person;
-        if (contactDetailWindow.initialized) {
-            Ti.API.debug('contactDetailWindow is initialized');
-            contactDetailWindow.update(person);
-            contactDetailWindow.show();
-        }
-        else {
-            Ti.API.debug('contactDetailWindow is not initialized');
-            contactDetailWindow.open();
-        }
-
+        Ti.API.debug('openContactDetail called in DirectoryWindowController');
+        activityIndicator.hide();
+        contactDetailView.update(person);
+        contactDetailView.show();
     };
     
     blurSearch = function () {
@@ -210,6 +215,7 @@ Ti.API.info("Directory Window Opened");
         directoryProxy.clear();
         blurSearch();
         displaySearchResults();
+        activityIndicator.hide();
     };
     onSearchChange = function (e) {
         if(searchBar.value == '') {
@@ -227,15 +233,22 @@ Ti.API.info("Directory Window Opened");
     //Proxy events
 
     onProxySearching = function (e) {
+        activityIndicator.message = app.localDictionary.searching + '...';
+        activityIndicator.show();
         Ti.API.info("Searching...");
     };
     
     onProxySearchComplete = function (e) {
+        activityIndicator.hide();
         Ti.API.info("Directory Search Complete");
         displaySearchResults();
     };
     
     onProxySearchError = function (e) {
+        activityIndicator.message = app.localDictionary.errorPerformingSearch;
+        t = setTimeout(function() {
+            activityIndicator.hide();
+            },1000);
         Ti.API.info("Directory Proxy Search Error");
     };
     

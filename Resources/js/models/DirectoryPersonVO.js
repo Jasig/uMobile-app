@@ -1,4 +1,4 @@
-var DirectoryPersonVO = function (name,attributes) {
+var DirectoryPersonVO = function (name, attributes) {
     var person = {};
     
     //A person has the following attributes:
@@ -13,7 +13,16 @@ var DirectoryPersonVO = function (name,attributes) {
         }
     }
     if (attributes.username) {
-        person.username = attributes.username;
+        if(typeof attributes.username == 'string') {
+            person.username = attributes.username;
+        }
+        else if (typeof attributes.username == 'object') {
+            person.username = attributes.username[0];
+        }
+        else {
+            Ti.API.debug("User's username didn't match any type." + JSON.stringify(attributes.username) + ', ' + typeof attributes.username);
+        }
+
     }
     if (attributes['user.login.id']) {
         person.userLoginId = attributes['user.login.id'];

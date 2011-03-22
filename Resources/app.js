@@ -27,6 +27,8 @@ Titanium.include('js/models/DirectoryPersonVO.js');
 Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/MapDetailTop.js');
+Titanium.include('js/views/PersonDetailTableView.js');
+Titanium.include('js/controllers/DirectoryDetailController.js');
 
 var windows = {},
     facade = {};
@@ -44,7 +46,12 @@ facade.models = {
 
 facade.views = {
     MapDetailTop: MapDetailTop,
-    GenericTitleBar: GenericTitleBar
+    GenericTitleBar: GenericTitleBar,
+    PersonDetailTableView: PersonDetailTableView
+};
+
+facade.controllers = {
+    DirectoryDetailController: DirectoryDetailController
 };
 
 Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
