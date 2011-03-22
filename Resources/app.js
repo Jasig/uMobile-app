@@ -26,6 +26,7 @@ Titanium.include('js/models/MapProxy.js');
 Titanium.include('js/models/DirectoryPersonVO.js');
 Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/views/GenericTitleBar.js');
+Titanium.include('js/views/GlobalActivityIndicator.js');
 Titanium.include('js/views/MapDetailTop.js');
 Titanium.include('js/views/PersonDetailTableView.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
@@ -47,7 +48,8 @@ facade.models = {
 facade.views = {
     MapDetailTop: MapDetailTop,
     GenericTitleBar: GenericTitleBar,
-    PersonDetailTableView: PersonDetailTableView
+    PersonDetailTableView: PersonDetailTableView,
+    GlobalActivityIndicator: new GlobalActivityIndicator(facade)
 };
 
 facade.controllers = {
@@ -87,7 +89,8 @@ windows.directory = Titanium.UI.createWindow({
     url: 'js/controllers/DirectoryWindowController.js',
     title: facade.localDictionary.directory,
     app: facade,
-    key: 'directory'
+    key: 'directory',
+    id: 'directoryWindowController'
 });
 // windows.directory.open();
 

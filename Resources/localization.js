@@ -13,6 +13,7 @@ localDictionary.en_US = {
     errorPerformingSearch: "There was an error while performing your search request.",
     searchResults: "Search Results",
     noSearchResults: "No Search Results",
+    activityIndicatorMessage: "Loading...",
     
     //Map Window & Map Detail Window
     map: "Map",

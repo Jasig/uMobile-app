@@ -1,6 +1,6 @@
 var DirectoryDetailController = function (facade) {
     var app = facade,
-        self = Titanium.UI.createView(),
+        self = Titanium.UI.createView({visible:false}),
         //UI Components
         titleBar,
         nameLabel,
@@ -21,7 +21,8 @@ var DirectoryDetailController = function (facade) {
         self.update = updateValues;
         
         titleBackButton = Titanium.UI.createButton({
-            title: app.localDictionary.back
+            title: app.localDictionary.back,
+            className: 'titleBarButton'
         });
 
         titleBackButton.addEventListener("click",function(e){

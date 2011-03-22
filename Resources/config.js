@@ -79,7 +79,11 @@ UPM.GLOBAL_STYLES = {
     // detailTopBackgroundColor is used in backgrounds of the header of detail views of content such as directory contacts and map locations.
     detailTopBackgroundColor: "#333",
     // detailTopTitleColor is used for the text color of the header of detail views of content such as directory contacts and map locations.
-    detailTopTitleColor: "#fff"
+    detailTopTitleColor: "#fff",
+
+    //Activity Indicator Attributes
+    activityIndicatorColor: "#fff",
+    activityIndicatorBackgroundImage: 'images/bgActivityIndicator.png'
 };
 
 UPM.directoryEmergencyContacts = [];

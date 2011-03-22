@@ -8,21 +8,19 @@ var GenericTitleBar = function (opts) {
         homeButton,
         settingsButton,
         titleBar = Titanium.UI.createView({
-            top: opts.top || 0,
-            left: opts.left || 0,
-            height: opts.height || opts.app.UPM.TITLEBAR_HEIGHT,
+            // top: opts.top || 0,
+            // left: opts.left || 0,
+            // height: opts.height || opts.app.UPM.TITLEBAR_HEIGHT,
             width: Titanium.Platform.displayCaps.platformWidth,
-            backgroundColor: "#000",
-            backgroundGradient: opts.app.UPM.GLOBAL_STYLES.titleBarGradient
+            // backgroundGradient: opts.app.UPM.GLOBAL_STYLES.titleBarGradient,
+            className: 'titleBar'
         });
     if (opts.title) {
         //Places the title in the center of the titlebar...
         
         title = Titanium.UI.createLabel({
-            textAlign: "center",
             text: opts.title,
-            color: "#fff",
-            font: { fontWeight: "bold" }
+            className: 'titleBarLabel'
         });
         titleBar.add(title);
     }
@@ -31,20 +29,6 @@ var GenericTitleBar = function (opts) {
         //Expects a view object.
         //There should only be either a home button or backbutton, not both.
         backButton = opts.backButton;
-        backButton.left = 10;
-        backButton.width = 50;
-        backButton.height = 30;
-        
-        //TODO: These styles should be moved into JSS
-        backButton.style = 0;
-        backButton.color = "#fff";
-        backButton.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarButtonGradient;
-        backButton.borderWidth = 1;
-        backButton.borderRadius = 5;
-        backButton.borderColor = "#000";
-        backButton.font = {
-            fontSize: 14
-        };
         titleBar.add(backButton);
         
         //Manually add gradient changes for button toggle

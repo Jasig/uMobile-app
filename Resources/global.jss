@@ -1,7 +1,0 @@
-titleBar {
-	
-}
-
-win {
-	backgroundColor: '#fff';
-}

@@ -95,6 +95,8 @@ Ti.API.info("Directory Window Opened");
         searchBar.addEventListener('return',onSearchSubmit);
         searchBar.addEventListener('change', onSearchChange);
 
+        
+
         //Create an array to hold the initial data passed into the Directory
         //Initial Data includes phone directory and emergency contacts
         defaultTableData = [];
@@ -144,12 +146,11 @@ Ti.API.info("Directory Window Opened");
         contactDetailView.height = Ti.Platform.displayCaps.platformHeight;
         contactDetailView.width = Ti.Platform.displayCaps.platformWidth;
         win.add(contactDetailView);
-        contactDetailView.hide();
-        
-        activityIndicator = Titanium.UI.createActivityIndicator({
-            height:50,
-            width: 100
-        });
+
+        activityIndicator = app.views.GlobalActivityIndicator;
+        activityIndicator.resetDimensions();
+        activityIndicator.height = Ti.Platform.displayCaps.platformHeight - viewBottom;
+        activityIndicator.top = viewBottom;
         win.add(activityIndicator);
         
         initialized = true;
@@ -181,8 +182,6 @@ Ti.API.info("Directory Window Opened");
                 noSearchResultsSection.headerTitle = app.localDictionary.noSearchResults;
 
                 defaultTableData.splice(0,0,noSearchResultsSection);
-                
-                                
             }
             peopleListTable.setData(defaultTableData);
         }
@@ -210,7 +209,7 @@ Ti.API.info("Directory Window Opened");
         searchBar.blur();
         directoryProxy.search(searchBar.value);
     };
-    
+
     onSearchCancel = function (e) {
         directoryProxy.clear();
         blurSearch();
@@ -248,7 +247,7 @@ Ti.API.info("Directory Window Opened");
         activityIndicator.message = app.localDictionary.errorPerformingSearch;
         t = setTimeout(function() {
             activityIndicator.hide();
-            },1000);
+            },3000);
         Ti.API.info("Directory Proxy Search Error");
     };
     
