@@ -1,0 +1,80 @@
+var PersonDetailTableView = function (p, opts) {
+    var self,
+        app = opts.app,
+        person = p,
+        //Event Handlers
+        onEmailSelect;
+    
+    self = Titanium.UI.createTableView({
+        top: opts.top || 0,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    });
+    
+    self.update = function (p) {
+        var newData = [],
+            emailSection,
+            emailSectionTitle,
+            phoneSection,
+            usernameSection;
+            
+        self.data = [];
+        person = p;
+        
+        Ti.API.debug("checking user's email");
+        if (person.email && person.email.length > 0) {
+            if(person.email.length > 1) {
+                emailSectionTitle = app.localDictionary.emailAddresses;
+            }
+            else {
+                emailSectionTitle = app.localDictionary.emailAddress;
+            }
+            emailSection = Titanium.UI.createTableViewSection({
+                headerTitle: emailSectionTitle
+            });
+            for (var e=0,eLength=person.email.length; e<eLength; e++) {
+                _row = Titanium.UI.createTableViewRow({
+                    title: person.email[e]
+                });
+                emailSection.add(_row);
+                _row.addEventListener('click',onEmailSelect);
+                
+            }
+            newData.push(emailSection);
+        }
+        
+        Ti.API.debug("checking phone");
+        if (person.phone) {
+            phoneSection = Titanium.UI.createTableViewSection({
+                headerTitle: app.localDictionary.phoneNumber
+            });
+            phoneSection.add(Titanium.UI.createTableViewRow({
+                title: person.phone
+            }));
+            newData.push(phoneSection);
+        }
+        
+        Ti.API.debug("checking username");
+        if (person.username) {
+            usernameSection = Titanium.UI.createTableViewSection({
+                // headerTitle: app.localDictionary.username
+                headerTitle: "Username"
+            });
+            usernameSection.add(Titanium.UI.createTableViewRow({
+                // title: person.username
+                title: "Username"
+            }));
+            newData.push(usernameSection);
+        }
+        
+        self.data = newData;
+    };
+    
+    onEmailSelect = function (e) {
+        var emailDialog = Ti.UI.createEmailDialog({
+            toRecipients: [e.source.title]
+        });
+        emailDialog.open();
+    };
+    
+    return self;
+};
