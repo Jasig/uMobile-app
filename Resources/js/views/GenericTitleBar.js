@@ -7,21 +7,12 @@ var GenericTitleBar = function (opts) {
         backButton,
         homeButton,
         settingsButton,
-        titleBar = Titanium.UI.createView({
-            // top: opts.top || 0,
-            // left: opts.left || 0,
-            // height: opts.height || opts.app.UPM.TITLEBAR_HEIGHT,
-            width: Titanium.Platform.displayCaps.platformWidth,
-            // backgroundGradient: opts.app.UPM.GLOBAL_STYLES.titleBarGradient,
-            className: 'titleBar'
-        });
+        titleBar = Titanium.UI.createView(opts.app.styles.titleBar),
+        labelStyle = opts.app.styles.titleBarLabel;
     if (opts.title) {
         //Places the title in the center of the titlebar...
-        
-        title = Titanium.UI.createLabel({
-            text: opts.title,
-            className: 'titleBarLabel'
-        });
+        labelStyle.text = opts.title;
+        title = Titanium.UI.createLabel(labelStyle);
         titleBar.add(title);
     }
     if (opts.backButton) {
@@ -42,12 +33,7 @@ var GenericTitleBar = function (opts) {
     if (opts.homeButton && !opts.backButton) {
         //Expects homeButton to be a boolean indicating whether or not to show the home button
         //There shouldn't be a home button and back button, as then the bar just gets too cluttered. Back button wins in a fight.
-        homeButton = Titanium.UI.createImageView({
-            image: opts.app.UPM.getResourcePath("icons/tab-home.png"),
-            width: 18,
-            height: 18,
-            left: 10
-        });
+        homeButton = Titanium.UI.createImageView(opts.app.styles.titleBarHomeButton);
         titleBar.add(homeButton);
         
         homeButton.addEventListener('singletap', function() {
@@ -62,12 +48,7 @@ var GenericTitleBar = function (opts) {
     }
     if (opts.settingsButton) {
         //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
-        settingsButton = Titanium.UI.createImageView({
-    	    height: 18,
-    	    width: 18,
-    	    image: opts.app.UPM.getResourcePath("icons/tab-settings.png"),
-    	    left: Ti.Platform.displayCaps.platformWidth - 28
-    	});
+        settingsButton = Titanium.UI.createImageView(opts.app.styles.titleBarSettingsButton);
     	titleBar.add(settingsButton);
     	
     	settingsButton.addEventListener('singletap', function (e) {

@@ -21,6 +21,7 @@
 Titanium.include('config.js');
 Titanium.include('lib.js');
 Titanium.include('skin.js');
+Titanium.include('style.js');
 Titanium.include('localization.js');
 Titanium.include('js/models/MapProxy.js');
 Titanium.include('js/models/DirectoryPersonVO.js');
@@ -32,11 +33,12 @@ Titanium.include('js/views/PersonDetailTableView.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
 
 var windows = {},
-    facade = {};
+    facade;
     
 facade = {
     UPM: UPM,
-    localDictionary: localDictionary[Titanium.App.Properties.getString('locale')] //Returns a localized object of all application strings, based on locale property set in config.js.
+    localDictionary: localDictionary[Titanium.App.Properties.getString('locale')], //Returns a localized object of all application strings, based on locale property set in config.js.
+    styles: styles
 };
 
 facade.models = {
