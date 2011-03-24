@@ -23,12 +23,12 @@ var GenericTitleBar = function (opts) {
         titleBar.add(backButton);
         
         //Manually add gradient changes for button toggle
-        backButton.addEventListener("touchstart",function(e){
+        /*backButton.addEventListener("touchstart",function(e){
             e.source.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarGradient;
         });
         backButton.addEventListener("touchend",function(e){
             e.source.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarButtonGradient;
-        });
+        });*/
     }
     if (opts.homeButton && !opts.backButton) {
         //Expects homeButton to be a boolean indicating whether or not to show the home button

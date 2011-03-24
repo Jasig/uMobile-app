@@ -34,6 +34,8 @@ Ti.API.info("Directory Window Opened");
         defaultTableData,
         initialized = false,
         viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
+        contactDetailViewOptions,
+        searchBarOptions,
         //UI Elements
         peopleGroup,
         titleBar,
@@ -79,17 +81,13 @@ Ti.API.info("Directory Window Opened");
         win.add(titleBar);
         viewBottom += app.UPM.TITLEBAR_HEIGHT;
 
-        
+        searchBarOptions = app.styles.searchBar;
+        searchBarOptions.top = viewBottom;
+        searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
         //Create and add a search bar at the top of the table to search for contacts
-        searchBar = Titanium.UI.createSearchBar({
-            top: viewBottom,
-            height:50,
-            barColor: app.UPM.GLOBAL_STYLES.secondaryBarColor,
-            showCancel: true,
-            hintText: app.localDictionary.directorySearchHintText
-        });
+        searchBar = Titanium.UI.createSearchBar(searchBarOptions);
         win.add(searchBar);
-        viewBottom += 50;
+        viewBottom += searchBarOptions.height;
         
         searchBar.addEventListener('cancel', onSearchCancel);
         searchBar.addEventListener('return',onSearchSubmit);
@@ -141,11 +139,10 @@ Ti.API.info("Directory Window Opened");
         peopleListTable.addEventListener('move', blurSearch);
         
         //Create the contact detail view but don't show it yet.
-        contactDetailView = new app.controllers.DirectoryDetailController(app);
-        contactDetailView.top = 0;
-        contactDetailView.height = Ti.Platform.displayCaps.platformHeight;
-        contactDetailView.width = Ti.Platform.displayCaps.platformWidth;
+        contactDetailViewOptions = app.styles.contactDetailView;
+        contactDetailView = new app.controllers.DirectoryDetailController(app,contactDetailViewOptions);
         win.add(contactDetailView);
+        Ti.API.debug('created contactDetailView' + contactDetailView);
 
         activityIndicator = app.views.GlobalActivityIndicator;
         activityIndicator.resetDimensions();
@@ -189,6 +186,8 @@ Ti.API.info("Directory Window Opened");
     
     openContactDetail = function (person) {
         Ti.API.debug('openContactDetail called in DirectoryWindowController');
+        Ti.API.debug(contactDetailView);
+        Ti.API.debug(person);
         activityIndicator.hide();
         contactDetailView.update(person);
         contactDetailView.show();

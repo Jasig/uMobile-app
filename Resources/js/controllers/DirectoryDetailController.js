@@ -1,6 +1,6 @@
-var DirectoryDetailController = function (facade) {
+var DirectoryDetailController = function (facade,opts) {
     var app = facade,
-        self = Titanium.UI.createView({visible:false}),
+        self = Titanium.UI.createView(opts),
         //UI Components
         titleBar,
         nameLabel,
@@ -15,15 +15,14 @@ var DirectoryDetailController = function (facade) {
         onWinClose;
     
     self.construct = function () {
-        Ti.API.debug("Initializing DirectoryDetailController");
-        self.backgroundColor = app.UPM.GLOBAL_STYLES.detailTopBackgroundColor;
+        Ti.API.debug('DirectoryDetailController constructed');
+        var titleBackButtonOpts;
         self.initialized = true;
         self.update = updateValues;
         
-        titleBackButton = Titanium.UI.createButton({
-            title: app.localDictionary.back,
-            className: 'titleBarButton'
-        });
+        titleBackButtonOpts = app.styles.titleBarButton;
+        titleBackButtonOpts.title = app.localDictionary.back;
+        titleBackButton = Titanium.UI.createButton(titleBackButtonOpts);
 
         titleBackButton.addEventListener("click",function(e){
             self.hide();
@@ -37,22 +36,10 @@ var DirectoryDetailController = function (facade) {
         });
         self.add(titleBar);
 
-        nameLabel = Titanium.UI.createLabel({
-            top: app.UPM.TITLEBAR_HEIGHT,
-            left: 10,
-            height: 85,
-            color: app.UPM.GLOBAL_STYLES.detailTopTitleColor,
-            font: {
-                fontSize: 24,
-                fontWeight: 'bold'
-            }
-        });
+        nameLabel = Titanium.UI.createLabel(app.styles.directoryDetailNameLabel);
         self.add(nameLabel);
         
-        attributeTable = new app.views.PersonDetailTableView({
-            app: app,
-            top: 125
-        });
+        attributeTable = new app.views.PersonDetailTableView(app,app.styles.directoryDetailAttributeTable);
         self.add(attributeTable);
     };
     
@@ -63,6 +50,7 @@ var DirectoryDetailController = function (facade) {
     };
 
     if (!self.initialized) {
+        Ti.API.debug("initializing DirectoryDetailController");
         self.construct();
     }
     

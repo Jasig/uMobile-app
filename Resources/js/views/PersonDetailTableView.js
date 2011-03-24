@@ -1,6 +1,6 @@
-var PersonDetailTableView = function (opts) {
+var PersonDetailTableView = function (facade,opts) {
     var self = Titanium.UI.createTableView(),
-        app = opts.app,
+        app = facade,
         person,
         //Event Handlers
         onEmailSelect;
@@ -81,7 +81,6 @@ var PersonDetailTableView = function (opts) {
             Ti.Platform.openURL('mailto:' + e.source.title);            
         }
     };
-    
     self.construct();
     
     return self;
