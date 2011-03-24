@@ -30,7 +30,9 @@ Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/GlobalActivityIndicator.js');
 Titanium.include('js/views/MapDetailTop.js');
 Titanium.include('js/views/PersonDetailTableView.js');
+Titanium.include('js/views/SecondaryNavBar.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
+Titanium.include('js/controllers/MapDetailViewController.js');
 
 var windows = {},
     facade;
@@ -51,11 +53,13 @@ facade.views = {
     MapDetailTop: MapDetailTop,
     GenericTitleBar: GenericTitleBar,
     PersonDetailTableView: PersonDetailTableView,
-    GlobalActivityIndicator: new GlobalActivityIndicator(facade)
+    GlobalActivityIndicator: new GlobalActivityIndicator(facade),
+    SecondaryNavBar: SecondaryNavBar
 };
 
 facade.controllers = {
-    DirectoryDetailController: DirectoryDetailController
+    DirectoryDetailController: DirectoryDetailController,
+    MapDetailViewController: MapDetailViewController
 };
 
 Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);

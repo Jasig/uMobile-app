@@ -9,12 +9,16 @@ var GenericTitleBar = function (opts) {
         settingsButton,
         titleBar = Titanium.UI.createView(opts.app.styles.titleBar),
         labelStyle = opts.app.styles.titleBarLabel;
+        
     if (opts.title) {
         //Places the title in the center of the titlebar...
         labelStyle.text = opts.title;
         title = Titanium.UI.createLabel(labelStyle);
         titleBar.add(title);
     }
+    titleBar.updateTitle = function (t) {
+        title.text = t;
+    };
     if (opts.backButton) {
         //This adds a button at the left of the title bar, presumably to go back to a previous view. Not limited to that, as there are no event listeners added here.
         //Expects a view object.

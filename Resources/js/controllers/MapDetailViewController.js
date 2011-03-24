@@ -1,67 +1,88 @@
-(function () {   
-    var win = Titanium.UI.currentWindow,
+var MapDetailViewController = function (facade,opts) {   
+    var app = facade,
+        self = Titanium.UI.createView(app.styles.view),
+        locationData = opts.data,
         locationDetailTitleBar,
         locationDetailMap,
         locationDetail,
-        locationPhotos,
-        titleBackButton;
-    this.init = function () {
-        //Create a scrollable view to contain the contents of the detail view
+        locationPhotoOptions = {},
+        locationPhoto,
+        titleBackButton,
+        topDetailView;
         
-        Ti.API.debug("Creating locationDetailScroll in MapDetailViewController");
-        locationDetailScroll = Titanium.UI.createScrollView({
-            // contentWidth:'auto',
-            // contentHeight:50
-        });
-        win.add(locationDetailScroll);
-        
+    init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
         Ti.API.debug("Creating titleBackButton in MapDetailViewController");
-        titleBackButton = Titanium.UI.createButton({
-            title: win.app.localDictionary.back
-        });
+        titleBackButtonOptions = app.styles.secondaryNavBarButton;
+        titleBackButtonOptions.title = app.localDictionary.back;
+        titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
         
         Ti.API.debug("adding event listener to titleBackButton in MapDetailViewController");
         titleBackButton.addEventListener("click",function(e){
-            win.close();
+            self.hide();
         });
-
-        Ti.API.debug("Creating locationDetailTitleBar in MapDetailViewController");
-        //Create the title bar for the top of the detail view
-        locationDetailTitleBar = new win.app.views.GenericTitleBar({
-            title: win.data.title,
-            settingsButton: true,
-            backButton: titleBackButton,
-            app: win.app
-        });
-        locationDetailScroll.add(locationDetailTitleBar);
-
-        Ti.API.debug("Creating topDetailView in MapDetailViewController");
-        //Create the top area of the detail view, containing the map icon, address, and directions link.
-        topDetailView = new win.app.views.MapDetailTop({
-            details: win.data,
-            app: win.app,
-            top: 50
-        });
-        locationDetailScroll.add(topDetailView);
         
-        //Display a photo of the location, if one is available.
-        if(win.data.img){
-            Ti.API.info(win.data.img);
-            locationPhoto = Titanium.UI.createImageView({
-                image: win.data.img.replace(/\/thumbnail\//,'/photo/'),
-                width: Titanium.Platform.displayCaps.platformWidth - 20,
-                height:225,
-                left: 10,
-                top: topDetailView.size.height + topDetailView.top + 100,
-                backgroundColor: "#eee",
-                borderRadius: 10,
-                borderWidth: 10,
-                borderColor: "#eee"
-            });
-            locationDetailScroll.add(locationPhoto);
-        }
+        showTitleBar();
+        showTop();
+        showImage();
+
+        self.updateAndShow = updateAndShow;
     };
     
-    this.init();
-})();
+    function showTitleBar () {
+        Ti.API.debug("Creating locationDetailTitleBar in MapDetailViewController");
+        //Create the title bar for the top of the detail view
+        if(!locationDetailTitleBar) {
+            locationDetailTitleBar = new app.views.SecondaryNavBar(app,{
+                backButton: titleBackButton
+            });
+            Ti.API.debug("Here's what the Secondary Nav Title Bar came back as: " + locationDetailTitleBar);
+            self.add(locationDetailTitleBar);            
+        }
+    }
+    
+    function showTop () {
+        Ti.API.debug("Creating topDetailView in MapDetailViewController");
+        //Create the top area of the detail view, containing the map icon, address, and directions link.
+        if(!topDetailView) {
+            topDetailView = new app.views.MapDetailTop({
+                details: locationData,
+                app: app
+            });
+            self.add(topDetailView);            
+        }
+        else {
+            topDetailView.update(locationData);
+        }
+        
+    }
+    
+    function showImage () {
+        //Display a photo of the location, if one is available.
+        if (locationData.img) {
+            if(!locationPhoto) {
+                locationPhotoOptions = app.styles.mapDetailLocationPhoto;
+                locationPhotoOptions.image = locationData.img.replace(/\/thumbnail\//,'/photo/');
+                locationPhoto = Titanium.UI.createImageView(locationPhotoOptions);                
+                self.add(locationPhoto);
+            }
+            else {
+                locationPhoto.image = locationData.img.replace(/\/thumbnail\//,'/photo/');
+            }
+        }        
+    }
+    
+    function updateAndShow (data) {
+        Ti.API.debug("MapDetailViewController.updateAndShow() called");
+        locationData = data;
+        
+        showTop();
+        showImage();
+        
+        self.show();
+    };
+    
+    init();
+    
+    return self;
+};

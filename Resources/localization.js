@@ -18,6 +18,7 @@ localDictionary.en_US = {
     //Map Window & Map Detail Window
     map: "Map",
     getDirections: "Get Directions",
+    noAddressAvailable: "No Address Available",
     
     //Settings Window
     settings: "Settings",

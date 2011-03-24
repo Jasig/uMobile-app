@@ -34,17 +34,10 @@ var UPM = UPM || {};
 UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
 // UPM.BASE_PORTAL_URL = 'http://172.16.67.71:8080';
 UPM.PORTAL_CONTEXT = '/uPortal';
-UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/services/mapData.json';
+UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/services/map-test-data.json';
 UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/api/people.json?searchTerms[]=given&given=';
 
 Titanium.App.Properties.setString('locale','en_US');
-
-// Default latitude and longitude for map.  This location
-// will be used for map initialization if the user's location
-// cannot be determined or if the user declines to grant 
-// GPS access to the application.
-UPM.DEFAULT_LATITUDE = 41.3104425;
-UPM.DEFAULT_LONGITUDE = -72.9254028;
 
 UPM.LOCAL_MODULES = [
      {
@@ -68,10 +61,6 @@ UPM.GLOBAL_STYLES = {
     secondaryBarColor: "#333",
     windowBackgroundColor: "#fff",
     tableBackgroundColor: "#fff",
-    // detailTopBackgroundColor is used in backgrounds of the header of detail views of content such as directory contacts and map locations.
-    detailTopBackgroundColor: "#333",
-    // detailTopTitleColor is used for the text color of the header of detail views of content such as directory contacts and map locations.
-    detailTopTitleColor: "#fff",
 
     //Activity Indicator Attributes
     activityIndicatorColor: "#fff",
