@@ -21,29 +21,26 @@
  * map tab.
  */
 
-(function() {
+ (function() {
     var win = Titanium.UI.currentWindow,
-        locationDetailViewOptions,
-        locationDetailView,
-        app = win.app,
-        self = {},
-        mapView,
-        searchBar,
-        createMapView,
-        mapPoints = [], 
-        loadPointDetail, 
-        rawAnnotations = [],
-        loadingIndicator,
-        mapService,
-        searchSubmit,
-        titleBar;
-    
-    self.init = function () {
+    locationDetailViewOptions,
+    locationDetailView,
+    app = win.app,
+    self = {},
+    mapView,
+    searchBar,
+    createMapView,
+    mapPoints = [],
+    loadPointDetail,
+    rawAnnotations = [],
+    loadingIndicator,
+    mapService,
+    titleBar;
+
+    self.init = function() {
         //Initializes when the map window is loaded, is passed an instance of the MapService proxy.
         mapService = app.models.mapService;
-        self.createMapView();
-        win.initialized = true;
-        
+
         titleBar = app.views.GenericTitleBar({
             homeButton: true,
             app: app,
@@ -55,72 +52,68 @@
         
         searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
         win.add(searchBar);
-        searchBar.addEventListener('return',searchSubmit);
+        searchBar.addEventListener('return', searchSubmit);
+        searchBar.addEventListener('cancel', searchBlur);
+        
+        Ti.App.addEventListener('MapProxySearching', onProxySearching);
+        Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
+        Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
+        
+        self.createMapView();
+        
+        win.add(app.views.GlobalActivityIndicator);
+        
+        win.initialized = true;
     };
 
-    self.createMapView = function () {
-        var annotations, buttonBar;
+    self.createMapView = function() {
+        var annotations,
+        buttonBar;
 
-       // create the map view
-       mapView = Titanium.Map.createView(app.styles.mapView);
-       win.add(mapView);
-       mapView.addEventListener('touchstart',function(e){
-           searchBar.blur();
-       });
-       mapView.addEventListener('loaddetail',self.loadDetail);
+        // create the map view
+        mapView = Titanium.Map.createView(app.styles.mapView);
+        win.add(mapView);
 
-       //Initialize the MapService, which manages the data for points on the map, 
-       //including retrieval of data and searching array of points
-       mapService.init(mapView);
-       
-       //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
-       mapView.addEventListener("click", function(e) {
-            searchBar.blur();
-            var _annotation;
-            Ti.API.info("Map clicked, and source of click event is: " + JSON.stringify(e));
-            if(e.clicksource === 'title' && e.title) {
-               _annotation = mapService.getAnnotationByTitle(e.title);
-               mapView.fireEvent('loaddetail',_annotation);
-            }
-            else {
-                Ti.API.info("Clicksource: " + e.clicksource);
-                Ti.API.info("Title: " + e.title);
-                Ti.API.info("Result of search: " + mapService.getAnnotationByTitle(e.title));
-            }
-        });
-        mapView.addEventListener('regionChanged',function(e){
-            searchBar.blur();
-        });
+        //Initialize the MapService, which manages the data for points on the map,
+        //including retrieval of data and searching array of points
+        mapService.init();
 
-       // create controls for zoomin / zoomout
-       // included in Android by default
-       if(Titanium.Platform.osname === "iphone") {
-           buttonBar = Titanium.UI.createButtonBar(app.styles.mapButtonBar);
-           mapView.add(buttonBar);
+        //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
+        mapView.addEventListener('touchstart', searchBlur);
+        mapView.addEventListener('loaddetail', self.loadDetail);
+        mapView.addEventListener("click", onMapViewClick);
+        mapView.addEventListener('regionChanged', searchBlur);
 
-           // add event listeners for the zoom buttons
-           buttonBar.addEventListener('click', function (e) {
-               if (e.index == 0) {
-                   mapView.zoom(1);
-               } else {
-                   mapView.zoom(-1);
-               }
-           });
-       }
+        // create controls for zoomin / zoomout
+        // included in Android by default
+        if (Titanium.Platform.osname === "iphone") {
+            buttonBar = Titanium.UI.createButtonBar(app.styles.mapButtonBar);
+            mapView.add(buttonBar);
+
+            // add event listeners for the zoom buttons
+            buttonBar.addEventListener('click',
+            function(e) {
+                if (e.index == 0) {
+                    mapView.zoom(1);
+                } else {
+                    mapView.zoom( - 1);
+                }
+            });
+        }
     };
     self.loadDetail = function(e) {
         //Create and open the view for the map detail
         // locationDetailWinOptions = app.styles.view;
         // locationDetailViewOptions.url = app.UPM.getResourcePath("/js/controllers/MapDetailViewController.js");
         Ti.API.debug('self.loadDetail');
-        searchBar.blur();
-        if(!locationDetailView) {
+        searchBlur();
+        if (!locationDetailView) {
             Ti.API.debug("locationDetailView not defined");
             locationDetailViewOptions = app.styles.view;
             locationDetailViewOptions.data = e;
-            locationDetailView = new app.controllers.MapDetailViewController (app,locationDetailViewOptions);
+            locationDetailView = new app.controllers.MapDetailViewController(app, locationDetailViewOptions);
             win.add(locationDetailView);
-            locationDetailView.show();            
+            locationDetailView.show();
         }
         else {
             Ti.API.debug("locationDetailView defined");
@@ -128,11 +121,61 @@
         }
     };
     
-    searchSubmit = function(e) {
+    function plotPoints (points) {
+        //Clears the map of all annotations, takes an array of points, creates annotations of them, and plots them on the map.
+        mapView.removeAllAnnotations();
+        Ti.API.debug("plotPoints: " + JSON.stringify(points));
+        for (var i=0, iLength = points.length; i<iLength; i++) {
+            var _annotation = Titanium.Map.createAnnotation({
+                title: points[i].title || app.localDictionary.titleNotAvailable,
+                latitude: points[i].latitude,
+                longitude: points[i].longitude,
+                pincolor:Titanium.Map.ANNOTATION_RED
+            });
+            mapView.addAnnotation(_annotation);
+        }
+    }
+
+    function searchBlur(e) {
         searchBar.blur();
+    }
+
+    function searchSubmit(e) {
+        searchBlur();
         mapService.search(searchBar.value);
-    };
-    
+    }
+
+    function onMapViewClick(e) {
+        searchBlur();
+        var _annotation;
+        Ti.API.info("Map clicked, and source of click event is: " + JSON.stringify(e));
+        if (e.clicksource === 'title' && e.title) {
+            _annotation = mapService.getAnnotationByTitle(e.title);
+            mapView.fireEvent('loaddetail', _annotation);
+        }
+        else {
+            Ti.API.info("Clicksource: " + e.clicksource);
+            Ti.API.info("Title: " + e.title);
+            Ti.API.info("Result of search: " + mapService.getAnnotationByTitle(e.title));
+        }
+    }
+
+    //Proxy Events
+    function onProxySearching (e) {
+        Ti.API.debug('onProxySearching' + e);
+        app.views.GlobalActivityIndicator.message = app.localDictionary.searching;
+        app.views.GlobalActivityIndicator.show();
+    }
+    function onProxySearchComplete (e) {
+        Ti.API.debug('onProxySearchComplete' + JSON.stringify(e.points));
+        app.views.GlobalActivityIndicator.hide();
+        plotPoints(e.points);
+    }
+    function onProxyEmptySearch (e) {
+        app.views.GlobalActivityIndicator.hide();
+        Ti.API.debug('onProxyEmptySearch' + e);
+    }
+
     self.init();
     return self;
 })();

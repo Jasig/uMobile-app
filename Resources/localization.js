@@ -20,6 +20,7 @@ localDictionary.en_US = {
     map: "Map",
     getDirections: "Get Directions",
     noAddressAvailable: "No Address Available",
+    titleNotAvailable: "Title Not Available",
     
     //Settings Window
     settings: "Settings",

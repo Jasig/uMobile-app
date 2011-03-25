@@ -68,7 +68,7 @@
     
     function onPortletLoad(e) {
         Ti.API.debug("Porlet loaded");
-        // activityIndicator.hide();
+        activityIndicator.hide();
         portletView.show();
     }
     

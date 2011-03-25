@@ -46,12 +46,14 @@ styles = {
     },
     textFieldLabel: {
         height:35,
-        width:'auto'
+        width:'auto',
+        color: '#000'
     },
     //Global search bar properties
     searchBar: {
         top: TITLEBAR_HEIGHT,
         height: TITLEBAR_HEIGHT,
+        backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
         barColor: SECONDARY_BAR_BACKGROUND_COLOR,
         showCancel: true
     }, 
@@ -165,7 +167,7 @@ styles = {
 	},
 	// MAP STYLES
 	mapView: {
-	    top: TITLEBAR_HEIGHT,
+	    top: TITLEBAR_HEIGHT * 2,
         mapType: Titanium.Map.STANDARD_TYPE,
         region:{
             latitude: 41.3104425,
@@ -209,12 +211,9 @@ styles = {
 	},
 	// ACTIVITY INDICATOR STYLING
 	globalActivityIndicator: {
-	    color: '#fff',
-	    backgroundImage: UPM.getResourcePath('images/bgActivityIndicator.png'),
-        height: 100,
-        width: 'auto',
-        borderColor: "#999",
-        borderWidth: 3,
-        borderRadius: 10
+        width: Ti.Platform.displayCaps.platformWidth,
+        height: Ti.Platform.displayCaps.platformHeight,
+        backgroundImage: UPM.getResourcePath('images/bgActivityIndicator.png'),
+        style: Titanium.UI.iPhone.ActivityIndicatorStyle.BIG
 	}
 };

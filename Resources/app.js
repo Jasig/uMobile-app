@@ -123,13 +123,15 @@ windows.settings = Titanium.UI.createWindow({
 });
 
 Ti.App.addEventListener('showWindow', function (e) {
+    Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
     windows[e.oldWindow].hide();
     
     if (windows[e.newWindow].initialized) {
+        Ti.API.debug("new window is initialized");
         windows[e.newWindow].show();
-    } 
-    
+    }     
     else {
+        Ti.API.debug("new window is NOT initialized");
         windows[e.newWindow].open();
     }        
 

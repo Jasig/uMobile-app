@@ -58,7 +58,7 @@ createPortalView = function () {
 	portalView.add(titleBar);
     win.add(portalView);
     
-    
+    win.initialized = true;
 };
 
 getShowPortletFunc = function (portlet) {
@@ -296,9 +296,12 @@ var getPortletsForUser = function(onload) {
     var jsonUrl = win.app.UPM.BASE_PORTAL_URL + win.app.UPM.PORTAL_CONTEXT + "/api/layoutDoc.json";
     Ti.API.info(jsonUrl);
     loader.open("GET", jsonUrl);
+    // app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
+    // app.views.GlobalActivityIndicator.show();
     
     // Runs the function when the data is ready for us to process  
     loader.onload = function() { 
+        // app.views.GlobalActivityIndicator.hide();
         Ti.API.debug("Layout data loaded in getPortletsForUser");
         var layout = eval('('+this.responseText+')').layout;
         for (var i = 0; i < win.app.UPM.LOCAL_MODULES.length; i++) {

@@ -1,53 +1,44 @@
 var MapService = function (facade) {
-    var app=facade,
-        map,
-        mapPoints = [],
-        annotationEvents = {};
+    var app = facade,
+        self = {},
+        mapPoints = [];
         
-    this.init = function (mapView) {
-        //mapView object passed in from controller, for simplicity of callbacks on resource-intensive events ()
-        Ti.API.info(app);
-        if (mapView) {
-            map = mapView;
-        }
-               
-        this.loadMapPoints();
+    self.init = function () {               
+        self.loadMapPoints();
     };
-    this.search = function (query, opts) {
-        var searchBusy;
+    
+    self.search = function (query, opts) {
+
+        var result = [], searchBusy;
         query = query.toLowerCase();
 
         //If a search isn't already executing
        if(!searchBusy && query != '') {
-           Ti.API.info("Starting to search...");
+            onSearch(query);
+            Ti.API.info("Starting to search...");
             searchBusy = true;
 
-            map.removeAllAnnotations();
             for (var i=0, iLength = mapPoints.length; i<iLength; i++) {
-                if (mapPoints[i].title.toLowerCase().search(query) != -1) {
-                    //|| MapService.mapPoints[i].searchText.toLowerCase().search(query) != -1
-                    _annotation = Titanium.Map.createAnnotation({
-                        title: mapPoints[i].title || "Title Not Available",
-                        latitude: mapPoints[i].latitude,
-                        longitude: mapPoints[i].longitude,
-                        pincolor:Titanium.Map.ANNOTATION_RED
-                    });
-                    map.addAnnotation(_annotation);
+                if (mapPoints[i].title.toLowerCase().search(query) != -1 || mapPoints[i].searchText.toLowerCase().search(query) != -1) {
+                    result.push(mapPoints[i]);
                 }
             }
             searchBusy = false;
+            onSearchComplete(result);
+            
         } else if (query === '') {
-            map.removeAllAnnotations();
+            onEmptySearch();
         }
     };
-    this.getAnnotationByTitle = function(t) {
+    self.getAnnotationByTitle = function(t) {
         for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
             if (mapPoints[i].title === t) {
                 return mapPoints[i];
             }
         }
+        return false;
     };
-    this.loadMapPoints = function (filters) {
+    self.loadMapPoints = function (filters) {
         //Default returns all points for an institution.
         //Can be filtered by campus, admin-defined categories
         Ti.API.info("loadMapPoints()");
@@ -55,10 +46,9 @@ var MapService = function (facade) {
         request = Titanium.Network.createHTTPClient ({
             connectionType : 'GET',
             location : app.UPM.MAP_SERVICE_URL,
-            // onload : MapService.newPointsLoaded,
-            onload : this.newPointsLoaded,
+            onload : self.newPointsLoaded,
             onerror : function (e) {
-                Ti.API.info("Error with map service" + this.responseText);
+                Ti.API.info("Error with map service" + request.responseText);
             }
         });
         request.open("GET", app.UPM.MAP_SERVICE_URL);
@@ -67,51 +57,38 @@ var MapService = function (facade) {
         Ti.API.debug("MapService.updateMapPoints() request sent");
 
     };
-    this.newPointsLoaded = function (e) {
+    self.newPointsLoaded = function (e) {
         // Customize the response and add it to the cached mapPoints array in the MapService object.
         var response = JSON.parse(e.source.responseText);
         Ti.API.debug("newPointsLoaded()");
 
         for (var i = 0, iLength = response.buildings.length; i < iLength; i++) {
-            var btnRight;
             response.buildings[i].title = response.buildings[i].name;
             response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
             response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
-            // response.buildings[i].pincolor = Titanium.Map.ANNOTATION_PURPLE;
-            // response.buildings[i].myid = response.buildings[i].abbreviation;
-
-            btnRight = Titanium.UI.createImageView({
-                image: 'images/btnCircleRightArrow.png',
-                width: 30,
-                height: 30,
-                _parent: response.buildings[i]
-            });
-            btnRight.addEventListener('touchstart', annotationEvents.touchStart);
-            btnRight.addEventListener('touchend', annotationEvents.touchEnd);
-            btnRight.addEventListener('singletap',annotationEvents.singleTap);
-            response.buildings[i].rightView = btnRight;
 
             mapPoints.push(response.buildings[i]);
         }
-        Ti.API.info("First point in array is: " + JSON.stringify(mapPoints[0]));
-
-        map.fireEvent("pointsloaded");
+        onPointsLoaded();
     };
-    annotationEvents.touchStart = function(e){
-        e.source.image = 'images/btnCircleRightArrow-press.png';
-    };
-    annotationEvents.touchEnd = function(e){
-        e.source.image = 'images/btnCircleRightArrow.png';
-    };
-    annotationEvents.singleTap = function(e){
-        if(e.source._parent) {
-            map.fireEvent("loaddetail",e.source._parent);
-            Ti.API.info("loaddetail event fired with parent: " + e.source._parent);        
-        } 
-        else {
-            Ti.API.info("loaddetail event didn't fire." + JSON.stringify(e));
-        }
-
-    };
-    return this;
+    
+    function onSearch(query) {
+        Ti.App.fireEvent('MapProxySearching',query);
+    }
+    
+    function onEmptySearch () {
+        Ti.App.fireEvent('MapProxyEmptySearch');
+        // map.removeAllAnnotations();
+    }
+    
+    function onSearchComplete(result) {
+        Ti.API.debug('onSearchComplete in MapProxy: ' + JSON.stringify(result));
+        Ti.App.fireEvent('MapProxySearchComplete', { points: result });
+    }
+    
+    function onPointsLoaded () {
+        Ti.App.fireEvent('MapProxyPointsLoaded');
+    }
+    
+    return self;
 };

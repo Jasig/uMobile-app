@@ -25,14 +25,6 @@ var GenericTitleBar = function (opts) {
         //There should only be either a home button or backbutton, not both.
         backButton = opts.backButton;
         titleBar.add(backButton);
-        
-        //Manually add gradient changes for button toggle
-        /*backButton.addEventListener("touchstart",function(e){
-            e.source.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarGradient;
-        });
-        backButton.addEventListener("touchend",function(e){
-            e.source.backgroundGradient = opts.app.UPM.GLOBAL_STYLES.titleBarButtonGradient;
-        });*/
     }
     if (opts.homeButton && !opts.backButton) {
         //Expects homeButton to be a boolean indicating whether or not to show the home button
@@ -40,7 +32,8 @@ var GenericTitleBar = function (opts) {
         homeButton = Titanium.UI.createImageView(opts.app.styles.titleBarHomeButton);
         titleBar.add(homeButton);
         
-        homeButton.addEventListener('singletap', function() {
+        homeButton.addEventListener('click', function() {
+            Ti.API.debug("Home button clicked in GenericTitleBar");
             Ti.App.fireEvent(
                 'showWindow', 
                 {
