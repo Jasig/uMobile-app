@@ -9,6 +9,7 @@ localDictionary.en_US = {
     update: "Update",
     home: "Home",
     doneEditing: "Done Editing",
+    loading: 'Loading',
     searching: "Searching",
     errorPerformingSearch: "There was an error while performing your search request.",
     searchResults: "Search Results",

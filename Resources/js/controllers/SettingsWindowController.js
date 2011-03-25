@@ -24,11 +24,11 @@
 
 //TODO: Move everything into a controller function
 
-var win = Titanium.UI.currentWindow;
-
-var credentials, 
+var win = Titanium.UI.currentWindow,
+    app = win.app,
+    credentials, 
     usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, 
-    titlebar, title, homeButton,
+    titlebar,
     createTitleBar, createCredentialsForm;
 
 
@@ -38,94 +38,64 @@ credentials = win.app.UPM.getCredentials();
 
 win.backgroundColor = win.app.UPM.HOME_GRID_BACKGROUND_COLOR;
 
-// TODO: Remove this block of code and use GenericTitleBar instead 
 createTitleBar = function () {
-    titlebar = Titanium.UI.createView({
-        backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
-        top:0,
-        height: win.app.UPM.TITLEBAR_HEIGHT
+
+    titleBar = new app.views.GenericTitleBar({
+        app: app,
+        windowKey: 'settings',
+        title: app.localDictionary.settings,
+        settingsButton: false,
+        homeButton: true
     });
-    win.add(titlebar);
-    
-    title = Titanium.UI.createLabel({
-        textAlign: "center",
-        text: win.app.localDictionary.settings,
-        color: win.app.UPM.TITLEBAR_TEXT_COLOR,
-        font: { fontWeight: "bold" }
-    });
-    titlebar.add(title);
-    
-    homeButton = Titanium.UI.createImageView({
-        image: "../../icons/tab-home.png",
-        height: 18,
-        width: 18,
-        left: 10
-    });
-    titlebar.add(homeButton);
-    
-    homeButton.addEventListener('singletap', function (e) {
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'settings',
-                newWindow: 'home',
-                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
-            }
-        );
-    });
+    win.add(titleBar);
 
 };
 
 createCredentialsForm = function () {
-    
+    var usernameLabelOpts = app.styles.textFieldLabel,
+        usernameInputOpts = app.styles.textField,
+        passwordLabelOpts = app.styles.textFieldLabel,
+        passwordInputOpts = app.styles.textField,
+        saveButtonOpts;
+
     // create the username label and input field
-    usernameLabel = Titanium.UI.createLabel({
-        text: win.app.localDictionary.username,
-        height:35,
-        width:'auto',
-        top:50,
-        left:10
-    });
+    usernameLabelOpts.text = win.app.localDictionary.username;
+    usernameLabelOpts.top = 50;
+    usernameLabelOpts.left = 10;
+    usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
     win.add(usernameLabel);
-    usernameInput = Titanium.UI.createTextField({
-    	height:35,
-    	top:50,
-    	left:100,
-    	width:150,
-        value: credentials.username,
-    	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
-    });
+    
+    usernameInputOpts.top = 50;
+    usernameInputOpts.left = 100;
+    usernameInputOpts.value = credentials.username;
+    usernameInput = Titanium.UI.createTextField(usernameInputOpts);
     win.add(usernameInput);
     
     // create the password label and input field
-    passwordLabel = Titanium.UI.createLabel({
-        text:win.app.localDictionary.password,
-        height:35,
-        width:'auto',
-        top:100,
-        left:10
-    });
+    passwordLabelOpts.top = 100;
+    passwordLabelOpts.left = 10;
+    passwordLabelOpts.text = win.app.localDictionary.password;
+    passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
     win.add(passwordLabel);
-    passwordInput = Titanium.UI.createTextField({
-        height:35,
-        top:100,
-        left:100,
-        width:150,
-        value: credentials.password,
-        borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
-    });
+    
+    passwordInputOpts.value = credentials.password;
+    passwordInputOpts.passwordMask = true;
+    passwordInputOpts.top = 100;
+    passwordInputOpts.left = 100;
+    passwordInput = Titanium.UI.createTextField(passwordInputOpts);
     win.add(passwordInput);
     
     // create the save button and configure it to persist
     // the new credentials when pressed
-    saveButton = Titanium.UI.createButton({
-        height:35,
-        top:150,
-        left:10,
-        width:250,
-        title: win.app.localDictionary.update
-    });
+    
+    saveButtonOpts = app.styles.contentButton;
+    saveButtonOpts.top = 150;
+    saveButtonOpts.left = 10;
+    saveButtonOpts.title = win.app.localDictionary.update;
+    saveButton = Titanium.UI.createButton(saveButtonOpts);
+    
     win.add(saveButton);
+    
     saveButton.addEventListener('click', function (e) {
         win.app.UPM.saveCredentials({ 
             username: usernameInput.value, 

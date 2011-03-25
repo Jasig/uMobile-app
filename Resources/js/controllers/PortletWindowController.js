@@ -17,61 +17,63 @@
  * under the License.
  */
 
+(function () {
+    var win = Titanium.UI.currentWindow,
+        app = win.app,
+        activityIndicator = app.views.GlobalActivityIndicator,
+        portletViewOpts,
+        portletView,
+        titleBar,
+        initialized,
+        pathToRoot = '../../';
 
-var win, 
-    portletView,
-    pathToRoot = '../../';
-
-win = Titanium.UI.currentWindow;
-
-var portletBar = Titanium.UI.createView({
-    backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
-    top:0,
-    height: win.app.UPM.TITLEBAR_HEIGHT
-});
-var portletTitle = Titanium.UI.createLabel({
-    textAlign: "center",
-    text: win.app.localDictionary.uMobile,
-    color: win.app.UPM.TITLEBAR_TEXT_COLOR,
-    font: { fontWeight: "bold" }
-});
-portletBar.add(portletTitle);
-var homeButton = Titanium.UI.createImageView({
-    image: pathToRoot + "icons/tab-home.png",
-    width: 18,
-    height: 18,
-    left: 10
-});
-portletBar.add(homeButton);
-win.add(portletBar);
-win.initialized = true;
-
-homeButton.addEventListener('singletap', function() {
-    Ti.App.fireEvent(
-        'showWindow', 
-        {
-            oldWindow: 'portlet',
-            newWindow: 'home'
-        }
-    );
-});
-
-Ti.App.addEventListener('includePortlet', function(portlet) {
-    Ti.API.info("Loading portlet " + portlet);
-    
-    if (portletView) {
-        win.remove(portletView);
+    function init() {
+        titleBar = new app.views.GenericTitleBar({
+            windowKey: 'portlet',
+            app: app,
+            title: app.localDictionary.uMobile,
+            settingsButton: true,
+            homeButton: true
+        });
+        win.add(titleBar);   
+        
+        portletViewOpts = app.styles.portletView;
+        portletView = Titanium.UI.createWebView(portletViewOpts);
+        win.add(portletView);
+        
+        portletView.addEventListener('load', onPortletLoad);
+        portletView.addEventListener('beforeload', onBeforePortletLoad);
+        Ti.App.addEventListener('includePortlet', onIncludePortlet);
+        
+        win.add(activityIndicator);
+        
+        win.initialized = true;
     }
-
-    Ti.API.info("Showing portlet " + portlet.url);
-    portletView = Titanium.UI.createWebView({ 
-        url: win.app.UPM.BASE_PORTAL_URL + portlet.url,
-        top: win.app.UPM.TITLEBAR_HEIGHT
-    });
-    portletTitle.text = portlet.title;
     
-    win.add(portletView);
-    Ti.API.info("Finished portlet " + portlet.url);
-
-});
-
+    function onIncludePortlet (portlet) {
+        if (portletView) {
+            Ti.API.debug('portletView exists, removing it.');
+            portletView.stopLoading();
+            portletView.hide();
+        }
+        portletView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
+        titleBar.updateTitle(portlet.title);
+    }
+    
+    function onBeforePortletLoad (e) {
+        Ti.API.debug("Loading portlet");
+        activityIndicator.message = app.localDictionary.loading;
+        activityIndicator.show();
+    }
+    
+    function onPortletLoad(e) {
+        Ti.API.debug("Porlet loaded");
+        // activityIndicator.hide();
+        portletView.show();
+    }
+    
+    if(!win.initialized) {
+        init();
+    }
+    
+})();

@@ -24,7 +24,8 @@
 
 // library includes
 
-var win, 
+var win = Titanium.UI.currentWindow,
+    app = win.app,
     portalView,
     portletView,
     portalGridView,
@@ -35,8 +36,6 @@ var win,
     getShowPortletFunc,
     getIconUrl,
     pathToRoot = '../../';
-
-win = Titanium.UI.currentWindow;
 
 createPortalView = function () {
     if (portalView) {
@@ -49,40 +48,17 @@ createPortalView = function () {
 		backgroundColor: win.app.UPM.HOME_GRID_BACKGROUND_COLOR
 	});
 	
-	var bar = Titanium.UI.createView({
-	    backgroundColor: win.app.UPM.TITLEBAR_BACKGROUND_COLOR,
-        height: win.app.UPM.TITLEBAR_HEIGHT,
-        top: 0
-    });
-	var title = Titanium.UI.createLabel({
-        textAlign: "center",
-        text: "uMobile",
-        color: "#fff",
-        font: { fontWeight: "bold" }
-    });
-	bar.add(title);
-	var settingsButton = Titanium.UI.createImageView({
-	    height: 18,
-	    width: 18,
-	    image: pathToRoot + "icons/tab-settings.png",
-	    left: Ti.Platform.displayCaps.platformWidth - 28
+	var titleBar = new app.views.GenericTitleBar({
+	    app: app,
+	    windowKey: 'home',
+	    title:app.localDictionary.uMobile,
+	    settingsButton: true,
+	    homeButton: false
 	});
-	bar.add(settingsButton);
-	portalView.add(bar);
-	
+	portalView.add(titleBar);
     win.add(portalView);
     
-    settingsButton.addEventListener('singletap', function (e) {
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'home',
-                newWindow: 'settings',
-                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT 
-            }
-        );
-    });
-
+    
 };
 
 getShowPortletFunc = function (portlet) {

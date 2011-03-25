@@ -16,6 +16,9 @@ styles = {
         backgroundColor: '#fff',
         top: TITLEBAR_HEIGHT
     },
+    portletView: {
+        top: TITLEBAR_HEIGHT
+    },
     contentButton: {
         style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
         height: 30,
@@ -35,6 +38,15 @@ styles = {
         borderColor: '#999',
         borderWidth: 1,
         color: '#333'
+    },
+    textField: {
+        height:35,
+    	width:150,
+    	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
+    },
+    textFieldLabel: {
+        height:35,
+        width:'auto'
     },
     //Global search bar properties
     searchBar: {
@@ -113,7 +125,7 @@ styles = {
     	color: '#333',
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: '#1d348b',
+        borderColor: '#ccc',
     	font: {
     	    fontSize: 14
     	},
@@ -194,5 +206,15 @@ styles = {
 	    width: Titanium.Platform.displayCaps.platformWidth,
         top: 140,
         height: 241
+	},
+	// ACTIVITY INDICATOR STYLING
+	globalActivityIndicator: {
+	    color: '#fff',
+	    backgroundImage: UPM.getResourcePath('images/bgActivityIndicator.png'),
+        height: 100,
+        width: 'auto',
+        borderColor: "#999",
+        borderWidth: 3,
+        borderRadius: 10
 	}
 };
