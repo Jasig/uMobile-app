@@ -47,7 +47,7 @@ createPortalView = function () {
 	portalView = Titanium.UI.createScrollView({
 		backgroundColor: win.app.UPM.HOME_GRID_BACKGROUND_COLOR
 	});
-	
+
 	var titleBar = new app.views.GenericTitleBar({
 	    app: app,
 	    windowKey: 'home',
@@ -57,7 +57,7 @@ createPortalView = function () {
 	});
 	portalView.add(titleBar);
     win.add(portalView);
-    
+
     win.initialized = true;
 };
 
@@ -78,17 +78,17 @@ getShowPortletFunc = function (portlet) {
 };
 
 var sortPortlets = function(a, b) {
-            
+
     // get the values for the configured property from 
     // each object and transform them to lower case
     var aprop = a.title.toLowerCase();
     var bprop = b.title.toLowerCase();
-    
+
     // if the values are identical, indicate an equals
     if (aprop === bprop) {
         return 0;
     }
-    
+
     // otherwise perform a normal alphabetic sort
     if (aprop > bprop) {
         return 1;
@@ -100,7 +100,7 @@ var sortPortlets = function(a, b) {
 
 getIconUrl = function (p) {
     var _iconUrl;
-    
+
     if (!p.url && p.iconUrl) {
         _iconUrl = pathToRoot + p.iconUrl;
     } 
@@ -110,7 +110,7 @@ getIconUrl = function (p) {
     else {
         _iconUrl = win.app.UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
     }
-    
+
     return _iconUrl;
 };
 
@@ -166,7 +166,7 @@ drawAndroidGrid = function (portlets) {
         });
         gridItem.add(gridItemIcon);
 
-        
+
         // TODO: hook up to actual badge icon service
         if (_portlet.title == 'Blackboard') {
             Ti.API.info("blackboard");
@@ -204,7 +204,7 @@ drawAndroidGrid = function (portlets) {
 
 drawiOSGrid = function (portlets) {
     var dashboardItems = [], dashboard;
-    
+
     //Create the dashboard item to be placed  on the home screen
     for (var i=0, iLength=portlets.length; i<iLength; i++) {
         var _portlet, _dashboardItem, _iconContainer;
@@ -223,7 +223,7 @@ drawiOSGrid = function (portlets) {
             touchEnabled: true
         });
         _dashboardItem.add(_iconContainer);
-        
+
         var _imageView = Titanium.UI.createImageView({
             image: getIconUrl(_portlet),
             width: 57,
@@ -239,10 +239,10 @@ drawiOSGrid = function (portlets) {
                 fontSize: 13
             }
         }));
-                        
+
         dashboardItems.push(_dashboardItem);
     }
-    
+
     //Create the dashboard to layout the dashboard items in the home screen
     dashboard = Titanium.UI.createDashboardView({
         backgroundColor: '#fff',
@@ -259,7 +259,7 @@ drawiOSGrid = function (portlets) {
     dashboard.add(doneButton);
     doneButton.hide();
     win.add(dashboard);
-    
+
     dashboard.addEventListener('edit',function(e){
         doneButton.show();
     });
@@ -296,18 +296,19 @@ var getPortletsForUser = function(onload) {
     var jsonUrl = win.app.UPM.BASE_PORTAL_URL + win.app.UPM.PORTAL_CONTEXT + "/api/layoutDoc.json";
     Ti.API.info(jsonUrl);
     loader.open("GET", jsonUrl);
-    // app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
-    // app.views.GlobalActivityIndicator.show();
-    
+    win.add(app.views.GlobalActivityIndicator);
+    app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
+    app.views.GlobalActivityIndicator.show();
+
     // Runs the function when the data is ready for us to process  
     loader.onload = function() { 
-        // app.views.GlobalActivityIndicator.hide();
         Ti.API.debug("Layout data loaded in getPortletsForUser");
         var layout = eval('('+this.responseText+')').layout;
         for (var i = 0; i < win.app.UPM.LOCAL_MODULES.length; i++) {
             layout.push(win.app.UPM.LOCAL_MODULES[i]);
         }
         drawHomeGrid(layout);
+        app.views.GlobalActivityIndicator.hide();
     };  
 
     // Send the HTTP request  

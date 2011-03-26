@@ -5,6 +5,8 @@ var MapDetailTop = function (opts) {
         mapIcon,
         mapIconContainer,
         directionsButton,
+        locationTitle,
+        locationTitleOptions,
         locationAddress,
         locationAddressOptions,
         onGetDirections,
@@ -15,10 +17,15 @@ var MapDetailTop = function (opts) {
         detailViewOptions = app.styles.mapDetailViewTop;
         detailView = Titanium.UI.createView(app.styles.mapDetailTopView);
 
+        locationTitleOptions = app.styles.mapDetailLocationTitle;
+        locationTitleOptions.text = details.title;
+        locationTitle = Titanium.UI.createLabel(locationTitleOptions);
+        detailView.add(locationTitle);
+
         Ti.API.debug("Creating locationAddressLabel in MapDetailTop");
         //Add a label for the address next to the map thumbnail
         locationAddressOptions = app.styles.mapDetailLocationAddress;
-        locationAddressOptions.text = opts.details.address || app.localDictionary.noAddressAvailable;
+        locationAddressOptions.text = details.address || app.localDictionary.noAddressAvailable;
         locationAddress = Titanium.UI.createLabel(locationAddressOptions);
         detailView.add(locationAddress);
 
@@ -26,7 +33,7 @@ var MapDetailTop = function (opts) {
         //Add "Get Directions" button
         directionsButtonOptions = app.styles.contentButton;
         directionsButtonOptions.title = opts.app.localDictionary.getDirections;
-        directionsButtonOptions.top = locationAddress.height + locationAddress.top + 10;
+        directionsButtonOptions.top = locationAddress.height + locationAddress.top + 5;
         directionsButtonOptions.left = 10;
         directionsButtonOptions.width = 150;
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);

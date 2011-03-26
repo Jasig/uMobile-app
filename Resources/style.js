@@ -191,14 +191,25 @@ styles = {
 	    top: TITLEBAR_HEIGHT,
         left: 0,
         backgroundColor: DETAIL_TOP_BACKGROUND_COLOR,
-        height: 100
+        height: 120
+	},
+	mapDetailLocationTitle: {
+	    left: 10,
+	    top: 10,
+        height: 30,
+	    font: {
+            fontSize: 24,
+            fontWeight: 'bold'
+        },
+        color: "#000",
+        textAlign: "left"
 	},
 	mapDetailLocationAddress: {
 	    left: 10,
-	    top: 10,
-        height: 36,
+	    top: 40,
+        height: 30,
 	    font: {
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: 'bold'
         },
         color: "#333",
@@ -206,14 +217,18 @@ styles = {
 	},
 	mapDetailLocationPhoto: {
 	    width: Titanium.Platform.displayCaps.platformWidth,
-        top: 140,
+        top: TITLEBAR_HEIGHT + 120,
         height: 241
 	},
 	// ACTIVITY INDICATOR STYLING
 	globalActivityIndicator: {
-        width: Ti.Platform.displayCaps.platformWidth,
-        height: Ti.Platform.displayCaps.platformHeight,
-        backgroundImage: UPM.getResourcePath('images/bgActivityIndicator.png'),
-        style: Titanium.UI.iPhone.ActivityIndicatorStyle.BIG
+	    color: '#fff'
 	}
 };
+//iPhone-specific overrides
+if (Ti.Platform.osname === 'iphone') {
+    styles.globalActivityIndicator.backgroundImage = UPM.getResourcePath('images/bgActivityIndicator.png');
+    styles.globalActivityIndicator.width = Ti.Platform.displayCaps.platformWidth;
+    styles.globalActivityIndicator.height = Ti.Platform.displayCaps.platformHeight;
+    styles.globalActivityIndicator.style = Titanium.UI.iPhone.ActivityIndicatorStyle.PLAIN;
+}

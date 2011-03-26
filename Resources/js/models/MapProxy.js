@@ -9,21 +9,19 @@ var MapService = function (facade) {
     
     self.search = function (query, opts) {
 
-        var result = [], searchBusy;
+        var result = [];
         query = query.toLowerCase();
 
         //If a search isn't already executing
-       if(!searchBusy && query != '') {
+       if(query != '') {
             onSearch(query);
             Ti.API.info("Starting to search...");
-            searchBusy = true;
 
             for (var i=0, iLength = mapPoints.length; i<iLength; i++) {
                 if (mapPoints[i].title.toLowerCase().search(query) != -1 || mapPoints[i].searchText.toLowerCase().search(query) != -1) {
                     result.push(mapPoints[i]);
                 }
             }
-            searchBusy = false;
             onSearchComplete(result);
             
         } else if (query === '') {
@@ -78,7 +76,6 @@ var MapService = function (facade) {
     
     function onEmptySearch () {
         Ti.App.fireEvent('MapProxyEmptySearch');
-        // map.removeAllAnnotations();
     }
     
     function onSearchComplete(result) {

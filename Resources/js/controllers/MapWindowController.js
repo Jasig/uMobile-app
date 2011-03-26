@@ -26,7 +26,6 @@
     locationDetailViewOptions,
     locationDetailView,
     app = win.app,
-    self = {},
     mapView,
     searchBar,
     createMapView,
@@ -37,9 +36,13 @@
     mapService,
     titleBar;
 
-    self.init = function() {
+    init = function() {
         //Initializes when the map window is loaded, is passed an instance of the MapService proxy.
         mapService = app.models.mapService;
+        
+        win.add(app.views.GlobalActivityIndicator);
+        app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
+        app.views.GlobalActivityIndicator.show();
 
         titleBar = app.views.GenericTitleBar({
             homeButton: true,
@@ -59,14 +62,14 @@
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
         Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
         
-        self.createMapView();
+        createMapView();
         
-        win.add(app.views.GlobalActivityIndicator);
+        app.views.GlobalActivityIndicator.hide();
         
         win.initialized = true;
     };
 
-    self.createMapView = function() {
+    createMapView = function() {
         var annotations,
         buttonBar;
 
@@ -80,7 +83,7 @@
 
         //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
         mapView.addEventListener('touchstart', searchBlur);
-        mapView.addEventListener('loaddetail', self.loadDetail);
+        mapView.addEventListener('loaddetail', loadDetail);
         mapView.addEventListener("click", onMapViewClick);
         mapView.addEventListener('regionChanged', searchBlur);
 
@@ -101,7 +104,7 @@
             });
         }
     };
-    self.loadDetail = function(e) {
+    loadDetail = function(e) {
         //Create and open the view for the map detail
         // locationDetailWinOptions = app.styles.view;
         // locationDetailViewOptions.url = app.UPM.getResourcePath("/js/controllers/MapDetailViewController.js");
@@ -134,6 +137,7 @@
             });
             mapView.addAnnotation(_annotation);
         }
+        app.views.GlobalActivityIndicator.hide();
     }
 
     function searchBlur(e) {
@@ -141,6 +145,7 @@
     }
 
     function searchSubmit(e) {
+        Ti.API.debug('searchSubmit() in MapWindowController');
         searchBlur();
         mapService.search(searchBar.value);
     }
@@ -168,7 +173,6 @@
     }
     function onProxySearchComplete (e) {
         Ti.API.debug('onProxySearchComplete' + JSON.stringify(e.points));
-        app.views.GlobalActivityIndicator.hide();
         plotPoints(e.points);
     }
     function onProxyEmptySearch (e) {
@@ -176,8 +180,7 @@
         Ti.API.debug('onProxyEmptySearch' + e);
     }
 
-    self.init();
-    return self;
+    init();
 })();
 
 
