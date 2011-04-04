@@ -101,16 +101,26 @@ createCredentialsForm = function () {
             username: usernameInput.value, 
             password: passwordInput.value 
         });
-        Ti.API.debug('Updated user credentials');
-        Ti.App.fireEvent('credentialUpdate', {});
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'settings',
-                newWindow: 'home',
-                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
+        win.app.UPM.establishSession(
+            function () {
+                Ti.API.debug('Updated user credentials');
+                Ti.App.fireEvent('credentialUpdate', {});
+                Ti.App.fireEvent(
+                    'showWindow', 
+                    {
+                        oldWindow: 'settings',
+                        newWindow: 'home',
+                        transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
+                    }
+                );
+            },
+            function () {
+                Titanium.UI.createAlertDialog({ title: 'Error',
+                    message: 'Authentication failed', buttonNames: ['OK']
+                }).show();
             }
         );
+
     });
 
 };
