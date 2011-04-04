@@ -290,33 +290,37 @@ drawHomeGrid = function (portlets) {
 createPortalView();
 
 var getPortletsForUser = function(onload) {
-    var loader = Titanium.Network.createHTTPClient();
+    var portlets;
 
-    // Sets the HTTP request method, and the URL to get data from  
-    var jsonUrl = win.app.UPM.BASE_PORTAL_URL + win.app.UPM.PORTAL_CONTEXT + "/api/layoutDoc.json";
-    Ti.API.info(jsonUrl);
-    loader.open("GET", jsonUrl);
+    // Display a loading indicator until we can finish downloading the user
+    // layout and creating the initial view
     win.add(app.views.GlobalActivityIndicator);
     app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
     app.views.GlobalActivityIndicator.show();
 
-    // Runs the function when the data is ready for us to process  
-    loader.onload = function() { 
-        Ti.API.debug("Layout data loaded in getPortletsForUser");
-        var layout = eval('('+this.responseText+')').layout;
-        for (var i = 0; i < win.app.UPM.LOCAL_MODULES.length; i++) {
-            layout.push(win.app.UPM.LOCAL_MODULES[i]);
-        }
-        drawHomeGrid(layout);
-        app.views.GlobalActivityIndicator.hide();
-    };  
-
-    // Send the HTTP request  
-    loader.send();
+    // Get the module list for this user from the portal server and create a 
+    // layout based on this list.
+    portlets = app.UPM.getPortletList();
+    app.lastUpdate = new Date();
+    drawHomeGrid(portlets);
+    
+    // Remove our loading indicator
+    app.views.GlobalActivityIndicator.hide();
 
 };
 
-win.app.UPM.establishSession(getPortletsForUser);
+var showSettings = function() {
+    Ti.App.fireEvent(
+        'showWindow', 
+        {
+            oldWindow: 'home',
+            newWindow: 'settings',
+            transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT 
+        }
+    );
+};
+
+win.app.UPM.establishSession(getPortletsForUser, showSettings);
 
 Ti.App.addEventListener('credentialUpdate', function(e){
     createPortalView();
