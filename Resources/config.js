@@ -23,9 +23,8 @@
  * may differ between deploying institutions.
  */
  
-Ti.include('js/models/DirectoryPersonVO.js');
-
 var UPM = UPM || {};
+
 
 //------- PORTAL LOCATION -------
 
@@ -49,6 +48,22 @@ UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
 //------- DIRECTORY SERVICE -------
 
 UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/api/people.json';
+UPM.DIRECTORY_SERVICE_SEARCH_FIELDS = [
+    'given',
+    'sn'
+];
+UPM.DIRECTORY_SERVICE_RESULT_FIELDS = {
+    fullName: 'displayName',
+    nickname: 'nickname',
+    URL: 'url',
+    homeAddress: 'postalAddress',
+    homeEmail: 'mail',
+    homePhone: 'telephoneNumber',
+    firstName: 'givenName',
+    lastName: 'sn',
+    jobTitle: 'title',
+    organization: 'department'
+};
 
 Titanium.App.Properties.setString('locale','en_US');
 
@@ -77,5 +92,5 @@ UPM.GLOBAL_STYLES = {
 };
 
 UPM.directoryEmergencyContacts = [];
-UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Police", {phone: '555 555 5555'}));
-UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Ambulance", {phone: '555 555 5555'}));
+//UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Police", {phone: '555 555 5555'}));
+//UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Ambulance", {phone: '555 555 5555'}));

@@ -106,7 +106,7 @@ Ti.API.info("Directory Window Opened");
             for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
                 var _contact = directoryProxy.getEmergencyContacts()[i],
                 _emergencyContactRow = Titanium.UI.createTableViewRow({
-                    title: _contact.name,
+                    title: _contact.fullName,
                     hasChild: true,
                     data: _contact
                 });
@@ -161,9 +161,10 @@ Ti.API.info("Directory Window Opened");
 
         if(_people.length > 0) {
             // peopleListTable.show();
+            Ti.API.info(_people);
             for (var i=0, iLength=_people.length; i<iLength; i++) {
                 var _contactRow = Titanium.UI.createTableViewRow({
-                    title: _people[i].name,
+                    title: _people[i].displayName[0],
                     hasChild: true,
                     data: _people[i]
                 });

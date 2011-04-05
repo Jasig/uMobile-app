@@ -17,9 +17,26 @@ var DirectoryProxy = function (facade,opts) {
     };
     
     self.search = function (query) {
-        xhrSearch.open('GET',app.UPM.DIRECTORY_SERVICE_URL + query);
+        Ti.API.info("query: " + query);
+        var url = app.UPM.DIRECTORY_SERVICE_URL;
+        var separator = '?';
+        Ti.API.info("url: " + url);
+        var i = 0;
+        for (i = 0; i < app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
+            url += separator + 'searchTerms[]=' + app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS[i];
+            separator = '&';
+        }
+        separator = '&';
+        Ti.API.info("query: " + query);
+        Ti.API.info("url: " + url);
+        for (i = 0; i < app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
+            url += separator + app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
+            separator = '&';
+        }
+        
+        Ti.API.info('Query: ' + url);
+        xhrSearch.open('GET', url);
         xhrSearch.send();
-        Ti.API.info('Query: ' + app.UPM.DIRECTORY_SERVICE_URL);
         Ti.App.fireEvent('DirectoryProxySearching');
     };
     self.clear = function () {
@@ -45,8 +62,8 @@ var DirectoryProxy = function (facade,opts) {
         people = [];
         var _people = JSON.parse(xhrSearch.responseText).people;
         for (var i=0, iLength=_people.length; i<iLength; i++) {
-            var _person = new app.models.DirectoryPersonVO(_people[i].name,_people[i].attributes);
-            people.push(_person);
+            Ti.API.info('calling method');
+            people.push(_people[i].attributes);
         }
         Ti.App.fireEvent('DirectoryProxySearchComplete');
     };
@@ -54,8 +71,6 @@ var DirectoryProxy = function (facade,opts) {
     onXhrSearchError = function (e) {
         Ti.App.fireEvent('DirectoryProxySearchError');
     };
-    
-
     
     init();
     

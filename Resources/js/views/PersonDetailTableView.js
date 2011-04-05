@@ -16,55 +16,65 @@ var PersonDetailTableView = function (facade,opts) {
         var newData = [],
             emailSection,
             emailSectionTitle,
-            phoneSection,
-            usernameSection;
+            phoneSection;
             
         self.data = [];
         person = p;
+        Ti.API.info(person);
         
         Ti.API.debug("checking user's email");
-        if (person.email && person.email.length > 0) {
-            if(person.email.length > 1) {
-                emailSectionTitle = app.localDictionary.emailAddresses;
-            }
-            else {
-                emailSectionTitle = app.localDictionary.emailAddress;
-            }
+        if (person.email.home) {
+            emailSectionTitle = app.localDictionary.emailAddress;
             emailSection = Titanium.UI.createTableViewSection({
                 headerTitle: emailSectionTitle
             });
-            for (var e=0,eLength=person.email.length; e<eLength; e++) {
                 _row = Titanium.UI.createTableViewRow({
-                    title: person.email[e]
+                    title: person.email.home
                 });
                 emailSection.add(_row);
                 _row.addEventListener('click',onEmailSelect);
-                
-            }
             newData.push(emailSection);
         }
         
         Ti.API.debug("checking phone");
-        if (person.phone) {
+        if (person.phone.home) {
             phoneSection = Titanium.UI.createTableViewSection({
                 headerTitle: app.localDictionary.phoneNumber
             });
             phoneSection.add(Titanium.UI.createTableViewRow({
-                title: person.phone
+                title: person.phone.home
             }));
             newData.push(phoneSection);
         }
         
-        Ti.API.debug("checking username");
-        if (person.username) {
-            usernameSection = Titanium.UI.createTableViewSection({
-                headerTitle: app.localDictionary.username
+        if (person.jobTitle) {
+            var titleSection = Titanium.UI.createTableViewSection({
+                headerTitle: 'Title'
             });
-            usernameSection.add(Titanium.UI.createTableViewRow({
-                title: person.username
-                // title: 'username'
+            titleSection.add(Titanium.UI.createTableViewRow({
+                title: person.jobTitle
             }));
-            newData.push(usernameSection);
+            newData.push(titleSection);
+        }
+        
+        if (person.organization) {
+            var orgSection = Titanium.UI.createTableViewSection({
+                headerTitle: 'Organization'
+            });
+            orgSection.add(Titanium.UI.createTableViewRow({
+                title: person.phone.home
+            }));
+            newData.push(orgSection);
+        }
+        
+        if (person.address.home) {
+            var addressSection = Titanium.UI.createTableViewSection({
+                headerTitle: 'Address'
+            });
+            addressSection.add(Titanium.UI.createTableViewRow({
+                title: person.address.home
+            }));
+            newData.push(addressSection);
         }
         
         self.data = newData;
@@ -81,6 +91,11 @@ var PersonDetailTableView = function (facade,opts) {
             Ti.Platform.openURL('mailto:' + e.source.title);            
         }
     };
+    
+    onPhoneSelect = function (e) {
+        Ti.Platform.openURL('tel:' + e.source.title);
+    };
+    
     self.construct();
     
     return self;

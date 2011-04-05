@@ -24,7 +24,6 @@ Titanium.include('skin.js');
 Titanium.include('style.js');
 Titanium.include('localization.js');
 Titanium.include('js/models/MapProxy.js');
-Titanium.include('js/models/DirectoryPersonVO.js');
 Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/GlobalActivityIndicator.js');
@@ -45,8 +44,7 @@ facade = {
 
 facade.models = {
     mapService: new MapService(facade),
-    directoryProxy: new DirectoryProxy(facade),
-    DirectoryPersonVO: DirectoryPersonVO
+    directoryProxy: new DirectoryProxy(facade)
 };
 
 facade.views = {
