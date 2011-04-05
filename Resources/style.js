@@ -10,7 +10,15 @@ var TITLEBAR_HEIGHT = 40,
 DETAIL_TOP_TITLE_COLOR = '#333',
 DETAIL_TOP_BACKGROUND_COLOR = '#eee',
 PRIMARY_BAR_BACKGROUND_COLOR = "#000";
-SECONDARY_BAR_BACKGROUND_COLOR = "#333";
+SECONDARY_BAR_BACKGROUND_COLOR = "#38678F";
+PRIMARY_BAR_BACKGROUND_GRADIENT = {
+    type:'linear',
+    colors:['#3E4650','#121416']
+};
+SECONDARY_BAR_BACKGROUND_GRADIENT = {
+    type:'linear',
+    colors:['#4682B4','#294D6B']
+};
 styles = {
     view: {
         backgroundColor: '#fff',
@@ -55,7 +63,8 @@ styles = {
         height: TITLEBAR_HEIGHT,
         backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
         barColor: SECONDARY_BAR_BACKGROUND_COLOR,
-        showCancel: true
+        backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
+        showCancel: false
     }, 
     //Styles for GenericTitleBar.js
     titleBar: {
@@ -63,10 +72,7 @@ styles = {
     	left: 0,
     	height: 40,
     	backgroundColor: PRIMARY_BAR_BACKGROUND_COLOR,
-    	backgroundGradient: {
-    	    type:'linear',
-            colors:['#333','#000']
-    	},
+    	backgroundGradient: PRIMARY_BAR_BACKGROUND_GRADIENT,
     	width: Titanium.Platform.displayCaps.platformWidth
     },
     //Titanium.UI.Button implemented in the GenericTitleBar
@@ -116,6 +122,7 @@ styles = {
     	left: 0,
     	height: TITLEBAR_HEIGHT,
     	backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
+    	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
     	width: Titanium.Platform.displayCaps.platformWidth
     },
     secondaryNavBarButton: {
@@ -124,18 +131,15 @@ styles = {
         width: 50,
         height: 30,
     	backgroundImage: 'none',
-    	color: '#333',
+    	color: '#fff',
         borderWidth: 1,
-        borderRadius: 5,
-        borderColor: '#ccc',
+        borderRadius: 10,
+        borderColor: '#000',
     	font: {
-    	    fontSize: 14
+    	    fontSize: 14,
+    	    fontWeight: 'bold'
     	},
-    	backgroundGradient: {
-    	    backFillStart: false,
-    	    type:'linear',
-            colors:['#fff','#ccc']
-    	}
+    	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT
     },
     secondaryNavBarLabel: {
         textAlign: "center",

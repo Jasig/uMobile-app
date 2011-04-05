@@ -45,6 +45,7 @@ createPortalView = function () {
 
     Ti.API.debug("Creating a new portal home view");
 	portalView = Titanium.UI.createScrollView({
+        backgroundImage: pathToRoot + 'images/home-background.png',
 		backgroundColor: win.app.UPM.HOME_GRID_BACKGROUND_COLOR
 	});
 
@@ -147,10 +148,12 @@ drawAndroidGrid = function (portlets) {
         gridItemLabel = Titanium.UI.createLabel({
             textAlign: "center",
             text: _portlet.title.toLowerCase(),
-            shadowColor: "#fff",
+            shadowColor: "#000",
             shadowOffset: { x:0 , y:1 },
             font: { 
-                fontSize: 12
+                fontSize: 10,
+                fontWeight: 'bold',
+                fontFamily: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
             },
             top: (win.app.UPM.HOME_GRID_ITEM_HEIGHT - 20), //Magic number, consider constant or another approach
             color: win.app.UPM.HOME_GRID_TEXT_COLOR,
@@ -168,7 +171,7 @@ drawAndroidGrid = function (portlets) {
 
 
         // TODO: hook up to actual badge icon service
-        if (_portlet.title == 'Blackboard') {
+        if (_portlet.newItemCount > 0) {
             Ti.API.info("blackboard");
             gridBadgeBackground = Titanium.UI.createImageView({
                 image: "../../icons/badgeBackground.png",
@@ -181,7 +184,7 @@ drawAndroidGrid = function (portlets) {
             gridBadgeNumber = Titanium.UI.createLabel({
                 textAlign: "center",
                 color: "#fff",
-                text: "1",
+                text: _portlet.newItemCount,
                 height: 16,
                 width: 16,
                 font: { 
