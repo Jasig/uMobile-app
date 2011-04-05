@@ -24,6 +24,7 @@
         portletViewOpts,
         portletView,
         titleBar,
+        navBar,
         initialized,
         pathToRoot = '../../';
 
@@ -39,12 +40,27 @@
         
         portletViewOpts = app.styles.portletView;
         portletView = Titanium.UI.createWebView(portletViewOpts);
+        portletView.top = 40;
         win.add(portletView);
         
         portletView.addEventListener('load', onPortletLoad);
         portletView.addEventListener('beforeload', onBeforePortletLoad);
         Ti.App.addEventListener('includePortlet', onIncludePortlet);
-        
+
+        // initialize navigation back button for URLs outside of the portal
+        navBarOptions = app.styles.secondaryNavBarButton;
+        navBarOptions.title = app.localDictionary.back;
+        navBackButton = Titanium.UI.createButton(navBarOptions);
+
+        // initialize navigation bar for URLs outside the portal
+        navBar = new app.views.SecondaryNavBar(app,{
+            backButton: navBackButton
+        });
+        navBar.top = 40;
+        navBar.visible = false;
+        win.add(navBar);
+        navBackButton.addEventListener('click', function() { portletView.goBack(); });
+
         win.add(activityIndicator);
         
         win.initialized = true;
@@ -69,6 +85,17 @@
     function onPortletLoad(e) {
         Ti.API.debug("Porlet loaded");
         activityIndicator.hide();
+        
+        var newUrl = e.url;
+        if (newUrl.indexOf('localhost:8080/uPortal') >= 0) {
+            navBar.visible = false;
+            portletView.top = 40;
+        } else {
+            Ti.API.info("making visible");
+            navBar.visible = true;
+            portletView.top = 80;
+        }
+
         portletView.show();
     }
     
