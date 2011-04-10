@@ -148,6 +148,56 @@ styles = {
             fontWeight: "bold"
         }
     },
+    //PORTAL VIEW STYLES
+    homeGrid: {
+        backgroundImage: UPM.getResourcePath('images/home-background.png'),
+        numColumns: 3,
+        backgroundColor: "#eee",
+        color: "#fff"
+    },
+    gridIcon: {
+        width: 32,
+        height: 32
+    },
+    gridItem: {
+        width: 80,
+        height: 80,
+        padding: 10
+    },
+    gridItemLabel: {
+        textAlign: "center",
+        shadowColor: "#000",
+        shadowOffset: { x:0 , y:1 },
+        font: { 
+            fontSize: 10,
+            fontWeight: 'bold',
+            fontFamily: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
+        },
+        top: 60, //Magic number, consider constant or another approach
+        color: "#fff",
+        touchEnabled: false
+        
+    },
+    gridBadgeBackground: {
+        top: 15, //Magic number, consider constant or another approach
+        right: 15,
+        height: 20,
+        width: 20
+    },
+    gridBadgeNumber: {
+        textAlign: "center",
+        color: "#fff",
+        height: 16,
+        width: 16,
+        font: { 
+            fontSize: 12,
+            fontWeight: "bold"
+        },
+        top: 16, //Magic number, consider constant or another approach
+        right: 17,
+        touchEnabled: false
+        
+    },
 	//DIRECTORY STYLES
 	contactDetailView: {
 	    backgroundColor: DETAIL_TOP_BACKGROUND_COLOR,

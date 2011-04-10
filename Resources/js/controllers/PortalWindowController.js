@@ -44,10 +44,7 @@ createPortalView = function () {
     }
 
     Ti.API.debug("Creating a new portal home view");
-	portalView = Titanium.UI.createScrollView({
-        backgroundImage: pathToRoot + 'images/home-background.png',
-		backgroundColor: win.app.UPM.HOME_GRID_BACKGROUND_COLOR
-	});
+	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
 
 	var titleBar = new app.views.GenericTitleBar({
 	    app: app,
@@ -122,8 +119,8 @@ drawAndroidGrid = function (portlets) {
         var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
         _portlet = portlets[i];
 
-        var completeWidth = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
-        var completeHeight = win.app.UPM.HOME_GRID_ITEM_WIDTH + 2 * win.app.UPM.HOME_GRID_ITEM_PADDING;
+        var completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        var completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
 
         // calculate the appropriate number of columns based on the device
         // width and desired item size
@@ -133,68 +130,39 @@ drawAndroidGrid = function (portlets) {
         var leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
 
         // Calculate the position for this grid item
-        top = win.app.UPM.TITLEBAR_HEIGHT + win.app.UPM.HOME_GRID_ITEM_PADDING + Math.floor(i / numColumns) * completeHeight;
-        left = leftPadding + win.app.UPM.HOME_GRID_ITEM_PADDING + (i % numColumns) * completeWidth;
+        top = app.styles.titleBar.height + app.styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight;
+        left = leftPadding + app.styles.gridItem.padding + (i % numColumns) * completeWidth;
 
         // Create the container for the grid item
-        gridItem = Titanium.UI.createView({
-            top: top,
-            left: left,
-            height: win.app.UPM.HOME_GRID_ITEM_HEIGHT,
-            width: win.app.UPM.HOME_GRID_ITEM_WIDTH
-        });
+        var gridItemDefaults = app.styles.gridItem;
+        gridItemDefaults.top = top;
+        gridItemDefaults.left = left;
+        gridItem = Titanium.UI.createView(gridItemDefaults);
 
         //Add a label to the grid item
-        gridItemLabel = Titanium.UI.createLabel({
-            textAlign: "center",
-            text: _portlet.title.toLowerCase(),
-            shadowColor: "#000",
-            shadowOffset: { x:0 , y:1 },
-            font: { 
-                fontSize: 10,
-                fontWeight: 'bold',
-                fontFamily: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
-            },
-            top: (win.app.UPM.HOME_GRID_ITEM_HEIGHT - 20), //Magic number, consider constant or another approach
-            color: win.app.UPM.HOME_GRID_TEXT_COLOR,
-            touchEnabled: false
-        });
+        var gridItemLabelDefaults = app.styles.gridItemLabel;
+        gridItemLabelDefaults.text =  _portlet.title.toLowerCase();
+        gridItemLabel = Titanium.UI.createLabel(gridItemLabelDefaults);
         gridItem.add(gridItemLabel);
 
         //Add an icon to the grid item
-        gridItemIcon = Titanium.UI.createImageView({
-            image: getIconUrl(_portlet),
-            height: win.app.UPM.HOME_GRID_ICON_HEIGHT,
-            width: win.app.UPM.HOME_GRID_ICON_WIDTH
-        });
+        gridItemIconDefaults = app.styles.gridIcon;
+        gridItemIconDefaults.image = getIconUrl(_portlet);
+        gridItemIcon = Titanium.UI.createImageView(gridItemIconDefaults);
         gridItem.add(gridItemIcon);
 
 
         // TODO: hook up to actual badge icon service
         if (_portlet.newItemCount > 0) {
             Ti.API.info("blackboard");
-            gridBadgeBackground = Titanium.UI.createImageView({
-                image: "../../icons/badgeBackground.png",
-                top: win.app.UPM.HOME_GRID_ITEM_PADDING+5, //Magic number, consider constant or another approach
-                right: win.app.UPM.HOME_GRID_ITEM_PADDING+5,
-                height: 20,
-                width: 20
-            });
+            var gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
+            gridBadgeBackgroundDefaults.image = "../../icons/badgeBackground.png";
+            gridBadgeBackground = Titanium.UI.createImageView(gridBadgeBackgroundDefaults);
             gridItem.add(gridBadgeBackground);
-            gridBadgeNumber = Titanium.UI.createLabel({
-                textAlign: "center",
-                color: "#fff",
-                text: _portlet.newItemCount,
-                height: 16,
-                width: 16,
-                font: { 
-                    fontSize: 12,
-                    fontWeight: "bold"
-                },
-                top: win.app.UPM.HOME_GRID_ITEM_PADDING+6, //Magic number, consider constant or another approach
-                right: win.app.UPM.HOME_GRID_ITEM_PADDING+7,
-                touchEnabled: false
-            });
+            
+            var gridBadgeNumberDefaults = app.styles.gridBadgeNumber;
+            gridBadgeNumberDefaults.text = _portlet.newItemCount;
+            gridBadgeNumber = Titanium.UI.createLabel(gridBadgeNumberDefaults);
             gridItem.add(gridBadgeNumber);
         }
 
