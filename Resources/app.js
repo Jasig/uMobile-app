@@ -62,6 +62,11 @@ facade.controllers = {
 
 Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
 
+//Let the user know that they need a network connection to use this app.
+if (!Ti.Network.online) {
+    alert(facade.localDictionary.networkConnectionRequired);
+}
+
 //
 // MAIN PORTAL VIEW
 //

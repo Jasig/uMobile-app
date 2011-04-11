@@ -18,12 +18,14 @@ localDictionary.en_US = {
     searchResults: "Search Results",
     noSearchResults: "No Search Results",
     activityIndicatorMessage: "Loading...",
+    networkConnectionRequired: "A network connection is required to use this application. Please connect to the internet and come back to this application.",
     
     //Map Window & Map Detail Window
     map: "Map",
     getDirections: "Get Directions",
     noAddressAvailable: "No Address Available",
     titleNotAvailable: "Title Not Available",
+    mapNoSearchResults: "No locations match your search",
     map_NETWORK_UNAVAILABLE: "There was an error loading locations for the map. Please check your internet connection and try again",
     map_REQUEST_TIMEOUT: "The request to load map locations timed out. Please try again later.",
     map_SERVER_ERROR: "There was an error loading map locations. Please try again later.",

@@ -107,7 +107,12 @@ var MapService = function (facade) {
     
     function onSearchComplete(result) {
         Ti.API.debug('onSearchComplete in MapProxy: ' + JSON.stringify(result));
-        Ti.App.fireEvent('MapProxySearchComplete', { points: result });
+        if (result.length < 1) {
+            alert(app.localDictionary.mapNoSearchResults);
+        }
+        else {
+            Ti.App.fireEvent('MapProxySearchComplete', { points: result });
+        }
     }
     
     function onPointsLoaded () {
