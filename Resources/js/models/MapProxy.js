@@ -71,11 +71,17 @@ var MapService = function (facade) {
             responseLength = response.buildings.length;
             if (responseLength > 0) {
                 for (var i = 0; i < responseLength; i++) {
-                    response.buildings[i].title = response.buildings[i].name;
-                    response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
-                    response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
+                    var building = response.buildings[i];
+                    if (building.name && building.latitude && building.longitude) {
+                        response.buildings[i].title = response.buildings[i].name;
+                        response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
+                        response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
 
-                    mapPoints.push(response.buildings[i]);
+                        mapPoints.push(response.buildings[i]);
+                    }
+                    else {
+                        Ti.API.debug("Skipping " + building.name);
+                    }
                 }
                 onPointsLoaded();                
             }
