@@ -61,6 +61,7 @@
         Ti.App.addEventListener('MapProxySearching', onProxySearching);
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
         Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
+        Ti.App.addEventListener('MapProxyLoadError', onProxyLoadError);
         
         createMapView();
         
@@ -179,21 +180,28 @@
         app.views.GlobalActivityIndicator.hide();
         Ti.API.debug('onProxyEmptySearch' + e);
     }
+    function onProxyLoadError (e) {
+        Ti.API.debug(JSON.stringify(e));
+        switch (e.errorCode) {
+            case mapService.requestErrors.NETWORK_UNAVAILABLE:
+                alert(app.localDictionary.map_NETWORK_UNAVAILABLE);
+                break;
+            case mapService.requestErrors.REQUEST_TIMEOUT:
+                alert(app.localDictionary.map_REQUEST_TIMEOUT);
+                break;
+            case mapService.requestErrors.SERVER_ERROR:
+                alert(app.localDictionary.map_SERVER_ERROR);
+                break;
+            case mapService.requestErrors.NO_DATA_RETURNED:
+                alert(app.localDictionary.map_NO_DATA_RETURNED);
+                break;
+            case mapService.requestErrors.INVALID_DATA_RETURNED: 
+                alert(app.localDictionary.map_INVALID_DATA_RETURNED);
+                break;
+            default:
+                alert(app.localDictionary.map_GENERAL_ERROR);
+        }
+    }
 
     init();
 })();
-
-
-
-/*  We'll worry about loading indicators later on. 
-    loadingIndicator = Titanium.UI.createActivityIndicator({
-       color : "#fff",
-       backgroundColor : "#000",
-       opacity : 0.75,
-       message : "Map is loading"
-   });   
-   mapView.add(loadingIndicator);
-   loadingIndicator.show();*/
-
-
-

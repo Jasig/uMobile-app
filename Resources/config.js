@@ -36,7 +36,7 @@ UPM.PORTAL_CONTEXT = '/uPortal';
 
 //------- AUTHENTICATION -------
 
-UPM.SERVER_SESSION_TIMEOUT = 29 * 60 * 60;
+UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
 UPM.LOGIN_METHOD = UPM.doCASLogin;
 UPM.CAS_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080/cas' : 'http://localhost:8080/cas';
 UPM.ENCRYPTION_KEY = 'um0b1le';
@@ -44,6 +44,7 @@ UPM.ENCRYPTION_KEY = 'um0b1le';
 //------- MAP SERVICE -------
 
 UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
+
 
 //------- DIRECTORY SERVICE -------
 

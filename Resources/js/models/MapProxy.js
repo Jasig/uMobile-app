@@ -2,7 +2,16 @@ var MapService = function (facade) {
     var app = facade,
         self = {},
         mapPoints = [];
-        
+    
+    self.requestErrors = {
+        NETWORK_UNAVAILABLE: 0,
+        REQUEST_TIMEOUT: 1,
+        SERVER_ERROR: 2,
+        NO_DATA_RETURNED: 3,
+        INVALID_DATA_RETURNED: 4,
+        GENERAL_ERROR: 5
+    };
+    
     self.init = function () {               
         self.loadMapPoints();
     };
@@ -45,9 +54,7 @@ var MapService = function (facade) {
             connectionType : 'GET',
             location : app.UPM.MAP_SERVICE_URL,
             onload : self.newPointsLoaded,
-            onerror : function (e) {
-                Ti.API.info("Error with map service" + request.responseText);
-            }
+            onerror : onLoadError
         });
         request.open("GET", app.UPM.MAP_SERVICE_URL);
         request.send();
@@ -57,18 +64,38 @@ var MapService = function (facade) {
     };
     self.newPointsLoaded = function (e) {
         // Customize the response and add it to the cached mapPoints array in the MapService object.
-        var response = JSON.parse(e.source.responseText);
-        Ti.API.debug("newPointsLoaded()");
+        var response, responseLength;
+        
+        try {
+            response = JSON.parse(e.source.responseText);
+            responseLength = response.buildings.length;
+            if (responseLength > 0) {
+                for (var i = 0; i < responseLength; i++) {
+                    response.buildings[i].title = response.buildings[i].name;
+                    response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
+                    response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
 
-        for (var i = 0, iLength = response.buildings.length; i < iLength; i++) {
-            response.buildings[i].title = response.buildings[i].name;
-            response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
-            response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
-
-            mapPoints.push(response.buildings[i]);
+                    mapPoints.push(response.buildings[i]);
+                }
+                onPointsLoaded();                
+            }
+            else {
+                //No location objects in the response, so fire an event so the controller is aware.
+                Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.NO_DATA_RETURNED});
+            }
         }
-        onPointsLoaded();
+        catch (e) {
+            Ti.API.info("Data was invalid, calling onInvalidData()");
+            //Data didn't parse, so fire an event so the controller is aware
+            Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.INVALID_DATA_RETURNED});
+        }
     };
+    
+    function onLoadError (e) {
+        var errorCode;
+        Ti.API.debug("Error with map service" + JSON.stringify(e));
+        Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.GENERAL_ERROR});
+    }
     
     function onSearch(query) {
         Ti.App.fireEvent('MapProxySearching',query);
