@@ -20,7 +20,6 @@
 // library includes
 Titanium.include('config.js');
 Titanium.include('lib.js');
-Titanium.include('skin.js');
 Titanium.include('style.js');
 Titanium.include('localization.js');
 Titanium.include('js/models/MapProxy.js');
