@@ -26,14 +26,24 @@ var MapService = function (facade) {
        if(query != '' && typeof query == 'string') {
             onSearch(query);
             Ti.API.info("Starting to search...");
-
-            for (var i=0, iLength = mapPoints.length; i<iLength; i++) {
-                if (mapPoints[i].title.toLowerCase().search(query) != -1 || mapPoints[i].searchText.toLowerCase().search(query) != -1) {
-                    result.push(mapPoints[i]);
-                }
+            
+            //Query the database for rows in the map_locations table that match the query
+            queryResult = db.execute('SELECT * FROM map_locations WHERE title LIKE "%'+ query +'%" OR searchText LIKE "%'+ query +'%" or abbreviation LIKE "%'+ query +'%"');
+            
+            //Iterate through the query result to add objects to the result array
+            while (queryResult.isValidRow()) {
+                result.push({
+                    title: queryResult.fieldByName('title'),
+                    address: queryResult.fieldByName('address'),
+                    latitude: queryResult.fieldByName('latitude'),
+                    longitude: queryResult.fieldByName('longitude'),
+                    img: queryResult.fieldByName('img')
+                });
+                Ti.API.info(queryResult.fieldByName('img'));
+                queryResult.next();
             }
-            // Ti.API.info("Database query result: " + (db.execute('SELECT * FROM map_locations WHERE title LIKE "%wall%" OR searchText LIKE "%wall%" or abbreviation LIKE "%wall%"')).rowCount);
-            // result = db.execute('SELECT * FROM map_locations WHERE title LIKE "'+ query +'" OR searchText LIKE "'+ query +'" or abbreviation LIKE "'+ query +'"') ;
+            
+            queryResult.close();
             onSearchComplete(result);
             
         } else if (query === '') {
