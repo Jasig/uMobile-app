@@ -18,11 +18,12 @@ var MapService = function (facade) {
     
     self.search = function (query, opts) {
 
-        var result = [];
+        var result = [], db, queryResult;
+        db = Titanium.Database.open('umobile');
         query = query.toLowerCase();
 
         //If a search isn't already executing
-       if(query != '') {
+       if(query != '' && typeof query == 'string') {
             onSearch(query);
             Ti.API.info("Starting to search...");
 
@@ -31,11 +32,14 @@ var MapService = function (facade) {
                     result.push(mapPoints[i]);
                 }
             }
+            // Ti.API.info("Database query result: " + (db.execute('SELECT * FROM map_locations WHERE title LIKE "%wall%" OR searchText LIKE "%wall%" or abbreviation LIKE "%wall%"')).rowCount);
+            // result = db.execute('SELECT * FROM map_locations WHERE title LIKE "'+ query +'" OR searchText LIKE "'+ query +'" or abbreviation LIKE "'+ query +'"') ;
             onSearchComplete(result);
             
         } else if (query === '') {
             onEmptySearch();
         }
+        db.close();
     };
     self.getAnnotationByTitle = function(t) {
         for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
@@ -64,25 +68,41 @@ var MapService = function (facade) {
     };
     self.newPointsLoaded = function (e) {
         // Customize the response and add it to the cached mapPoints array in the MapService object.
-        var response, responseLength;
+        var response, responseLength, db;
         
         try {
             response = JSON.parse(e.source.responseText);
             responseLength = response.buildings.length;
             if (responseLength > 0) {
+                db = Ti.Database.open('umobile');
+                
                 for (var i = 0; i < responseLength; i++) {
                     var building = response.buildings[i];
                     if (building.name && building.latitude && building.longitude) {
                         response.buildings[i].title = response.buildings[i].name;
                         response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
                         response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
-
+                        
+                        db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (" + 
+                            JSON.stringify(building.name) + ", " + 
+                            JSON.stringify(building.abbreviation) + ", " + 
+                            JSON.stringify(building.accuracy) + ", " + 
+                            JSON.stringify(building.address) + ", " + 
+                            JSON.stringify(building.alternateName) + ", " + 
+                            parseFloat(building.latitude) + ", " + 
+                            parseFloat(building.longitude) + ", " + 
+                            JSON.stringify(building.searchText) + ", " + 
+                            (building.zip ? parseInt(building.zip, 10) : null) + ", " + 
+                            JSON.stringify(building.img) +")");
+                        
+                        
                         mapPoints.push(response.buildings[i]);
                     }
                     else {
                         Ti.API.debug("Skipping " + building.name);
                     }
                 }
+                db.close();
                 onPointsLoaded();                
             }
             else {
@@ -112,7 +132,7 @@ var MapService = function (facade) {
     }
     
     function onSearchComplete(result) {
-        Ti.API.debug('onSearchComplete in MapProxy: ' + JSON.stringify(result));
+        Ti.API.debug('onSearchComplete in MapProxy');
         if (result.length < 1) {
             alert(app.localDictionary.mapNoSearchResults);
         }

@@ -173,7 +173,7 @@
         app.views.GlobalActivityIndicator.show();
     }
     function onProxySearchComplete (e) {
-        Ti.API.debug('onProxySearchComplete' + JSON.stringify(e.points));
+        Ti.API.debug('onProxySearchComplete');
         plotPoints(e.points);
     }
     function onProxyEmptySearch (e) {
