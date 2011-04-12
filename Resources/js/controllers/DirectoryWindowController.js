@@ -68,6 +68,7 @@ Ti.API.info("Directory Window Opened");
         Ti.API.debug("DirectoryWindowController.init()");
         win.backgroundColor = app.UPM.GLOBAL_STYLES.windowBackgroundColor;
         win.initialized = true;
+        Ti.App.addEventListener('showWindow', onWindowBlur);
         viewBottom = 0;
         
         //Create a title bar from the generic title bar partial view
@@ -199,6 +200,9 @@ Ti.API.info("Directory Window Opened");
     };
     
     // Controller Events
+    function onWindowBlur (e) {
+        blurSearch();
+    }
     // Search Events
     onPhoneDirectoryClick = function (e) {
         Ti.API.debug("Clicked the phone directory button");

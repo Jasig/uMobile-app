@@ -20,10 +20,11 @@ var MapService = function (facade) {
 
         var result = [], db, queryResult;
         db = Titanium.Database.open('umobile');
-        query = query.toLowerCase();
 
         //If a search isn't already executing
-       if(query != '' && typeof query == 'string') {
+        if(query != '' && typeof query == 'string') {
+            query = query.toLowerCase();
+            query = query.replace(/[^a-zA-Z 0-9]+/g,'');
             onSearch(query);
             Ti.API.info("Starting to search...");
             

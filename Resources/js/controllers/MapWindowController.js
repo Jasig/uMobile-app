@@ -41,6 +41,7 @@
         mapService = app.models.mapService;
         
         win.add(app.views.GlobalActivityIndicator);
+        Ti.App.addEventListener('showWindow', onWindowBlur);
         app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
         app.views.GlobalActivityIndicator.show();
 
@@ -151,6 +152,12 @@
         mapService.search(searchBar.value);
     }
 
+    // Event Handlers
+    //Controller Events
+    function onWindowBlur(e) {
+        Ti.API.info("Map blur event fired");
+        searchBlur();
+    }
     function onMapViewClick(e) {
         searchBlur();
         var _annotation;
