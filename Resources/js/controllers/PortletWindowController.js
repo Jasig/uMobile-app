@@ -79,6 +79,7 @@
     function onBeforePortletLoad (e) {
         Ti.API.debug("Loading portlet");
         activityIndicator.message = app.localDictionary.loading;
+        activityIndicator.resetDimensions();
         activityIndicator.show();
     }
     

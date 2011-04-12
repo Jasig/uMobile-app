@@ -44,7 +44,7 @@ createPortalView = function () {
     }
 
     Ti.API.debug("Creating a new portal home view");
-	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
+	portalView = Titanium.UI.createView(app.styles.homeGrid);
 
 	var titleBar = new app.views.GenericTitleBar({
 	    app: app,
@@ -53,7 +53,7 @@ createPortalView = function () {
 	    settingsButton: true,
 	    homeButton: false
 	});
-	portalView.add(titleBar);
+	win.add(titleBar);
     win.add(portalView);
 
     win.initialized = true;
@@ -130,7 +130,7 @@ drawAndroidGrid = function (portlets) {
         var leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
 
         // Calculate the position for this grid item
-        top = app.styles.titleBar.height + app.styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight;
+        top = app.styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight;
         left = leftPadding + app.styles.gridItem.padding + (i % numColumns) * completeWidth;
 
         // Create the container for the grid item

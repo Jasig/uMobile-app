@@ -66,7 +66,6 @@ Ti.API.info("Directory Window Opened");
     
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
-        win.backgroundColor = app.UPM.GLOBAL_STYLES.windowBackgroundColor;
         win.initialized = true;
         Ti.App.addEventListener('showWindow', onWindowBlur);
         viewBottom = 0;
@@ -80,7 +79,7 @@ Ti.API.info("Directory Window Opened");
             windowKey: win.key
         });
         win.add(titleBar);
-        viewBottom += app.UPM.TITLEBAR_HEIGHT;
+        viewBottom += app.styles.titleBar.height;
 
         searchBarOptions = app.styles.searchBar;
         searchBarOptions.top = viewBottom;

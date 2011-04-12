@@ -36,7 +36,7 @@
         // to pre-populate the input fields
         credentials = win.app.UPM.getCredentials();
 
-        win.backgroundColor = win.app.UPM.HOME_GRID_BACKGROUND_COLOR;
+        win.backgroundColor = win.app.styles.backgroundColor;
         
         Ti.App.addEventListener('showWindow', onWindowBlur);
         titleBar = new app.views.GenericTitleBar({

@@ -59,7 +59,8 @@ facade.controllers = {
     MapDetailViewController: MapDetailViewController
 };
 
-Titanium.UI.setBackgroundColor(UPM.HOME_GRID_BACKGROUND_COLOR);
+Titanium.UI.setBackgroundColor(facade.styles.backgroundColor);
+Titanium.UI.setBackgroundImage(facade.styles.backgroundImage);
 
 //Let the user know that they need a network connection to use this app.
 if (!Ti.Network.online) {

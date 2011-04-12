@@ -20,6 +20,8 @@ SECONDARY_BAR_BACKGROUND_GRADIENT = {
     colors:['#4682B4','#294D6B']
 };
 styles = {
+    backgroundColor: '#fff',
+    backgroundImage: UPM.getResourcePath('images/home-background.png'),
     view: {
         backgroundColor: '#fff',
         top: TITLEBAR_HEIGHT
@@ -70,7 +72,7 @@ styles = {
     titleBar: {
         top: 0,
     	left: 0,
-    	height: 40,
+    	height: TITLEBAR_HEIGHT,
     	backgroundColor: PRIMARY_BAR_BACKGROUND_COLOR,
     	backgroundGradient: PRIMARY_BAR_BACKGROUND_GRADIENT,
     	width: Titanium.Platform.displayCaps.platformWidth
@@ -150,9 +152,8 @@ styles = {
     },
     //PORTAL VIEW STYLES
     homeGrid: {
-        backgroundImage: UPM.getResourcePath('images/home-background.png'),
+        top: TITLEBAR_HEIGHT,
         numColumns: 3,
-        backgroundColor: "#eee",
         color: "#fff"
     },
     gridIcon: {
@@ -173,13 +174,13 @@ styles = {
             fontWeight: 'bold',
             fontFamily: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
         },
-        top: 60, //Magic number, consider constant or another approach
+        top: 80 - 20,
         color: "#fff",
         touchEnabled: false
         
     },
     gridBadgeBackground: {
-        top: 15, //Magic number, consider constant or another approach
+        top: 15, 
         right: 15,
         height: 20,
         width: 20
