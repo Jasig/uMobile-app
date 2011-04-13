@@ -223,7 +223,12 @@ styles = {
 	    top: TITLEBAR_HEIGHT + 85
 	},
 	directoryDetailRow: {
-	    backgroundColor: "#fff"
+	    backgroundColor: "#fff",
+	    color: '#333',
+	    textAlign: 'center',
+	    fontSize: 14,
+	    fontWeight: 'bold',
+	    className: 'personDataContainer'
 	},
 	directoryDetailRowLabel: {
 	    font: {
