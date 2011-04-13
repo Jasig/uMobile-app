@@ -6,12 +6,6 @@ var PersonDetailTableView = function (facade,opts) {
         onEmailSelect;
     
     self.update = function (p) {
-        var newData = [],
-            emailSection,
-            emailSectionTitle,
-            phoneSection;
-            
-        self.data = [];
         person = p;
         Ti.API.info(person);
         
@@ -56,16 +50,19 @@ var PersonDetailTableView = function (facade,opts) {
         _row = Titanium.UI.createTableViewRow(_rowOptions);
         _label = Titanium.UI.createLabel(app.styles.directoryDetailRowLabel);
         _label.text = label;
+        _label.data = value;
         _row.add(_label);
         
         _value = Titanium.UI.createLabel(app.styles.directoryDetailRowValue);
         _value.text = value;
+        _value.data = value;
         _row.add(_value);
         
         return _row;
     }
     onEmailSelect = function (e) {
-        Ti.API.info("Email select event" + e.source + " & " + e.source.value);
+        var _address;
+        Ti.API.info("onEmailSelect()" + e.source.data);
         if(Ti.Platform.osname == 'iphone') {
             var emailDialog = Ti.UI.createEmailDialog({
                 toRecipients: [e.source.data]
