@@ -1,16 +1,9 @@
 var PersonDetailTableView = function (facade,opts) {
-    var self = Titanium.UI.createTableView(),
-        app = facade,
+    var app = facade,
+        self = Titanium.UI.createTableView(app.styles.directoryDetailAttributeTable),
         person,
         //Event Handlers
         onEmailSelect;
-    self.construct = function () {
-        self.top = opts.top || 0;
-        self.backgroundColor = app.UPM.GLOBAL_STYLES.tableBackgroundColor;
-        if (Titanium.Platform.osname === 'iphone') {
-            self.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
-        }  
-    };
     
     self.update = function (p) {
         var newData = [],
@@ -22,81 +15,71 @@ var PersonDetailTableView = function (facade,opts) {
         person = p;
         Ti.API.info(person);
         
-        Ti.API.debug("checking user's email");
+        if (!person.email.home && !person.phone.home && !person.jobTitle && !person.organization && !person.address.home) {
+            var _emptyRow = Titanium.UI.createTableViewRow({
+                title: app.localDictionary.noContactData
+            });
+        }
+        
+        Ti.API.debug("checking user's email " + person.email.home);
         if (person.email.home) {
-            emailSectionTitle = app.localDictionary.emailAddress;
-            emailSection = Titanium.UI.createTableViewSection({
-                headerTitle: emailSectionTitle
-            });
-                _row = Titanium.UI.createTableViewRow({
-                    title: person.email.home
-                });
-                emailSection.add(_row);
-                _row.addEventListener('click',onEmailSelect);
-            newData.push(emailSection);
+            var _emailRow = createRow(app.localDictionary.email, person.email.home);
+
+            self.appendRow(_emailRow);
+            _emailRow.addEventListener('click', onEmailSelect);
         }
         
-        Ti.API.debug("checking phone");
+        Ti.API.debug("checking phone " + person.phone.home);
         if (person.phone.home) {
-            phoneSection = Titanium.UI.createTableViewSection({
-                headerTitle: app.localDictionary.phoneNumber
-            });
-            phoneSection.add(Titanium.UI.createTableViewRow({
-                title: person.phone.home
-            }));
-            newData.push(phoneSection);
+            self.appendRow(createRow(app.localDictionary.phone, person.phone.home));
         }
         
+        Ti.API.debug("checking job " + person.jobTitle);
         if (person.jobTitle) {
-            var titleSection = Titanium.UI.createTableViewSection({
-                headerTitle: 'Title'
-            });
-            titleSection.add(Titanium.UI.createTableViewRow({
-                title: person.jobTitle
-            }));
-            newData.push(titleSection);
+            self.appendRow(createRow(app.localDictionary.title, person.jobTitle));
         }
         
+        Ti.API.debug("checking org " + person.organization);
         if (person.organization) {
-            var orgSection = Titanium.UI.createTableViewSection({
-                headerTitle: 'Organization'
-            });
-            orgSection.add(Titanium.UI.createTableViewRow({
-                title: person.phone.home
-            }));
-            newData.push(orgSection);
+            self.appendRow(createRow(app.localDictionary.organization, person.organization));
         }
         
+        Ti.API.debug("checking address " + person.address.home);
         if (person.address.home) {
-            var addressSection = Titanium.UI.createTableViewSection({
-                headerTitle: 'Address'
-            });
-            addressSection.add(Titanium.UI.createTableViewRow({
-                title: person.address.home
-            }));
-            newData.push(addressSection);
+            self.appendRow(createRow(app.localDictionary.address, person.address.home));
         }
-        
-        self.data = newData;
     };
-    
+    function createRow (label, value) {
+        var _row, _rowOptions, _label, _value;
+        _rowOptions = app.styles.directoryDetailRow;
+        _rowOptions.data = value;
+        _row = Titanium.UI.createTableViewRow(_rowOptions);
+        _label = Titanium.UI.createLabel(app.styles.directoryDetailRowLabel);
+        _label.text = label;
+        _row.add(_label);
+        
+        _value = Titanium.UI.createLabel(app.styles.directoryDetailRowValue);
+        _value.text = value;
+        _row.add(_value);
+        
+        return _row;
+    }
     onEmailSelect = function (e) {
+        Ti.API.info("Email select event" + e.source + " & " + e.source.value);
         if(Ti.Platform.osname == 'iphone') {
             var emailDialog = Ti.UI.createEmailDialog({
-                toRecipients: [e.source.title]
+                toRecipients: [e.source.data]
             });
             emailDialog.open();
         }
         else {
-            Ti.Platform.openURL('mailto:' + e.source.title);            
+            Ti.Platform.openURL('mailto:' + e.source.data);
         }
     };
     
     onPhoneSelect = function (e) {
         Ti.Platform.openURL('tel:' + e.source.title);
     };
-    
-    self.construct();
     
     return self;
 };

@@ -12,45 +12,51 @@ var MapService = function (facade) {
         GENERAL_ERROR: 5
     };
     
-    self.init = function () {               
+    self.init = function () {
+        var _db = Titanium.Database.open('umobile');
+        _db.execute('CREATE TABLE IF NOT EXISTS "map_locations" ("title" TEXT UNIQUE, "abbreviation" TEXT, "accuracy" INTEGER, "address" TEXT, "alternateName" TEXT, "latitude" REAL, "longitude" REAL, "searchText" TEXT, "zip" INTEGER, "img" TEXT)');
+        _db.close();
         self.loadMapPoints();
     };
     
     self.search = function (query, opts) {
 
-        var result = [], db, queryResult;
-        db = Titanium.Database.open('umobile');
+        var result = [], _db, queryResult;
 
         //If a search isn't already executing
         if(query != '' && typeof query == 'string') {
+            onSearch(query);
             query = query.toLowerCase();
             query = query.replace(/[^a-zA-Z 0-9]+/g,'');
-            onSearch(query);
+
             Ti.API.info("Starting to search...");
             
+            _db = Titanium.Database.open('umobile');
             //Query the database for rows in the map_locations table that match the query
-            queryResult = db.execute('SELECT * FROM map_locations WHERE title LIKE "%'+ query +'%" OR searchText LIKE "%'+ query +'%" or abbreviation LIKE "%'+ query +'%"');
+            queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE "%'+ query +'%" OR searchText LIKE "%'+ query +'%" or abbreviation LIKE "%'+ query +'%"');
             
             //Iterate through the query result to add objects to the result array
-            while (queryResult.isValidRow()) {
-                result.push({
-                    title: queryResult.fieldByName('title'),
-                    address: queryResult.fieldByName('address'),
-                    latitude: queryResult.fieldByName('latitude'),
-                    longitude: queryResult.fieldByName('longitude'),
-                    img: queryResult.fieldByName('img')
-                });
-                Ti.API.info(queryResult.fieldByName('img'));
-                queryResult.next();
+            if (queryResult) {
+                while (queryResult.isValidRow()) {
+                    result.push({
+                        title: queryResult.fieldByName('title'),
+                        address: queryResult.fieldByName('address'),
+                        latitude: queryResult.fieldByName('latitude'),
+                        longitude: queryResult.fieldByName('longitude'),
+                        img: queryResult.fieldByName('img')
+                    });
+                    Ti.API.info(queryResult.fieldByName('img'));
+                    queryResult.next();
+                }
+                queryResult.close();
             }
+            _db.close();
             
-            queryResult.close();
             onSearchComplete(result);
             
         } else if (query === '') {
             onEmptySearch();
         }
-        db.close();
     };
     self.getAnnotationByTitle = function(t) {
         for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
@@ -135,7 +141,7 @@ var MapService = function (facade) {
     }
     
     function onSearch(query) {
-        Ti.App.fireEvent('MapProxySearching',query);
+        Ti.App.fireEvent('MapProxySearching', {query: query});
     }
     
     function onEmptySearch () {

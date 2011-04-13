@@ -25,44 +25,16 @@
 Ti.API.info("Directory Window Opened");
 
 (function () {
-    var win = Titanium.UI.currentWindow,
-        app = win.app,
-        self = {},
-        directoryProxy = app.models.directoryProxy,
+    var win = Titanium.UI.currentWindow, app = win.app, self = {}, directoryProxy = app.models.directoryProxy,
         // Data and variables
-        peopleResult = [],
-        defaultTableData,
-        initialized = false,
-        viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
-        contactDetailViewOptions,
-        searchBarOptions,
+        peopleResult = [], defaultTableData, initialized = false, viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
+        contactDetailViewOptions, searchBarOptions,
         //UI Elements
-        peopleGroup,
-        titleBar,
-        searchBar,
-        noSearchResultsSection,
-        noSearchResultsRow,
-        contentScrollView,
-        peopleListTable,
-        emergencyContactSection,
-        phoneDirectorySection,
-        phoneDirectoryRow,
-        contactDetailView,
-        activityIndicator,
+        peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
         //Methods
-        searchSubmit,
-        openContactDetail,
-        blurSearch,
-        displaySearchResults,
+        searchSubmit, openContactDetail, blurSearch, displaySearchResults,
         //Event Handlers
-        onSearchCancel,
-        onPhoneDirectoryClick,
-        onSearchSubmit,
-        onSearchChange,
-        onContactRowClick,
-        onProxySearching,
-        onProxySearchComplete,
-        onProxySearchError;
+        onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onContactRowClick, onProxySearching, onProxySearchComplete, onProxySearchError;
     
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
@@ -91,16 +63,14 @@ Ti.API.info("Directory Window Opened");
         
         searchBar.addEventListener('cancel', onSearchCancel);
         searchBar.addEventListener('return',onSearchSubmit);
-        searchBar.addEventListener('change', onSearchChange);
-
-        
 
         //Create an array to hold the initial data passed into the Directory
         //Initial Data includes phone directory and emergency contacts
         defaultTableData = [];
         
+        Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
         //Create a section to display emergency contact numbers
-        if(directoryProxy.getEmergencyContacts) {
+        if(directoryProxy.getEmergencyContacts() != false) {
             emergencyContactSection = Titanium.UI.createTableViewSection();
             emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
             for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
@@ -146,8 +116,6 @@ Ti.API.info("Directory Window Opened");
 
         activityIndicator = app.views.GlobalActivityIndicator;
         activityIndicator.resetDimensions();
-        activityIndicator.height = Ti.Platform.displayCaps.platformHeight - viewBottom;
-        activityIndicator.top = viewBottom;
         win.add(activityIndicator);
         
         initialized = true;
@@ -175,12 +143,13 @@ Ti.API.info("Directory Window Opened");
         }
         else {
             Ti.API.debug("Not more than 0 results");
-            if(defaultTableData[0].headerTitle != app.localDictionary.noSearchResults) {
+            /*if(defaultTableData[0].headerTitle != app.localDictionary.noSearchResults) {
                 noSearchResultsSection = Titanium.UI.createTableViewSection();
                 noSearchResultsSection.headerTitle = app.localDictionary.noSearchResults;
 
                 defaultTableData.splice(0,0,noSearchResultsSection);
-            }
+            }*/
+            alert(app.localDictionary.noSearchResults);
             peopleListTable.setData(defaultTableData);
         }
     };
@@ -218,12 +187,6 @@ Ti.API.info("Directory Window Opened");
         blurSearch();
         displaySearchResults();
         activityIndicator.hide();
-    };
-    onSearchChange = function (e) {
-        if(searchBar.value == '') {
-            directoryProxy.clear();
-            displaySearchResults();
-        }
     };
     
     //Contact Events

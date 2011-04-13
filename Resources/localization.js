@@ -16,7 +16,7 @@ localDictionary.en_US = {
     searching: "Searching",
     errorPerformingSearch: "There was an error while performing your search request.",
     searchResults: "Search Results",
-    noSearchResults: "No Search Results",
+    noSearchResults: "No results matched your search",
     activityIndicatorMessage: "Loading...",
     networkConnectionRequired: "A network connection is required to use this application. Please connect to the internet and come back to this application.",
     
@@ -40,12 +40,18 @@ localDictionary.en_US = {
     
     //Directory Window
     directory: "Directory",
+    noContactData: "No contact data is available.",
     directorySearchHintText: "John Doe, Jdoe@myschool.edu, 555 555 5555",
     phoneDirectory: "Phone Directory",
     phoneDirectoryNumber: "(555) 555-5555",
     phoneNumber: "Phone Number",
     emergencyContacts: "Emergency Contacts",
     contactDetail: "Contact Detail",
+    email: "Email",
+    phone: "Phone",
+    title: "Title",
+    organization:"Organization",
+    address:"Address",
     emailAddress: "Email Address",
     emailAddresses: "Email Addresses"
 };

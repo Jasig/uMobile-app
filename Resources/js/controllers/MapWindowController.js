@@ -175,7 +175,7 @@
 
     //Proxy Events
     function onProxySearching (e) {
-        Ti.API.debug('onProxySearching' + e);
+        Ti.API.debug('onProxySearching' + e.query);
         app.views.GlobalActivityIndicator.message = app.localDictionary.searching;
         app.views.GlobalActivityIndicator.show();
     }

@@ -210,15 +210,39 @@ styles = {
 	directoryDetailNameLabel: {
 	    top: TITLEBAR_HEIGHT,
         left: 10,
+        width: Ti.Platform.displayCaps.platformWidth - (10 * 2),
         height: 85,
         color: DETAIL_TOP_TITLE_COLOR,
+        textAlign: "center",
         font: {
             fontSize: 24,
             fontWeight: 'bold'
         }
 	},
 	directoryDetailAttributeTable: {
-	    top: 125
+	    top: TITLEBAR_HEIGHT + 85
+	},
+	directoryDetailRow: {
+	    backgroundColor: "#fff"
+	},
+	directoryDetailRowLabel: {
+	    font: {
+	        fontWeight: 'bold',
+	        fontSize: 14
+	    },
+	    textAlign: 'right',
+	    color: '#333',
+	    left: 10,
+	    width: 75
+	},
+	directoryDetailRowValue: {
+	    font: {
+	        fontSize: 14,
+	        fontWeight: 'normal'
+	    },
+	    color: '#333',
+	    left: 75 + 10 + 10,
+	    width: Ti.Platform.displayCaps.platformWidth - 100 - 10 - 10 - 10
 	},
 	// MAP STYLES
 	mapView: {
@@ -282,6 +306,7 @@ styles = {
 };
 //iPhone-specific overrides
 if (Ti.Platform.osname === 'iphone') {
+    styles.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.PLAIN;
     styles.globalActivityIndicator.backgroundImage = UPM.getResourcePath('images/bgActivityIndicator.png');
     styles.globalActivityIndicator.width = Ti.Platform.displayCaps.platformWidth;
     styles.globalActivityIndicator.height = Ti.Platform.displayCaps.platformHeight;

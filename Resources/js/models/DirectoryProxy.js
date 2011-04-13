@@ -54,7 +54,8 @@ var DirectoryProxy = function (facade,opts) {
         }
     };
     self.getEmergencyContacts = function () {
-        return app.UPM.directoryEmergencyContacts || null;
+        // return app.UPM.directoryEmergencyContacts || false;
+        return false;
     };
     
     onXhrSearchLoad = function (e) {
