@@ -1,5 +1,5 @@
 var localDictionary = [];
-//When possible, try to use the literal English representation of the phrase.
+//When possible, and if the use is general enough, try to use the literal English representation of the phrase.
 //In some cases, it's better to give context, so that a translator can understand how the word will be used. Eg. activityIndicatorMessage
 //If a phrase is too long, make it as short as it can be while still clear in meaning. Eg. errorPerformingSearch
 
@@ -53,5 +53,6 @@ localDictionary.en_US = {
     organization:"Organization",
     address:"Address",
     emailAddress: "Email Address",
-    emailAddresses: "Email Addresses"
+    emailAddresses: "Email Addresses",
+    directoryErrorFetching: "There was an error fetching the results for your query. Please try a different query."
 };

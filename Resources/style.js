@@ -239,6 +239,9 @@ styles = {
 	    left: 10,
 	    width: 75
 	},
+	directoryLinkLabel: {
+	    color: "#4365af"
+	},
 	directoryDetailRowValue: {
 	    font: {
 	        fontSize: 14,
@@ -247,6 +250,16 @@ styles = {
 	    color: '#333',
 	    left: 75 + 10 + 10,
 	    width: Ti.Platform.displayCaps.platformWidth - 100 - 10 - 10 - 10
+	},
+	directoryDetailValueNoLabel: {
+	    font: {
+	        fontSize: 14,
+	        fontWeight: 'normal'
+	    },
+	    color: '#333',
+	    textAlign: 'center',
+	    left: 10,
+	    width: Ti.Platform.displayCaps.platformWidth - (10 * 2)
 	},
 	// MAP STYLES
 	mapView: {

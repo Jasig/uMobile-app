@@ -178,11 +178,13 @@ Ti.API.info("Directory Window Opened");
     };
     
     onSearchSubmit = function(e) {
+        Ti.API.debug('onSearchSubmit');
         searchBar.blur();
         directoryProxy.search(searchBar.value);
     };
 
     onSearchCancel = function (e) {
+        Ti.API.debug('onSearchCancel');
         directoryProxy.clear();
         blurSearch();
         displaySearchResults();
@@ -206,7 +208,12 @@ Ti.API.info("Directory Window Opened");
     onProxySearchComplete = function (e) {
         activityIndicator.hide();
         Ti.API.info("Directory Search Complete");
-        displaySearchResults();
+        if (!e.error) {
+            displaySearchResults();
+        }
+        else {
+            alert(e.error);
+        }
     };
     
     onProxySearchError = function (e) {

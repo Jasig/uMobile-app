@@ -3,25 +3,26 @@ var PersonDetailTableView = function (facade,opts) {
         self = Titanium.UI.createTableView(app.styles.directoryDetailAttributeTable),
         person,
         //Event Handlers
-        onEmailSelect;
+        onEmailSelect,
+        emptyRow,
+        isDataEmpty = false;
     
     self.update = function (p) {
         //Clear the previous data from the table.
-        self.setData([]);
+        self.data = [];
         person = p;
         
         if (!person.email.home && !person.phone.home && !person.jobTitle && !person.organization && !person.address.home) {
-            /*var _emptyRow, _emptyRowOpts;
-            _emptyRowOpts = app.styles.directoryDetailRow;
-            _emptyRowOpts.title = app.localDictionary.noContactData;
-            Ti.API.info("Empty row options: " + JSON.stringify(_emptyRowOpts));
-            _emptyRow = Titanium.UI.createTableViewRow(_emptyRowOpts);
-            self.appendRow(_emptyRow);*/
+            if(!emptyRow) {
+                emptyRow = createRow({value: app.localDictionary.noContactData});
+            }
+            self.appendRow(emptyRow);
+            isDataEmpty = true;
         }
         
         Ti.API.debug("checking user's email " + person.email.home);
         if (person.email.home) {
-            var _emailRow = createRow(app.localDictionary.email, person.email.home);
+            var _emailRow = createRow({label: app.localDictionary.email, value: person.email.home, link: true});
 
             self.appendRow(_emailRow);
             _emailRow.addEventListener('click', onEmailSelect);
@@ -29,38 +30,57 @@ var PersonDetailTableView = function (facade,opts) {
         
         Ti.API.debug("checking phone " + person.phone.home);
         if (person.phone.home) {
-            self.appendRow(createRow(app.localDictionary.phone, person.phone.home));
+            self.appendRow(createRow({label: app.localDictionary.phone, value: person.phone.home}));
         }
         
         Ti.API.debug("checking job " + person.jobTitle);
         if (person.jobTitle) {
-            self.appendRow(createRow(app.localDictionary.title, person.jobTitle));
+            self.appendRow(createRow({label: app.localDictionary.title, value: person.jobTitle}));
         }
         
         Ti.API.debug("checking org " + person.organization);
         if (person.organization) {
-            self.appendRow(createRow(app.localDictionary.organization, person.organization));
+            self.appendRow(createRow({label: app.localDictionary.organization, value: person.organization}));
         }
         
         Ti.API.debug("checking address " + person.address.home);
         if (person.address.home) {
-            self.appendRow(createRow(app.localDictionary.address, person.address.home));
+            self.appendRow(createRow({label: app.localDictionary.address, value: person.address.home}));
         }
     };
-    function createRow (label, value) {
-        var _row, _rowOptions, _label, _value;
+    function createRow (attributes) {
+        var _row, _rowOptions, _label, _value, _valueOpts;
+        //The only required param in the attributes object is value. "label" is optional but preferred.
+        //The layout will change to expand the value text if there's no label with it.
         _rowOptions = app.styles.directoryDetailRow;
-        _rowOptions.data = value;
-        _rowOptions.className = 'personData';
-        _row = Titanium.UI.createTableViewRow(_rowOptions);
-        _label = Titanium.UI.createLabel(app.styles.directoryDetailRowLabel);
-        _label.text = label;
-        _label.data = value;
-        _row.add(_label);
         
-        _value = Titanium.UI.createLabel(app.styles.directoryDetailRowValue);
-        _value.text = value;
-        _value.data = value;
+        if (!attributes.label) {
+            _rowOptions.className = 'personDataNoLabel';
+        }
+        else {
+            _label = Titanium.UI.createLabel(app.styles.directoryDetailRowLabel);
+            _label.text = attributes.label;
+            _label.data = attributes.value;
+            
+            _rowOptions.className = 'personData';
+        }
+        _rowOptions.data = attributes.value;
+        _row = Titanium.UI.createTableViewRow(_rowOptions);        
+        if (attributes.label) { 
+            _row.add(_label);
+            _valueOpts = app.styles.directoryDetailRowValue;
+        }
+        else {
+            _valueOpts = app.styles.directoryDetailValueNoLabel;
+        }
+        
+        _valueOpts.text = attributes.value;
+        _valueOpts.data = attributes.value;
+        if (attributes.link) { 
+            Ti.API.debug("Creating a link label for " + attributes.value);
+            _valueOpts.color = app.styles.directoryLinkLabel.color;
+        }
+        _value = Titanium.UI.createLabel(_valueOpts);
         _row.add(_value);
         
         return _row;
