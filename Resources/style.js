@@ -227,8 +227,7 @@ styles = {
 	    color: '#333',
 	    textAlign: 'center',
 	    fontSize: 14,
-	    fontWeight: 'bold',
-	    className: 'personDataContainer'
+	    fontWeight: 'bold'
 	},
 	directoryDetailRowLabel: {
 	    font: {

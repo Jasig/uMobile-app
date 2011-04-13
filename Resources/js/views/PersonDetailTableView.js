@@ -7,16 +7,16 @@ var PersonDetailTableView = function (facade,opts) {
     
     self.update = function (p) {
         //Clear the previous data from the table.
-        self.data = [];
+        self.setData([]);
         person = p;
         
         if (!person.email.home && !person.phone.home && !person.jobTitle && !person.organization && !person.address.home) {
-            var _emptyRow, _emptyRowOpts;
+            /*var _emptyRow, _emptyRowOpts;
             _emptyRowOpts = app.styles.directoryDetailRow;
             _emptyRowOpts.title = app.localDictionary.noContactData;
             Ti.API.info("Empty row options: " + JSON.stringify(_emptyRowOpts));
             _emptyRow = Titanium.UI.createTableViewRow(_emptyRowOpts);
-            self.appendRow(_emptyRow);
+            self.appendRow(_emptyRow);*/
         }
         
         Ti.API.debug("checking user's email " + person.email.home);
