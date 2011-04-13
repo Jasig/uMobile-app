@@ -34,7 +34,7 @@ Ti.API.info("Directory Window Opened");
         //Methods
         searchSubmit, openContactDetail, blurSearch, displaySearchResults,
         //Event Handlers
-        onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onContactRowClick, onProxySearching, onProxySearchComplete, onProxySearchError;
+        onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onSearchChange, onContactRowClick, onWindowBlur, onProxySearching, onProxySearchComplete, onProxySearchError;
     
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
@@ -47,7 +47,7 @@ Ti.API.info("Directory Window Opened");
             app: app,
             title: app.localDictionary.directory,
             homeButton: true,
-            settingsButton: false,
+            settingsButton: true,
             windowKey: win.key
         });
         win.add(titleBar);
@@ -62,7 +62,8 @@ Ti.API.info("Directory Window Opened");
         viewBottom += searchBarOptions.height;
         
         searchBar.addEventListener('cancel', onSearchCancel);
-        searchBar.addEventListener('return',onSearchSubmit);
+        searchBar.addEventListener('return', onSearchSubmit);
+        searchBar.addEventListener('change', onSearchChange);
 
         //Create an array to hold the initial data passed into the Directory
         //Initial Data includes phone directory and emergency contacts
@@ -70,7 +71,7 @@ Ti.API.info("Directory Window Opened");
         
         Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
         //Create a section to display emergency contact numbers
-        if(directoryProxy.getEmergencyContacts() != false) {
+        if(directoryProxy.getEmergencyContacts().length > 0) {
             emergencyContactSection = Titanium.UI.createTableViewSection();
             emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
             for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
@@ -84,6 +85,9 @@ Ti.API.info("Directory Window Opened");
                 _emergencyContactRow.addEventListener('click',onContactRowClick);
             }
             defaultTableData.push(emergencyContactSection);            
+        }
+        else {
+            Ti.API.info("There aren't any emergency contacts");
         }
         
         //Create the section and one row to display the phone number for the phone directory
@@ -128,7 +132,6 @@ Ti.API.info("Directory Window Opened");
         _people = directoryProxy.getPeople();
 
         if(_people.length > 0) {
-            // peopleListTable.show();
             Ti.API.info(_people);
             for (var i=0, iLength=_people.length; i<iLength; i++) {
                 var _contactRow = Titanium.UI.createTableViewRow({
@@ -143,12 +146,6 @@ Ti.API.info("Directory Window Opened");
         }
         else {
             Ti.API.debug("Not more than 0 results");
-            /*if(defaultTableData[0].headerTitle != app.localDictionary.noSearchResults) {
-                noSearchResultsSection = Titanium.UI.createTableViewSection();
-                noSearchResultsSection.headerTitle = app.localDictionary.noSearchResults;
-
-                defaultTableData.splice(0,0,noSearchResultsSection);
-            }*/
             alert(app.localDictionary.noSearchResults);
             peopleListTable.setData(defaultTableData);
         }
@@ -168,9 +165,9 @@ Ti.API.info("Directory Window Opened");
     };
     
     // Controller Events
-    function onWindowBlur (e) {
+    onWindowBlur = function (e) {
         blurSearch();
-    }
+    };
     // Search Events
     onPhoneDirectoryClick = function (e) {
         Ti.API.debug("Clicked the phone directory button");
@@ -181,6 +178,13 @@ Ti.API.info("Directory Window Opened");
         Ti.API.debug('onSearchSubmit');
         searchBar.blur();
         directoryProxy.search(searchBar.value);
+    };
+    
+    onSearchChange = function (e) {
+        if(searchBar.value === '') {
+            directoryProxy.clear();
+            peopleListTable.setData(defaultTableData);            
+        }
     };
 
     onSearchCancel = function (e) {

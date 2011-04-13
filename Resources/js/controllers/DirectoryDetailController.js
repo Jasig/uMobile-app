@@ -16,30 +16,28 @@ var DirectoryDetailController = function (facade,opts) {
     
     self.construct = function () {
         Ti.API.debug('DirectoryDetailController constructed');
-        var titleBackButtonOpts;
+        var backButtonOpts, backButon, backBarOpts, backBar;
         self.initialized = true;
         self.update = updateValues;
         
-        titleBackButtonOpts = app.styles.titleBarButton;
-        titleBackButtonOpts.title = app.localDictionary.back;
-        titleBackButton = Titanium.UI.createButton(titleBackButtonOpts);
+        backButtonOpts = app.styles.secondaryBarButton;
+        backButtonOpts.title = app.localDictionary.back;
+        backButton = Titanium.UI.createButton(backButtonOpts);
 
-        titleBackButton.addEventListener("click",function(e){
+        backButton.addEventListener("click",function(e){
             self.hide();
         });
-        //Create a title bar with generic title, plus a button to go back to the directory.
-        titleBar = new app.views.GenericTitleBar({
-            key: 'directory',
-            app: app,
-            title: app.localDictionary.contactDetail,
-            backButton: titleBackButton
-        });
-        self.add(titleBar);
+        
+        backBarOpts = app.styles.secondaryBar;
+        backBarOpts.top = 0;
+        backBar = Titanium.UI.createView(app.styles.secondaryBar);
+        backBar.add(backButton);
+        self.add(backBar);
 
         nameLabel = Titanium.UI.createLabel(app.styles.directoryDetailNameLabel);
-        self.add(nameLabel);
+        backBar.add(nameLabel);
         
-        attributeTable = new app.views.PersonDetailTableView(app,app.styles.directoryDetailAttributeTable);
+        attributeTable = new app.views.PersonDetailTableView(app, app.styles.directoryDetailAttributeTable);
         self.add(attributeTable);
     };
     

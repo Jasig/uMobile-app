@@ -19,6 +19,7 @@ SECONDARY_BAR_BACKGROUND_GRADIENT = {
     type:'linear',
     colors:['#4682B4','#294D6B']
 };
+SECONDARY_BAR_COLOR = "#fff";
 styles = {
     backgroundColor: '#fff',
     backgroundImage: UPM.getResourcePath('images/home-background.png'),
@@ -67,7 +68,29 @@ styles = {
         barColor: SECONDARY_BAR_BACKGROUND_COLOR,
         backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
         showCancel: false
-    }, 
+    },
+    secondaryBar: {
+        top: TITLEBAR_HEIGHT,
+        height: TITLEBAR_HEIGHT,
+        backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
+        barColor: SECONDARY_BAR_BACKGROUND_COLOR,
+        backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT
+    },
+    secondaryBarButton: {
+        style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
+        left: 10,
+        width: 50,
+        height: 30,
+    	backgroundImage: 'none',
+    	color: '#fff',
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: '#333',
+    	font: {
+    	    fontSize: 14
+    	},
+    	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT
+    },
     //Styles for GenericTitleBar.js
     titleBar: {
         top: 0,
@@ -203,24 +226,23 @@ styles = {
 	contactDetailView: {
 	    backgroundColor: DETAIL_TOP_BACKGROUND_COLOR,
         visible: false,
-	    top: 0,
-        height: Ti.Platform.displayCaps.platformHeight,
+	    top: TITLEBAR_HEIGHT,
+        height: Ti.Platform.displayCaps.platformHeight - TITLEBAR_HEIGHT,
         width: Ti.Platform.displayCaps.platformWidth
 	},
 	directoryDetailNameLabel: {
-	    top: TITLEBAR_HEIGHT,
-        left: 10,
-        width: Ti.Platform.displayCaps.platformWidth - (10 * 2),
-        height: 85,
-        color: DETAIL_TOP_TITLE_COLOR,
+        left: 70,
+        width: Ti.Platform.displayCaps.platformWidth - (70 * 2),
+        height: TITLEBAR_HEIGHT,
+        color: SECONDARY_BAR_COLOR,
         textAlign: "center",
         font: {
-            fontSize: 24,
+            fontSize: 14,
             fontWeight: 'bold'
         }
 	},
 	directoryDetailAttributeTable: {
-	    top: TITLEBAR_HEIGHT + 85
+	    top: TITLEBAR_HEIGHT
 	},
 	directoryDetailRow: {
 	    backgroundColor: "#fff",
