@@ -1,18 +1,13 @@
 var MapDetailTop = function (opts) {
     var app = opts.app,
         details = opts.details,
-        detailView,
-        mapIcon,
-        mapIconContainer,
-        directionsButton,
-        locationTitle,
-        locationTitleOptions,
-        locationAddress,
-        locationAddressOptions,
-        onGetDirections,
+        detailView, mapIcon, mapIconContainer, directionsButton, locationTitle, locationAddress,
+        onGetDirections, onDirBtnPress, onDirBtnUp,
         getMapAddress;
         
     function init() {
+        var locationAddressOptions, locationTitleOptions;
+        
         Ti.API.debug("Creating detailView in MapDetailTop");
         detailViewOptions = app.styles.mapDetailViewTop;
         detailView = Titanium.UI.createView(app.styles.mapDetailTopView);
@@ -30,20 +25,30 @@ var MapDetailTop = function (opts) {
         detailView.add(locationAddress);
 
         Ti.API.debug("Creating directionsButton in MapDetailTop");
+        
+        directionsButtonOptions = app.styles.contentButton;
+        
         //Add "Get Directions" button
+
+        directionsButtonOptions.top = locationAddress.height + locationAddress.top + 5;
+        directionsButtonOptions.left = 10;
+        directionsButtonOptions.width = 150;
+        
+        
+        
+        
         if(details.address) {
-            directionsButtonOptions = app.styles.contentButton;
             directionsButtonOptions.title = opts.app.localDictionary.getDirections;
-            directionsButtonOptions.top = locationAddress.height + locationAddress.top + 5;
-            directionsButtonOptions.left = 10;
-            directionsButtonOptions.width = 150;
-            directionsButton = Titanium.UI.createButton(directionsButtonOptions);
-            
-            detailView.add(directionsButton);            
         }
+        directionsButton = Titanium.UI.createButton(directionsButtonOptions);
+        
+        detailView.add(directionsButton);
+        details.address ? directionsButton.show() : directionsButton.hide();
 
         Ti.API.debug("Adding event listener to directionsButton in MapDetailTop");
-        directionsButton.addEventListener("click", onGetDirections);        
+        directionsButton.addEventListener("click", onGetDirections);
+        directionsButton.addEventListener('touchstart', onDirBtnPress);
+        directionsButton.addEventListener('touchend', onDirBtnUp);
         
         detailView.update = update;
     }
@@ -63,6 +68,13 @@ var MapDetailTop = function (opts) {
     
     onGetDirections = function (e) {
         Ti.Platform.openURL(getMapAddress());
+    };
+    onDirBtnPress = function (e) {
+        directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+    };
+    
+    onDirBtnUp = function (e) {
+        directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
     };
 
     init();

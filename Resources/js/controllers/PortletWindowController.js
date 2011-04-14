@@ -26,7 +26,8 @@
         titleBar,
         navBar,
         initialized,
-        pathToRoot = '../../';
+        pathToRoot = '../../',
+        onBackBtnPress, onBackButtonUp;
 
     function init() {
         titleBar = new app.views.GenericTitleBar({
@@ -51,6 +52,8 @@
         navBarOptions = app.styles.secondaryNavBarButton;
         navBarOptions.title = app.localDictionary.back;
         navBackButton = Titanium.UI.createButton(navBarOptions);
+        navBackButton.addEventListener('touchstart', onBackBtnPress);
+        navBackButton.addEventListener('touchend', onBackBtnUp);
 
         // initialize navigation bar for URLs outside the portal
         navBar = new app.views.SecondaryNavBar(app,{
@@ -104,6 +107,14 @@
 
         portletView.show();
     }
+    
+    onBackBtnPress = function (e) {
+        navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+    };
+    
+    onBackBtnUp = function (e) {
+        navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
+    };
     
     if(!win.initialized) {
         init();
