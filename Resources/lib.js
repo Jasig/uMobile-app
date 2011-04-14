@@ -201,6 +201,15 @@ UPM.establishSession = function(options) {
 
 };
 
+UPM.doLocalLogin = function (credentials, options) {
+    var url = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true'
+    client = Titanium.Network.createHTTPClient();
+    client.open('GET', url, false);
+    client.send();
+    
+    options.onsuccess();
+};
+
 UPM.doCASLogin = function (credentials, options) {
     var url, client, initialResponse, flowRegex, flowId, data, failureRegex;
     
