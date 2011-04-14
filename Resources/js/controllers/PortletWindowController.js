@@ -72,7 +72,13 @@
             portletView.stopLoading();
             portletView.hide();
         }
-        portletView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
+        if (portlet.url.indexOf('/') == 0) {
+            portletView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
+            portletView.externalModule = false;
+        } else {
+            portletView.url = portlet.url;
+            portletView.externalModule = true;
+        }
         titleBar.updateTitle(portlet.title);
     }
     
@@ -88,11 +94,10 @@
         activityIndicator.hide();
         
         var newUrl = e.url;
-        if (newUrl.indexOf('localhost:8080/uPortal') >= 0) {
+        if (portletView.externalModule || newUrl.indexOf(UPM.BASE_PORTAL_URL) >= 0) {
             navBar.visible = false;
             portletView.top = 40;
         } else {
-            Ti.API.info("making visible");
             navBar.visible = true;
             portletView.top = 80;
         }
