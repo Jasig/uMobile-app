@@ -65,7 +65,7 @@ var DirectoryDetailController = function (facade,opts) {
         person.email.home = getAttribute('homeEmail', attributes);
         person.phone.home = getAttribute('homePhone', attributes);
         
-        person.department = getAttribute('organization', attributes);
+        person.organization = getAttribute('organization', attributes);
         person.firstName = getAttribute('firstName', attributes);
         person.fullName = getAttribute('fullName', attributes);
         person.jobTitle = getAttribute('jobTitle', attributes);
