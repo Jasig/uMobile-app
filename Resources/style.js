@@ -199,7 +199,8 @@ styles = {
     gridItem: {
         width: 80,
         height: 80,
-        padding: 10
+        padding: 10,
+        pressOpacity: 0.5
     },
     gridItemLabel: {
         textAlign: "center",

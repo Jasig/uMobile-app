@@ -33,7 +33,8 @@ Titanium.include('js/controllers/DirectoryDetailController.js');
 Titanium.include('js/controllers/MapDetailViewController.js');
 
 var windows = {},
-    facade;
+    facade,
+    activityIndicator;
     
 facade = {
     UPM: UPM,
@@ -127,6 +128,7 @@ windows.settings = Titanium.UI.createWindow({
 
 Ti.App.addEventListener('showWindow', function (e) {
     Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
+
     if(windows[e.oldWindow] != windows[e.newWindow]) {
         windows[e.oldWindow].hide();
 

@@ -67,7 +67,7 @@ var GenericTitleBar = function (opts) {
     };
     
     onHomePressUp = function (e) {
-        homeButtonContainer.backgroundColor = '';
+        homeButtonContainer.backgroundColor = 'auto';
     };
     onSettingsClick = function (e) {
         Ti.App.fireEvent(
@@ -85,7 +85,7 @@ var GenericTitleBar = function (opts) {
     };
     
     onSettingsPressUp = function (e) {
-        settingsButtonContainer.backgroundColor = '';
+        settingsButtonContainer.backgroundColor = 'auto';
     };
 
     init();

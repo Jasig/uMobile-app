@@ -26,15 +26,9 @@
 
 var win = Titanium.UI.currentWindow,
     app = win.app,
-    portalView,
-    portletView,
-    portalGridView,
-    createPortalView,
-    drawHomeGrid,
-    drawAndroidGrid,
-    drawiOSGrid,
-    getShowPortletFunc,
-    getIconUrl,
+    portalView, portletView, portalGridView, createPortalView,
+    drawHomeGrid, drawAndroidGrid, drawiOSGrid, getShowPortletFunc, getIconUrl, onGridItemPressUp, showSettings, getPortletsForUser,
+    onCredentialUpdate,
     pathToRoot = '../../';
 
 createPortalView = function () {
@@ -42,6 +36,8 @@ createPortalView = function () {
         Ti.API.debug("Removing the existing portal home view");
         win.remove(portalView);
     }
+    
+    
 
     Ti.API.debug("Creating a new portal home view");
 	portalView = Titanium.UI.createView(app.styles.homeGrid);
@@ -55,6 +51,10 @@ createPortalView = function () {
 	});
 	win.add(titleBar);
     win.add(portalView);
+
+    win.app.UPM.establishSession(getPortletsForUser, showSettings);
+
+    Ti.App.addEventListener('credentialUpdate', onCredentialUpdate);
 
     win.initialized = true;
 };
@@ -112,7 +112,8 @@ getIconUrl = function (p) {
     return _iconUrl;
 };
 
-drawAndroidGrid = function (portlets) {
+
+drawHomeGrid = function (portlets) {
     Ti.API.debug("Preparing to iterate through portlets in drawAndroidGrid");
     for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
         Ti.API.debug("Portlet iteration " + i + ", " + portlets[i].title);
@@ -170,97 +171,12 @@ drawAndroidGrid = function (portlets) {
         //Place the item in the scrollview and listen for singletaps
         portalView.add(gridItem);
         gridItem.addEventListener("singletap", getShowPortletFunc(_portlet));
+        gridItem.addEventListener("touchstart", onGridItemPressDown);
+        gridItem.addEventListener("touchend", onGridItemPressUp);
     }
 };
 
-drawiOSGrid = function (portlets) {
-    var dashboardItems = [], dashboard;
-
-    //Create the dashboard item to be placed  on the home screen
-    for (var i=0, iLength=portlets.length; i<iLength; i++) {
-        var _portlet, _dashboardItem, _iconContainer;
-        _portlet = portlets[i];
-
-        //Get the icon image for the portlet, or default.
-        _dashboardItem = Titanium.UI.createDashboardItem({
-            canDelete: false
-        });
-
-        _iconContainer = Titanium.UI.createView({
-            width: 70,
-            height: 70,
-            borderRadius: 10,
-            backgroundColor: '#eee',
-            touchEnabled: true
-        });
-        _dashboardItem.add(_iconContainer);
-
-        var _imageView = Titanium.UI.createImageView({
-            image: getIconUrl(_portlet),
-            width: 57,
-            height: 57
-        });
-        _iconContainer.add(_imageView);
-        _dashboardItem.add(Titanium.UI.createLabel({
-            text: _portlet.title.toLowerCase(),
-            textAlign: 'center',
-            top: 45,
-            height: 15,
-            font: {
-                fontSize: 13
-            }
-        }));
-
-        dashboardItems.push(_dashboardItem);
-    }
-
-    //Create the dashboard to layout the dashboard items in the home screen
-    dashboard = Titanium.UI.createDashboardView({
-        backgroundColor: '#fff',
-        height: Ti.Platform.displayCaps.platformHeight - win.app.UPM.TITLEBAR_HEIGHT,
-        top: win.app.UPM.TITLEBAR_HEIGHT,
-        data: dashboardItems
-    });
-    var doneButton = Titanium.UI.createButton({
-        title: win.app.localDictionary.doneEditing,
-        height: 30,
-        width: Ti.Platform.displayCaps.platformWidth - 20,
-        top: Ti.Platform.displayCaps.platformHeight - 100
-    });
-    dashboard.add(doneButton);
-    doneButton.hide();
-    win.add(dashboard);
-
-    dashboard.addEventListener('edit',function(e){
-        doneButton.show();
-    });
-    dashboard.addEventListener('commit',function(e){
-        doneButton.hide();
-    });
-    doneButton.addEventListener('click',function(e){
-        dashboard.stopEditing();
-    });
-};
-
-drawHomeGrid = function (portlets) {
-    portlets.sort(sortPortlets);
-
-    if (Ti.Platform.osname === ('iphone' || 'ipad')) {
-        // drawiOSGrid(portlets); //Temporarily drawing it the old way until this question is resolved: http://developer.appcelerator.com/question/117405/events-not-working-in-dashboarditem-after-adding-views. 
-        // Can resort to listening for click events on the whole dashboard view, and determining what to do based on the clicksource.
-        drawAndroidGrid(portlets);
-    }
-    else if (Ti.Platform.osname === 'android') {
-        Ti.API.debug('OS is Android, calling drawAndroidGrid');
-        drawAndroidGrid(portlets);
-    }
-    win.initialized = true;
-};
-
-
-createPortalView();
-
-var getPortletsForUser = function(onload) {
+getPortletsForUser = function(onload) {
     var portlets;
 
     // Display a loading indicator until we can finish downloading the user
@@ -280,7 +196,7 @@ var getPortletsForUser = function(onload) {
 
 };
 
-var showSettings = function() {
+showSettings = function() {
     Ti.App.fireEvent(
         'showWindow', 
         {
@@ -291,9 +207,17 @@ var showSettings = function() {
     );
 };
 
-win.app.UPM.establishSession(getPortletsForUser, showSettings);
-
-Ti.App.addEventListener('credentialUpdate', function(e){
+onCredentialUpdate = function (e) {
     createPortalView();
     win.app.UPM.establishSession(getPortletsForUser);
-});
+};
+
+onGridItemPressDown = function (e) {
+    e.source.opacity = app.styles.gridItem.pressOpacity;
+};
+
+onGridItemPressUp = function (e) {
+    e.source.opacity = 1;
+};
+
+createPortalView();
