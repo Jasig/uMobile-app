@@ -6,17 +6,20 @@ var DirectoryDetailController = function (facade,opts) {
         nameLabel,
         phoneLabel,
         attributeTable,
+        backButton,
         //Methods
         updateValues,
         //Controller Event Handlers
         onWinOpen,
         onWinShow,
         onWinHide,
-        onWinClose;
+        onWinClose,
+        onBackButtonPress,
+        onBackButtonUp;
     
     self.construct = function () {
         Ti.API.debug('DirectoryDetailController constructed');
-        var backButtonOpts, backButon, backBarOpts, backBar;
+        var backButtonOpts, backBarOpts, backBar;
         self.initialized = true;
         self.update = updateValues;
         
@@ -28,11 +31,15 @@ var DirectoryDetailController = function (facade,opts) {
             self.hide();
         });
         
+        backButton.addEventListener('touchstart', onBackButtonPress);
+        backButton.addEventListener('touchend', onBackButtonUp);
+        
         backBarOpts = app.styles.secondaryBar;
         backBarOpts.top = 0;
         backBar = Titanium.UI.createView(app.styles.secondaryBar);
         backBar.add(backButton);
         self.add(backBar);
+        
 
         nameLabel = Titanium.UI.createLabel(app.styles.directoryDetailNameLabel);
         backBar.add(nameLabel);
@@ -86,6 +93,14 @@ var DirectoryDetailController = function (facade,opts) {
             }
         }
         return null;
+    };
+
+    onBackButtonPress = function (e) {
+        backButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+    };
+    
+    onBackButtonUp = function (e) {
+        backButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
     };
 
     if (!self.initialized) {

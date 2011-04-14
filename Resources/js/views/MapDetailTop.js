@@ -50,6 +50,10 @@ var MapDetailTop = function (opts) {
     
     function update (data) {
         details = data;
+        details.address ? directionsButton.show() : directionsButton.hide();
+
+        locationTitle.text = details.title;
+
         locationAddress.text = details.address || app.localDictionary.noAddressAvailable;
     };
     

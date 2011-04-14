@@ -19,6 +19,10 @@ SECONDARY_BAR_BACKGROUND_GRADIENT = {
     type:'linear',
     colors:['#4682B4','#294D6B']
 };
+SECONDARY_BAR_BTN_DOWN_BG = {
+    type: 'linear',
+    colors: ['#294D6B','#4682B4']
+};
 SECONDARY_BAR_COLOR = "#fff";
 styles = {
     backgroundColor: '#fff',
@@ -38,8 +42,11 @@ styles = {
             type: 'linear',
             colors: ['#fff','#ccc']
         },
-        backgroundSelectedColor: '#eee',
-        selectedColor: '#000',
+        backgroundGradientPress: {
+            backFillStart: false,
+            type: 'linear',
+            colors: ['#ccc', '#fff']
+        },
         font: {
             fontSize: 14,
             fontWeight: 'bold'
@@ -47,7 +54,8 @@ styles = {
         borderRadius: 10,
         borderColor: '#999',
         borderWidth: 1,
-        color: '#333'
+        color: '#333',
+        selectedColor: '#333'
     },
     textField: {
         height:35,
@@ -89,7 +97,8 @@ styles = {
     	font: {
     	    fontSize: 14
     	},
-    	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT
+    	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
+    	backgroundGradientPress: SECONDARY_BAR_BTN_DOWN_BG
     },
     //Styles for GenericTitleBar.js
     titleBar: {
@@ -98,7 +107,8 @@ styles = {
     	height: TITLEBAR_HEIGHT,
     	backgroundColor: PRIMARY_BAR_BACKGROUND_COLOR,
     	backgroundGradient: PRIMARY_BAR_BACKGROUND_GRADIENT,
-    	width: Titanium.Platform.displayCaps.platformWidth
+    	width: Titanium.Platform.displayCaps.platformWidth,
+    	zIndex: 1
     },
     //Titanium.UI.Button implemented in the GenericTitleBar
     titleBarButton: {
@@ -190,7 +200,8 @@ styles = {
         top: TITLEBAR_HEIGHT,
         numColumns: 3,
         color: "#fff",
-        backgroundImage: '../../images/home-background.png'
+        backgroundImage: '../../images/home-background.png',
+        zIndex: 1
     },
     gridIcon: {
         width: 32,
@@ -352,7 +363,8 @@ styles = {
 	},
 	// ACTIVITY INDICATOR STYLING
 	globalActivityIndicator: {
-	    color: '#fff'
+	    color: '#fff',
+	    zIndex: 10
 	}
 };
 //iPhone-specific overrides

@@ -65,17 +65,19 @@ var DirectoryProxy = function (facade,opts) {
     onXhrSearchLoad = function (e) {
         //When the search is complete, reset the main people array
         people = [];
-        try {
-            var _people = JSON.parse(xhrSearch.responseText).people;
-            for (var i=0, iLength=_people.length; i<iLength; i++) {
-                Ti.API.info('calling method');
-                people.push(_people[i].attributes);
+        (function() {
+            try {
+                var _people = JSON.parse(xhrSearch.responseText).people;
+                for (var i=0, iLength=_people.length; i<iLength; i++) {
+                    Ti.API.info('calling method');
+                    people.push(_people[i].attributes);
+                }
+                Ti.App.fireEvent('DirectoryProxySearchComplete');
             }
-            Ti.App.fireEvent('DirectoryProxySearchComplete');
-        }
-        catch (e) {
-            Ti.App.fireEvent('DirectoryProxySearchComplete', {error: app.localDictionary.directoryErrorFetching});
-        }
+            catch (err) {
+                Ti.App.fireEvent('DirectoryProxySearchComplete', {error: app.localDictionary.directoryErrorFetching});
+            }            
+        })();
     };
     
     onXhrSearchError = function (e) {

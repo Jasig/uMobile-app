@@ -30,7 +30,7 @@
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, activityIndicator,
         titlebar,
         createTitleBar, createCredentialsForm,
-        onUpdateCredentials;
+        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp;
 
     function init() {
         // get the current user credentials in order
@@ -105,6 +105,8 @@
         win.add(saveButton);
 
         saveButton.addEventListener('click', onUpdateCredentials);
+        saveButton.addEventListener('touchstart', onSaveButtonPress);
+        saveButton.addEventListener('touchend', onSaveButtonUp);
         passwordInput.addEventListener('return', onUpdateCredentials);
         usernameInput.addEventListener('return', onUpdateCredentials);
 
@@ -138,6 +140,15 @@
         });
         activityIndicator.hide();
     };
+    
+    onSaveButtonPress = function(e) {
+        saveButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+    };
+    
+    onSaveButtonUp = function (e) {
+        saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+    };
+    
     function onWindowBlur (e) {
         passwordInput.blur();
         usernameInput.blur();

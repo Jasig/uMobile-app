@@ -26,10 +26,28 @@
 
 var win = Titanium.UI.currentWindow,
     app = win.app,
-    portalView, portletView, portalGridView, createPortalView,
-    drawHomeGrid, drawAndroidGrid, drawiOSGrid, getShowPortletFunc, getIconUrl, onGridItemPressUp, showSettings, getPortletsForUser,
-    onCredentialUpdate,
+    portalView, portletView, portalGridView, activityIndicator,
+    init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, getShowPortletFunc, getIconUrl, showSettings, getPortletsForUser,
+    onGridItemPressUp, onCredentialUpdate,
     pathToRoot = '../../';
+
+init = function () {
+    var titleBar = new app.views.GenericTitleBar({
+	    app: app,
+	    windowKey: 'home',
+	    title: app.localDictionary.uMobile,
+	    settingsButton: true,
+	    homeButton: false
+	});
+	win.add(titleBar);
+	
+	activityIndicator = app.views.GlobalActivityIndicator;
+    win.add(activityIndicator);
+    
+	createPortalView();
+	
+	win.initialized = true;
+};
 
 createPortalView = function () {
     if (portalView) {
@@ -37,26 +55,14 @@ createPortalView = function () {
         win.remove(portalView);
     }
     
-    
-
     Ti.API.debug("Creating a new portal home view");
 	portalView = Titanium.UI.createView(app.styles.homeGrid);
 
-	var titleBar = new app.views.GenericTitleBar({
-	    app: app,
-	    windowKey: 'home',
-	    title:app.localDictionary.uMobile,
-	    settingsButton: true,
-	    homeButton: false
-	});
-	win.add(titleBar);
     win.add(portalView);
-
+    
     win.app.UPM.establishSession({ onsuccess: getPortletsForUser, onauthfailure: showSettings });
 
     Ti.App.addEventListener('credentialUpdate', onCredentialUpdate);
-
-    win.initialized = true;
 };
 
 getShowPortletFunc = function (portlet) {
@@ -181,9 +187,9 @@ getPortletsForUser = function(onload) {
 
     // Display a loading indicator until we can finish downloading the user
     // layout and creating the initial view
-    win.add(app.views.GlobalActivityIndicator);
-    app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
-    app.views.GlobalActivityIndicator.show();
+    activityIndicator.message = app.localDictionary.loading;
+    activityIndicator.resetDimensions();
+    activityIndicator.show();
 
     // Get the module list for this user from the portal server and create a 
     // layout based on this list.
@@ -192,7 +198,7 @@ getPortletsForUser = function(onload) {
     drawHomeGrid(portlets);
     
     // Remove our loading indicator
-    app.views.GlobalActivityIndicator.hide();
+    activityIndicator.hide();
 
 };
 
@@ -218,5 +224,6 @@ onGridItemPressDown = function (e) {
 onGridItemPressUp = function (e) {
     e.source.opacity = 1;
 };
-
-createPortalView();
+if(!win.initialized) {
+    init();
+}

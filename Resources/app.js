@@ -126,6 +126,8 @@ windows.settings = Titanium.UI.createWindow({
     key: 'settings'
 });
 
+activityIndicator = facade.views.GlobalActivityIndicator;
+
 Ti.App.addEventListener('showWindow', function (e) {
     Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
 
@@ -147,19 +149,20 @@ Ti.App.addEventListener('showWindow', function (e) {
 });
 
 Ti.App.addEventListener('showPortlet', function (portlet) {
-
-    windows.home.hide();
-    Ti.API.info("Showing portlet window " + portlet.title);
     
+    Ti.API.info("Showing portlet window " + portlet.title);
+    windows.home.hide();
     if (windows.portlet.initialized) {
         Titanium.App.fireEvent('includePortlet', portlet);
         windows.portlet.show();
     } 
-    
+
     else {
         windows.portlet.addEventListener('open', function(e) {
             Titanium.App.fireEvent('includePortlet', portlet);
         });
         windows.portlet.open();
     }
+    
+    activityIndicator.hide();
 });

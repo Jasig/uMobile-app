@@ -86,52 +86,53 @@ var MapService = function (facade) {
     self.newPointsLoaded = function (e) {
         // Customize the response and add it to the cached mapPoints array in the MapService object.
         var response, responseLength, db;
-        
-        try {
-            response = JSON.parse(e.source.responseText);
-            responseLength = response.buildings.length;
-            if (responseLength > 0) {
-                db = Ti.Database.open('umobile');
-                
-                for (var i = 0; i < responseLength; i++) {
-                    var building = response.buildings[i];
-                    if (building.name && building.latitude && building.longitude) {
-                        response.buildings[i].title = response.buildings[i].name;
-                        response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
-                        response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
-                        
-                        db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (" + 
-                            JSON.stringify(building.name) + ", " + 
-                            JSON.stringify(building.abbreviation) + ", " + 
-                            JSON.stringify(building.accuracy) + ", " + 
-                            JSON.stringify(building.address) + ", " + 
-                            JSON.stringify(building.alternateName) + ", " + 
-                            parseFloat(building.latitude) + ", " + 
-                            parseFloat(building.longitude) + ", " + 
-                            JSON.stringify(building.searchText) + ", " + 
-                            (building.zip ? parseInt(building.zip, 10) : null) + ", " + 
-                            JSON.stringify(building.img) +")");
-                        
-                        
-                        mapPoints.push(response.buildings[i]);
+        (function(){
+            try {
+                response = JSON.parse(e.source.responseText);
+                responseLength = response.buildings.length;
+                if (responseLength > 0) {
+                    db = Ti.Database.open('umobile');
+
+                    for (var i = 0; i < responseLength; i++) {
+                        var building = response.buildings[i];
+                        if (building.name && building.latitude && building.longitude) {
+                            response.buildings[i].title = response.buildings[i].name;
+                            response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
+                            response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
+
+                            db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (" + 
+                                JSON.stringify(building.name) + ", " + 
+                                JSON.stringify(building.abbreviation) + ", " + 
+                                JSON.stringify(building.accuracy) + ", " + 
+                                JSON.stringify(building.address) + ", " + 
+                                JSON.stringify(building.alternateName) + ", " + 
+                                parseFloat(building.latitude) + ", " + 
+                                parseFloat(building.longitude) + ", " + 
+                                JSON.stringify(building.searchText) + ", " + 
+                                (building.zip ? parseInt(building.zip, 10) : null) + ", " + 
+                                JSON.stringify(building.img) +")");
+
+
+                            mapPoints.push(response.buildings[i]);
+                        }
+                        else {
+                            Ti.API.debug("Skipping " + building.name);
+                        }
                     }
-                    else {
-                        Ti.API.debug("Skipping " + building.name);
-                    }
+                    db.close();
+                    onPointsLoaded();                
                 }
-                db.close();
-                onPointsLoaded();                
+                else {
+                    //No location objects in the response, so fire an event so the controller is aware.
+                    Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.NO_DATA_RETURNED});
+                }
             }
-            else {
-                //No location objects in the response, so fire an event so the controller is aware.
-                Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.NO_DATA_RETURNED});
+            catch (err) {
+                Ti.API.info("Data was invalid, calling onInvalidData()");
+                //Data didn't parse, so fire an event so the controller is aware
+                Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.INVALID_DATA_RETURNED});
             }
-        }
-        catch (e) {
-            Ti.API.info("Data was invalid, calling onInvalidData()");
-            //Data didn't parse, so fire an event so the controller is aware
-            Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.INVALID_DATA_RETURNED});
-        }
+        })();
     };
     
     function onLoadError (e) {
