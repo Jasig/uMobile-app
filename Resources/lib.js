@@ -86,6 +86,19 @@ UPM.saveCredentials = function (credentials) {
     db.close();
 };
 
+UPM.updateSessionTimeout = function(app) {
+    app.lastUpdate = new Date();
+};
+
+UPM.ensureSession = function(app, options) {
+    if (!app.UPM.isValidSession(app.lastUpdate)) {
+        Ti.API.info("Invalid session");
+        // re-authenticate 
+        establishSession(options);
+        // TODO: re-load portlet list and refresh portlet and directory views
+    }
+};
+
 UPM.isValidSession = function (lastUpdate) {
     var now, lastLoginSeconds, checkSessionUrl, checkSessionClient, checkSessionResponse;
     
@@ -166,14 +179,14 @@ UPM.getPortletList = function() {
 /**
  * Establish a session on the uPortal server.
  */
-UPM.establishSession = function(onsuccess, onauthfailure, onnetworkfailure) {
+UPM.establishSession = function(options) {
     var credentials, url;
 
     // If the user has configured credentials, attempt to perform CAS 
     // authentication 
     credentials = UPM.getCredentials();
     if (credentials.username && credentials.password) {
-        UPM.LOGIN_METHOD(credentials, onsuccess, onauthfailure, onnetworkfailure);        
+        UPM.LOGIN_METHOD(credentials, options);        
     } 
     
     // If no credentials are available just log into uPortal as a guest through
@@ -181,18 +194,14 @@ UPM.establishSession = function(onsuccess, onauthfailure, onnetworkfailure) {
     else {
         url = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/Login?isNativeDevice=true';
         var authenticator = Titanium.Network.createHTTPClient();
-        authenticator.onload = onsuccess;
+        authenticator.onload = options.onsuccess;
         authenticator.open('GET', url);
         authenticator.send();
     }
 
 };
 
-UPM.doLocalLogin = function (credentials, onsuccess, onauthfailure, onnetworkfailure) {
-    // TODO
-};
-
-UPM.doCASLogin = function (credentials, onsuccess, onauthfailure, onnetworkfailure) {
+UPM.doCASLogin = function (credentials, options) {
     var url, client, initialResponse, flowRegex, flowId, data, failureRegex;
     
     url = UPM.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/Login?isNativeDevice=true');
@@ -226,9 +235,9 @@ UPM.doCASLogin = function (credentials, onsuccess, onauthfailure, onnetworkfailu
     // we get back a CAS page, assume that the credentials were invalid.
     failureRegex = new RegExp(/body id="cas"/);
     if (failureRegex.exec(client.responseText)) {
-        onauthfailure();
+        options.onauthfailure();
     } else {
-        onsuccess();
+        options.onsuccess();
     }
     
 };

@@ -153,9 +153,9 @@ drawHomeGrid = function (portlets) {
         gridItem.add(gridItemIcon);
 
 
-        // TODO: hook up to actual badge icon service
+        // if the module has a new item count of more than zero (no new items)
+        // add a badge number to the home screen icon
         if (_portlet.newItemCount > 0) {
-            Ti.API.info("blackboard");
             var gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
             gridBadgeBackgroundDefaults.image = "../../icons/badgeBackground.png";
             gridBadgeBackground = Titanium.UI.createImageView(gridBadgeBackgroundDefaults);
@@ -209,7 +209,6 @@ showSettings = function() {
 
 onCredentialUpdate = function (e) {
     createPortalView();
-    win.app.UPM.establishSession(getPortletsForUser);
 };
 
 onGridItemPressDown = function (e) {
