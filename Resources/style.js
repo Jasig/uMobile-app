@@ -22,7 +22,6 @@ SECONDARY_BAR_BACKGROUND_GRADIENT = {
 SECONDARY_BAR_COLOR = "#fff";
 styles = {
     backgroundColor: '#fff',
-    backgroundImage: UPM.getResourcePath('images/home-background.png'),
     view: {
         backgroundColor: '#fff',
         top: TITLEBAR_HEIGHT
@@ -177,7 +176,8 @@ styles = {
     homeGrid: {
         top: TITLEBAR_HEIGHT,
         numColumns: 3,
-        color: "#fff"
+        color: "#fff",
+        backgroundImage: '../../images/home-background.png'
     },
     gridIcon: {
         width: 32,
