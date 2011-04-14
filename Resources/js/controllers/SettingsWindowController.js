@@ -117,27 +117,25 @@
             username: usernameInput.value, 
             password: passwordInput.value 
         });
-        win.app.UPM.establishSession(
-            win.app.UPM.establishSession({
-                onsuccess: function () {
-                    Ti.API.debug('Updated user credentials');
-                    Ti.App.fireEvent('credentialUpdate', {});
-                    Ti.App.fireEvent(
-                        'showWindow', 
-                        {
-                            oldWindow: 'settings',
-                            newWindow: 'home',
-                            transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
-                        }
-                    );
-                },
-                onauthfailure: function () {
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
-                    message: app.localDictionary.authenticationFailed, buttonNames: ['OK']
-                    }).show();
-                }
-            });
-        );
+        win.app.UPM.establishSession({
+            onsuccess: function () {
+                Ti.API.debug('Updated user credentials');
+                Ti.App.fireEvent('credentialUpdate', {});
+                Ti.App.fireEvent(
+                    'showWindow', 
+                    {
+                        oldWindow: 'settings',
+                        newWindow: 'home',
+                        transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
+                    }
+                );
+            },
+            onauthfailure: function () {
+            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                message: app.localDictionary.authenticationFailed, buttonNames: ['OK']
+                }).show();
+            }
+        });
         activityIndicator.hide();
     };
     function onWindowBlur (e) {

@@ -52,7 +52,7 @@ createPortalView = function () {
 	win.add(titleBar);
     win.add(portalView);
 
-    win.app.UPM.establishSession(getPortletsForUser, showSettings);
+    win.app.UPM.establishSession({ onsuccess: getPortletsForUser, onauthfailure: showSettings });
 
     Ti.App.addEventListener('credentialUpdate', onCredentialUpdate);
 
