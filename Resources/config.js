@@ -93,5 +93,5 @@ UPM.GLOBAL_STYLES = {
 };
 
 UPM.directoryEmergencyContacts = [];
-//UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Police", {phone: '555 555 5555'}));
-//UPM.directoryEmergencyContacts.push(new DirectoryPersonVO("Campus Ambulance", {phone: '555 555 5555'}));
+UPM.directoryEmergencyContacts.push({ displayName: ["Campus Police"], telephoneNumber: ['555 555 5555'] });
+UPM.directoryEmergencyContacts.push({ displayName: ["Campus Ambulance"], telephoneNumber: ['555 555 5555'] });

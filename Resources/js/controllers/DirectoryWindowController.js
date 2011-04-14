@@ -77,7 +77,7 @@ Ti.API.info("Directory Window Opened");
             for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
                 var _contact = directoryProxy.getEmergencyContacts()[i],
                 _emergencyContactRow = Titanium.UI.createTableViewRow({
-                    title: _contact.fullName,
+                    title: _contact.displayName[0],
                     hasChild: true,
                     data: _contact
                 });
