@@ -33,7 +33,7 @@
             windowKey: 'portlet',
             app: app,
             title: app.localDictionary.uMobile,
-            settingsButton: true,
+            settingsButton: false,
             homeButton: true
         });
         win.add(titleBar);   
@@ -94,7 +94,7 @@
         activityIndicator.hide();
         
         var newUrl = e.url;
-        if (portletView.externalModule || newUrl.indexOf(UPM.BASE_PORTAL_URL) >= 0) {
+        if (portletView.externalModule || newUrl.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
             navBar.visible = false;
             portletView.top = 40;
         } else {

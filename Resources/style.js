@@ -66,7 +66,8 @@ styles = {
         backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
         barColor: SECONDARY_BAR_BACKGROUND_COLOR,
         backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
-        showCancel: false
+        showCancel: true,
+        width: Ti.Platform.displayCaps.platformWidth
     },
     secondaryBar: {
         top: TITLEBAR_HEIGHT,
@@ -127,19 +128,31 @@ styles = {
             fontWeight: "bold"
         }
     },
+    titleBarHomeContainer: {
+        width: 40,
+        height: 30,
+        borderRadius: 5,
+        backgroundColorPressed: "#999",
+        left: 5
+    },
     //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
     titleBarHomeButton: {
         image: UPM.getResourcePath("icons/tab-home.png"),
         width: 18,
-        height: 18,
-        left: 10
+        height: 18
     },
     //Titanium.UI.View with settings icon implemented in GenericTitleBar on right-hand side
+    titleBarSettingsContainer: {
+        width: 40,
+        height: 30,
+        borderRadius: 5,
+        backgroundColorPressed: "#999",
+        left: Ti.Platform.displayCaps.platformWidth - 40 - 5
+    },
     titleBarSettingsButton: {
 	    height: 18,
 	    width: 18,
-	    image: UPM.getResourcePath("icons/tab-settings.png"),
-	    left: Ti.Platform.displayCaps.platformWidth - 28
+	    image: UPM.getResourcePath("icons/tab-settings.png")
 	},
 	secondaryNavBar: {
         top: 0,
@@ -193,9 +206,8 @@ styles = {
         shadowColor: "#000",
         shadowOffset: { x:0 , y:1 },
         font: { 
-            fontSize: 10,
-            fontWeight: 'bold',
-            fontFamily: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
+            size: 10,
+            family: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
         },
         top: 80 - 20,
         color: "#fff",
@@ -265,11 +277,10 @@ styles = {
 	    color: "#4365af"
 	},
 	directoryDetailRowValue: {
+	    color: '#f00',
 	    font: {
-	        fontSize: 14,
-	        fontWeight: 'normal'
+	        fontSize: 14
 	    },
-	    color: '#333',
 	    left: 75 + 10 + 10,
 	    width: Ti.Platform.displayCaps.platformWidth - 100 - 10 - 10 - 10
 	},

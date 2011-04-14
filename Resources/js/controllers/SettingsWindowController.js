@@ -27,9 +27,10 @@
     var win = Titanium.UI.currentWindow,
         app = win.app,
         credentials, 
-        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, 
+        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, activityIndicator,
         titlebar,
-        createTitleBar, createCredentialsForm;
+        createTitleBar, createCredentialsForm,
+        onUpdateCredentials;
 
     function init() {
         // get the current user credentials in order
@@ -48,7 +49,12 @@
         });
         win.add(titleBar);
         
+        
         createCredentialsForm();
+
+        activityIndicator = app.views.GlobalActivityIndicator;
+        activityIndicator.resetDimensions();
+        win.add(activityIndicator);
         
         win.initialized = true;
     }    
@@ -98,38 +104,44 @@
 
         win.add(saveButton);
 
-        saveButton.addEventListener('click', function (e) {
-            win.app.UPM.saveCredentials({ 
-                username: usernameInput.value, 
-                password: passwordInput.value 
-            });
-            win.app.UPM.establishSession(
-                function () {
-                    Ti.API.debug('Updated user credentials');
-                    Ti.App.fireEvent('credentialUpdate', {});
-                    Ti.App.fireEvent(
-                        'showWindow', 
-                        {
-                            oldWindow: 'settings',
-                            newWindow: 'home',
-                            transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
-                        }
-                    );
-                },
-                function () {
-                    Titanium.UI.createAlertDialog({ title: 'Error',
-                        message: 'Authentication failed', buttonNames: ['OK']
-                    }).show();
-                }
-            );
-
-        });
+        saveButton.addEventListener('click', onUpdateCredentials);
+        passwordInput.addEventListener('return', onUpdateCredentials);
+        usernameInput.addEventListener('return', onUpdateCredentials);
 
     };
 
+    onUpdateCredentials = function (e) {
+        activityIndicator.message = app.localDictionary.loggingIn;
+        activityIndicator.show();
+        win.app.UPM.saveCredentials({ 
+            username: usernameInput.value, 
+            password: passwordInput.value 
+        });
+        win.app.UPM.establishSession(
+            function () {
+                Ti.API.debug('Updated user credentials');
+                Ti.App.fireEvent('credentialUpdate', {});
+                Ti.App.fireEvent(
+                    'showWindow', 
+                    {
+                        oldWindow: 'settings',
+                        newWindow: 'home',
+                        transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
+                    }
+                );
+            },
+            function () {
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                    message: app.localDictionary.authenticationFailed, buttonNames: ['OK']
+                }).show();
+            }
+        );
+        activityIndicator.hide();
+    };
     function onWindowBlur (e) {
         passwordInput.blur();
         usernameInput.blur();
+        activityIndicator.hide();
     }
 
     if (!win.initialized) {

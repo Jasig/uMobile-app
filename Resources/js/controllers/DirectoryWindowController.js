@@ -47,7 +47,7 @@ Ti.API.info("Directory Window Opened");
             app: app,
             title: app.localDictionary.directory,
             homeButton: true,
-            settingsButton: true,
+            settingsButton: false,
             windowKey: win.key
         });
         win.add(titleBar);
@@ -183,7 +183,7 @@ Ti.API.info("Directory Window Opened");
     onSearchChange = function (e) {
         if(searchBar.value === '') {
             directoryProxy.clear();
-            peopleListTable.setData(defaultTableData);            
+            peopleListTable.setData(defaultTableData);
         }
     };
 
@@ -191,7 +191,7 @@ Ti.API.info("Directory Window Opened");
         Ti.API.debug('onSearchCancel');
         directoryProxy.clear();
         blurSearch();
-        displaySearchResults();
+        peopleListTable.setData(defaultTableData);
         activityIndicator.hide();
     };
     

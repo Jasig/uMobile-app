@@ -95,6 +95,7 @@ windows.portlet = Titanium.UI.createWindow({
 //
 windows.directory = Titanium.UI.createWindow({
     url: 'js/controllers/DirectoryWindowController.js',
+    backgroundColor: facade.styles.backgroundColor,
     title: facade.localDictionary.directory,
     app: facade,
     key: 'directory',
@@ -126,17 +127,21 @@ windows.settings = Titanium.UI.createWindow({
 
 Ti.App.addEventListener('showWindow', function (e) {
     Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
-    windows[e.oldWindow].hide();
-    
-    if (windows[e.newWindow].initialized) {
-        Ti.API.debug("new window is initialized");
-        windows[e.newWindow].show();
-    }     
-    else {
-        Ti.API.debug("new window is NOT initialized");
-        windows[e.newWindow].open();
-    }        
+    if(windows[e.oldWindow] != windows[e.newWindow]) {
+        windows[e.oldWindow].hide();
 
+        if (windows[e.newWindow].initialized) {
+            Ti.API.debug("new window is initialized");
+            windows[e.newWindow].show();
+        }     
+        else {
+            Ti.API.debug("new window is NOT initialized");
+            windows[e.newWindow].open();
+        }
+    }
+    else {
+        Ti.API.debug("You're trying to navigate to the same window you're already in.");
+    }
 });
 
 Ti.App.addEventListener('showPortlet', function (portlet) {

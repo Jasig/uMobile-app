@@ -31,14 +31,16 @@ var MapDetailTop = function (opts) {
 
         Ti.API.debug("Creating directionsButton in MapDetailTop");
         //Add "Get Directions" button
-        directionsButtonOptions = app.styles.contentButton;
-        directionsButtonOptions.title = opts.app.localDictionary.getDirections;
-        directionsButtonOptions.top = locationAddress.height + locationAddress.top + 5;
-        directionsButtonOptions.left = 10;
-        directionsButtonOptions.width = 150;
-        directionsButton = Titanium.UI.createButton(directionsButtonOptions);
-
-        detailView.add(directionsButton);
+        if(details.address) {
+            directionsButtonOptions = app.styles.contentButton;
+            directionsButtonOptions.title = opts.app.localDictionary.getDirections;
+            directionsButtonOptions.top = locationAddress.height + locationAddress.top + 5;
+            directionsButtonOptions.left = 10;
+            directionsButtonOptions.width = 150;
+            directionsButton = Titanium.UI.createButton(directionsButtonOptions);
+            
+            detailView.add(directionsButton);            
+        }
 
         Ti.API.debug("Adding event listener to directionsButton in MapDetailTop");
         directionsButton.addEventListener("click", onGetDirections);        

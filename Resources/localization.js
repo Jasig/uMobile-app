@@ -9,6 +9,7 @@ localDictionary.en_US = {
     search: "Search",
     go: "Go",
     back: "Back",
+    error: "Error",
     update: "Update",
     home: "Home",
     doneEditing: "Done Editing",
@@ -37,6 +38,8 @@ localDictionary.en_US = {
     settings: "Settings",
     username: "Username",
     password: "Password",
+    authenticationFailed: "Authentication failed",
+    loggingIn: "Logging in",
     
     //Directory Window
     directory: "Directory",

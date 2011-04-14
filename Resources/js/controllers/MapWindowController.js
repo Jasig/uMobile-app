@@ -48,7 +48,7 @@
         titleBar = app.views.GenericTitleBar({
             homeButton: true,
             app: app,
-            settingsButton: true,
+            settingsButton: false,
             title: app.localDictionary.map,
             windowKey: 'map'
         });

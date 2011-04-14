@@ -32,13 +32,14 @@ var UPM = UPM || {};
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
 // trailing slash.
 UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+// UPM.BASE_PORTAL_URL = 'http://192.168.1.138:8080';
 UPM.PORTAL_CONTEXT = '/uPortal';
 
 //------- AUTHENTICATION -------
 
 UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
 UPM.LOGIN_METHOD = UPM.doCASLogin;
-UPM.CAS_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080/cas' : 'http://localhost:8080/cas';
+UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
 UPM.ENCRYPTION_KEY = 'um0b1le';
 
 //------- MAP SERVICE -------
