@@ -99,11 +99,11 @@ var sortPortlets = function(a, b) {
 getIconUrl = function (p) {
     var _iconUrl;
 
-    if (!p.url && p.iconUrl) {
-        _iconUrl = pathToRoot + p.iconUrl;
+    if (p.iconUrl && p.iconUrl.indexOf('/') == 0) {
+        _iconUrl = win.app.UPM.BASE_PORTAL_URL + p.iconUrl;
     } 
     else if (p.iconUrl) {
-        _iconUrl = win.app.UPM.BASE_PORTAL_URL + p.iconUrl;
+        _iconUrl = pathToRoot + p.iconUrl;
     } 
     else {
         _iconUrl = win.app.UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
