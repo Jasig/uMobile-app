@@ -38,6 +38,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
 (function (){
     var windows = {},
         app,
+        UPM = {},
         activityIndicator,
         init, setUpWindows;
     

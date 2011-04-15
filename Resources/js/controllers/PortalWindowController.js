@@ -202,7 +202,7 @@ getPortletList = function() {
     // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
     Ti.API.debug("layoutClient text" + layoutClient.responseText);
     
-    if(layoutClient.responseXML.getElementsByTagName('json-layout')) {
+    if(layoutClient.responseXML) {
         layoutText = layoutClient.responseXML.getElementsByTagName('json-layout').item(0).text;
     }
     else {

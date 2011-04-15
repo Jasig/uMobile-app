@@ -24,7 +24,7 @@
  */
 
 function setConfig (app) {
-    var UPM = UPM || {};
+    var UPM = app.UPM;
 
     Titanium.App.Properties.setString('locale','en_US');
     

@@ -39,6 +39,7 @@ var LoginProxy = function (facade) {
             })();
         }
         rows.close();
+        db.close();
 
         Ti.API.info(credentials);
         return credentials;
