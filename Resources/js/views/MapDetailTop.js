@@ -43,7 +43,7 @@ var MapDetailTop = function (opts) {
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);
         
         detailView.add(directionsButton);
-        details.address ? directionsButton.show() : directionsButton.hide();
+        (!details.address) ? directionsButton.hide() : directionsButton.show();
 
         Ti.API.debug("Adding event listener to directionsButton in MapDetailTop");
         directionsButton.addEventListener("click", onGetDirections);

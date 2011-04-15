@@ -35,7 +35,7 @@
     function init() {
         // get the current user credentials in order
         // to pre-populate the input fields
-        credentials = win.app.UPM.getCredentials();
+        credentials = app.models.loginProxy.getCredentials();
 
         win.backgroundColor = win.app.styles.backgroundColor;
         
@@ -115,11 +115,11 @@
     onUpdateCredentials = function (e) {
         activityIndicator.message = app.localDictionary.loggingIn;
         activityIndicator.show();
-        win.app.UPM.saveCredentials({ 
+        app.models.loginProxy.saveCredentials({ 
             username: usernameInput.value, 
             password: passwordInput.value 
         });
-        win.app.UPM.establishSession({
+        app.models.loginProxy.establishSession({
             onsuccess: function () {
                 Ti.API.debug('Updated user credentials');
                 Ti.App.fireEvent('credentialUpdate', {});

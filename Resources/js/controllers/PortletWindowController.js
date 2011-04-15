@@ -21,15 +21,13 @@
     var win = Titanium.UI.currentWindow,
         app = win.app,
         activityIndicator = app.views.GlobalActivityIndicator,
-        portletViewOpts,
-        portletView,
-        titleBar,
-        navBar,
+        portletView, titleBar, navBar,
         initialized,
         pathToRoot = '../../',
         onBackBtnPress, onBackButtonUp;
 
     function init() {
+        var portletViewOpts, navBarOptions;
         titleBar = new app.views.GenericTitleBar({
             windowKey: 'portlet',
             app: app,

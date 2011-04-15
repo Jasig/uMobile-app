@@ -60,7 +60,7 @@ createPortalView = function () {
 
     win.add(portalView);
     
-    win.app.UPM.establishSession({ onsuccess: getPortletsForUser, onauthfailure: showSettings });
+    app.models.loginProxy.establishSession({ onsuccess: getPortletsForUser, onauthfailure: showSettings });
 
     Ti.App.addEventListener('credentialUpdate', onCredentialUpdate);
 };
@@ -182,6 +182,45 @@ drawHomeGrid = function (portlets) {
     }
 };
 
+/**
+ * This method is currently blocking.
+ */
+getPortletList = function() {
+    var layoutUrl, layoutClient, layoutText, portlets;
+    
+    // Send a request to uPortal's main URL to get a JSON representation of the
+    // user layout
+    layoutUrl = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT;
+    layoutClient = Titanium.Network.createHTTPClient();
+    layoutClient.open('GET', layoutUrl, false);
+    layoutClient.send();
+
+    // uPortal 3.2 isn't capable of sending the layout as JSON, so the response
+    // will be an XML document with the appropriate JSON contained in a 
+    // "json-layout" element.  Parse this element as JSON and use the data 
+    // array as the initial module list.
+    // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
+    Ti.API.debug("layoutClient text" + layoutClient.responseText);
+    
+    if(layoutClient.responseXML.getElementsByTagName('json-layout')) {
+        layoutText = layoutClient.responseXML.getElementsByTagName('json-layout').item(0).text;
+    }
+    else {
+        alert("Using hard-coded layout! XML wasn't valid");
+        Ti.API.warn("Using hard-coded layout! XML wasn't valid");
+        layoutText = '{ "layout": [ { "title": "Welcome", "url": "/uPortal/f/u24l1s5/p/snappy.u24l1n7/max/render.uP", "description": "Mockup image rotator thingy.", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/mimetypes/text-html.png" }, { "title": "Google Search", "url": "/uPortal/f/u24l1s5/p/google-portlet.u24l1n8/max/render.uP", "description": "Google Portlet from http://code.google.com/p/googleportlet/", "newItemCount": "0", "iconUrl": "${request.contextPath}/media/skins/icons/google.png" }, { "title": "", "url": "", "description": "The Weather Module allows you to access the latest weather conditions and 5-day forecasts for the cities you select.", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/status/weather-few-clouds.png" }, { "title": "Most Popular Apps", "url": "/uPortal/f/u24l1s12/p/popular-portlets.u24l1n14/max/render.uP", "description": "Shows which apps (portlets) have been added by users and how often", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/preferences-system.png" }, { "title": "Calendar", "url": "/uPortal/f/u24l1s12/p/calendar.u24l1n16/max/render.uP", "description": "Small monthly calendar.", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/mimetypes/x-office-calendar.png" }, { "title": "Bookmarks", "url": "/uPortal/f/u24l1s12/p/pbookmarks.u24l1n17/max/render.uP", "description": "Bookmarks portlet", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/mimetypes/x-office-address-book.png" }, { "title": "Student Welcome", "url": "/uPortal/f/u22l1s5/p/student-feature.u22l1n7/max/render.uP", "description": "Student-targeted welcome screen", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/mimetypes/image-x-generic.png" }, { "title": "My Notifications", "url": "/uPortal/f/u22l1s5/p/notifications.u22l1n8/max/render.uP", "description": "Mockup notifications portlet.", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/apps/preferences-desktop-multimedia.png" }, { "title": "Who\'s Online", "url": "/uPortal/f/u22l1s5/p/whos-online.u22l1n10/max/render.uP", "description": "Mockup of a Who\'s Online portlet.", "newItemCount": "0", "iconUrl": "/ResourceServingWebapp/rs/tango/0.8.90/32x32/mimetypes/text-html.png" }, { "title": "", "url": "", "description": "Course links and announcements", "newItemCount": "0", "iconUrl": "/CoursesPortlet/notepad.png" } ] }';
+    }    
+
+    portlets = JSON.parse(layoutText).layout;
+
+    // Add locally-configured modules to the module list.
+    for (var i = 0; i < app.UPM.LOCAL_MODULES.length; i++) {
+        portlets.push(app.UPM.LOCAL_MODULES[i]);
+    }
+    return portlets;
+
+};
+
 getPortletsForUser = function(onload) {
     var portlets;
 
@@ -193,7 +232,7 @@ getPortletsForUser = function(onload) {
 
     // Get the module list for this user from the portal server and create a 
     // layout based on this list.
-    portlets = app.UPM.getPortletList();
+    portlets = getPortletList();
     app.lastUpdate = new Date();
     drawHomeGrid(portlets);
     

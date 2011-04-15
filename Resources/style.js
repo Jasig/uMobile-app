@@ -5,7 +5,7 @@ Right now, it's unsophisticated with only one level of encapsulation. titleBarBu
 To apply styles to elements
 */
 
-Ti.include('lib.js');
+// Ti.include('lib.js');
 var TITLEBAR_HEIGHT = 40,
 DETAIL_TOP_TITLE_COLOR = '#333',
 DETAIL_TOP_BACKGROUND_COLOR = '#eee',

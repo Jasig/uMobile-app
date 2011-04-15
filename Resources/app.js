@@ -19,52 +19,17 @@
 
 // library includes
 Titanium.include('config.js');
-Titanium.include('lib.js');
-Titanium.include('style.js');
-Titanium.include('localization.js');
-Titanium.include('js/models/MapProxy.js');
-Titanium.include('js/models/DirectoryProxy.js');
-Titanium.include('js/views/GenericTitleBar.js');
-Titanium.include('js/views/GlobalActivityIndicator.js');
-Titanium.include('js/views/MapDetailTop.js');
-Titanium.include('js/views/PersonDetailTableView.js');
-Titanium.include('js/views/SecondaryNavBar.js');
-Titanium.include('js/controllers/DirectoryDetailController.js');
-Titanium.include('js/controllers/MapDetailViewController.js');
 
 var windows = {},
-    facade,
+    app = facade,
     activityIndicator;
-    
-facade = {
-    UPM: UPM,
-    localDictionary: localDictionary[Titanium.App.Properties.getString('locale')], //Returns a localized object of all application strings, based on locale property set in config.js.
-    styles: styles
-};
 
-facade.models = {
-    mapService: new MapService(facade),
-    directoryProxy: new DirectoryProxy(facade)
-};
 
-facade.views = {
-    MapDetailTop: MapDetailTop,
-    GenericTitleBar: GenericTitleBar,
-    PersonDetailTableView: PersonDetailTableView,
-    GlobalActivityIndicator: new GlobalActivityIndicator(facade),
-    SecondaryNavBar: SecondaryNavBar
-};
-
-facade.controllers = {
-    DirectoryDetailController: DirectoryDetailController,
-    MapDetailViewController: MapDetailViewController
-};
-
-Titanium.UI.setBackgroundColor(facade.styles.backgroundColor);
+// Titanium.UI.setBackgroundColor(app.styles.backgroundColor);
 
 //Let the user know that they need a network connection to use this app.
 if (!Ti.Network.online) {
-    alert(facade.localDictionary.networkConnectionRequired);
+    alert(app.localDictionary.networkConnectionRequired);
 }
 
 //
@@ -73,7 +38,7 @@ if (!Ti.Network.online) {
 windows.home = Titanium.UI.createWindow({
     url: 'js/controllers/PortalWindowController.js',
     navBarHidden: true,
-    app: facade,
+    app: app,
     key: 'home'
 });
 
@@ -86,7 +51,7 @@ windows.home.open();
 windows.portlet = Titanium.UI.createWindow({
     url: 'js/controllers/PortletWindowController.js',
     navBarHidden: true,
-    app: facade,
+    app: app,
     key: 'portlet'
 });
 
@@ -96,9 +61,9 @@ windows.portlet = Titanium.UI.createWindow({
 //
 windows.directory = Titanium.UI.createWindow({
     url: 'js/controllers/DirectoryWindowController.js',
-    backgroundColor: facade.styles.backgroundColor,
-    title: facade.localDictionary.directory,
-    app: facade,
+    backgroundColor: app.styles.backgroundColor,
+    title: app.localDictionary.directory,
+    app: app,
     key: 'directory',
     id: 'directoryWindowController'
 });
@@ -109,8 +74,8 @@ windows.directory = Titanium.UI.createWindow({
 //
 windows.map = Titanium.UI.createWindow({
     url: 'js/controllers/MapWindowController.js',
-    title: facade.localDictionary.map,
-    app: facade,
+    title: app.localDictionary.map,
+    app: app,
     key: 'map'
 });
 // windows.map.open();
@@ -122,11 +87,11 @@ windows.map = Titanium.UI.createWindow({
 windows.settings = Titanium.UI.createWindow({
     url: 'js/controllers/SettingsWindowController.js',
     navBarHidden: true,
-    app: facade,
+    app: app,
     key: 'settings'
 });
 
-activityIndicator = facade.views.GlobalActivityIndicator;
+activityIndicator = app.views.GlobalActivityIndicator;
 
 Ti.App.addEventListener('showWindow', function (e) {
     Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
