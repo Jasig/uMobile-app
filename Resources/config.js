@@ -40,7 +40,7 @@ function setConfig (app) {
     //------- AUTHENTICATION -------
 
     UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
-    //UPM.LOGIN_METHOD = UPM.doCASLogin;
+    // UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
     UPM.LOGIN_METHOD = app.models.loginProxy.doLocalLogin;
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
     UPM.ENCRYPTION_KEY = 'um0b1le';

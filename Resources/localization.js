@@ -20,6 +20,7 @@ localDictionary.en_US = {
     noSearchResults: "No results matched your search",
     activityIndicatorMessage: "Loading...",
     networkConnectionRequired: "A network connection is required to use this application. Please connect to the internet and come back to this application.",
+    couldNotConnectToPortal: "Sorry, your portlets could not be loaded from the portal.",
     
     //Map Window & Map Detail Window
     map: "Map",
