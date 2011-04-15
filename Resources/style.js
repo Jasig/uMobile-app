@@ -5,7 +5,7 @@ Right now, it's unsophisticated with only one level of encapsulation. titleBarBu
 To apply styles to elements
 */
 
-var Styles = function () {
+var Styles = function (app) {
     var TITLEBAR_HEIGHT = 40,
     DETAIL_TOP_TITLE_COLOR = '#333',
     DETAIL_TOP_BACKGROUND_COLOR = '#eee',
@@ -147,7 +147,7 @@ var Styles = function () {
         },
         //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
         titleBarHomeButton: {
-            image: UPM.getResourcePath("icons/tab-home.png"),
+            image: app.models.resourceProxy.getResourcePath("icons/tab-home.png"),
             width: 18,
             height: 18
         },
@@ -162,7 +162,7 @@ var Styles = function () {
         titleBarSettingsButton: {
     	    height: 18,
     	    width: 18,
-    	    image: UPM.getResourcePath("icons/tab-settings.png")
+    	    image: app.models.resourceProxy.getResourcePath("icons/tab-settings.png")
     	},
     	secondaryNavBar: {
             top: 0,
@@ -370,7 +370,7 @@ var Styles = function () {
     //iPhone-specific overrides
     if (Ti.Platform.osname === 'iphone') {
         stylesheet.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.PLAIN;
-        stylesheet.globalActivityIndicator.backgroundImage = UPM.getResourcePath('images/bgActivityIndicator.png');
+        stylesheet.globalActivityIndicator.backgroundImage = app.models.resourceProxy.getResourcePath('images/bgActivityIndicator.png');
         stylesheet.globalActivityIndicator.width = Ti.Platform.displayCaps.platformWidth;
         stylesheet.globalActivityIndicator.height = Ti.Platform.displayCaps.platformHeight;
         stylesheet.globalActivityIndicator.style = Titanium.UI.iPhone.ActivityIndicatorStyle.PLAIN;

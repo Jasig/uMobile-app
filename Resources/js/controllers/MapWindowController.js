@@ -109,7 +109,7 @@
     loadDetail = function(e) {
         //Create and open the view for the map detail
         // locationDetailWinOptions = app.styles.view;
-        // locationDetailViewOptions.url = app.UPM.getResourcePath("/js/controllers/MapDetailViewController.js");
+        // locationDetailViewOptions.url = app.app.models.resourceProxy.getResourcePath("/js/controllers/MapDetailViewController.js");
         Ti.API.debug('self.loadDetail');
         searchBlur();
         if (!locationDetailView) {
