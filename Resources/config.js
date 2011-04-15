@@ -24,7 +24,7 @@
  */
  
 
-Titanium.include('lib.js');
+Ti.include('js/ApplicationFacade.js');
 Titanium.include('style.js');
 Titanium.include('localization.js');
 Titanium.include('js/gibberish-aes.js');
@@ -39,36 +39,44 @@ Titanium.include('js/views/SecondaryNavBar.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
 Titanium.include('js/controllers/MapDetailViewController.js');
 
-var UPM = UPM || {},
-    facade;
+var UPM, facade;
 
 Titanium.App.Properties.setString('locale','en_US');
 
-facade = {
-    UPM: UPM,
-    localDictionary: localDictionary[Titanium.App.Properties.getString('locale')], //Returns a localized object of all application strings, based on locale property set in config.js.
-    styles: styles,
-    GibberishAES: GibberishAES
+UPM = UPM || {};
+
+UPM.getResourcePath = function (file) {
+    //File path should be passed in as a relative path loaded from the root of the Resources directory. 
+    //Should not contain a forward slash at beginning of path.
+    if(Titanium.Platform.osname === ('iphone' || 'ipad')) {
+        Ti.API.info("getResourcePath is iOS");
+        return file;
+    } 
+    else if (Titanium.Platform.osname === 'android') {
+        Ti.API.info("getResourcePath is Android");
+        return Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + "/" + file);
+    }
+    else {
+        return file;
+    }
 };
 
-facade.models = {
-    mapService: new MapService(facade),
-    directoryProxy: new DirectoryProxy(facade),
-    loginProxy: new LoginProxy(facade)
-};
 
-facade.views = {
-    MapDetailTop: MapDetailTop,
-    GenericTitleBar: GenericTitleBar,
-    PersonDetailTableView: PersonDetailTableView,
-    GlobalActivityIndicator: new GlobalActivityIndicator(facade),
-    SecondaryNavBar: SecondaryNavBar
-};
+facade = new ApplicationFacade();
+facade.registerMember('UPM', UPM);
+facade.registerMember('styles', new Styles());
+facade.registerMember('GibberishAES', GibberishAES);
+facade.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]);
 
-facade.controllers = {
-    DirectoryDetailController: DirectoryDetailController,
-    MapDetailViewController: MapDetailViewController
-};
+facade.registerModel('mapService', new MapService(facade));
+facade.registerModel('directoryProxy', new DirectoryProxy(facade));
+facade.registerModel('loginProxy', new LoginProxy(facade));
+
+facade.registerView('MapDetailTop', MapDetailTop);
+facade.registerView('GenericTitleBar', GenericTitleBar);
+facade.registerView('PersonDetailTableView', PersonDetailTableView);
+facade.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(facade));
+facade.registerView('SecondaryNavBar', SecondaryNavBar);
 
 
 //------- PORTAL LOCATION -------
@@ -137,22 +145,10 @@ UPM.GLOBAL_STYLES = {
     tableBackgroundColor: "#fff"
 };
 
-UPM.getResourcePath = function (file) {
-    //File path should be passed in as a relative path loaded from the root of the Resources directory. 
-    //Should not contain a forward slash at beginning of path.
-    if(Titanium.Platform.osname === ('iphone' || 'ipad')) {
-        Ti.API.info("getResourcePath is iOS");
-        return file;
-    } 
-    else if (Titanium.Platform.osname === 'android') {
-        Ti.API.info("getResourcePath is Android");
-        return Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + "/" + file);
-    }
-    else {
-        return file;
-    }
-};
-
 UPM.directoryEmergencyContacts = [];
 UPM.directoryEmergencyContacts.push({ displayName: ["Campus Police"], telephoneNumber: ['555 555 5555'] });
 UPM.directoryEmergencyContacts.push({ displayName: ["Campus Ambulance"], telephoneNumber: ['555 555 5555'] });
+
+
+
+
