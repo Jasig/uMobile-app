@@ -52,10 +52,12 @@ var MapDetailTop = function (opts) {
         directionsButton.addEventListener('touchstart', onDirBtnPress);
         directionsButton.addEventListener('touchend', onDirBtnUp);
         
+        Ti.API.debug("Added event listeners to directionsButton, now calling update()");
         detailView.update = update;
     }
     
     function update (data) {
+        Ti.API.debug("update() in MapDetailTop");
         details = data;
         if(details.address) {
             directionsButton.show();
@@ -67,6 +69,7 @@ var MapDetailTop = function (opts) {
         locationTitle.text = details.title;
 
         locationAddress.text = details.address || app.localDictionary.noAddressAvailable;
+        Ti.API.debug("update() finished in MapDetailTop");
     };
     
     getMapAddress = function () {

@@ -1,7 +1,17 @@
 var MapService = function (facade) {
     var app = facade,
         self = {},
-        mapPoints = [];
+        mapPoints = [],
+        mapCenter = {
+            latitude: 0,
+            longitude: 0,
+            latitudeDelta: 1,
+            longitudeDelta: 1,
+            latLow: 0,
+            latHigh: 0,
+            longLow: 0,
+            longHigh: 0
+        };
     
     self.requestErrors = {
         NETWORK_UNAVAILABLE: 0,
@@ -37,6 +47,11 @@ var MapService = function (facade) {
             
             //Iterate through the query result to add objects to the result array
             if (queryResult) {
+                mapCenter.latLow = queryResult.fieldByName('latitude');
+                mapCenter.latHigh = queryResult.fieldByName('latitude');                
+                mapCenter.longLow = queryResult.fieldByName('longitude');
+                mapCenter.longHigh = queryResult.fieldByName('longitude');
+                
                 while (queryResult.isValidRow()) {
                     result.push({
                         title: queryResult.fieldByName('title'),
@@ -46,6 +61,18 @@ var MapService = function (facade) {
                         img: queryResult.fieldByName('img')
                     });
                     Ti.API.info(queryResult.fieldByName('img'));
+                    if (queryResult.fieldByName('latitude') < mapCenter.latLow) {
+                        mapCenter.latLow = queryResult.fieldByName('latitude');
+                    }
+                    else if (queryResult.fieldByName('latitude') > mapCenter.latHigh) {
+                        mapCenter.latHigh = queryResult.fieldByName('latitude');
+                    }
+                    if (queryResult.fieldByName('longitude') < mapCenter.longLow) {
+                        mapCenter.longLow = queryResult.fieldByName('longitude');
+                    }
+                    else if (queryResult.fieldByName('longitude') > mapCenter.longHigh) {
+                        mapCenter.longHigh = queryResult.fieldByName('longitude');
+                    }
                     queryResult.next();
                 }
                 queryResult.close();
@@ -59,18 +86,35 @@ var MapService = function (facade) {
         }
     };
     self.getAnnotationByTitle = function(t) {
-        for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
+        /*for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
             if (mapPoints[i].title === t) {
                 return mapPoints[i];
             }
+        }*/
+        var result = {}, resultSet, db;
+        db = Titanium.Database.open('umobile');
+        resultSet = db.execute("SELECT * FROM map_locations WHERE title IS ? LIMIT 1", t);
+        while (resultSet.isValidRow()) {
+            
+            result = {
+                title: resultSet.fieldByName('title'),
+                address: resultSet.fieldByName('address'),
+                latitude: resultSet.fieldByName('latitude'),
+                longitude: resultSet.fieldByName('longitude'),
+                img: resultSet.fieldByName('img')
+            };
+            resultSet.next();
         }
-        return false;
+        resultSet.close();
+        db.close();
+        
+        Ti.API.info("Map search result: " + JSON.stringify(result));
+        return result;
     };
-    self.loadMapPoints = function (filters) {
+    self.loadMapPoints = function () {
         //Default returns all points for an institution.
-        //Can be filtered by campus, admin-defined categories
         Ti.API.info("loadMapPoints()");
-
+        Ti.App.fireEvent('MapProxyLoading');
         request = Titanium.Network.createHTTPClient ({
             connectionType : 'GET',
             location : app.UPM.MAP_SERVICE_URL,
@@ -88,10 +132,15 @@ var MapService = function (facade) {
         var response, responseLength, db;
         (function(){
             try {
+                Ti.API.debug("Trying to iterate through new points");
                 response = JSON.parse(e.source.responseText);
                 responseLength = response.buildings.length;
                 if (responseLength > 0) {
                     db = Ti.Database.open('umobile');
+                    mapCenter.latLow = response.buildings[0].latitude;
+                    mapCenter.latHigh = response.buildings[0].latitude; 
+                    mapCenter.longLow = response.buildings[0].longitude;
+                    mapCenter.longHigh = response.buildings[0].longitude; 
 
                     for (var i = 0; i < responseLength; i++) {
                         var building = response.buildings[i];
@@ -114,6 +163,19 @@ var MapService = function (facade) {
 
 
                             mapPoints.push(response.buildings[i]);
+                            
+                            if (building.latitude < mapCenter.latLow) {
+                                mapCenter.latLow = building.latitude;
+                            }
+                            else if (building.latitude > mapCenter.latHigh) {
+                                mapCenter.latHigh = building.latitude;
+                            }
+                            if (building.longitude < mapCenter.longLow) {
+                                mapCenter.longLow = building.longitude;
+                            }
+                            else if (building.longitude > mapCenter.longHigh) {
+                                mapCenter.longHigh = building.longitude;
+                            }
                         }
                         else {
                             Ti.API.debug("Skipping " + building.name);
@@ -133,6 +195,14 @@ var MapService = function (facade) {
                 Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.INVALID_DATA_RETURNED});
             }
         })();
+    };
+    
+    self.getMapCenter = function () {
+        mapCenter.latitude = (mapCenter.latLow + mapCenter.latHigh) / 2;
+        mapCenter.longitude = (mapCenter.longLow + mapCenter.longHigh) / 2;
+        mapCenter.latitudeDelta = (mapCenter.latHigh - mapCenter.latLow) > 0.005 ? mapCenter.latHigh - mapCenter.latLow : 0.005;
+        mapCenter.longitudeDelta = (mapCenter.longHigh - mapCenter.longLow) > 0.005 ? mapCenter.longHigh - mapCenter.longLow : 0.005;
+        return mapCenter;
     };
     
     function onLoadError (e) {

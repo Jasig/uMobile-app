@@ -34,7 +34,9 @@
     rawAnnotations = [],
     loadingIndicator,
     mapService,
-    titleBar;
+    titleBar,
+    //Proxy Events
+    onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError;
 
     init = function() {
         //Initializes when the map window is loaded, is passed an instance of the MapService proxy.
@@ -63,6 +65,8 @@
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
         Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
         Ti.App.addEventListener('MapProxyLoadError', onProxyLoadError);
+        Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
+        Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
         createMapView();
         
@@ -111,6 +115,8 @@
         // locationDetailWinOptions = app.styles.view;
         // locationDetailViewOptions.url = app.app.models.resourceProxy.getResourcePath("/js/controllers/MapDetailViewController.js");
         Ti.API.debug('self.loadDetail');
+        app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
+        app.views.GlobalActivityIndicator.show();
         searchBlur();
         if (!locationDetailView) {
             Ti.API.debug("locationDetailView not defined");
@@ -124,9 +130,11 @@
             Ti.API.debug("locationDetailView defined");
             locationDetailView.updateAndShow(e);
         }
+        
+        app.views.GlobalActivityIndicator.hide();
     };
     
-    function plotPoints (points) {
+    plotPoints = function (points) {
         //Clears the map of all annotations, takes an array of points, creates annotations of them, and plots them on the map.
         mapView.removeAllAnnotations();
         Ti.API.debug("plotPoints: " + JSON.stringify(points));
@@ -140,25 +148,26 @@
             mapView.addAnnotation(_annotation);
         }
         app.views.GlobalActivityIndicator.hide();
-    }
+    };
 
-    function searchBlur(e) {
+    searchBlur = function (e) {
         searchBar.blur();
-    }
+    };
 
-    function searchSubmit(e) {
+    searchSubmit = function (e) {
         Ti.API.debug('searchSubmit() in MapWindowController');
         searchBlur();
         mapService.search(searchBar.value);
-    }
+    };
 
     // Event Handlers
     //Controller Events
-    function onWindowBlur(e) {
+    onWindowBlur = function (e) {
         Ti.API.info("Map blur event fired");
         searchBlur();
-    }
-    function onMapViewClick(e) {
+    };
+    
+    onMapViewClick = function (e) {
         searchBlur();
         var _annotation;
         Ti.API.info("Map clicked, and source of click event is: " + JSON.stringify(e));
@@ -171,23 +180,40 @@
             Ti.API.info("Title: " + e.title);
             Ti.API.info("Result of search: " + mapService.getAnnotationByTitle(e.title));
         }
-    }
+    };
 
     //Proxy Events
-    function onProxySearching (e) {
+    onProxySearching = function (e) {
         Ti.API.debug('onProxySearching' + e.query);
         app.views.GlobalActivityIndicator.message = app.localDictionary.searching;
         app.views.GlobalActivityIndicator.show();
-    }
-    function onProxySearchComplete (e) {
+    };
+    
+    onProxyLoading = function (e) {
+        app.views.GlobalActivityIndicator.message = app.localDictionary.loading;
+        app.views.GlobalActivityIndicator.show();
+    };
+    
+    onProxyLoaded = function (e) {
+        Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(mapService.getMapCenter()));
+        app.views.GlobalActivityIndicator.hide();
+        mapView.setLocation(mapService.getMapCenter());
+    };
+    
+    onProxySearchComplete = function (e) {
+        app.views.GlobalActivityIndicator.hide();
         Ti.API.debug('onProxySearchComplete');
         plotPoints(e.points);
-    }
-    function onProxyEmptySearch (e) {
-        app.views.GlobalActivityIndicator.hide();
+        mapView.setLocation(mapService.getMapCenter());
+    };
+    
+    onProxyEmptySearch = function (e) {
+        
         Ti.API.debug('onProxyEmptySearch' + e);
-    }
-    function onProxyLoadError (e) {
+    };
+    
+    onProxyLoadError = function (e) {
+        app.views.GlobalActivityIndicator.hide();
         Ti.API.debug(JSON.stringify(e));
         switch (e.errorCode) {
             case mapService.requestErrors.NETWORK_UNAVAILABLE:
@@ -208,7 +234,7 @@
             default:
                 alert(app.localDictionary.map_GENERAL_ERROR);
         }
-    }
+    };
 
     init();
 })();

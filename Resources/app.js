@@ -113,8 +113,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
                 });
                 windows.portlet.open();
             }
-
-            activityIndicator.hide();
         });
         
         setUpWindows();

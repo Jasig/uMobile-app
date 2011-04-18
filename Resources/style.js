@@ -9,6 +9,7 @@ var Styles = function (app) {
     var defaults, stylesheet, OS = Ti.Platform.osname;
     defaults = {
         TITLEBAR_HEIGHT: 40,
+        SEARCHBAR_HEIGHT: OS === 'android' ? 45 : 40,
         DETAIL_TOP_TITLE_COLOR: '#333',
         DETAIL_TOP_BACKGROUND_COLOR: '#eee',
         PRIMARY_BAR_BACKGROUND_COLOR: "#000",
@@ -38,7 +39,7 @@ var Styles = function (app) {
             top: defaults.TITLEBAR_HEIGHT
         },
         contentButton: {
-            style: (OS === 'iphone') ? Titanium.UI.iPhone.SystemButtonStyle.PLAIN : 'auto',
+            style: (OS === 'iphone') ? Titanium.UI.iPhone.SystemButtonStyle.PLAIN : 0,
             height: 30,
             width: 100,
             backgroundGradient: {
@@ -55,7 +56,7 @@ var Styles = function (app) {
                 fontSize: 14,
                 fontWeight: 'bold'
             },
-            borderRadius: (OS === 'iphone') ? 10 : 'auto',
+            borderRadius: (OS === 'iphone') ? 10 : 0,
             borderColor: '#999',
             borderWidth: 1,
             color: '#333',
@@ -74,11 +75,11 @@ var Styles = function (app) {
         //Global search bar properties
         searchBar: {
             top: defaults.TITLEBAR_HEIGHT,
-            height: defaults.TITLEBAR_HEIGHT,
+            height: defaults.SEARCHBAR_HEIGHT,
             backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
             barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
             backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
-            showCancel: true,
+            showCancel: OS === 'android' ? false : true,
             width: Ti.Platform.displayCaps.platformWidth
         },
         secondaryBar: {
@@ -312,16 +313,11 @@ var Styles = function (app) {
     	},
     	// MAP STYLES
     	mapView: {
-    	    top: defaults.TITLEBAR_HEIGHT * 2,
+    	    top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
             mapType: Titanium.Map.STANDARD_TYPE,
-            region:{
-                latitude: 41.3104425,
-                longitude: -72.9254028,
-                latitudeDelta:0.01,
-                longitudeDelta:0.01
-            },
-            regionFit:false,
-            userLocation:true
+            regionFit: true,
+            animate: true,
+            userLocation: false
     	},
     	mapButtonBar: {
     	     labels: ['+', '-'],
@@ -368,7 +364,7 @@ var Styles = function (app) {
     	// ACTIVITY INDICATOR STYLING
     	globalActivityIndicator: {
     	    color: '#fff',
-    	    zIndex: 10
+    	    zIndex: 100
     	}
     };
     //iPhone-specific overrides
