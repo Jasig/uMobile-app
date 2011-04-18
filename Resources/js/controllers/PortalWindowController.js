@@ -128,7 +128,7 @@
             portalView.add(gridItem);
             gridItem.addEventListener("singletap", app.models.portalProxy.getShowPortletFunc(_portlet));
             gridItem.addEventListener("touchstart", onGridItemPressDown);
-            gridItem.addEventListener("touchend", onGridItemPressUp);
+            gridItem.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
         
         activityIndicator.hide();
@@ -158,7 +158,8 @@
 
     onGridItemPressUp = function (e) {
         Ti.API.debug("Home button pressed up");
-        e.source.opacity = 1;
+        Ti.API.debug(e.source);
+        // e.source.opacity = 1.0;
     };
     //PortalProxy events
     onGettingPortlets = function (e) {

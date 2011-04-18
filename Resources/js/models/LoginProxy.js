@@ -25,7 +25,7 @@ var LoginProxy = function (facade) {
             try { 
                 credentials.username = app.GibberishAES.dec(rows.fieldByName('value'), app.UPM.ENCRYPTION_KEY);
             } catch (e) {
-
+                Ti.API.debug("Couldn't decrypt username");
             }
         }
         rows.close();
@@ -35,7 +35,9 @@ var LoginProxy = function (facade) {
             (function(){
                 try {
                     credentials.password = app.GibberishAES.dec(rows.fieldByName('value'), app.UPM.ENCRYPTION_KEY);
-                } catch (e) { }            
+                } catch (e) {
+                    Ti.API.debug("Couldn't decrypt password");
+                }            
             })();
         }
         rows.close();
@@ -110,6 +112,11 @@ var LoginProxy = function (facade) {
             checkSessionUrl = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/api/session.json';
             checkSessionClient = Titanium.Network.createHTTPClient();
             checkSessionClient.open('GET', checkSessionUrl, false);
+            /*
+                TODO Remove this line when the guest session is returned properly (temporary hack)
+            */
+            checkSessionClient.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
+            
             checkSessionClient.send();
 
             Ti.API.info(checkSessionClient.responseText);
@@ -191,6 +198,11 @@ var LoginProxy = function (facade) {
             onerror: onLoginError
         });
         client.open('GET', url, true);
+        /*
+            TODO Remove this line when the guest session is returned properly (temporary hack)
+        */
+        client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
+        
         client.send();
         
     };
@@ -231,6 +243,11 @@ var LoginProxy = function (facade) {
                 onerror: onPostError
             });
             client.open('POST', url, true);
+            /*
+                TODO Remove this line when the guest session is returned properly (temporary hack)
+            */
+            client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
+            
             data = { 
                 username: credentials.username, 
                 password: credentials.password, 
@@ -250,6 +267,11 @@ var LoginProxy = function (facade) {
             onerror: onInitialError
         });
         client.open('GET', url, false);
+        /*
+            TODO Remove this line when the guest session is returned properly (temporary hack)
+        */
+        client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
+        
         client.send();
     };
     

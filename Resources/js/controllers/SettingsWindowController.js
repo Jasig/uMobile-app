@@ -75,6 +75,7 @@
 
         usernameInputOpts.top = 50;
         usernameInputOpts.left = 100;
+        // usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
         usernameInputOpts.value = credentials.username;
         usernameInput = Titanium.UI.createTextField(usernameInputOpts);
         win.add(usernameInput);
@@ -90,6 +91,7 @@
         passwordInputOpts.passwordMask = true;
         passwordInputOpts.top = 100;
         passwordInputOpts.left = 100;
+        // usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
         passwordInput = Titanium.UI.createTextField(passwordInputOpts);
         win.add(passwordInput);
 
@@ -106,7 +108,7 @@
 
         saveButton.addEventListener('click', onUpdateCredentials);
         saveButton.addEventListener('touchstart', onSaveButtonPress);
-        saveButton.addEventListener('touchend', onSaveButtonUp);
+        saveButton.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onSaveButtonUp);
         passwordInput.addEventListener('return', onUpdateCredentials);
         usernameInput.addEventListener('return', onUpdateCredentials);
 

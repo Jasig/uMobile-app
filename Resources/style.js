@@ -6,35 +6,39 @@ To apply styles to elements
 */
 
 var Styles = function (app) {
-    var TITLEBAR_HEIGHT = 40,
-    DETAIL_TOP_TITLE_COLOR = '#333',
-    DETAIL_TOP_BACKGROUND_COLOR = '#eee',
-    PRIMARY_BAR_BACKGROUND_COLOR = "#000";
-    SECONDARY_BAR_BACKGROUND_COLOR = "#38678F";
-    PRIMARY_BAR_BACKGROUND_GRADIENT = {
-        type:'linear',
-        colors:['#3E4650','#121416']
+    var defaults, stylesheet, OS = Ti.Platform.osname;
+    defaults = {
+        TITLEBAR_HEIGHT: 40,
+        DETAIL_TOP_TITLE_COLOR: '#333',
+        DETAIL_TOP_BACKGROUND_COLOR: '#eee',
+        PRIMARY_BAR_BACKGROUND_COLOR: "#000",
+        SECONDARY_BAR_BACKGROUND_COLOR: "#38678F",
+        PRIMARY_BAR_BACKGROUND_GRADIENT: {
+            type:'linear',
+            colors:['#3E4650','#121416']
+        },
+        SECONDARY_BAR_BACKGROUND_GRADIENT: {
+            type:'linear',
+            colors:['#4682B4','#294D6B']
+        },
+        SECONDARY_BAR_BTN_DOWN_BG: {
+            type: 'linear',
+            colors: ['#294D6B','#4682B4']
+        },
+        SECONDARY_BAR_COLOR: "#fff"
     };
-    SECONDARY_BAR_BACKGROUND_GRADIENT = {
-        type:'linear',
-        colors:['#4682B4','#294D6B']
-    };
-    SECONDARY_BAR_BTN_DOWN_BG = {
-        type: 'linear',
-        colors: ['#294D6B','#4682B4']
-    };
-    SECONDARY_BAR_COLOR = "#fff";
+    
     stylesheet = {
         backgroundColor: '#fff',
         view: {
             backgroundColor: '#fff',
-            top: TITLEBAR_HEIGHT
+            top: defaults.TITLEBAR_HEIGHT
         },
         portletView: {
-            top: TITLEBAR_HEIGHT
+            top: defaults.TITLEBAR_HEIGHT
         },
         contentButton: {
-            style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
+            style: (OS === 'iphone') ? Titanium.UI.iPhone.SystemButtonStyle.PLAIN : 'auto',
             height: 30,
             width: 100,
             backgroundGradient: {
@@ -51,14 +55,14 @@ var Styles = function (app) {
                 fontSize: 14,
                 fontWeight: 'bold'
             },
-            borderRadius: 10,
+            borderRadius: (OS === 'iphone') ? 10 : 'auto',
             borderColor: '#999',
             borderWidth: 1,
             color: '#333',
             selectedColor: '#333'
         },
         textField: {
-            height:35,
+            height: OS === 'iphone' ? 35 : 45,
         	width:150,
         	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
         },
@@ -69,20 +73,20 @@ var Styles = function (app) {
         },
         //Global search bar properties
         searchBar: {
-            top: TITLEBAR_HEIGHT,
-            height: TITLEBAR_HEIGHT,
-            backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
-            barColor: SECONDARY_BAR_BACKGROUND_COLOR,
-            backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
+            top: defaults.TITLEBAR_HEIGHT,
+            height: defaults.TITLEBAR_HEIGHT,
+            backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+            barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+            backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
             showCancel: true,
             width: Ti.Platform.displayCaps.platformWidth
         },
         secondaryBar: {
-            top: TITLEBAR_HEIGHT,
-            height: TITLEBAR_HEIGHT,
-            backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
-            barColor: SECONDARY_BAR_BACKGROUND_COLOR,
-            backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT
+            top: defaults.TITLEBAR_HEIGHT,
+            height: defaults.TITLEBAR_HEIGHT,
+            backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+            barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+            backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
         },
         secondaryBarButton: {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
@@ -97,16 +101,16 @@ var Styles = function (app) {
         	font: {
         	    fontSize: 14
         	},
-        	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
-        	backgroundGradientPress: SECONDARY_BAR_BTN_DOWN_BG
+        	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
+        	backgroundGradientPress: defaults.SECONDARY_BAR_BTN_DOWN_BG
         },
         //Styles for GenericTitleBar.js
         titleBar: {
             top: 0,
         	left: 0,
-        	height: TITLEBAR_HEIGHT,
-        	backgroundColor: PRIMARY_BAR_BACKGROUND_COLOR,
-        	backgroundGradient: PRIMARY_BAR_BACKGROUND_GRADIENT,
+        	height: defaults.TITLEBAR_HEIGHT,
+        	backgroundColor: defaults.PRIMARY_BAR_BACKGROUND_COLOR,
+        	backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
         	width: Titanium.Platform.displayCaps.platformWidth,
         	zIndex: 1
         },
@@ -167,9 +171,9 @@ var Styles = function (app) {
     	secondaryNavBar: {
             top: 0,
         	left: 0,
-        	height: TITLEBAR_HEIGHT,
-        	backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
-        	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT,
+        	height: defaults.TITLEBAR_HEIGHT,
+        	backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+        	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
         	width: Titanium.Platform.displayCaps.platformWidth
         },
         secondaryNavBarButton: {
@@ -186,7 +190,7 @@ var Styles = function (app) {
         	    fontSize: 14,
         	    fontWeight: 'bold'
         	},
-        	backgroundGradient: SECONDARY_BAR_BACKGROUND_GRADIENT
+        	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
         },
         secondaryNavBarLabel: {
             textAlign: "center",
@@ -197,7 +201,7 @@ var Styles = function (app) {
         },
         //PORTAL VIEW STYLES
         homeGrid: {
-            top: TITLEBAR_HEIGHT,
+            top: defaults.TITLEBAR_HEIGHT,
             numColumns: 3,
             color: "#fff",
             backgroundImage: '../../images/home-background.png',
@@ -248,17 +252,17 @@ var Styles = function (app) {
         },
     	//DIRECTORY STYLES
     	contactDetailView: {
-    	    backgroundColor: DETAIL_TOP_BACKGROUND_COLOR,
+    	    backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
             visible: false,
-    	    top: TITLEBAR_HEIGHT,
-            height: Ti.Platform.displayCaps.platformHeight - TITLEBAR_HEIGHT,
+    	    top: defaults.TITLEBAR_HEIGHT,
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
             width: Ti.Platform.displayCaps.platformWidth
     	},
     	directoryDetailNameLabel: {
             left: 70,
             width: Ti.Platform.displayCaps.platformWidth - (70 * 2),
-            height: TITLEBAR_HEIGHT,
-            color: SECONDARY_BAR_COLOR,
+            height: defaults.TITLEBAR_HEIGHT,
+            color: defaults.SECONDARY_BAR_COLOR,
             textAlign: "center",
             font: {
                 fontSize: 14,
@@ -266,7 +270,7 @@ var Styles = function (app) {
             }
     	},
     	directoryDetailAttributeTable: {
-    	    top: TITLEBAR_HEIGHT
+    	    top: defaults.TITLEBAR_HEIGHT
     	},
     	directoryDetailRow: {
     	    backgroundColor: "#fff",
@@ -308,7 +312,7 @@ var Styles = function (app) {
     	},
     	// MAP STYLES
     	mapView: {
-    	    top: TITLEBAR_HEIGHT * 2,
+    	    top: defaults.TITLEBAR_HEIGHT * 2,
             mapType: Titanium.Map.STANDARD_TYPE,
             region:{
                 latitude: 41.3104425,
@@ -322,16 +326,16 @@ var Styles = function (app) {
     	mapButtonBar: {
     	     labels: ['+', '-'],
     	     color: '#fff',
-               backgroundColor: SECONDARY_BAR_BACKGROUND_COLOR,
+               backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
                style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
                top: Ti.Platform.displayCaps.platformHeight - 140,
                width: 100,
                height: 35
     	},
     	mapDetailTopView: {
-    	    top: TITLEBAR_HEIGHT,
+    	    top: defaults.TITLEBAR_HEIGHT,
             left: 0,
-            backgroundColor: DETAIL_TOP_BACKGROUND_COLOR,
+            backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
             height: 120
     	},
     	mapDetailLocationTitle: {
@@ -358,7 +362,7 @@ var Styles = function (app) {
     	},
     	mapDetailLocationPhoto: {
     	    width: Titanium.Platform.displayCaps.platformWidth,
-            top: TITLEBAR_HEIGHT + 120,
+            top: defaults.TITLEBAR_HEIGHT + 120,
             height: 241
     	},
     	// ACTIVITY INDICATOR STYLING
@@ -375,5 +379,6 @@ var Styles = function (app) {
         stylesheet.globalActivityIndicator.height = Ti.Platform.displayCaps.platformHeight;
         stylesheet.globalActivityIndicator.style = Titanium.UI.iPhone.ActivityIndicatorStyle.PLAIN;
     }
+    Ti.API.info("OS is: " + OS + " and contentButton borderRadius is" + stylesheet.contentButton.borderRadius);
     return stylesheet;
 };
