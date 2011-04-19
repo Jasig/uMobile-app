@@ -31,8 +31,8 @@ localDictionary.en_US = {
     map_NETWORK_UNAVAILABLE: "There was an error loading locations for the map. Please check your internet connection and try again",
     map_REQUEST_TIMEOUT: "The request to load map locations timed out. Please try again later.",
     map_SERVER_ERROR: "There was an error loading map locations. Please try again later.",
-    map_NO_DATA_RETURNED: "No locations are available for map search at this time.",
-    map_INVALID_DATA_RETURNED: "There was an error processing data for map. Search will not work at this time.",
+    map_NO_DATA_RETURNED: "There was an error processing data for map. Search will only work with cached data at this time.",
+    map_INVALID_DATA_RETURNED: "There was an error processing data for map. Search will only work with cached data at this time.",
     map_GENERAL_ERROR: "There was an error loading locations to search the map.",
     
     //Settings Window

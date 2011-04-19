@@ -92,6 +92,8 @@ Titanium.include('js/controllers/MapDetailViewController.js');
                     Ti.API.debug("new window is NOT initialized");
                     windows[e.newWindow].open();
                 }
+                Ti.API.info("Is old window visible? " + windows[e.oldWindow].visible);
+                Ti.API.info("Is new window visible? " + windows[e.newWindow].visible);
             }
             else {
                 Ti.API.debug("You're trying to navigate to the same window you're already in.");

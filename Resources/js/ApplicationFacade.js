@@ -1,5 +1,3 @@
-
-
 var ApplicationFacade = function () {
     var facade = {};
 

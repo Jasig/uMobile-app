@@ -9,7 +9,7 @@ var Styles = function (app) {
     var defaults, stylesheet, OS = Ti.Platform.osname;
     defaults = {
         TITLEBAR_HEIGHT: 40,
-        SEARCHBAR_HEIGHT: OS === 'android' ? 45 : 40,
+        SEARCHBAR_HEIGHT: 40,
         DETAIL_TOP_TITLE_COLOR: '#333',
         DETAIL_TOP_BACKGROUND_COLOR: '#eee',
         PRIMARY_BAR_BACKGROUND_COLOR: "#000",
@@ -38,30 +38,6 @@ var Styles = function (app) {
         portletView: {
             top: defaults.TITLEBAR_HEIGHT
         },
-        contentButton: {
-            style: (OS === 'iphone') ? Titanium.UI.iPhone.SystemButtonStyle.PLAIN : 0,
-            height: 30,
-            width: 100,
-            backgroundGradient: {
-                backFillStart: false,
-                type: 'linear',
-                colors: ['#fff','#ccc']
-            },
-            backgroundGradientPress: {
-                backFillStart: false,
-                type: 'linear',
-                colors: ['#ccc', '#fff']
-            },
-            font: {
-                fontSize: 14,
-                fontWeight: 'bold'
-            },
-            borderRadius: (OS === 'iphone') ? 10 : 0,
-            borderColor: '#999',
-            borderWidth: 1,
-            color: '#333',
-            selectedColor: '#333'
-        },
         textField: {
             height: OS === 'iphone' ? 35 : 45,
         	width:150,
@@ -71,6 +47,21 @@ var Styles = function (app) {
             height:35,
             width:'auto',
             color: '#000'
+        },
+        contentButton: {
+            font: {
+                fontSize: 14,
+                fontWeight: 'bold'
+            },
+            height: 30,
+            width: 100,
+            backgroundGradient: {
+                
+            },
+            backgroundGradientPress: {
+            },
+            color: '#333',
+            selectedColor: '#333'
         },
         //Global search bar properties
         searchBar: {
@@ -147,6 +138,7 @@ var Styles = function (app) {
             width: 40,
             height: 30,
             borderRadius: 5,
+            backgroundColor: 'transparent',
             backgroundColorPressed: "#999",
             left: 5
         },
@@ -161,6 +153,7 @@ var Styles = function (app) {
             width: 40,
             height: 30,
             borderRadius: 5,
+            backgroundColor: 'transparent',
             backgroundColorPressed: "#999",
             left: Ti.Platform.displayCaps.platformWidth - 40 - 5
         },
@@ -314,6 +307,7 @@ var Styles = function (app) {
     	// MAP STYLES
     	mapView: {
     	    top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
+    	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - defaults.SEARCHBAR_HEIGHT,
             mapType: Titanium.Map.STANDARD_TYPE,
             regionFit: true,
             animate: true,
@@ -374,6 +368,30 @@ var Styles = function (app) {
         stylesheet.globalActivityIndicator.width = Ti.Platform.displayCaps.platformWidth;
         stylesheet.globalActivityIndicator.height = Ti.Platform.displayCaps.platformHeight;
         stylesheet.globalActivityIndicator.style = Titanium.UI.iPhone.ActivityIndicatorStyle.PLAIN;
+        stylesheet.contentButton = {
+            style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
+            height: 30,
+            width: 100,
+            backgroundGradient: {
+                backFillStart: false,
+                type: 'linear',
+                colors: ['#fff','#ccc']
+            },
+            backgroundGradientPress: {
+                backFillStart: false,
+                type: 'linear',
+                colors: ['#ccc', '#fff']
+            },
+            font: {
+                fontSize: 14,
+                fontWeight: 'bold'
+            },
+            borderRadius: (OS === 'iphone') ? 10 : 0,
+            borderColor: '#999',
+            borderWidth: 1,
+            color: '#333',
+            selectedColor: '#333'
+        };
     }
     Ti.API.info("OS is: " + OS + " and contentButton borderRadius is" + stylesheet.contentButton.borderRadius);
     return stylesheet;

@@ -39,7 +39,7 @@
 
         win.backgroundColor = win.app.styles.backgroundColor;
         
-        Ti.App.addEventListener('showWindow', onWindowBlur);
+        // Ti.App.addEventListener('showWindow', onWindowBlur);
         titleBar = new app.views.GenericTitleBar({
             app: app,
             windowKey: 'settings',
@@ -152,9 +152,13 @@
     };
     
     function onWindowBlur (e) {
+        win.hide();
+        Ti.API.debug("onWindowBlur in SettingsWindowController");
         passwordInput.blur();
         usernameInput.blur();
-        activityIndicator.hide();
+        if(activityIndicator.visible) {
+            activityIndicator.hide();
+        }
     }
 
     if (!win.initialized) {

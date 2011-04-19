@@ -26,9 +26,9 @@
 (function(){
     var win = Titanium.UI.currentWindow,
         app = win.app,
-        portalView, portletView, portalGridView, activityIndicator,
+        portalView, portletView, portalGridView, activityIndicator, pressedItem,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
-        onGridItemPressUp, onCredentialUpdate, onGettingPortlets, onPortletsLoaded,
+        onGridItemPressUp, onCredentialUpdate, onGettingPortlets, onPortletsLoaded, 
         pathToRoot = '../../';
 
     init = function () {
@@ -153,13 +153,22 @@
 
     onGridItemPressDown = function (e) {
         Ti.API.debug("Home button pressed down");
-        e.source.opacity = app.styles.gridItem.pressOpacity;
+        if(Ti.Platform.osname === 'iphone') {
+            e.source.opacity = app.styles.gridItem.pressOpacity;
+        }
+        else {
+            Ti.API.debug("Not setting opacity of icon because Android doesn't support it.");
+        }
     };
 
     onGridItemPressUp = function (e) {
         Ti.API.debug("Home button pressed up");
-        Ti.API.debug(e.source);
-        // e.source.opacity = 1.0;
+        if(Ti.Platform.osname === 'iphone') {
+            e.source.setOpacity(1.0);
+        }
+        else {
+            Ti.API.debug("onGridItemPressUp condition wasn't met");
+        }
     };
     //PortalProxy events
     onGettingPortlets = function (e) {

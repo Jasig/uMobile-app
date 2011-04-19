@@ -24,7 +24,7 @@ var MapService = function (facade) {
     
     self.init = function () {
         var _db = Titanium.Database.open('umobile');
-        _db.execute('CREATE TABLE IF NOT EXISTS "map_locations" ("title" TEXT UNIQUE, "abbreviation" TEXT, "accuracy" INTEGER, "address" TEXT, "alternateName" TEXT, "latitude" REAL, "longitude" REAL, "searchText" TEXT, "zip" INTEGER, "img" TEXT)');
+        _db.execute('CREATE TABLE IF NOT EXISTS "map_locations" ("title" TEXT UNIQUE, "abbreviation" TEXT, "accuracy" INTEGER, "address" TEXT, "alternateName" TEXT, "latitude" REAL, "longitude" REAL, "searchText" TEXT, "zip" TEXT, "img" TEXT)');
         _db.close();
         self.loadMapPoints();
     };
@@ -47,31 +47,31 @@ var MapService = function (facade) {
             
             //Iterate through the query result to add objects to the result array
             if (queryResult) {
-                mapCenter.latLow = queryResult.fieldByName('latitude');
-                mapCenter.latHigh = queryResult.fieldByName('latitude');                
-                mapCenter.longLow = queryResult.fieldByName('longitude');
-                mapCenter.longHigh = queryResult.fieldByName('longitude');
+                mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
+                mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude')); 
+                mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
+                mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
                 
                 while (queryResult.isValidRow()) {
                     result.push({
                         title: queryResult.fieldByName('title'),
                         address: queryResult.fieldByName('address'),
-                        latitude: queryResult.fieldByName('latitude'),
-                        longitude: queryResult.fieldByName('longitude'),
+                        latitude: parseFloat(queryResult.fieldByName('latitude')),
+                        longitude: parseFloat(queryResult.fieldByName('longitude')),
                         img: queryResult.fieldByName('img')
                     });
                     Ti.API.info(queryResult.fieldByName('img'));
                     if (queryResult.fieldByName('latitude') < mapCenter.latLow) {
-                        mapCenter.latLow = queryResult.fieldByName('latitude');
+                        mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
                     }
                     else if (queryResult.fieldByName('latitude') > mapCenter.latHigh) {
-                        mapCenter.latHigh = queryResult.fieldByName('latitude');
+                        mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude'));
                     }
                     if (queryResult.fieldByName('longitude') < mapCenter.longLow) {
-                        mapCenter.longLow = queryResult.fieldByName('longitude');
+                        mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
                     }
                     else if (queryResult.fieldByName('longitude') > mapCenter.longHigh) {
-                        mapCenter.longHigh = queryResult.fieldByName('longitude');
+                        mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
                     }
                     queryResult.next();
                 }
@@ -99,8 +99,9 @@ var MapService = function (facade) {
             result = {
                 title: resultSet.fieldByName('title'),
                 address: resultSet.fieldByName('address'),
-                latitude: resultSet.fieldByName('latitude'),
-                longitude: resultSet.fieldByName('longitude'),
+                latitude: parseFloat(resultSet.fieldByName('latitude')),
+                longitude: parseFloat(resultSet.fieldByName('longitude')),
+                zip: resultSet.fieldByName('zip'),
                 img: resultSet.fieldByName('img')
             };
             resultSet.next();
@@ -158,7 +159,7 @@ var MapService = function (facade) {
                                 parseFloat(building.latitude) + ", " + 
                                 parseFloat(building.longitude) + ", " + 
                                 JSON.stringify(building.searchText) + ", " + 
-                                (building.zip ? parseInt(building.zip, 10) : null) + ", " + 
+                                JSON.stringify(building.zip) + ", " + 
                                 JSON.stringify(building.img) +")");
 
 
@@ -202,6 +203,7 @@ var MapService = function (facade) {
         mapCenter.longitude = (mapCenter.longLow + mapCenter.longHigh) / 2;
         mapCenter.latitudeDelta = (mapCenter.latHigh - mapCenter.latLow) > 0.005 ? mapCenter.latHigh - mapCenter.latLow : 0.005;
         mapCenter.longitudeDelta = (mapCenter.longHigh - mapCenter.longLow) > 0.005 ? mapCenter.longHigh - mapCenter.longLow : 0.005;
+        Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(mapCenter));
         return mapCenter;
     };
     
@@ -221,12 +223,7 @@ var MapService = function (facade) {
     
     function onSearchComplete(result) {
         Ti.API.debug('onSearchComplete in MapProxy');
-        if (result.length < 1) {
-            alert(app.localDictionary.mapNoSearchResults);
-        }
-        else {
-            Ti.App.fireEvent('MapProxySearchComplete', { points: result });
-        }
+        Ti.App.fireEvent('MapProxySearchComplete', { points: result });
     }
     
     function onPointsLoaded () {

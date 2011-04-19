@@ -33,15 +33,15 @@ function setConfig (app) {
     // Base url of the portal, which should be of the format
     // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
     // trailing slash.
-    UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    // UPM.BASE_PORTAL_URL = 'http://172.16.67.65:8080';
+    // UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+    UPM.BASE_PORTAL_URL = 'http://umobile.unicon.net';
     UPM.PORTAL_CONTEXT = '/uPortal';
 
     //------- AUTHENTICATION -------
 
     UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
     // UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
-    UPM.LOGIN_METHOD = app.models.loginProxy.doLocalLogin;
+    UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
     UPM.ENCRYPTION_KEY = 'um0b1le';
 
@@ -92,6 +92,13 @@ function setConfig (app) {
         secondaryBarColor: "#333",
         windowBackgroundColor: "#fff",
         tableBackgroundColor: "#fff"
+    };
+    
+    UPM.DEFAULT_MAP_REGION = {
+        latitude: 41.3137919,
+        longitude: -72.9234645,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005
     };
 
     UPM.directoryEmergencyContacts = [];

@@ -76,11 +76,15 @@
     };
 
     createMapView = function() {
-        var annotations,
-        buttonBar;
+        var annotations, buttonBar, mapViewOpts;
 
         // create the map view
-        mapView = Titanium.Map.createView(app.styles.mapView);
+        mapViewOpts = app.styles.mapView;
+        if (app.UPM.DEFAULT_MAP_REGION) {
+            mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
+        }
+        
+        mapView = Titanium.Map.createView(mapViewOpts);
         win.add(mapView);
 
         //Initialize the MapService, which manages the data for points on the map,
@@ -148,6 +152,7 @@
             mapView.addAnnotation(_annotation);
         }
         app.views.GlobalActivityIndicator.hide();
+        mapView.setLocation(mapService.getMapCenter());
     };
 
     searchBlur = function (e) {
@@ -201,14 +206,18 @@
     };
     
     onProxySearchComplete = function (e) {
-        app.views.GlobalActivityIndicator.hide();
         Ti.API.debug('onProxySearchComplete');
-        plotPoints(e.points);
-        mapView.setLocation(mapService.getMapCenter());
+        app.views.GlobalActivityIndicator.hide();
+        if(e.points.length < 1) {
+            alert(app.localDictionary.mapNoSearchResults);
+        }
+        else {
+            plotPoints(e.points);
+        }
     };
     
     onProxyEmptySearch = function (e) {
-        
+        app.views.GlobalActivityIndicator.hide();
         Ti.API.debug('onProxyEmptySearch' + e);
     };
     
