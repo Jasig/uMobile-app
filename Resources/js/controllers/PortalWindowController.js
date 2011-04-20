@@ -28,7 +28,7 @@
         app = win.app,
         portalView, portletView, portalGridView, activityIndicator, pressedItem,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
-        onGridItemPressUp, onCredentialUpdate, onGettingPortlets, onPortletsLoaded, 
+        onGridItemPressUp, onCredentialUpdate, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
         pathToRoot = '../../';
 
     init = function () {
@@ -48,6 +48,7 @@
     	
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
+    	win.addEventListener('focus', onWindowFocus);
 
     	win.initialized = true;
     };
@@ -59,7 +60,7 @@
         }
 
         Ti.API.debug("Creating a new portal home view");
-    	portalView = Titanium.UI.createView(app.styles.homeGrid);
+    	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
 
         win.add(portalView);
 
@@ -170,6 +171,11 @@
             Ti.API.debug("onGridItemPressUp condition wasn't met");
         }
     };
+    
+    onWindowFocus = function (e) {
+        Ti.API.debug("PortalWindowController has gained focus.");
+    };
+    
     //PortalProxy events
     onGettingPortlets = function (e) {
         // Display a loading indicator until we can finish downloading the user

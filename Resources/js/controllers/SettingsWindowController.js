@@ -22,24 +22,23 @@
  * user settings tab.
  */
 
-//TODO: Move everything into a controller function
 (function(){
     var win = Titanium.UI.currentWindow,
         app = win.app,
         credentials, 
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, activityIndicator,
         titlebar,
-        createTitleBar, createCredentialsForm,
-        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp;
+        init, createTitleBar, createCredentialsForm,
+        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur;
 
-    function init() {
+    init = function () {
         // get the current user credentials in order
         // to pre-populate the input fields
         credentials = app.models.loginProxy.getCredentials();
 
         win.backgroundColor = win.app.styles.backgroundColor;
         
-        // Ti.App.addEventListener('showWindow', onWindowBlur);
+        Ti.App.addEventListener('showWindow', onWindowBlur);
         titleBar = new app.views.GenericTitleBar({
             app: app,
             windowKey: 'settings',
@@ -49,7 +48,6 @@
         });
         win.add(titleBar);
         
-        
         createCredentialsForm();
 
         activityIndicator = app.views.GlobalActivityIndicator;
@@ -57,7 +55,7 @@
         win.add(activityIndicator);
         
         win.initialized = true;
-    }    
+    };
 
     createCredentialsForm = function () {
         var usernameLabelOpts = app.styles.textFieldLabel,
@@ -75,7 +73,7 @@
 
         usernameInputOpts.top = 50;
         usernameInputOpts.left = 100;
-        // usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
+        usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
         usernameInputOpts.value = credentials.username;
         usernameInput = Titanium.UI.createTextField(usernameInputOpts);
         win.add(usernameInput);
@@ -91,7 +89,7 @@
         passwordInputOpts.passwordMask = true;
         passwordInputOpts.top = 100;
         passwordInputOpts.left = 100;
-        // usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
+        usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
         passwordInput = Titanium.UI.createTextField(passwordInputOpts);
         win.add(passwordInput);
 
@@ -151,17 +149,17 @@
         saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
     };
     
-    function onWindowBlur (e) {
-        win.hide();
+    onWindowBlur = function (e) {
         Ti.API.debug("onWindowBlur in SettingsWindowController");
         passwordInput.blur();
         usernameInput.blur();
         if(activityIndicator.visible) {
             activityIndicator.hide();
         }
-    }
+    };
 
     if (!win.initialized) {
+        Ti.API.debug("Calling init() in SettingsWindowController");
         init();
     }
     

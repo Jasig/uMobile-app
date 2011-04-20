@@ -37,6 +37,7 @@ var GenericTitleBar = function (opts) {
             homeButtonContainer.addEventListener('singletap', onHomeClick);
             homeButtonContainer.addEventListener('touchstart', onHomePressDown);
             homeButtonContainer.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onHomePressUp);
+            
         }
         if (opts.settingsButton) {
             settingsButtonContainer = Titanium.UI.createView(opts.app.styles.titleBarSettingsContainer);
@@ -48,7 +49,6 @@ var GenericTitleBar = function (opts) {
 
             settingsButtonContainer.addEventListener('singletap', onSettingsClick);
             settingsButtonContainer.addEventListener('touchstart', onSettingsPressDown);
-            
             settingsButtonContainer.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onSettingsPressUp);
         }
     }

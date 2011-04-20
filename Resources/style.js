@@ -40,7 +40,7 @@ var Styles = function (app) {
         },
         textField: {
             height: OS === 'iphone' ? 35 : 45,
-        	width:150,
+        	width: 150,
         	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
         },
         textFieldLabel: {
@@ -53,7 +53,7 @@ var Styles = function (app) {
                 fontSize: 14,
                 fontWeight: 'bold'
             },
-            height: 30,
+            height: 40,
             width: 100,
             backgroundGradient: {
                 
@@ -198,6 +198,7 @@ var Styles = function (app) {
             top: defaults.TITLEBAR_HEIGHT,
             numColumns: 3,
             color: "#fff",
+            contentHeight:'auto',
             backgroundImage: '../../images/home-background.png',
             zIndex: 1
         },
@@ -307,7 +308,6 @@ var Styles = function (app) {
     	// MAP STYLES
     	mapView: {
     	    top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-    	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - defaults.SEARCHBAR_HEIGHT,
             mapType: Titanium.Map.STANDARD_TYPE,
             regionFit: true,
             animate: true,
@@ -357,6 +357,9 @@ var Styles = function (app) {
     	},
     	// ACTIVITY INDICATOR STYLING
     	globalActivityIndicator: {
+    	    top: defaults.TITLEBAR_HEIGHT,
+    	    width: Ti.Platform.displayCaps.platformWidth,
+    	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
     	    color: '#fff',
     	    zIndex: 100
     	}

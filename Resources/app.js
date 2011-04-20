@@ -82,8 +82,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
 
             if(windows[e.oldWindow] != windows[e.newWindow]) {
-                windows[e.oldWindow].hide();
-
                 if (windows[e.newWindow].initialized) {
                     Ti.API.debug("new window is initialized");
                     windows[e.newWindow].show();
@@ -92,6 +90,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
                     Ti.API.debug("new window is NOT initialized");
                     windows[e.newWindow].open();
                 }
+                windows[e.oldWindow].hide();
                 Ti.API.info("Is old window visible? " + windows[e.oldWindow].visible);
                 Ti.API.info("Is new window visible? " + windows[e.newWindow].visible);
             }
@@ -126,7 +125,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         //
         windows.home = Titanium.UI.createWindow({
             url: 'js/controllers/PortalWindowController.js',
-            navBarHidden: true,
             app: app,
             key: 'home'
         });
@@ -139,7 +137,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         //
         windows.portlet = Titanium.UI.createWindow({
             url: 'js/controllers/PortletWindowController.js',
-            navBarHidden: true,
             app: app,
             key: 'portlet'
         });
@@ -168,14 +165,11 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             key: 'map'
         });
         // windows.map.open();
-
-
         //
         //  SETTINGS VIEW
         //
         windows.settings = Titanium.UI.createWindow({
             url: 'js/controllers/SettingsWindowController.js',
-            navBarHidden: true,
             app: app,
             key: 'settings'
         });

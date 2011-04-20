@@ -70,8 +70,6 @@
         
         createMapView();
         
-        app.views.GlobalActivityIndicator.hide();
-        
         win.initialized = true;
     };
 
@@ -134,7 +132,7 @@
             Ti.API.debug("locationDetailView defined");
             locationDetailView.updateAndShow(e);
         }
-        
+        Ti.API.debug("Hiding Activity Indicator in loadDetail()");
         app.views.GlobalActivityIndicator.hide();
     };
     
@@ -151,6 +149,7 @@
             });
             mapView.addAnnotation(_annotation);
         }
+        Ti.API.debug("Hiding Activity Indicator in plotPoints()");
         app.views.GlobalActivityIndicator.hide();
         mapView.setLocation(mapService.getMapCenter());
     };
@@ -217,11 +216,13 @@
     };
     
     onProxyEmptySearch = function (e) {
+        Ti.API.debug("Hiding activity indicator in onProxyEmptySearch()");
         app.views.GlobalActivityIndicator.hide();
         Ti.API.debug('onProxyEmptySearch' + e);
     };
     
     onProxyLoadError = function (e) {
+        Ti.API.debug("Hiding activity indicator in onProxyLoadError()");
         app.views.GlobalActivityIndicator.hide();
         Ti.API.debug(JSON.stringify(e));
         switch (e.errorCode) {
