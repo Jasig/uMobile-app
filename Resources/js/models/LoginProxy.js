@@ -1,10 +1,32 @@
 var LoginProxy = function (facade) {
     var app = facade,
         self = {},
-        init;
+        init,
+        networkSessionTimer, webViewSessionTimer;
     
-    init = function () {
-        
+    self.init = function () {
+        //Implement constants for what contexts are available for session timeouts.
+        self.sessionTimeContexts = {
+            NETWORK: "Network",
+            WEBVIEW: "Webview"
+        };
+        networkSessionTimer = app.models.sessionTimerModel.createSessionTimer(self.sessionTimeContexts.NETWORK);
+        webViewSessionTimer = app.models.sessionTimerModel.createSessionTimer(self.sessionTimeContexts.WEBVIEW);
+    };
+    
+    self.updateSessionTimeout = function(context) {
+        /* This method will reset the timer for either the network session or 
+        portlet session so we can be sure to log the user back in if necessary.*/
+        switch (context) {
+            case self.sessionTimeContexts.NETWORK:
+                networkSessionTimer.reset();
+                break;
+            case self.sessionTimeContexts.WEBVIEW:
+                webViewSessionTimer.reset();
+                break;
+            default:
+                Ti.API.debug("Context for sessionTimeout didn't match");
+        }
     };
     
     /**
@@ -75,10 +97,6 @@ var LoginProxy = function (facade) {
         // close the database
         db.close();
     };
-    
-    self.updateSessionTimeout = function(app) {
-        app.lastUpdate = new Date();
-    };
 
     self.ensureSession = function(app, options) {
         if (!self.isValidSession(app.lastUpdate)) {
@@ -144,11 +162,13 @@ var LoginProxy = function (facade) {
 
         onAuthError = function (e) {
             Ti.API.info("onAuthError in LoginProxy.establishSession");
+            networkSessionTimer.stop();
             options.onauthfailure();
         };
         
         onAuthComplete = function (e) {
             Ti.API.info("onAuthComplete in LoginProxy.establishSession" + authenticator.responseText);
+            networkSessionTimer.reset();
             options.onsuccess();
         };
 
@@ -184,10 +204,12 @@ var LoginProxy = function (facade) {
         var url, onLoginComplete, onLoginError;
         
         onLoginComplete = function (e) {
+            networkSessionTimer.reset();
             options.onsuccess();
         };
         
         onLoginError = function (e) {
+            networkSessionTimer.stop();
             options.onauthfailure();
         };
         
@@ -211,6 +233,7 @@ var LoginProxy = function (facade) {
         var url, client, initialResponse, flowRegex, flowId, data, failureRegex, onInitialResponse, onInitialError, onPostResponse, onPostError;
 
         onPostError = function (e) {
+            networkSessionTimer.stop();
             options.onauthfailure();
         };
         
@@ -219,12 +242,15 @@ var LoginProxy = function (facade) {
             // we get back a CAS page, assume that the credentials were invalid.
             failureRegex = new RegExp(/body id="cas"/);
             if (failureRegex.exec(client.responseText)) {
+                networkSessionTimer.stop();
                 options.onauthfailure();
             } else {
+                networkSessionTimer.reset();
                 options.onsuccess();
             }
         };
         onInitialError = function (e) {
+            networkSessionTimer.stop();
             options.onauthfailure();
         };
         
@@ -275,7 +301,7 @@ var LoginProxy = function (facade) {
         client.send();
     };
     
-    init();
+    // init();
     
     return self;
 };

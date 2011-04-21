@@ -28,6 +28,7 @@ Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/models/LoginProxy.js');
 Titanium.include('js/models/PortalProxy.js');
 Titanium.include('js/models/ResourceProxy.js');
+Titanium.include('js/models/SessionTimerModel.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/GlobalActivityIndicator.js');
 Titanium.include('js/views/MapDetailTop.js');
@@ -46,15 +47,20 @@ Titanium.include('js/controllers/MapDetailViewController.js');
     
     init = function () {
         app = new ApplicationFacade();
-        app.registerModel('resourceProxy', new ResourceProxy()); //This one doesn't need the app passed in because it only needs to know the OS
+        //A method reference (to set UPM.LOGIN_METHOD) is required from LoginProxy to set the config, so it gets priority in the loading order.
+        app.registerModel('loginProxy', new LoginProxy(app));
         app.registerMember('UPM', UPM);
+        setConfig(app);
+        
+        app.registerModel('resourceProxy', new ResourceProxy()); //This one doesn't need the app passed in because it only needs to know the OS
         app.registerMember('styles', new Styles(app));
         app.registerMember('GibberishAES', GibberishAES);
         
-
+        
+        app.registerModel('sessionTimerModel', new SessionTimerModel(app));
+        app.models.loginProxy.init();
         app.registerModel('mapService', new MapService(app));
         app.registerModel('directoryProxy', new DirectoryProxy(app));
-        app.registerModel('loginProxy', new LoginProxy(app));
         app.registerModel('portalProxy', new PortalProxy(app));
 
         app.registerView('MapDetailTop', MapDetailTop);
@@ -63,13 +69,12 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app));
         app.registerView('SecondaryNavBar', SecondaryNavBar);
         app.registerView('SharedWebView', new SharedWebView(app));
-
-        //Set configuration settings. Some config settings require references
-        //from members of the facade, so the execution order is important.
-        setConfig(app);
         
         app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]);
-
+        
+        activityIndicator = app.views.GlobalActivityIndicator;
+        
+        Ti.App.fireEvent("FacadeInitialized");
 
         // Titanium.UI.setBackgroundColor(app.styles.backgroundColor);
 
@@ -77,8 +82,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         if (!Ti.Network.online) {
             alert(app.localDictionary.networkConnectionRequired);
         }
-        
-        activityIndicator = app.views.GlobalActivityIndicator;
         
         Ti.App.addEventListener('showWindow', function (e) {
             Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
@@ -143,7 +146,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             app: app,
             key: 'portlet'
         });
-
 
         //
         //Directory VIEW
