@@ -76,7 +76,6 @@ var Styles = function (app) {
         secondaryBar: {
             top: defaults.TITLEBAR_HEIGHT,
             height: defaults.TITLEBAR_HEIGHT,
-            backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
             barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
             backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
         },
@@ -101,8 +100,7 @@ var Styles = function (app) {
             top: 0,
         	left: 0,
         	height: defaults.TITLEBAR_HEIGHT,
-        	backgroundColor: defaults.PRIMARY_BAR_BACKGROUND_COLOR,
-        	backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
+            backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
         	width: Titanium.Platform.displayCaps.platformWidth,
         	zIndex: 1
         },
@@ -208,7 +206,7 @@ var Styles = function (app) {
         },
         gridItem: {
             width: 80,
-            height: 80,
+            height: 100,
             padding: 10,
             pressOpacity: 0.5
         },
@@ -395,6 +393,11 @@ var Styles = function (app) {
             color: '#333',
             selectedColor: '#333'
         };
+        
+    }
+    if(Ti.Platform.osname === 'android') {
+        stylesheet.titleBar.backgroundImage = '/images/titlebarbg.png';
+        stylesheet.secondaryBar.backgroundImage = '/images/secondarybarbg.png';
     }
     Ti.API.info("OS is: " + OS + " and contentButton borderRadius is" + stylesheet.contentButton.borderRadius);
     return stylesheet;
