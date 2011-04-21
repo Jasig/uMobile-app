@@ -24,6 +24,8 @@ localDictionary.en_US = {
     
     //Map Window & Map Detail Window
     map: "Map",
+    mapLoadingLocations: "Loading locations from server",
+    mapProcessingLocations: "Processing locations",
     getDirections: "Get Directions",
     noAddressAvailable: "No Address Available",
     titleNotAvailable: "Title Not Available",

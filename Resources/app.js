@@ -102,7 +102,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         Ti.App.addEventListener('showPortlet', function (portlet) {
 
             Ti.API.info("Showing portlet window " + portlet.title);
-            windows.home.hide();
             if (windows.portlet.initialized) {
                 Titanium.App.fireEvent('includePortlet', portlet);
                 windows.portlet.show();
@@ -114,6 +113,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
                 });
                 windows.portlet.open();
             }
+            windows.home.hide();
         });
         
         setUpWindows();
@@ -126,7 +126,8 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         windows.home = Titanium.UI.createWindow({
             url: 'js/controllers/PortalWindowController.js',
             app: app,
-            key: 'home'
+            key: 'home',
+            exitOnClose: true
         });
 
         windows.home.open();

@@ -140,18 +140,25 @@
         //Clears the map of all annotations, takes an array of points, creates annotations of them, and plots them on the map.
         mapView.removeAllAnnotations();
         Ti.API.debug("plotPoints: " + JSON.stringify(points));
+        Ti.API.debug("Annotation style: " + JSON.stringify(app.styles.mapAnnotation));
         for (var i=0, iLength = points.length; i<iLength; i++) {
-            var _annotation = Titanium.Map.createAnnotation({
-                title: points[i].title || app.localDictionary.titleNotAvailable,
-                latitude: points[i].latitude,
-                longitude: points[i].longitude,
-                pincolor:Titanium.Map.ANNOTATION_RED
-            });
+            var _annotationParams, _annotation;
+            _annotationParams = app.styles.mapAnnotation;
+            _annotationParams.title = points[i].title || app.localDictionary.titleNotAvailable;
+            _annotationParams.latitude = points[i].latitude;
+            _annotationParams.longitude = points[i].longitude;
+            _annotationParams.myid = 'annotation' + i;
+            _annotationParams.subtitle = '';
+            
+            _annotation = Titanium.Map.createAnnotation(_annotationParams);
             mapView.addAnnotation(_annotation);
         }
         Ti.API.debug("Hiding Activity Indicator in plotPoints()");
         app.views.GlobalActivityIndicator.hide();
         mapView.setLocation(mapService.getMapCenter());
+        mapView.setMapType(Titanium.Map.STANDARD_TYPE);
+        // mapView.selectAnnotation(points[0].title);
+        mapView.zoom(-1);
     };
 
     searchBlur = function (e) {
@@ -201,7 +208,6 @@
     onProxyLoaded = function (e) {
         Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(mapService.getMapCenter()));
         app.views.GlobalActivityIndicator.hide();
-        mapView.setLocation(mapService.getMapCenter());
     };
     
     onProxySearchComplete = function (e) {

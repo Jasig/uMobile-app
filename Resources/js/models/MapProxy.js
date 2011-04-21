@@ -86,11 +86,6 @@ var MapService = function (facade) {
         }
     };
     self.getAnnotationByTitle = function(t) {
-        /*for (var i=0, iLength=mapPoints.length; i<iLength; i++) {
-            if (mapPoints[i].title === t) {
-                return mapPoints[i];
-            }
-        }*/
         var result = {}, resultSet, db;
         db = Titanium.Database.open('umobile');
         resultSet = db.execute("SELECT * FROM map_locations WHERE title IS ? LIMIT 1", t);

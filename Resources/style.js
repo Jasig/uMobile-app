@@ -311,6 +311,9 @@ var Styles = function (app) {
             animate: true,
             userLocation: false
     	},
+    	mapAnnotation: {
+    	    
+    	},
     	mapButtonBar: {
     	     labels: ['+', '-'],
     	     color: '#fff',
@@ -393,11 +396,12 @@ var Styles = function (app) {
             color: '#333',
             selectedColor: '#333'
         };
-        
+        stylesheet.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
     }
     if(Ti.Platform.osname === 'android') {
         stylesheet.titleBar.backgroundImage = '/images/titlebarbg.png';
         stylesheet.secondaryBar.backgroundImage = '/images/secondarybarbg.png';
+        stylesheet.mapAnnotation.image = '/images/mapPin.png';
     }
     Ti.API.info("OS is: " + OS + " and contentButton borderRadius is" + stylesheet.contentButton.borderRadius);
     return stylesheet;
