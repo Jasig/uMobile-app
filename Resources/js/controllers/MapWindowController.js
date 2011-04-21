@@ -156,9 +156,6 @@
         Ti.API.debug("Hiding Activity Indicator in plotPoints()");
         app.views.GlobalActivityIndicator.hide();
         mapView.setLocation(mapService.getMapCenter());
-        mapView.setMapType(Titanium.Map.STANDARD_TYPE);
-        // mapView.selectAnnotation(points[0].title);
-        mapView.zoom(-1);
     };
 
     searchBlur = function (e) {

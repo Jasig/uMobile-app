@@ -37,14 +37,12 @@
         });
         win.add(titleBar);   
         
-        portletViewOpts = app.styles.portletView;
-        portletView = Titanium.UI.createWebView(portletViewOpts);
-        portletView.top = 40;
+        portletView = app.views.SharedWebView;
         win.add(portletView);
         
-        portletView.addEventListener('load', onPortletLoad);
-        portletView.addEventListener('beforeload', onBeforePortletLoad);
         Ti.App.addEventListener('includePortlet', onIncludePortlet);
+        Ti.App.addEventListener('SharedWebViewBeforeLoad', onBeforePortletLoad);
+        Ti.App.addEventListener('SharedWebViewLoad', onPortletLoad);
 
         // initialize navigation back button for URLs outside of the portal
         navBarOptions = app.styles.secondaryNavBarButton;
@@ -97,10 +95,10 @@
         var newUrl = e.url;
         if (portletView.externalModule || newUrl.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
             navBar.visible = false;
-            portletView.top = 40;
+            portletView.top = app.styles.titleBar.height;
         } else {
             navBar.visible = true;
-            portletView.top = 80;
+            portletView.top = app.styles.titleBar.height + navBar.height;
         }
 
         portletView.show();

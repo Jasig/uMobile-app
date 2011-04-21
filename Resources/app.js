@@ -33,6 +33,7 @@ Titanium.include('js/views/GlobalActivityIndicator.js');
 Titanium.include('js/views/MapDetailTop.js');
 Titanium.include('js/views/PersonDetailTableView.js');
 Titanium.include('js/views/SecondaryNavBar.js');
+Titanium.include('js/views/SharedWebView.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
 Titanium.include('js/controllers/MapDetailViewController.js');
 
@@ -61,6 +62,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app.registerView('PersonDetailTableView', PersonDetailTableView);
         app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app));
         app.registerView('SecondaryNavBar', SecondaryNavBar);
+        app.registerView('SharedWebView', new SharedWebView(app));
 
         //Set configuration settings. Some config settings require references
         //from members of the facade, so the execution order is important.

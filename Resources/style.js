@@ -206,7 +206,7 @@ var Styles = function (app) {
         },
         gridItem: {
             width: 80,
-            height: 100,
+            height: 80,
             padding: 10,
             pressOpacity: 0.5
         },
@@ -307,7 +307,7 @@ var Styles = function (app) {
     	mapView: {
     	    top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
             mapType: Titanium.Map.STANDARD_TYPE,
-            regionFit: true,
+            regionFit: Titanium.Platform.osname === 'android' ? false : true,
             animate: true,
             userLocation: false
     	},
