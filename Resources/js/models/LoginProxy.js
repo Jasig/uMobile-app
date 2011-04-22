@@ -1,15 +1,32 @@
 var LoginProxy = function (facade) {
     var app = facade,
         self = {},
-        init, updateSessionTimeout,
+        init, updateSessionTimeout, loginMethod,
         networkSessionTimer, webViewSessionTimer, onSessionExpire;
     
-    self.init = function () {
+    init = function () {
         //Implement constants for what contexts are available for session timeouts.
         self.sessionTimeContexts = {
             NETWORK: "Network",
             WEBVIEW: "Webview"
         };
+        self.loginMethods = {
+            CAS: "Cas",
+            LOCAL_LOGIN: "LocalLogin"
+        };
+        
+        Ti.API.info("Setting login method: " + app.UPM.LOGIN_METHOD);
+        switch (app.UPM.LOGIN_METHOD) {
+            case self.loginMethods.CAS:
+                loginMethod = self.doCASLogin;
+                break;
+            case self.loginMethods.LOCAL_LOGIN:
+                loginMethod = self.doLocalLogin;
+                break;
+            default:
+                Ti.API.info("Login method not recognized in LoginProxy.init()");
+        }
+        
         networkSessionTimer = app.models.sessionTimerModel.createSessionTimer(self.sessionTimeContexts.NETWORK);
         webViewSessionTimer = app.models.sessionTimerModel.createSessionTimer(self.sessionTimeContexts.WEBVIEW);
         
@@ -165,7 +182,7 @@ var LoginProxy = function (facade) {
         credentials = self.getCredentials();
         if (credentials.username && credentials.password) {
             Ti.API.info("Using standard login method with existing credentials.");
-            app.UPM.LOGIN_METHOD(credentials);
+            loginMethod(credentials);
         }
 
         // If no credentials are available just log into uPortal as a guest through
@@ -304,7 +321,7 @@ var LoginProxy = function (facade) {
         
     };
     
-    // init();
+    init();
     
     return self;
 };

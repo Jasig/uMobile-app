@@ -41,24 +41,20 @@ Titanium.include('js/controllers/MapDetailViewController.js');
 (function (){
     var windows = {},
         app,
-        UPM = {},
         activityIndicator,
         init, setUpWindows;
     
     init = function () {
         app = new ApplicationFacade();
-        //A method reference (to set UPM.LOGIN_METHOD) is required from LoginProxy to set the config, so it gets priority in the loading order.
-        app.registerModel('loginProxy', new LoginProxy(app));
-        app.registerMember('UPM', UPM);
-        setConfig(app);
+        
         
         app.registerModel('resourceProxy', new ResourceProxy()); //This one doesn't need the app passed in because it only needs to know the OS
         app.registerMember('styles', new Styles(app));
         app.registerMember('GibberishAES', GibberishAES);
-        
+        app.registerMember('UPM', new Config(app));
         
         app.registerModel('sessionTimerModel', new SessionTimerModel(app));
-        app.models.loginProxy.init();
+        app.registerModel('loginProxy', new LoginProxy(app));
         app.registerModel('mapService', new MapService(app));
         app.registerModel('directoryProxy', new DirectoryProxy(app));
         app.registerModel('portalProxy', new PortalProxy(app));

@@ -23,8 +23,8 @@
  * may differ between deploying institutions.
  */
 
-function setConfig (app) {
-    var UPM = app.UPM;
+var Config = function (app) {
+    var UPM = {};
 
     Titanium.App.Properties.setString('locale','en_US');
     
@@ -42,7 +42,7 @@ function setConfig (app) {
     // UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
     UPM.SERVER_SESSION_TIMEOUT = 15; //Temporary override to test the timer.
     // UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
-    UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
+    UPM.LOGIN_METHOD = "LocalLogin"; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
     UPM.ENCRYPTION_KEY = 'um0b1le';
 
@@ -105,4 +105,6 @@ function setConfig (app) {
     UPM.directoryEmergencyContacts = [];
     UPM.directoryEmergencyContacts.push({ displayName: ["Campus Police"], telephoneNumber: ['555 555 5555'] });
     UPM.directoryEmergencyContacts.push({ displayName: ["Campus Ambulance"], telephoneNumber: ['555 555 5555'] });
-}
+    
+    return UPM;
+};
