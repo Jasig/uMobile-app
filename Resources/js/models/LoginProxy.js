@@ -1,7 +1,7 @@
 var LoginProxy = function (facade) {
     var app = facade,
         self = {},
-        init, updateSessionTimeout, loginMethod,
+        init, updateSessionTimeout, establishSilentNetworkSession, loginMethod,
         networkSessionTimer, webViewSessionTimer, onSessionExpire;
     
     init = function () {
@@ -161,7 +161,11 @@ var LoginProxy = function (facade) {
     /**
      * Establish a session on the uPortal server.
      */
-    self.establishNetworkSession = function() {
+    self.establishNetworkSession = function(options) {
+        /* 
+        Possible options: 
+            isUnobtrusive (Bool), tells it not to reload anything, just establish-the session again behind the scenes
+        */
         Ti.API.info("Establishing Session");
         var credentials, url, onAuthComplete, onAuthError, authenticator;
 
@@ -174,7 +178,9 @@ var LoginProxy = function (facade) {
         onAuthComplete = function (e) {
             Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
             networkSessionTimer.reset();
-            Ti.App.fireEvent("EstablishNetworkSessionSuccess");
+            if (!options || !options.isUnobtrusive) {
+                Ti.App.fireEvent("EstablishNetworkSessionSuccess");
+            }
         };
 
         // If the user has configured credentials, attempt to perform CAS 
@@ -182,7 +188,7 @@ var LoginProxy = function (facade) {
         credentials = self.getCredentials();
         if (credentials.username && credentials.password) {
             Ti.API.info("Using standard login method with existing credentials.");
-            loginMethod(credentials);
+            loginMethod(credentials, options);
         }
 
         // If no credentials are available just log into uPortal as a guest through
@@ -204,13 +210,15 @@ var LoginProxy = function (facade) {
         }
     };
     
-    self.doLocalLogin = function (credentials) {
+    self.doLocalLogin = function (credentials, options) {
         Ti.API.info("LoginProxy doLocalLogin");
         var url, onLoginComplete, onLoginError;
         
         onLoginComplete = function (e) {
             networkSessionTimer.reset();
-            Ti.App.fireEvent('EstablishNetworkSessionSuccess');
+            if (!options || !options.isUnobtrusive) {
+                Ti.App.fireEvent('EstablishNetworkSessionSuccess');
+            }
         };
         
         onLoginError = function (e) {
@@ -234,7 +242,7 @@ var LoginProxy = function (facade) {
         
     };
     
-    self.doCASLogin = function (credentials) {
+    self.doCASLogin = function (credentials, options) {
         var url, client, initialResponse, flowRegex, flowId, data, failureRegex, onInitialResponse, onInitialError, onPostResponse, onPostError;
 
         onPostError = function (e) {
@@ -251,7 +259,9 @@ var LoginProxy = function (facade) {
                 Ti.App.fireEvent('EstablishNetworkSessionFailure');
             } else {
                 networkSessionTimer.reset();
-                Ti.App.fireEvent('EstablishNetworkSessionSuccess');
+                if (!options || !options.isUnobtrusive) {
+                    Ti.App.fireEvent('EstablishNetworkSessionSuccess');
+                }
             }
         };
         onInitialError = function (e) {
@@ -310,7 +320,7 @@ var LoginProxy = function (facade) {
         Ti.API.debug("onSessionExpire() in LoginProxy");
         switch (e.context) {
             case self.sessionTimeContexts.NETWORK:
-                self.establishNetworkSession();
+                self.establishNetworkSession({isUnobtrusive: true});
                 break;
             case self.sessionTimeContexts.WEBVIEW:
                 Ti.API.info("Haven't implemented Webview sessions yet.");
@@ -318,7 +328,6 @@ var LoginProxy = function (facade) {
             default:
                 Ti.API.info("Didn't recognize the context");
         }
-        
     };
     
     init();
