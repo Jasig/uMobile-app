@@ -40,7 +40,7 @@ function setConfig (app) {
     //------- AUTHENTICATION -------
 
     // UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
-    UPM.SERVER_SESSION_TIMEOUT = 5; //Temporary override to test the timer.
+    UPM.SERVER_SESSION_TIMEOUT = 15; //Temporary override to test the timer.
     // UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
     UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';

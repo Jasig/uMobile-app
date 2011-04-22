@@ -22,9 +22,10 @@ var SessionTimerModel = function (facade) {
         session.reset = function () {
             Ti.API.info("Reset the timer for: " + context + " & timer= " + sessionLifeTimeMilli);
             if(counter) {
+                Ti.API.debug("counter variable defined, clearing timeout");
                 clearTimeout(counter);
             }
-            counter = setTimeout(onTimeout, parseInt(sessionLifeTimeMilli, sessionLifeTimeMilli));
+            counter = setTimeout(onTimeout, parseInt(sessionLifeTimeMilli, 10));
             session.isActive = true;
         };
         
