@@ -1,8 +1,8 @@
 var LoginProxy = function (facade) {
     var app = facade,
         self = {},
-        init,
-        networkSessionTimer, webViewSessionTimer;
+        init, updateSessionTimeout,
+        networkSessionTimer, webViewSessionTimer, onSessionTimeout;
     
     self.init = function () {
         //Implement constants for what contexts are available for session timeouts.
@@ -12,11 +12,15 @@ var LoginProxy = function (facade) {
         };
         networkSessionTimer = app.models.sessionTimerModel.createSessionTimer(self.sessionTimeContexts.NETWORK);
         webViewSessionTimer = app.models.sessionTimerModel.createSessionTimer(self.sessionTimeContexts.WEBVIEW);
+        
+        
     };
     
     self.updateSessionTimeout = function(context) {
         /* This method will reset the timer for either the network session or 
-        portlet session so we can be sure to log the user back in if necessary.*/
+        portlet session so we can be sure to log the user back in if necessary.
+        It's a public method so that other controllers can call it each time an
+        activity occurs that will extend a session. */
         switch (context) {
             case self.sessionTimeContexts.NETWORK:
                 networkSessionTimer.reset();
@@ -97,28 +101,12 @@ var LoginProxy = function (facade) {
         // close the database
         db.close();
     };
-
-    self.ensureSession = function(app, options) {
-        if (!self.isValidSession(app.lastUpdate)) {
-            Ti.API.info("Invalid session");
-            // re-authenticate 
-            self.establishSession(options);
-            // TODO: re-load portlet list and refresh portlet and directory views
-        }
-    };
     
-    self.isValidSession = function (lastUpdate) {
-        var now, lastLoginSeconds, checkSessionUrl, checkSessionClient, checkSessionResponse;
-
-        if (lastUpdate) {
-            // If the last portal request was more recent than the session timeout,
-            // assume the session is still valid.  This strategy will fail in the 
-            // case of a portal server restart.
-            now = new Date();
-            lastLoginSeconds = (now.getTime() - lastUpdate.getTime())/1000;
-            if (lastLoginSeconds < app.UPM.SERVER_SESSION_TIMEOUT) {
-                return true;
-            }
+    self.isValidNetworkSession = function () {
+        var checkSessionUrl, checkSessionClient, checkSessionResponse;
+        //Checks to see if the networkSessionTimer says it's active, and also checks that the API indicates a valid session.
+        if(!networkSessionTimer.isActive) {
+            return false;
         }
 
         Ti.API.info('Detected potential session timeout');
@@ -156,18 +144,18 @@ var LoginProxy = function (facade) {
     /**
      * Establish a session on the uPortal server.
      */
-    self.establishSession = function(options) {
+    self.establishNetworkSession = function(options) {
         Ti.API.info("Establishing Session");
         var credentials, url, onAuthComplete, onAuthError, authenticator;
 
         onAuthError = function (e) {
-            Ti.API.info("onAuthError in LoginProxy.establishSession");
+            Ti.API.info("onAuthError in LoginProxy.establishNetworkSession");
             networkSessionTimer.stop();
             options.onauthfailure();
         };
         
         onAuthComplete = function (e) {
-            Ti.API.info("onAuthComplete in LoginProxy.establishSession" + authenticator.responseText);
+            Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
             networkSessionTimer.reset();
             options.onsuccess();
         };
@@ -299,6 +287,11 @@ var LoginProxy = function (facade) {
         client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
         
         client.send();
+    };
+    
+    onSessionTimeout = function (e) {
+        Ti.API.debug("onSessionTimeout() in LoginProxy");
+        
     };
     
     // init();

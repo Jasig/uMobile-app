@@ -4,36 +4,39 @@ var SessionTimerModel = function (facade) {
     init = function () {
         //Gets the session expiration time from the config in seconds,
         //converts to milliseconds for use in the setTimeout
-        Ti.API.info("Constructing SessionTimerModel. Config value for SERVER_SESSION_TIMEOUT is " + app.UPM.SERVER_SESSION_TIMEOUT + "& type is: " + typeof app.UPM.SERVER_SESSION_TIMEOUT);
         sessionLifeTimeMilli = app.UPM.SERVER_SESSION_TIMEOUT * 1000;
     };
     
     self.createSessionTimer = function (context) {
-        var timer = {}, counter;
-        timer.context = context;
+        var session = {}, counter;
+        session.context = context;
+        session.isActive = false;
         
         function onTimeout () {
             Ti.API.info("SessionTimerExpired" + context);
             Ti.App.fireEvent("SessionTimerExpired", {context: context});
             clearTimeout(counter);
+            session.isActive = false;
         };
         
-        timer.reset = function () {
+        session.reset = function () {
             Ti.API.info("Reset the timer for: " + context + " & timer= " + sessionLifeTimeMilli);
             if(counter) {
                 clearTimeout(counter);
             }
-            counter = setTimeout(onTimeout, parseInt(sessionLifeTimeMilli, 10));
+            counter = setTimeout(onTimeout, parseInt(sessionLifeTimeMilli, sessionLifeTimeMilli));
+            session.isActive = true;
         };
         
-        timer.stop = function () {
+        session.stop = function () {
             Ti.API.info("SessionTimerModel.stop() for: " + context);
             if(counter) {
                 clearTimeout(counter);
             }
+            session.isActive = false;
         };
         
-        return timer;
+        return session;
     };
     
     init();

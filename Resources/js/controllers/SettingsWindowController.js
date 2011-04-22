@@ -119,7 +119,7 @@
             username: usernameInput.value, 
             password: passwordInput.value 
         });
-        app.models.loginProxy.establishSession({
+        app.models.loginProxy.establishNetworkSession({
             onsuccess: function () {
                 Ti.API.debug('Updated user credentials');
                 Ti.App.fireEvent('credentialUpdate', {});

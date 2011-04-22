@@ -64,7 +64,7 @@
 
         win.add(portalView);
 
-        app.models.loginProxy.establishSession({ onsuccess: app.models.portalProxy.getPortletsForUser, onauthfailure: showSettings });
+        app.models.loginProxy.establishNetworkSession({ onsuccess: app.models.portalProxy.getPortletsForUser, onauthfailure: showSettings });
 
         Ti.App.addEventListener('credentialUpdate', onCredentialUpdate);
     };
