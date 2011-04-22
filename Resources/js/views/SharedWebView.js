@@ -11,12 +11,14 @@ var SharedWebView = function (facade) {
     
     onWebViewLoad = function (e) {
         Ti.API.debug("Firing onBeforeWebViewLoad in SharedWebView: " + JSON.stringify(e));
-        Ti.App.fireEvent("SharedWebViewLoad", {url: e.url});
+        Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
     };
     
     onBeforeWebViewLoad = function (e) {
         Ti.App.fireEvent("SharedWebViewBeforeLoad");
     };
+    
+    
     
     init();
     

@@ -96,6 +96,7 @@
         if (portletView.externalModule || newUrl.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
             navBar.visible = false;
             portletView.top = app.styles.titleBar.height;
+            app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
         } else {
             navBar.visible = true;
             portletView.top = app.styles.titleBar.height + navBar.height;
