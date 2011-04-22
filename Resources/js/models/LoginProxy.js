@@ -118,6 +118,15 @@ var LoginProxy = function (facade) {
         // close the database
         db.close();
     };
+    self.isValidWebViewSession = function () {
+        // if(!networkSessionTimer.isActive && Ti.Platform.osname === 'android') {
+        if(!webViewSessionTimer.isActive) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
     
     self.isValidNetworkSession = function () {
         var checkSessionUrl, checkSessionClient, checkSessionResponse;
@@ -209,7 +218,15 @@ var LoginProxy = function (facade) {
             authenticator.send();
         }
     };
-    
+    self.getLocalLoginURL = function (url) {
+        /* 
+        This method returns a URL suitable to automatically log
+        in a user in a webview.
+        */
+        credentials = self.getCredentials();
+        return url + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true';
+        
+    };
     self.doLocalLogin = function (credentials, options) {
         Ti.API.info("LoginProxy doLocalLogin");
         var url, onLoginComplete, onLoginError;
@@ -322,8 +339,9 @@ var LoginProxy = function (facade) {
             case self.sessionTimeContexts.NETWORK:
                 self.establishNetworkSession({isUnobtrusive: true});
                 break;
-            case self.sessionTimeContexts.WEBVIEW:
-                Ti.API.info("Haven't implemented Webview sessions yet.");
+            case self.sessionTimeContexts.WEBVIEW:    
+                Ti.API.info("Stopping webViewSessionTimer");
+                webViewSessionTimer.stop();
                 break;
             default:
                 Ti.API.info("Didn't recognize the context");

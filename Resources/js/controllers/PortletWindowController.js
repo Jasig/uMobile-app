@@ -41,7 +41,6 @@
         win.add(portletView);
         
         Ti.App.addEventListener('includePortlet', onIncludePortlet);
-        Ti.App.addEventListener('SharedWebViewBeforeLoad', onBeforePortletLoad);
         Ti.App.addEventListener('SharedWebViewLoad', onPortletLoad);
 
         // initialize navigation back button for URLs outside of the portal
@@ -72,20 +71,13 @@
             portletView.hide();
         }
         if (portlet.url.indexOf('/') == 0) {
-            portletView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
+            portletView.load(app.UPM.BASE_PORTAL_URL + portlet.url);
             portletView.externalModule = false;
         } else {
-            portletView.url = portlet.url;
+            portletView.load(portlet.url);
             portletView.externalModule = true;
         }
         titleBar.updateTitle(portlet.title);
-    }
-    
-    function onBeforePortletLoad (e) {
-        Ti.API.debug("Loading portlet");
-        activityIndicator.message = app.localDictionary.loading;
-        activityIndicator.resetDimensions();
-        activityIndicator.show();
     }
     
     function onPortletLoad(e) {
