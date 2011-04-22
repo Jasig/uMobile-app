@@ -126,6 +126,7 @@ var MapService = function (facade) {
     self.newPointsLoaded = function (e) {
         // Customize the response and add it to the cached mapPoints array in the MapService object.
         var response, responseLength, db;
+        Ti.App.fireEvent('SessionActivity', {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
         (function(){
             try {
                 Ti.API.debug("Trying to iterate through new points");

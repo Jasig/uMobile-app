@@ -8,11 +8,26 @@ var SessionTimerModel = function (facade) {
     };
     
     self.createSessionTimer = function (context) {
-        var session = {}, counter;
+        var session = {}, counter, onSessionActivity, onTimeout;
         session.context = context;
         session.isActive = false;
         
-        function onTimeout () {
+        onSessionActivity = function (e) {
+            /* 
+            Handles application-wide session activity for network requests and 
+            portlet requests. Determines if the context matches this timer.
+            
+            */
+            if (e.context === session.context) {
+                Ti.API.debug("Resetting " + self.context + " session");
+                session.reset();
+            }
+            else {
+                Ti.API.debug("Context didn't match " + self.context);
+            }
+        };
+        
+        onTimeout = function () {
             Ti.API.info("SessionTimerExpired" + context);
             Ti.App.fireEvent("SessionTimerExpired", {context: context});
             clearTimeout(counter);
@@ -36,6 +51,8 @@ var SessionTimerModel = function (facade) {
             }
             session.isActive = false;
         };
+        
+        Ti.App.addEventListener('SessionActivity', onSessionActivity);
         
         return session;
     };
