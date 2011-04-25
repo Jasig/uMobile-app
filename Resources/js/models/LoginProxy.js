@@ -259,6 +259,11 @@ var LoginProxy = function (facade) {
         
     };
     
+    self.getCASLoginURL = function (url) {
+        var separator = url.indexOf('?') >= 0 ? '&' : '?';
+        return app.UPM.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
+    };
+    
     self.doCASLogin = function (credentials, options) {
         var url, client, initialResponse, flowRegex, flowId, data, failureRegex, onInitialResponse, onInitialError, onPostResponse, onPostError;
 

@@ -1,6 +1,5 @@
 var SharedWebView = function (facade) {
-    var app = facade, webView, init, customLoad,
-        onWebViewLoad, onBeforeWebViewLoad;
+    var app = facade, webView, init, customLoad;
     
     init = function () {
         activityIndicator = app.views.GlobalActivityIndicator;
@@ -10,49 +9,60 @@ var SharedWebView = function (facade) {
         webView.load = load;
     };
     
-    onWebViewLoad = function (e) {
+    function onWebViewLoad (e) {
         Ti.API.debug("Firing onBeforeWebViewLoad in SharedWebView: " + JSON.stringify(e));
-        Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
-    };
+        webView.show();
+        if (e.url.indexOf(app.UPM.CAS_URL) > -1) {
+            Ti.API.debug("The current page is a CAS page.");
+            // Ti.API.debug("doCas > onLoginReady() in SharedWebView");
+            var credentials, jsString;
+            credentials = app.models.loginProxy.getCredentials();
+            
+            if (credentials.username && credentials.password) {
+                jsString = "$('#username').val('" + credentials.username +"');$('#password').val('" + credentials.password +"');$('.btn-submit').click();";
+                Ti.API.debug("Preparing to evalJS in webView: " + jsString);
+                webView.evalJS(jsString);
+            }
+            else {
+                Ti.API.debug("Credentials don't contain username and password: " + JSON.stringify(credentials));
+            }
+        }
+        else {
+            Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
+        }
+    }
     
-    onBeforeWebViewLoad = function (e) {
+    function onBeforeWebViewLoad (e) {
         Ti.API.debug("Loading portlet");
         activityIndicator.message = app.localDictionary.loading;
         activityIndicator.resetDimensions();
         activityIndicator.show();
+        webView.hide();
         Ti.App.fireEvent("SharedWebViewBeforeLoad");
-    };
+    }
     
     load = function (url) {
         /*
         This method determines if a session is valid for the webview, and will
         either modify the URL and load, or will load the URL as-is if session is active.
         */
+        // webView.stopLoading();
+        webView.show();
         Ti.API.debug("load() in SharedWebView. Is valid webview session?" + app.models.loginProxy.isValidWebViewSession());
         if (!app.models.loginProxy.isValidWebViewSession()) {
             var doCas, doLocal;
             doLocal = function () {
                 Ti.API.debug("load > doLocal() in SharedWebView");
-                webView.url = app.models.loginProxy.getLocalLoginURL(url);
                 Ti.API.debug("Resulting URL: " + app.models.loginProxy.getLocalLoginURL(url));
+                webView.url = app.models.loginProxy.getLocalLoginURL(url);
             };
             
             doCas = function () {
-                var loginUrl, onLoginReady, onLoginComplete;
                 Ti.API.debug("load > doCas() in SharedWebView");
-                //Remove event listeners temporarily so we can redirect.
-                webView.removeEventListener('load', onWebViewLoad);
-                webView.removeEventListener('beforeload', onBeforeWebViewLoad);
-                
-                
-                onLoginComplete = function () {
-                    //Re-implement standard event listeners
-                    webView.addEventListener('load', onWebViewLoad);
-                    webView.addEventListener('beforeload', onBeforeWebViewLoad);
-                    
-                    webView.url = url;
-                };
+                Ti.API.debug("CAS URL is: " + app.models.loginProxy.getCASLoginURL(url));
+                webView.url = app.models.loginProxy.getCASLoginURL(url);
             };
+            
             switch (app.UPM.LOGIN_METHOD) {
                 case app.models.loginProxy.loginMethods.CAS:
                     doCas();

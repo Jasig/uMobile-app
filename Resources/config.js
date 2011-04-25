@@ -42,7 +42,7 @@ var Config = function (app) {
     // UPM.SERVER_SESSION_TIMEOUT = 29 * 60;
     UPM.SERVER_SESSION_TIMEOUT = 10;
     // UPM.LOGIN_METHOD = app.models.loginProxy.doCASLogin;
-    UPM.LOGIN_METHOD = "LocalLogin"; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
+    UPM.LOGIN_METHOD = "Cas"; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
     UPM.ENCRYPTION_KEY = 'um0b1le';
 
