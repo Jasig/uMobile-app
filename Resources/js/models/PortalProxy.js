@@ -1,5 +1,5 @@
 var PortalProxy = function (facade) {
-    var app = facade, self = {}, getPortletsForUser, getShowPortletFunc, getIconUrl, sortPortlets, 
+    var app = facade, self = {}, portlets, getPortletsForUser, getShowPortletFunc, getIconUrl, sortPortlets, 
         pathToRoot = '../../';
     
     self.getShowPortletFunc = function (portlet) {
@@ -17,6 +17,10 @@ var PortalProxy = function (facade) {
                 );
             }
         };
+    };
+    
+    self.getPortlets = function () {
+        return portlets;
     };
     
     sortPortlets = function(a, b) {
@@ -61,7 +65,7 @@ var PortalProxy = function (facade) {
      */
     getPortletList = function() {
         Ti.API.debug('getPortletList');
-        var layoutUrl, layoutClient, layoutText, portlets,
+        var layoutUrl, layoutClient, layoutText,
             onRequestComplete, onRequestError, onGetPortletsComplete, onGetPortletsError;
 
             onGetPortletsComplete = function (e) {
@@ -99,7 +103,7 @@ var PortalProxy = function (facade) {
                 // array as the initial module list.
                 // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
 
-                Ti.App.fireEvent('PortalProxyPortletsLoaded', { portlets: portlets });
+                Ti.App.fireEvent('PortalProxyPortletsLoaded');
             };
 
             onGetPortletsError = function (e) {
@@ -118,13 +122,13 @@ var PortalProxy = function (facade) {
     };
     
     self.getPortletsForUser = function(onload) {
-        var portlets;
+        var _portlets;
 
         Ti.App.fireEvent('PortalProxyGettingPortlets');
 
         // Get the module list for this user from the portal server and create a 
         // layout based on this list.
-        portlets = getPortletList();
+        _portlets = getPortletList();
         app.lastUpdate = new Date();
     };
     

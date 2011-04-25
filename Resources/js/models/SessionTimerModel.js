@@ -16,14 +16,20 @@ var SessionTimerModel = function (facade) {
             /* 
             Handles application-wide session activity for network requests and 
             portlet requests. Determines if the context matches this timer.
-            
             */
-            if (e.context === session.context) {
-                Ti.API.debug("Resetting " + self.context + " session");
-                session.reset();
+            if (Ti.Platform.osname === 'android') {
+                // Since Android is the only OS that doesn't share cookies between
+                // network requests and webviews, we need to manage sessions separately.
+                if (e.context === session.context) {
+                    Ti.API.debug("Resetting " + self.context + " session");
+                    session.reset();
+                }
+                else {
+                    Ti.API.debug("Context didn't match " + self.context);
+                }
             }
             else {
-                Ti.API.debug("Context didn't match " + self.context);
+                session.reset();
             }
         };
         

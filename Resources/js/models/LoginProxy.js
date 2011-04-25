@@ -3,24 +3,22 @@ var LoginProxy = function (facade) {
         self = {},
         init, updateSessionTimeout, establishSilentNetworkSession, loginMethod,
         networkSessionTimer, webViewSessionTimer, onSessionExpire;
+
     
     init = function () {
         //Implement constants for what contexts are available for session timeouts.
-        self.sessionTimeContexts = {
-            NETWORK: "Network",
-            WEBVIEW: "Webview"
-        };
-        self.loginMethods = {
-            CAS: "Cas",
-            LOCAL_LOGIN: "LocalLogin"
-        };
+        self.sessionTimeContexts = LoginProxy.sessionTimeContexts;
+        
+        // Create an instance of the static loginMethods variable, so other actors
+        // can get the methods via the LoginProxy instance on the facade.
+        self.loginMethods = LoginProxy.loginMethods;
         
         Ti.API.info("Setting login method: " + app.UPM.LOGIN_METHOD);
         switch (app.UPM.LOGIN_METHOD) {
-            case self.loginMethods.CAS:
+            case LoginProxy.loginMethods.CAS:
                 loginMethod = self.doCASLogin;
                 break;
-            case self.loginMethods.LOCAL_LOGIN:
+            case LoginProxy.loginMethods.LOCAL_LOGIN:
                 loginMethod = self.doLocalLogin;
                 break;
             default:
@@ -34,19 +32,28 @@ var LoginProxy = function (facade) {
     };
     
     self.updateSessionTimeout = function(context) {
-        /* This method will reset the timer for either the network session or 
+        /* If Android, this method will reset the timer for either the network session or 
         portlet session so we can be sure to log the user back in if necessary.
         It's a public method so that other controllers can call it each time an
-        activity occurs that will extend a session. */
-        switch (context) {
-            case self.sessionTimeContexts.NETWORK:
-                networkSessionTimer.reset();
-                break;
-            case self.sessionTimeContexts.WEBVIEW:
-                webViewSessionTimer.reset();
-                break;
-            default:
-                Ti.API.debug("Context for sessionTimeout didn't match");
+        activity occurs that will extend a session. 
+        
+        In iPhone, we share one session between network requests and webviews, so we'll reset both timers.
+        */
+        if (Ti.Platform.osname === 'android') {
+            switch (context) {
+                case self.sessionTimeContexts.NETWORK:
+                    networkSessionTimer.reset();
+                    break;
+                case self.sessionTimeContexts.WEBVIEW:
+                    webViewSessionTimer.reset();
+                    break;
+                default:
+                    Ti.API.debug("Context for sessionTimeout didn't match");
+            }            
+        }
+        else {
+            networkSessionTimer.reset();
+            webViewSessionTimer.reset();
         }
     };
     
@@ -187,6 +194,10 @@ var LoginProxy = function (facade) {
         onAuthComplete = function (e) {
             Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
             networkSessionTimer.reset();
+            if (Ti.Platform.osname !== 'android') {
+                Ti.API.debug("Since it's not Android, we'll reset the webView timer as well.");
+                webViewSessionTimer.reset();
+            }
             if (!options || !options.isUnobtrusive) {
                 Ti.App.fireEvent("EstablishNetworkSessionSuccess");
             }
@@ -233,6 +244,10 @@ var LoginProxy = function (facade) {
         
         onLoginComplete = function (e) {
             networkSessionTimer.reset();
+            if (Ti.Platform.osname !== 'android') {
+                Ti.API.debug("Since it's not Android, we'll reset the webView timer as well.");
+                webViewSessionTimer.reset();
+            }
             if (!options || !options.isUnobtrusive) {
                 Ti.App.fireEvent('EstablishNetworkSessionSuccess');
             }
@@ -281,6 +296,10 @@ var LoginProxy = function (facade) {
                 Ti.App.fireEvent('EstablishNetworkSessionFailure');
             } else {
                 networkSessionTimer.reset();
+                if (Ti.Platform.osname !== 'android') {
+                    Ti.API.debug("Since it's not Android, we'll reset the webView timer as well.");
+                    webViewSessionTimer.reset();
+                }
                 if (!options || !options.isUnobtrusive) {
                     Ti.App.fireEvent('EstablishNetworkSessionSuccess');
                 }
@@ -339,21 +358,39 @@ var LoginProxy = function (facade) {
     };
     
     onSessionExpire = function (e) {
+        // If it's not Android, we can just re-establish a session for 
+        // webviews and network requests behind the scenes.
+        // Otherwise, we can re-establish network session behind the scenes,
+        // but would need to set a flag for re-auth in the webview.
         Ti.API.debug("onSessionExpire() in LoginProxy");
-        switch (e.context) {
-            case self.sessionTimeContexts.NETWORK:
-                self.establishNetworkSession({isUnobtrusive: true});
-                break;
-            case self.sessionTimeContexts.WEBVIEW:    
-                Ti.API.info("Stopping webViewSessionTimer");
-                webViewSessionTimer.stop();
-                break;
-            default:
-                Ti.API.info("Didn't recognize the context");
+        if (Ti.Platform.osname !== 'android') {
+            self.establishNetworkSession({isUnobtrusive: true});
+        }
+        else {
+            switch (e.context) {
+                case self.sessionTimeContexts.NETWORK:
+                    self.establishNetworkSession({isUnobtrusive: true});
+                    break;
+                case self.sessionTimeContexts.WEBVIEW:    
+                    Ti.API.info("Stopping webViewSessionTimer");
+                    webViewSessionTimer.stop();
+                    break;
+                default:
+                    Ti.API.info("Didn't recognize the context");
+            }
         }
     };
     
     init();
     
     return self;
+};
+LoginProxy.sessionTimeContexts = {
+    NETWORK: "Network",
+    WEBVIEW: "Webview"
+};
+
+LoginProxy.loginMethods = {
+    CAS: "Cas",
+    LOCAL_LOGIN: "LocalLogin"
 };

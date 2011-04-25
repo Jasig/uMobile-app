@@ -188,7 +188,7 @@
     };
     
     onPortletsLoaded = function (e) {
-        drawHomeGrid(e.portlets);
+        drawHomeGrid(app.models.portalProxy.getPortlets());
     };
     
     if(!win.initialized) {

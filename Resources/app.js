@@ -42,9 +42,26 @@ Titanium.include('js/controllers/MapDetailViewController.js');
     var windows = {},
         app,
         activityIndicator,
-        init, setUpWindows;
+        init, setUpWindows,
+        onShowWindow, onShowPortlet;
     
     init = function () {
+        setUpFacade();
+
+        // Titanium.UI.setBackgroundColor(app.styles.backgroundColor);
+
+        //Let the user know that they need a network connection to use this app.
+        if (!Ti.Network.online) {
+            alert(app.localDictionary.networkConnectionRequired);
+        }
+        
+        Ti.App.addEventListener('showWindow', onShowWindow);
+        Ti.App.addEventListener('showPortlet', onShowPortlet);
+        
+        setUpWindows();
+    };
+    
+    setUpFacade = function () {
         app = new ApplicationFacade();
         
         
@@ -71,53 +88,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         activityIndicator = app.views.GlobalActivityIndicator;
         
         Ti.App.fireEvent("FacadeInitialized");
-
-        // Titanium.UI.setBackgroundColor(app.styles.backgroundColor);
-
-        //Let the user know that they need a network connection to use this app.
-        if (!Ti.Network.online) {
-            alert(app.localDictionary.networkConnectionRequired);
-        }
-        
-        Ti.App.addEventListener('showWindow', function (e) {
-            Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
-
-            if(windows[e.oldWindow] != windows[e.newWindow]) {
-                if (windows[e.newWindow].initialized) {
-                    Ti.API.debug("new window is initialized");
-                    windows[e.newWindow].show();
-                }     
-                else {
-                    Ti.API.debug("new window is NOT initialized");
-                    windows[e.newWindow].open();
-                }
-                windows[e.oldWindow].hide();
-                Ti.API.info("Is old window visible? " + windows[e.oldWindow].visible);
-                Ti.API.info("Is new window visible? " + windows[e.newWindow].visible);
-            }
-            else {
-                Ti.API.debug("You're trying to navigate to the same window you're already in.");
-            }
-        });
-
-        Ti.App.addEventListener('showPortlet', function (portlet) {
-
-            Ti.API.info("Showing portlet window " + portlet.title);
-            if (windows.portlet.initialized) {
-                Titanium.App.fireEvent('includePortlet', portlet);
-                windows.portlet.show();
-            } 
-
-            else {
-                windows.portlet.addEventListener('open', function(e) {
-                    Titanium.App.fireEvent('includePortlet', portlet);
-                });
-                windows.portlet.open();
-            }
-            windows.home.hide();
-        });
-        
-        setUpWindows();
     };
     
     setUpWindows = function () {
@@ -174,6 +144,44 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             app: app,
             key: 'settings'
         });
+    };
+    
+    // Event handlers
+    onShowWindow = function (e) {
+        Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
+
+        if(windows[e.oldWindow] != windows[e.newWindow]) {
+            if (windows[e.newWindow].initialized) {
+                Ti.API.debug("new window is initialized");
+                windows[e.newWindow].show();
+            }     
+            else {
+                Ti.API.debug("new window is NOT initialized");
+                windows[e.newWindow].open();
+            }
+            windows[e.oldWindow].hide();
+            Ti.API.info("Is old window visible? " + windows[e.oldWindow].visible);
+            Ti.API.info("Is new window visible? " + windows[e.newWindow].visible);
+        }
+        else {
+            Ti.API.debug("You're trying to navigate to the same window you're already in.");
+        }
+    };
+    
+    onShowPortlet = function (portlet) {
+        Ti.API.info("Showing portlet window " + portlet.title);
+        if (windows.portlet.initialized) {
+            Titanium.App.fireEvent('includePortlet', portlet);
+            windows.portlet.show();
+        } 
+
+        else {
+            windows.portlet.addEventListener('open', function(e) {
+                Titanium.App.fireEvent('includePortlet', portlet);
+            });
+            windows.portlet.open();
+        }
+        windows.home.hide();
     };
     
     init();

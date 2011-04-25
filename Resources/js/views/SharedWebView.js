@@ -11,23 +11,32 @@ var SharedWebView = function (facade) {
     
     function onWebViewLoad (e) {
         Ti.API.debug("Firing onBeforeWebViewLoad in SharedWebView: " + JSON.stringify(e));
-        webView.show();
+        
         if (e.url.indexOf(app.UPM.CAS_URL) > -1) {
+            //This should be webView.hide() if there weren't a bug with evalJS on Android.
+            //Currently, the script to automatically submit form is disabled until Titanium bug 3554 is resolved.
+            //Begin workaround
+            //webView.hide();
+            Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
+            
+            //End workaround
             Ti.API.debug("The current page is a CAS page.");
-            // Ti.API.debug("doCas > onLoginReady() in SharedWebView");
             var credentials, jsString;
             credentials = app.models.loginProxy.getCredentials();
             
             if (credentials.username && credentials.password) {
+                //Fill out the form in the page and submit
                 jsString = "$('#username').val('" + credentials.username +"');$('#password').val('" + credentials.password +"');$('.btn-submit').click();";
                 Ti.API.debug("Preparing to evalJS in webView: " + jsString);
-                webView.evalJS(jsString);
+                //Disabled until a bug is resolved.
+                // webView.evalJS(jsString);
             }
             else {
                 Ti.API.debug("Credentials don't contain username and password: " + JSON.stringify(credentials));
             }
         }
         else {
+            webView.show();
             Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
         }
     }
