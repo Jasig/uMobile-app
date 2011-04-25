@@ -27,11 +27,15 @@ var SharedWebView = function (facade) {
             if (credentials.username && credentials.password) {
                 //Fill out the form in the page and submit
                 jsString = "$('#username').val('" + credentials.username +"');$('#password').val('" + credentials.password +"');$('.btn-submit').click();";
-                Ti.API.debug("Preparing to evalJS in webView: " + jsString);
+                // Ti.API.debug("Preparing to evalJS in webView: " + jsString);
                 //Disabled until a bug is resolved.
                 // webView.evalJS(jsString);
             }
             else {
+                //Credentials don't exist, so we'll need to let the user login manually.
+                //Note, the user shouldn't even see the CAS page unless they've logged in
+                //at some point as something other than the default guest login...but
+                //that's not the concern of this method.
                 Ti.API.debug("Credentials don't contain username and password: " + JSON.stringify(credentials));
             }
         }

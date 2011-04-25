@@ -28,7 +28,7 @@ Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/models/LoginProxy.js');
 Titanium.include('js/models/PortalProxy.js');
 Titanium.include('js/models/ResourceProxy.js');
-Titanium.include('js/models/SessionTimerModel.js');
+Titanium.include('js/models/SessionProxy.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/GlobalActivityIndicator.js');
 Titanium.include('js/views/MapDetailTop.js');
@@ -70,7 +70,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app.registerMember('GibberishAES', GibberishAES);
         app.registerMember('UPM', new Config(app));
         
-        app.registerModel('sessionTimerModel', new SessionTimerModel(app));
+        app.registerModel('sessionProxy', new SessionProxy(app));
         app.registerModel('loginProxy', new LoginProxy(app));
         app.registerModel('mapService', new MapService(app));
         app.registerModel('directoryProxy', new DirectoryProxy(app));
