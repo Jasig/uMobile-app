@@ -3,8 +3,6 @@
 var SessionProxy = function (facade) {
     var app = facade, self = {}, timers = [], sessionLifeTimeMilli, init, onSessionActivity, onSessionExpire, onTimeout;
     
-    Ti.include(app.models.resourceProxy.getResourcePath('js/models/LoginProxy.js'));
-    
     /* 
     The SessionProxy acts as a sub-proxy for LoginProxy to maintain a local
     representation of session time for the mobile application session. The current
@@ -32,12 +30,12 @@ var SessionProxy = function (facade) {
         Ti.API.info("Reset the timer for: " + context + " & timer= " + sessionLifeTimeMilli);
         Ti.API.debug("Currently " + timers.length + " timers running.");
         if (Ti.Platform.osname !== 'android') {
-            if(timers[app.models.loginProxy.sessionTimeContexts.NETWORK].counter) {
+            if(timers[LoginProxy.sessionTimeContexts.NETWORK].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
-                clearTimeout(timers[app.models.loginProxy.sessionTimeContexts.NETWORK].counter);
+                clearTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK].counter);
             }
-            timers[app.models.loginProxy.sessionTimeContexts.NETWORK].counter = setTimeout(function() {
-                onTimeout(timers[app.models.loginProxy.sessionTimeContexts.NETWORK]);
+            timers[LoginProxy.sessionTimeContexts.NETWORK].counter = setTimeout(function() {
+                onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
         }
         else if (timers[context]) {

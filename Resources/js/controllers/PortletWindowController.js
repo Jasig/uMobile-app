@@ -71,7 +71,7 @@
             portletView.hide();
         }
         if (portlet.url.indexOf('/') == 0) {
-            portletView.load(app.UPM.BASE_PORTAL_URL + portlet.url);
+            portletView.load(portlet.url);
             portletView.externalModule = false;
         } else {
             portletView.load(portlet.url);

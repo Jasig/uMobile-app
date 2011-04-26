@@ -229,7 +229,7 @@ var LoginProxy = function (facade) {
         in a user in a webview.
         */
         credentials = self.getCredentials();
-        return url + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true';
+        return app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + url;
         
     };
     self.doLocalLogin = function (credentials, options) {

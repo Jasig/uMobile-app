@@ -40,7 +40,6 @@ var SharedWebView = function (facade) {
             }
         }
         else {
-            webView.show();
             Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
         }
     }
@@ -50,7 +49,6 @@ var SharedWebView = function (facade) {
         activityIndicator.message = app.localDictionary.loading;
         activityIndicator.resetDimensions();
         activityIndicator.show();
-        webView.hide();
         Ti.App.fireEvent("SharedWebViewBeforeLoad");
     }
     
@@ -88,7 +86,13 @@ var SharedWebView = function (facade) {
             }
         }
         else {
-            webView.url = url;
+            if (url.indexOf('/') === 0) {
+                webView.url = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + url;
+            }
+            else {
+                webView.url = url;
+            }
+            
         }
         
     };
