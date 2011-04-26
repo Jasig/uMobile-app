@@ -33,14 +33,14 @@
     loadPointDetail,
     rawAnnotations = [],
     loadingIndicator,
-    mapService,
+    mapProxy,
     titleBar,
     //Proxy Events
     onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError;
 
     init = function() {
-        //Initializes when the map window is loaded, is passed an instance of the MapService proxy.
-        mapService = app.models.mapService;
+        //Initializes when the map window is loaded, is passed an instance of the mapProxy proxy.
+        mapProxy = app.models.mapProxy;
         
         win.add(app.views.GlobalActivityIndicator);
         Ti.App.addEventListener('showWindow', onWindowBlur);
@@ -56,11 +56,6 @@
         });
         win.add(titleBar);
         
-        searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
-        win.add(searchBar);
-        searchBar.addEventListener('return', searchSubmit);
-        searchBar.addEventListener('cancel', searchBlur);
-        
         Ti.App.addEventListener('MapProxySearching', onProxySearching);
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
         Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
@@ -69,6 +64,12 @@
         Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
         createMapView();
+        
+        searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+        win.add(searchBar);
+        searchBar.addEventListener('return', searchSubmit);
+        searchBar.addEventListener('cancel', searchBlur);
+        
         
         win.initialized = true;
     };
@@ -79,15 +80,16 @@
         // create the map view
         mapViewOpts = app.styles.mapView;
         if (app.UPM.DEFAULT_MAP_REGION) {
-            mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
+            Ti.API.info("Temporarily disabled default region in map.");
+            // mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
         }
         
         mapView = Titanium.Map.createView(mapViewOpts);
         win.add(mapView);
 
-        //Initialize the MapService, which manages the data for points on the map,
+        //Initialize the mapProxy, which manages the data for points on the map,
         //including retrieval of data and searching array of points
-        mapService.init();
+        mapProxy.init();
 
         //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
         mapView.addEventListener('touchstart', searchBlur);
@@ -155,7 +157,7 @@
         }
         Ti.API.debug("Hiding Activity Indicator in plotPoints()");
         app.views.GlobalActivityIndicator.hide();
-        mapView.setLocation(mapService.getMapCenter());
+        mapView.setLocation(mapProxy.getMapCenter());
     };
 
     searchBlur = function (e) {
@@ -165,7 +167,7 @@
     searchSubmit = function (e) {
         Ti.API.debug('searchSubmit() in MapWindowController');
         searchBlur();
-        mapService.search(searchBar.value);
+        mapProxy.search(searchBar.value);
     };
 
     // Event Handlers
@@ -180,13 +182,13 @@
         var _annotation;
         Ti.API.info("Map clicked, and source of click event is: " + JSON.stringify(e));
         if (e.clicksource === 'title' && e.title) {
-            _annotation = mapService.getAnnotationByTitle(e.title);
+            _annotation = mapProxy.getAnnotationByTitle(e.title);
             mapView.fireEvent('loaddetail', _annotation);
         }
         else {
             Ti.API.info("Clicksource: " + e.clicksource);
             Ti.API.info("Title: " + e.title);
-            Ti.API.info("Result of search: " + mapService.getAnnotationByTitle(e.title));
+            Ti.API.info("Result of search: " + mapProxy.getAnnotationByTitle(e.title));
         }
     };
 
@@ -203,7 +205,8 @@
     };
     
     onProxyLoaded = function (e) {
-        Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(mapService.getMapCenter()));
+        Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(mapProxy.getMapCenter()));
+        mapView.setLocation(mapProxy.getMapCenter(true));
         app.views.GlobalActivityIndicator.hide();
     };
     
@@ -229,19 +232,19 @@
         app.views.GlobalActivityIndicator.hide();
         Ti.API.debug(JSON.stringify(e));
         switch (e.errorCode) {
-            case mapService.requestErrors.NETWORK_UNAVAILABLE:
+            case mapProxy.requestErrors.NETWORK_UNAVAILABLE:
                 alert(app.localDictionary.map_NETWORK_UNAVAILABLE);
                 break;
-            case mapService.requestErrors.REQUEST_TIMEOUT:
+            case mapProxy.requestErrors.REQUEST_TIMEOUT:
                 alert(app.localDictionary.map_REQUEST_TIMEOUT);
                 break;
-            case mapService.requestErrors.SERVER_ERROR:
+            case mapProxy.requestErrors.SERVER_ERROR:
                 alert(app.localDictionary.map_SERVER_ERROR);
                 break;
-            case mapService.requestErrors.NO_DATA_RETURNED:
+            case mapProxy.requestErrors.NO_DATA_RETURNED:
                 alert(app.localDictionary.map_NO_DATA_RETURNED);
                 break;
-            case mapService.requestErrors.INVALID_DATA_RETURNED: 
+            case mapProxy.requestErrors.INVALID_DATA_RETURNED: 
                 alert(app.localDictionary.map_INVALID_DATA_RETURNED);
                 break;
             default:

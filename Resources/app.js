@@ -19,7 +19,7 @@
 
 // library includes
 Titanium.include('config.js');
-Ti.include('js/ApplicationFacade.js');
+Titanium.include('js/ApplicationFacade.js');
 Titanium.include('style.js');
 Titanium.include('localization.js');
 Titanium.include('js/gibberish-aes.js');
@@ -72,7 +72,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         
         app.registerModel('sessionProxy', new SessionProxy(app));
         app.registerModel('loginProxy', new LoginProxy(app));
-        app.registerModel('mapService', new MapService(app));
+        app.registerModel('mapProxy', new MapService(app));
         app.registerModel('directoryProxy', new DirectoryProxy(app));
         app.registerModel('portalProxy', new PortalProxy(app));
 

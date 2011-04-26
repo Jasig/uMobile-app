@@ -305,7 +305,8 @@ var Styles = function (app) {
     	},
     	// MAP STYLES
     	mapView: {
-    	    top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
+            top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
+            height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT),
             mapType: Titanium.Map.STANDARD_TYPE,
             regionFit: Titanium.Platform.osname === 'android' ? false : true,
             animate: true,

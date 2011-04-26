@@ -3,14 +3,18 @@ var MapService = function (facade) {
         self = {},
         mapPoints = [],
         mapCenter = {
-            latitude: 0,
-            longitude: 0,
+            latitude: false,
+            longitude: false,
             latitudeDelta: 1,
             longitudeDelta: 1,
-            latLow: 0,
-            latHigh: 0,
-            longLow: 0,
-            longHigh: 0
+            latLow: false,
+            latHigh: false,
+            longLow: false,
+            longHigh: false
+        };
+        defaultMapCenter = {
+            latitudeDelta: 0.02, 
+            longitudeDelta: 0.02
         };
     
     self.requestErrors = {
@@ -38,12 +42,13 @@ var MapService = function (facade) {
             onSearch(query);
             query = query.toLowerCase();
             query = query.replace(/[^a-zA-Z 0-9]+/g,'');
+            query = '%' + query + '%';
 
             Ti.API.info("Starting to search...");
             
             _db = Titanium.Database.open('umobile');
             //Query the database for rows in the map_locations table that match the query
-            queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE "%'+ query +'%" OR searchText LIKE "%'+ query +'%" or abbreviation LIKE "%'+ query +'%"');
+            queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ?', query, query, query);
             
             //Iterate through the query result to add objects to the result array
             if (queryResult) {
@@ -129,8 +134,11 @@ var MapService = function (facade) {
         Ti.App.fireEvent('SessionActivity', {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
         (function(){
             try {
-                Ti.API.debug("Trying to iterate through new points");
+                Ti.API.debug("Trying to iterate through new points" + e.source.responseText);
                 response = JSON.parse(e.source.responseText);
+                //Set the default map center
+                defaultMapCenter.latitude = parseFloat(response.defaultLocation.latitude);
+                defaultMapCenter.longitude = parseFloat(response.defaultLocation.longitude);
                 responseLength = response.buildings.length;
                 if (responseLength > 0) {
                     db = Ti.Database.open('umobile');
@@ -142,24 +150,25 @@ var MapService = function (facade) {
                     for (var i = 0; i < responseLength; i++) {
                         var building = response.buildings[i];
                         if (building.name && building.latitude && building.longitude) {
-                            response.buildings[i].title = response.buildings[i].name;
-                            response.buildings[i].latitude = parseFloat(response.buildings[i].latitude);
-                            response.buildings[i].longitude = parseFloat(response.buildings[i].longitude);
+                            building.title = building.name;
+                            building.latitude = parseFloat(building.latitude);
+                            building.longitude = parseFloat(building.longitude);
+                            
+                            db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                                building.name ? building.name : '',
+                                building.abbreviation ? building.abbreviation : '',
+                                building.accuracy ? building.accuracy : '',
+                                building.address ? building.address : '',
+                                building.alternateName ? building.alternateName : '',
+                                building.latitude ? building.latitude : 0,
+                                building.longitude ? building.longitude : 0,
+                                building.searchText ? building.searchText : '',
+                                building.zip ? building.zip : '',
+                                building.img ? building.img : ''
+                                );
 
-                            db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (" + 
-                                JSON.stringify(building.name) + ", " + 
-                                JSON.stringify(building.abbreviation) + ", " + 
-                                JSON.stringify(building.accuracy) + ", " + 
-                                JSON.stringify(building.address) + ", " + 
-                                JSON.stringify(building.alternateName) + ", " + 
-                                parseFloat(building.latitude) + ", " + 
-                                parseFloat(building.longitude) + ", " + 
-                                JSON.stringify(building.searchText) + ", " + 
-                                JSON.stringify(building.zip) + ", " + 
-                                JSON.stringify(building.img) +")");
 
-
-                            mapPoints.push(response.buildings[i]);
+                            /*mapPoints.push(response.buildings[i]);
                             
                             if (building.latitude < mapCenter.latLow) {
                                 mapCenter.latLow = building.latitude;
@@ -172,7 +181,7 @@ var MapService = function (facade) {
                             }
                             else if (building.longitude > mapCenter.longHigh) {
                                 mapCenter.longHigh = building.longitude;
-                            }
+                            }*/
                         }
                         else {
                             Ti.API.debug("Skipping " + building.name);
@@ -194,13 +203,20 @@ var MapService = function (facade) {
         })();
     };
     
-    self.getMapCenter = function () {
-        mapCenter.latitude = (mapCenter.latLow + mapCenter.latHigh) / 2;
-        mapCenter.longitude = (mapCenter.longLow + mapCenter.longHigh) / 2;
-        mapCenter.latitudeDelta = (mapCenter.latHigh - mapCenter.latLow) > 0.005 ? mapCenter.latHigh - mapCenter.latLow : 0.005;
-        mapCenter.longitudeDelta = (mapCenter.longHigh - mapCenter.longLow) > 0.005 ? mapCenter.longHigh - mapCenter.longLow : 0.005;
-        Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(mapCenter));
-        return mapCenter;
+    self.getMapCenter = function (isDefault) {
+        if(isDefault) {
+            //Wants the default map location returned from the service, 
+            //not the dynamic one generated otherwise
+            return defaultMapCenter;
+        }
+        else {
+            mapCenter.latitude = (mapCenter.latLow + mapCenter.latHigh) / 2;
+            mapCenter.longitude = (mapCenter.longLow + mapCenter.longHigh) / 2;
+            mapCenter.latitudeDelta = (mapCenter.latHigh - mapCenter.latLow) > 0.005 ? mapCenter.latHigh - mapCenter.latLow : 0.005;
+            mapCenter.longitudeDelta = (mapCenter.longHigh - mapCenter.longLow) > 0.005 ? mapCenter.longHigh - mapCenter.longLow : 0.005;
+            Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(mapCenter));
+            return mapCenter;            
+        }
     };
     
     function onLoadError (e) {
