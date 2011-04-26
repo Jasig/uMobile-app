@@ -28,6 +28,8 @@
 
     function init() {
         var portletViewOpts, navBarOptions;
+        
+        win.setBackgroundColor(app.styles.backgroundColor);
         titleBar = new app.views.GenericTitleBar({
             windowKey: 'portlet',
             app: app,

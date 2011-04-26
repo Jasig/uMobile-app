@@ -57,9 +57,10 @@ var SharedWebView = function (facade) {
         This method determines if a session is valid for the webview, and will
         either modify the URL and load, or will load the URL as-is if session is active.
         */
-        // webView.stopLoading();
-        webView.show();
+        
+        webView.stopLoading();
         Ti.API.debug("load() in SharedWebView. Is valid webview session?" + app.models.loginProxy.isValidWebViewSession());
+        Ti.API.debug("URL to load is: " + url);
         if (!app.models.loginProxy.isValidWebViewSession()) {
             var doCas, doLocal;
             doLocal = function () {
@@ -87,14 +88,16 @@ var SharedWebView = function (facade) {
         }
         else {
             if (url.indexOf('/') === 0) {
-                webView.url = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + url;
+                Ti.API.info("Index of / in URL is 0");
+                var newUrl = app.UPM.BASE_PORTAL_URL + url;
+                Ti.API.info(newUrl);
+                webView.url = newUrl;
             }
             else {
+                Ti.API.info("Index of / in URL is NOT 0");
                 webView.url = url;
             }
-            
         }
-        
     };
     
     
