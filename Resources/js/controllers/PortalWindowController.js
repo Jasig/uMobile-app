@@ -73,7 +73,7 @@
 
 
     drawHomeGrid = function (portlets) {
-        Ti.API.debug("Preparing to iterate through portlets in drawAndroidGrid");
+        Ti.API.debug("Preparing to iterate through portlets in drawHomeGrid: " + portlets.length);
         for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
             Ti.API.debug("Portlet iteration " + i + ", " + portlets[i].title);
             var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;

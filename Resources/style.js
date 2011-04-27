@@ -201,12 +201,14 @@ var Styles = function (app) {
             zIndex: 1
         },
         gridIcon: {
-            width: 32,
-            height: 32
+            top: 0,
+            canScale: false,
+            width: 57,
+            height: 57
         },
         gridItem: {
             width: 80,
-            height: 80,
+            height: 57 + 20,
             padding: 10,
             pressOpacity: 0.5
         },
@@ -218,7 +220,7 @@ var Styles = function (app) {
                 size: 10,
                 family: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
             },
-            top: 80 - 20,
+            top: 57,
             color: "#fff",
             touchEnabled: false
 

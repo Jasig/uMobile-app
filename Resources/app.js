@@ -46,6 +46,9 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         onShowWindow, onShowPortlet;
     
     init = function () {
+        Ti.API.info("Hello. You're on an: " + Ti.Platform.osname);
+        Ti.API.info("Your resolution is: " + Ti.Platform.displayCaps.density);
+        Ti.API.info("With a DPI of: " + Ti.Platform.displayCaps.dpi);
         setUpFacade();
 
         // Titanium.UI.setBackgroundColor(app.styles.backgroundColor);
@@ -59,13 +62,14 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         Ti.App.addEventListener('showPortlet', onShowPortlet);
         
         setUpWindows();
+        
     };
     
     setUpFacade = function () {
         app = new ApplicationFacade();
         
         
-        app.registerModel('resourceProxy', new ResourceProxy()); //This one doesn't need the app passed in because it only needs to know the OS
+        app.registerModel('resourceProxy', new ResourceProxy(app)); //This one doesn't need the app passed in because it only needs to know the OS
         app.registerMember('styles', new Styles(app));
         app.registerMember('GibberishAES', GibberishAES);
         app.registerMember('UPM', new Config(app));

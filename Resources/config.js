@@ -74,10 +74,12 @@ var Config = function (app) {
          {
              title: 'map',
              iconUrl: 'icons/map.png',
+             fname: 'map',
              window: 'map'
          },
          {
              title: 'directory',
+             fname: 'directory',
              iconUrl: 'icons/directory.png',
              window: 'directory'
          }
@@ -99,6 +101,14 @@ var Config = function (app) {
         longitude: -72.9234645,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
+    };
+    
+    UPM.nativeIcons = {
+        videos: 'icons/youtube.png',
+        news: 'icons/feed.png',
+        calendar: 'icons/calendar.png',
+        map: 'icons/map.png',
+        directory: 'icons/directory.png'
     };
 
     UPM.directoryEmergencyContacts = [];
