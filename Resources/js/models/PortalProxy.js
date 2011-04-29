@@ -77,19 +77,21 @@ var PortalProxy = function (facade) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
                 Ti.API.debug('ResponseText is' + layoutClient.responseText);
                 
-                var responseXML;
+                var responseXML, nativeModules = app.UPM.LOCAL_MODULES;
                 
                 if (layoutClient.responseXML == null) {
                     if (typeof DOMParser != "undefined") {
                         // Titanium Desktop 1.0 doesn't fill out responseXML.
                         // We'll use WebKit's XML parser...
                         responseXML = (new DOMParser()).parseFromString(layoutClient.responseText, "text/xml");
-                    } else {
+                    } 
+                    else {
                         // Titanium Mobile 1.3 doesn't fill out responseXML on Android.
                         // We'll use Titanium's XML parser...
                         responseXML = Titanium.XML.parseString(layoutClient.responseText);
                     }
-                } else {
+                } 
+                else {
                     responseXML = layoutClient.responseXML;
                 }
 
@@ -98,9 +100,18 @@ var PortalProxy = function (facade) {
                 portlets = JSON.parse(layoutText).layout;
                 
                 for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
-                    if(app.UPM.LOCAL_MODULES[portlets[i].fname]) {
-                        portlets[i] = app.UPM.LOCAL_MODULES[portlets[i].fname];
+                    
+                    if(nativeModules[portlets[i].fname]) {
+                        Ti.API.info("We have a match for " + portlets[i].fname);
+                        portlets[i] = nativeModules[portlets[i].fname];
+                        delete nativeModules[portlets[i].fname];
+                        Ti.API.info("New portlet: " + JSON.stringify(portlets[i]));
                     }
+                }
+                
+                for (module in nativeModules) {
+                    Ti.API.info("Remaining module: " + nativeModules[module]);
+                    portlets.push(nativeModules[module]);
                 }
                 
                 portlets.sort(sortPortlets);
