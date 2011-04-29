@@ -85,6 +85,7 @@ var Config = function (app) {
          },
          {
              title: 'Twitter',
+             fname: 'twitter',
              url: 'http://mobile.twitter.com/searches?q=jasig11+OR+sakai11',
              externalModule: true
          }
@@ -113,7 +114,9 @@ var Config = function (app) {
         news: 'icons/feed.png',
         calendar: 'icons/calendar.png',
         map: 'icons/map.png',
-        directory: 'icons/directory.png'
+        directory: 'icons/directory.png',
+        twitter: 'icons/twitter.png',
+        weather: 'icons/weather.png'
     };
 
     UPM.directoryEmergencyContacts = [];
