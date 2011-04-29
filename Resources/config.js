@@ -70,26 +70,26 @@ var Config = function (app) {
         organization: 'department'
     };
 
-    UPM.LOCAL_MODULES = [
-         {
-             title: 'map',
-             iconUrl: 'icons/map.png',
-             fname: 'map',
-             window: 'map'
-         },
-         {
-             title: 'directory',
-             fname: 'directory',
-             iconUrl: 'icons/directory.png',
-             window: 'directory'
-         },
-         {
-             title: 'Twitter',
-             fname: 'twitter',
-             url: 'http://mobile.twitter.com/searches?q=jasig11+OR+sakai11',
-             externalModule: true
-         }
-    ];
+    UPM.LOCAL_MODULES = [];
+    UPM.LOCAL_MODULES.map = {
+        title: 'map',
+        iconUrl: 'icons/map.png',
+        fname: 'map',
+        window: 'map'
+    };
+    
+    UPM.LOCAL_MODULES.directory = {
+        title: 'directory',
+        fname: 'directory',
+        iconUrl: 'icons/directory.png',
+        window: 'directory'
+    };
+    UPM.LOCAL_MODULES.twitter = {
+        title: 'Twitter',
+        fname: 'twitter',
+        url: 'http://mobile.twitter.com/searches?q=jasig11+OR+sakai11',
+        externalModule: true
+    };
 
     UPM.GLOBAL_STYLES = {
         textFieldGradient: {

@@ -96,10 +96,11 @@ var PortalProxy = function (facade) {
                 layoutText = responseXML.getElementsByTagName('json-layout').item(0).text;
 
                 portlets = JSON.parse(layoutText).layout;
-
-                // Add locally-configured modules to the module list.
-                for (var i = 0; i < app.UPM.LOCAL_MODULES.length; i++) {
-                    portlets.push(app.UPM.LOCAL_MODULES[i]);
+                
+                for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
+                    if(app.UPM.LOCAL_MODULES[portlets[i].fname]) {
+                        portlets[i] = app.UPM.LOCAL_MODULES[portlets[i].fname];
+                    }
                 }
                 
                 portlets.sort(sortPortlets);
