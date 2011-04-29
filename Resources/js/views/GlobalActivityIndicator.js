@@ -16,8 +16,6 @@ GlobalActivityIndicator = function (app) {
         });
         
         dialogShowAnimation = Titanium.UI.createAnimation({
-            // width: app.styles.activityIndicatorDialog.width,
-            // height: app.styles.activityIndicatorDialog.height,
             transform: Titanium.UI.create2DMatrix({
                 scale: 1.0
             }),
@@ -31,8 +29,6 @@ GlobalActivityIndicator = function (app) {
         });
         
         dialogHideAnimation = Titanium.UI.createAnimation({
-            // width: app.styles.activityIndicatorDialog.width,
-            // height: app.styles.activityIndicatorDialog.height,
             transform: Titanium.UI.create2DMatrix({
                 scale: 0.5
             }),
@@ -61,40 +57,39 @@ GlobalActivityIndicator = function (app) {
     };
     
     self.showAnimate = function () {
+        //Disable animation until it can be ironed out.
         Ti.API.debug("showAnimate() in GlobalActivityIndicator");
-        
+        /*
         bgShowAnimation.addEventListener('complete', onBGShowComplete);
         dialogShowAnimation.addEventListener('complete', onDialogShowComplete);
         
-        // self.opacity = 0;
         self.show();
         
-        // dialog.width = Math.round(app.styles.activityIndicatorDialog.width * 0.5);
-        // dialog.height = Math.round(app.styles.activityIndicatorDialog.height * 0.5);
         dialog.transform = Titanium.UI.create2DMatrix({
             scale: 0.5
         });
         dialog.opacity = 0;
         
-        self.animate(bgShowAnimation);
+        self.animate(bgShowAnimation);*/
+        self.show();
+        
     };
     
     self.hideAnimate = function () {
+        //Disable animation until it can be ironed out
         Ti.API.debug("hideAnimate() in GlobalActivityIndicator");
-        
+        /*
         bgHideAnimation.addEventListener('complete', onBGHideComplete);
         dialogHideAnimation.addEventListener('complete', onDialogHideComplete);
         
-        // self.opacity = 1;
-        
-        // dialog.width = Math.round(app.styles.activityIndicatorDialog.width * 0.5);
-        // dialog.height = Math.round(app.styles.activityIndicatorDialog.height * 0.5);
         dialog.transform = Titanium.UI.create2DMatrix({
             scale: 1.0
         });
         dialog.opacity = 1.0;
         
-        dialog.animate(dialogHideAnimation);
+        dialog.animate(dialogHideAnimation);*/
+        
+        self.hide();
     };
     
     function onBGShowComplete () {

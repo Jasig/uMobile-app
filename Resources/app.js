@@ -29,6 +29,7 @@ Titanium.include('js/models/LoginProxy.js');
 Titanium.include('js/models/PortalProxy.js');
 Titanium.include('js/models/ResourceProxy.js');
 Titanium.include('js/models/SessionProxy.js');
+Titanium.include('js/models/WindowManager.js');
 Titanium.include('js/views/GenericTitleBar.js');
 Titanium.include('js/views/GlobalActivityIndicator.js');
 Titanium.include('js/views/MapDetailTop.js');
@@ -40,28 +41,27 @@ Titanium.include('js/controllers/MapDetailViewController.js');
 
 (function (){
     var windows = {},
-        app,
-        activityIndicator,
-        init, setUpWindows,
+        app, windowManager,
+        activityIndicator, 
+        init, setUpWindows, 
         onShowWindow, onShowPortlet, onLoginProxyError;
     
     init = function () {
         Ti.API.info("Hello. You're on an: " + Ti.Platform.osname);
         Ti.API.info("Your resolution is: " + Ti.Platform.displayCaps.density);
         Ti.API.info("With a DPI of: " + Ti.Platform.displayCaps.dpi);
-        setUpFacade();
 
+        setUpFacade();
+        windowManager = app.models.windowManager;
         //Let the user know that they need a network connection to use this app.
         if (!Ti.Network.online) {
             alert(app.localDictionary.networkConnectionRequired);
         }
         
-        Ti.App.addEventListener('showWindow', onShowWindow);
-        Ti.App.addEventListener('showPortlet', onShowPortlet);
         Ti.App.addEventListener('LoginProxyError', onLoginProxyError);
         
         setUpWindows();
-        
+        windowManager.openWindow('home');
     };
     
     setUpFacade = function () {
@@ -73,6 +73,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app.registerMember('GibberishAES', GibberishAES);
         app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]);
         
+        app.registerModel('windowManager', new WindowManager(app));
         app.registerModel('sessionProxy', new SessionProxy(app));
         app.registerModel('loginProxy', new LoginProxy(app));
         app.registerModel('mapProxy', new MapService(app));
@@ -95,95 +96,62 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         //
         // MAIN PORTAL VIEW
         //
-        windows.home = Titanium.UI.createWindow({
+        windowManager.addWindow({
             url: 'js/controllers/PortalWindowController.js',
             app: app,
             key: 'home',
             exitOnClose: true
         });
-        windows.home.open();
-
-
+        
         //
         // PORTLET VIEW
         //
-        windows.portlet = Titanium.UI.createWindow({
+        windowManager.addWindow({
             url: 'js/controllers/PortletWindowController.js',
             app: app,
-            key: 'portlet'
+            key: 'portlet',
+            exitOnClose: false
         });
 
         //
         //Directory VIEW
         //
-        windows.directory = Titanium.UI.createWindow({
+        windowManager.addWindow({
             url: 'js/controllers/DirectoryWindowController.js',
             backgroundColor: app.styles.backgroundColor,
             title: app.localDictionary.directory,
             app: app,
             key: 'directory',
             id: 'directoryWindowController',
-            initialized: false
+            initialized: false,
+            exitOnClose: false
         });
         // windows.directory.open();
 
         //
         // MAP VIEW
         //
-        windows.map = Titanium.UI.createWindow({
+        windowManager.addWindow({
             url: 'js/controllers/MapWindowController.js',
             title: app.localDictionary.map,
             app: app,
-            key: 'map'
+            key: 'map',
+            exitOnClose: false
         });
         // windows.map.open();
         //
         //  SETTINGS VIEW
         //
-        windows.settings = Titanium.UI.createWindow({
+        windowManager.addWindow({
             url: 'js/controllers/SettingsWindowController.js',
             app: app,
-            key: 'settings'
+            key: 'settings',
+            exitOnClose: false
         });
     };
     
     // Event handlers
-    onShowWindow = function (e) {
-        Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
-
-        if(windows[e.oldWindow] != windows[e.newWindow]) {
-            if (windows[e.newWindow].initialized) {
-                Ti.API.debug("new window is initialized");
-                windows[e.newWindow].show();
-            }     
-            else {
-                Ti.API.debug("new window is NOT initialized");
-                windows[e.newWindow].open();
-            }
-            windows[e.oldWindow].hide();
-            Ti.API.info("Is old window visible? " + windows[e.oldWindow].visible);
-            Ti.API.info("Is new window visible? " + windows[e.newWindow].visible);
-        }
-        else {
-            Ti.API.debug("You're trying to navigate to the same window you're already in.");
-        }
-    };
     
-    onShowPortlet = function (portlet) {
-        Ti.API.info("Showing portlet window " + portlet.title);
-        if (windows.portlet.initialized) {
-            Titanium.App.fireEvent('includePortlet', portlet);
-            windows.portlet.show();
-        } 
-
-        else {
-            windows.portlet.addEventListener('open', function(e) {
-                Titanium.App.fireEvent('includePortlet', portlet);
-            });
-            windows.portlet.open();
-        }
-        windows.home.hide();
-    };
     
     init();
     

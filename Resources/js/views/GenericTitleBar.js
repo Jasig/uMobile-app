@@ -64,7 +64,17 @@ var GenericTitleBar = function (opts) {
     };
     
     onHomePressDown = function (e) {
+        var timeUp;
+        
         homeButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColorPressed;
+        if (Ti.Platform.osname === 'android') {
+            //Because Android doesn't consistently register touchcancel or touchend, especially
+            //when the window changes in the middle of a press
+            timeUp = setTimeout(function(){
+                homeButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColor;
+                clearTimeout(timeUp);
+            }, 1000);
+        }
     };
     
     onHomePressUp = function (e) {
@@ -82,7 +92,16 @@ var GenericTitleBar = function (opts) {
     };
     
     onSettingsPressDown = function (e) {
+        var timeUp;
         settingsButtonContainer.backgroundColor = opts.app.styles.titleBarSettingsContainer.backgroundColorPressed;
+        if (Ti.Platform.osname === 'android') {
+            //Because Android doesn't consistently register touchcancel or touchend, especially
+            //when the window changes in the middle of a press
+            timeUp = setTimeout(function(){
+                settingsButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColor;
+                clearTimeout(timeUp);
+            }, 1000);            
+        }
     };
     
     onSettingsPressUp = function (e) {

@@ -10,7 +10,7 @@ var ResourceProxy = function (facade) {
         } 
         else if (Titanium.Platform.osname === 'android') {
             Ti.API.info("getResourcePath is Android");
-            return Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + "/" + file);
+            return "/" + file;
         }
         else {
             return file;

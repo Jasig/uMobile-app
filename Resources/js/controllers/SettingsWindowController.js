@@ -120,8 +120,8 @@
 
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
-        activityIndicator.setMessage(app.localDictionary.loggingIn);
-        activityIndicator.show();
+        activityIndicator.loadingMessage(app.localDictionary.loggingIn);
+        activityIndicator.showAnimate();
         app.models.loginProxy.saveCredentials({
             username: usernameInput.value, 
             password: passwordInput.value 
@@ -134,7 +134,7 @@
             
             }
         });
-        activityIndicator.hide();
+        activityIndicator.hideAnimate();
     };
     
     onSaveButtonPress = function(e) {
@@ -152,7 +152,7 @@
         passwordInput.blur();
         usernameInput.blur();
         if(activityIndicator.visible) {
-            activityIndicator.hide();
+            activityIndicator.hideAnimate();
         }
     };
     
