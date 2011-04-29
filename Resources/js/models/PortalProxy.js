@@ -101,6 +101,8 @@ var PortalProxy = function (facade) {
                 for (var i = 0; i < app.UPM.LOCAL_MODULES.length; i++) {
                     portlets.push(app.UPM.LOCAL_MODULES[i]);
                 }
+                
+                portlets.sort(sortPortlets);
 
                 // uPortal 3.2 isn't capable of sending the layout as JSON, so the response
                 // will be an XML document with the appropriate JSON contained in a 

@@ -58,7 +58,7 @@ localDictionary.en_US = {
     email: "Email",
     phone: "Phone",
     title: "Title",
-    organization:"Organization",
+    organization:"Org",
     address:"Address",
     emailAddress: "Email Address",
     emailAddresses: "Email Addresses",

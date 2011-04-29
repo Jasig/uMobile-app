@@ -82,6 +82,11 @@ var Config = function (app) {
              fname: 'directory',
              iconUrl: 'icons/directory.png',
              window: 'directory'
+         },
+         {
+             title: 'Twitter',
+             url: 'http://mobile.twitter.com/searches?q=jasig11+OR+sakai11',
+             externalModule: true
          }
     ];
 
