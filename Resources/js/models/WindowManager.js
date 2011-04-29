@@ -49,7 +49,6 @@ var WindowManager = function (facade) {
         Ti.API.info("Showing portlet window " + portlet.title);
         if (applicationWindows.portlet.initialized) {
             Titanium.App.fireEvent('includePortlet', portlet);
-            // applicationWindows.portlet.show();
             self.openWindow('portlet');
         } 
 
