@@ -1,6 +1,6 @@
 var WindowManager = function (facade) {
     var app=facade, init, self = {}, applicationWindows = [], activityStack = [],
-        onShowWindow, onShowPortlet;
+        onAndroidBack, onShowWindow, onShowPortlet;
 
     init = function () {
         Ti.App.addEventListener('showWindow', onShowWindow);
@@ -9,6 +9,7 @@ var WindowManager = function (facade) {
     
     self.addWindow = function (windowParams) {
         applicationWindows[windowParams.key] = Titanium.UI.createWindow(windowParams);
+        applicationWindows[windowParams.key].addEventListener('android:back', onAndroidBack);
     };
     
     self.openWindow = function (windowKey) {
@@ -39,7 +40,18 @@ var WindowManager = function (facade) {
         }
     };
     
+    self.goBack = function () {
+        //Show the previous window, and add it to the top of the activity stack.
+        if (activityStack.length >= 2) {
+            self.openWindow(activityStack[activityStack.length - 2]);
+        }
+    };
+    
     //Event Handlers
+    onAndroidBack = function (e) {
+        self.goBack();
+    };
+    
     onShowWindow = function (e) {
         Ti.API.debug("showWindow Event. New: " + e.newWindow + ", Old: " + e.oldWindow);
         self.openWindow(e.newWindow);

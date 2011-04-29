@@ -100,7 +100,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             url: 'js/controllers/PortalWindowController.js',
             app: app,
             key: 'home',
-            exitOnClose: true
+            exitOnClose: false
         });
         
         //

@@ -44,13 +44,17 @@
         win.add(activityIndicator);
 
         loginProxy = app.models.loginProxy;
-
-    	createPortalView();
+        loginProxy.establishNetworkSession();
     	
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
         Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
+        Ti.App.addEventListener('EstablishNetworkSessionSuccess', app.models.portalProxy.getPortletsForUser);
+        Ti.App.addEventListener('EstablishNetworkSessionFailure', showSettings);
+        
     	win.addEventListener('focus', onWindowFocus);
+
+        createPortalView();
 
     	win.initialized = true;
     };
@@ -65,21 +69,14 @@
     	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
 
         win.add(portalView);
-        
-        // if(!loginProxy.isValidNetworkSession) {
-           loginProxy.establishNetworkSession();
-        // }
-        //         else {
-        //             Ti.API.info("No need to login, a session already exists.");
-        //         }
-        
-        Ti.App.addEventListener('EstablishNetworkSessionSuccess', app.models.portalProxy.getPortletsForUser);
-        Ti.App.addEventListener('EstablishNetworkSessionFailure', showSettings);
     };
 
 
     drawHomeGrid = function (portlets) {
         Ti.API.debug("Preparing to iterate through portlets in drawHomeGrid: " + portlets.length);
+        
+        createPortalView();
+        
         for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
             Ti.API.debug("Portlet iteration " + i + ", " + portlets[i].title);
             var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
