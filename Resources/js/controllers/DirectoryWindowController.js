@@ -27,7 +27,7 @@ Ti.API.info("Directory Window Opened");
 (function () {
     var win = Titanium.UI.currentWindow, app = win.app, self = {}, directoryProxy = app.models.directoryProxy,
         // Data and variables
-        peopleResult = [], defaultTableData, initialized = false, viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
+        peopleResult = [], defaultTableData, viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
         contactDetailViewOptions, searchBarOptions,
         //UI Elements
         peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
@@ -38,8 +38,10 @@ Ti.API.info("Directory Window Opened");
     
     self.init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
-        win.initialized = true;
+        checkNetwork();
+        
         Ti.App.addEventListener('showWindow', onWindowBlur);
+        
         viewBottom = 0;
         
         //Create a title bar from the generic title bar partial view
@@ -122,7 +124,12 @@ Ti.API.info("Directory Window Opened");
         activityIndicator.resetDimensions();
         win.add(activityIndicator);
         
-        initialized = true;
+        win.initialized = true;
+    };
+    checkNetwork = function () {
+        if (!Ti.Network.online) {
+            alert(app.localDictionary.directoryRequiresNetwork);
+        }
     };
     
     displaySearchResults = function () {
@@ -155,7 +162,7 @@ Ti.API.info("Directory Window Opened");
         Ti.API.debug('openContactDetail called in DirectoryWindowController');
         Ti.API.debug(contactDetailView);
         Ti.API.debug(person);
-        activityIndicator.hide();
+        activityIndicator.hideAnimate();
         contactDetailView.update(person);
         contactDetailView.show();
     };
@@ -192,7 +199,7 @@ Ti.API.info("Directory Window Opened");
         directoryProxy.clear();
         blurSearch();
         peopleListTable.setData(defaultTableData);
-        activityIndicator.hide();
+        activityIndicator.hideAnimate();
     };
     
     //Contact Events
@@ -204,13 +211,13 @@ Ti.API.info("Directory Window Opened");
     //Proxy events
 
     onProxySearching = function (e) {
-        activityIndicator.message = app.localDictionary.searching + '...';
-        activityIndicator.show();
+        activityIndicator.loadingMessage(app.localDictionary.searching + '...');
+        activityIndicator.showAnimate();
         Ti.API.info("Searching...");
     };
     
     onProxySearchComplete = function (e) {
-        activityIndicator.hide();
+        activityIndicator.hideAnimate();
         Ti.API.info("Directory Search Complete");
         if (!e.error) {
             displaySearchResults();
@@ -221,9 +228,9 @@ Ti.API.info("Directory Window Opened");
     };
     
     onProxySearchError = function (e) {
-        activityIndicator.message = app.localDictionary.errorPerformingSearch;
+        activityIndicator.loadingMessage(app.localDictionary.errorPerformingSearch);
         t = setTimeout(function() {
-            activityIndicator.hide();
+            activityIndicator.hideAnimate();
             },3000);
         Ti.API.info("Directory Proxy Search Error");
     };
@@ -234,8 +241,8 @@ Ti.API.info("Directory Window Opened");
     Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
     Titanium.App.addEventListener('showWindow', blurSearch);
     
-    if(initialized === false) {
-        self.init();        
+    if(!win.initialized) {
+        self.init();
     }
 
     return self;

@@ -112,7 +112,7 @@ var PortalProxy = function (facade) {
             };
 
             onGetPortletsError = function (e) {
-                alert(app.localDictionary.couldNotConnectToPortal);
+                Ti.App.fireEvent("PortalProxyNetworkError", {message: app.localDictionary.couldNotConnectToPortal});
             };
 
         // Send a request to uPortal's main URL to get a JSON representation of the

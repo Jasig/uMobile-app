@@ -61,12 +61,15 @@
         win.add(navBar);
         navBackButton.addEventListener('click', function() { portletView.goBack(); });
 
+        activityIndicator.hideAnimate();
         win.add(activityIndicator);
         
         win.initialized = true;
     }
     
     function onIncludePortlet (portlet) {
+        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.showAnimate();
         if (portletView) {
             Ti.API.debug('portletView exists, removing it.');
             portletView.stopLoading();
@@ -84,7 +87,7 @@
     
     function onPortletLoad(e) {
         Ti.API.debug("Porlet loaded");
-        activityIndicator.hide();
+        activityIndicator.hideAnimate();
         
         var newUrl = e.url;
         if (portletView.externalModule || newUrl.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
@@ -106,6 +109,8 @@
     onBackBtnUp = function (e) {
         navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
     };
+    
+
     
     if(!win.initialized) {
         init();

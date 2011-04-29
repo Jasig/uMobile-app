@@ -308,7 +308,7 @@ var Styles = function (app) {
     	// MAP STYLES
     	mapView: {
             top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-            height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT),
+            // height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT),
             mapType: Titanium.Map.STANDARD_TYPE,
             regionFit: Titanium.Platform.osname === 'android' ? false : true,
             animate: true,
@@ -365,16 +365,29 @@ var Styles = function (app) {
     	    width: Ti.Platform.displayCaps.platformWidth,
     	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
     	    color: '#fff',
-    	    zIndex: 100
+    	    zIndex: 100,
+    	    backgroundImage: app.models.resourceProxy.getResourcePath('images/bgActivityIndicator.png')
+    	},
+    	activityIndicatorDialog: {
+    	    width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
+    	    height: 75,
+    	    borderRadius: 10,
+    	    borderWidth: 1,
+    	    borderColor: "#fff",
+    	    backgroundImage: app.models.resourceProxy.getResourcePath('images/bgActivityIndicatorDialog.png')
+    	},
+    	activityIndicatorMessage: {
+    	    textAlign: 'center',
+    	    fontSize: 18,
+    	    color: "#fff",
+    	    font: {
+    	        fontWeight: 'bold'
+    	    }
     	}
     };
     //iPhone-specific overrides
     if (Ti.Platform.osname === 'iphone') {
         stylesheet.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.PLAIN;
-        stylesheet.globalActivityIndicator.backgroundImage = app.models.resourceProxy.getResourcePath('images/bgActivityIndicator.png');
-        stylesheet.globalActivityIndicator.width = Ti.Platform.displayCaps.platformWidth;
-        stylesheet.globalActivityIndicator.height = Ti.Platform.displayCaps.platformHeight;
-        stylesheet.globalActivityIndicator.style = Titanium.UI.iPhone.ActivityIndicatorStyle.PLAIN;
         stylesheet.contentButton = {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
             height: 30,

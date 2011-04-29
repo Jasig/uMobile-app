@@ -29,9 +29,13 @@
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, activityIndicator,
         titlebar,
         init, createTitleBar, createCredentialsForm,
-        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur;
+        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError;
 
     init = function () {
+        Ti.API.debug("init() in SettingsWindowController");
+        Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
+        Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
+        
         // get the current user credentials in order
         // to pre-populate the input fields
         credentials = app.models.loginProxy.getCredentials();
@@ -105,47 +109,41 @@
         win.add(saveButton);
 
         saveButton.addEventListener('click', onUpdateCredentials);
-        saveButton.addEventListener('touchstart', onSaveButtonPress);
-        saveButton.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onSaveButtonUp);
+        if(Ti.Platform.osname === 'iphone') {
+            saveButton.addEventListener('touchstart', onSaveButtonPress);
+            saveButton.addEventListener('touchend', onSaveButtonUp);
+        }
         passwordInput.addEventListener('return', onUpdateCredentials);
         usernameInput.addEventListener('return', onUpdateCredentials);
 
     };
 
     onUpdateCredentials = function (e) {
-        activityIndicator.message = app.localDictionary.loggingIn;
+        Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
+        activityIndicator.setMessage(app.localDictionary.loggingIn);
         activityIndicator.show();
-        app.models.loginProxy.saveCredentials({ 
+        app.models.loginProxy.saveCredentials({
             username: usernameInput.value, 
             password: passwordInput.value 
         });
         app.models.loginProxy.establishNetworkSession({
             onsuccess: function () {
-                Ti.API.debug('Updated user credentials');
-                Ti.App.fireEvent('credentialUpdate', {});
-                Ti.App.fireEvent(
-                    'showWindow', 
-                    {
-                        oldWindow: 'settings',
-                        newWindow: 'home',
-                        transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT 
-                    }
-                );
+                
             },
             onauthfailure: function () {
-            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
-                message: app.localDictionary.authenticationFailed, buttonNames: ['OK']
-                }).show();
+            
             }
         });
         activityIndicator.hide();
     };
     
     onSaveButtonPress = function(e) {
+        Ti.API.debug("onSaveButtonPress() in SettingsWindowController");
         saveButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
     };
     
     onSaveButtonUp = function (e) {
+        Ti.API.debug("onSaveButtonUp() in SettingsWindowController");
         saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
     };
     
@@ -157,9 +155,38 @@
             activityIndicator.hide();
         }
     };
+    
+    //LoginProxy events
+    onSessionSuccess = function (e) {
+        if(win.key === Ti.UI.currentWindow.key) {
+            Ti.API.debug("onSessionSuccess() in SettingsWindowController");
+            Ti.App.fireEvent(
+                'showWindow', 
+                {
+                    oldWindow: 'settings',
+                    newWindow: 'home',
+                    transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT
+                }
+            );            
+        }
+        else {
+            Ti.API.debug("SettingsWindow isn't visible apparently...");
+        }
+    };
+    
+    onSessionError = function (e) {
+        if(win.visible) {
+            Ti.API.debug("onSessionError() in SettingsWindowController");
+            if (win.visible) {
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                    message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+                    }).show();            
+            }            
+        }
+    };
+    
 
     if (!win.initialized) {
-        Ti.API.debug("Calling init() in SettingsWindowController");
         init();
     }
     

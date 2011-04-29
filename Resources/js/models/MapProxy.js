@@ -109,7 +109,6 @@ var MapService = function (facade) {
         resultSet.close();
         db.close();
         
-        Ti.API.info("Map search result: " + JSON.stringify(result));
         return result;
     };
     self.loadMapPoints = function () {
@@ -134,7 +133,6 @@ var MapService = function (facade) {
         Ti.App.fireEvent('SessionActivity', {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
         (function(){
             try {
-                Ti.API.debug("Trying to iterate through new points" + e.source.responseText);
                 response = JSON.parse(e.source.responseText);
                 //Set the default map center
                 defaultMapCenter.latitude = parseFloat(response.defaultLocation.latitude);

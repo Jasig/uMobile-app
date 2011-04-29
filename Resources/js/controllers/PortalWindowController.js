@@ -24,11 +24,10 @@
 
 // library includes
 (function(){
-    var win = Titanium.UI.currentWindow,
-        app = win.app,
+    var win = Titanium.UI.currentWindow, app = win.app, loginProxy,
         portalView, portletView, portalGridView, activityIndicator, pressedItem,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
-        onGridItemPressUp, onCredentialUpdate, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
+        onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
         pathToRoot = '../../';
 
     init = function () {
@@ -44,10 +43,13 @@
     	activityIndicator = app.views.GlobalActivityIndicator;
         win.add(activityIndicator);
 
+        loginProxy = app.models.loginProxy;
+
     	createPortalView();
     	
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
+        Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
     	win.addEventListener('focus', onWindowFocus);
 
     	win.initialized = true;
@@ -63,12 +65,16 @@
     	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
 
         win.add(portalView);
-
-        app.models.loginProxy.establishNetworkSession();
+        
+        // if(!loginProxy.isValidNetworkSession) {
+           loginProxy.establishNetworkSession();
+        // }
+        //         else {
+        //             Ti.API.info("No need to login, a session already exists.");
+        //         }
+        
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', app.models.portalProxy.getPortletsForUser);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', showSettings);
-
-        Ti.App.addEventListener('credentialUpdate', onCredentialUpdate);
     };
 
 
@@ -134,7 +140,7 @@
             gridItem.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
         
-        activityIndicator.hide();
+        activityIndicator.hideAnimate();
     };
 
 
@@ -148,10 +154,6 @@
                 transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT 
             }
         );
-    };
-
-    onCredentialUpdate = function (e) {
-        createPortalView();
     };
 
     onGridItemPressDown = function (e) {
@@ -182,13 +184,20 @@
     onGettingPortlets = function (e) {
         // Display a loading indicator until we can finish downloading the user
         // layout and creating the initial view
-        activityIndicator.message = app.localDictionary.loading;
+        activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.resetDimensions();
-        activityIndicator.show();
+        activityIndicator.showAnimate();
     };
     
     onPortletsLoaded = function (e) {
         drawHomeGrid(app.models.portalProxy.getPortlets());
+    };
+    
+    onPortalProxyNetworkError = function (e) {
+        //This event responds to any type of error in retrieving portlets from the sever.
+        Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+            message: e.message, buttonNames: [app.localDictionary.OK]
+            }).show();
     };
     
     if(!win.initialized) {

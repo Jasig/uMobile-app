@@ -43,15 +43,13 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app,
         activityIndicator,
         init, setUpWindows,
-        onShowWindow, onShowPortlet;
+        onShowWindow, onShowPortlet, onLoginProxyError;
     
     init = function () {
         Ti.API.info("Hello. You're on an: " + Ti.Platform.osname);
         Ti.API.info("Your resolution is: " + Ti.Platform.displayCaps.density);
         Ti.API.info("With a DPI of: " + Ti.Platform.displayCaps.dpi);
         setUpFacade();
-
-        // Titanium.UI.setBackgroundColor(app.styles.backgroundColor);
 
         //Let the user know that they need a network connection to use this app.
         if (!Ti.Network.online) {
@@ -60,6 +58,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         
         Ti.App.addEventListener('showWindow', onShowWindow);
         Ti.App.addEventListener('showPortlet', onShowPortlet);
+        Ti.App.addEventListener('LoginProxyError', onLoginProxyError);
         
         setUpWindows();
         
@@ -68,11 +67,11 @@ Titanium.include('js/controllers/MapDetailViewController.js');
     setUpFacade = function () {
         app = new ApplicationFacade();
         
-        
+        app.registerMember('UPM', new Config(app));
         app.registerModel('resourceProxy', new ResourceProxy(app)); //This one doesn't need the app passed in because it only needs to know the OS
         app.registerMember('styles', new Styles(app));
         app.registerMember('GibberishAES', GibberishAES);
-        app.registerMember('UPM', new Config(app));
+        app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]);
         
         app.registerModel('sessionProxy', new SessionProxy(app));
         app.registerModel('loginProxy', new LoginProxy(app));
@@ -86,8 +85,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app));
         app.registerView('SecondaryNavBar', SecondaryNavBar);
         app.registerView('SharedWebView', new SharedWebView(app));
-        
-        app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]);
         
         activityIndicator = app.views.GlobalActivityIndicator;
         
@@ -104,7 +101,6 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             key: 'home',
             exitOnClose: true
         });
-
         windows.home.open();
 
 
@@ -126,7 +122,8 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             title: app.localDictionary.directory,
             app: app,
             key: 'directory',
-            id: 'directoryWindowController'
+            id: 'directoryWindowController',
+            initialized: false
         });
         // windows.directory.open();
 

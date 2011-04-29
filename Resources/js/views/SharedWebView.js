@@ -46,9 +46,9 @@ var SharedWebView = function (facade) {
     
     function onBeforeWebViewLoad (e) {
         Ti.API.debug("Loading portlet");
-        activityIndicator.message = app.localDictionary.loading;
+        activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.resetDimensions();
-        activityIndicator.show();
+        activityIndicator.showAnimate();
         Ti.App.fireEvent("SharedWebViewBeforeLoad");
     }
     

@@ -2,7 +2,7 @@ var LoginProxy = function (facade) {
     var app = facade,
         self = {}, sessionProxy,
         init, updateSessionTimeout, establishSilentNetworkSession, loginMethod,
-        networkSessionTimer, webViewSessionTimer, onSessionExpire;
+        networkSessionTimer, webViewSessionTimer, onSessionExpire, onNetworkError;
 
     
     init = function () {
@@ -135,8 +135,12 @@ var LoginProxy = function (facade) {
     self.isValidNetworkSession = function () {
         var checkSessionUrl, checkSessionClient, checkSessionResponse;
         //Checks to see if the networkSessionTimer says it's active, and also checks that the API indicates a valid session.
-        if(!sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
-            return false;
+        if(sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
+            Ti.API.info('self.isValidNetworkSession() in LoginProxy.' + sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK));
+            return true;
+        }
+        else {
+            Ti.API.info("No session timer created yet, will check session by other means.");
         }
 
         Ti.API.info('Detected potential session timeout');
@@ -158,6 +162,7 @@ var LoginProxy = function (facade) {
             Ti.API.info(checkSessionClient.responseText);
             checkSessionResponse = JSON.parse(checkSessionClient.responseText);
             if (checkSessionResponse.person) {
+                Ti.API.info("There was a person in the session response: " + checkSessionResponse.person);
                 // The session service responded with valid JSON containing an object
                 // representing the current user (either an authenticated or guest user)
                 return true;
@@ -341,6 +346,10 @@ var LoginProxy = function (facade) {
         client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
         
         client.send();
+    };
+    
+    onNetworkError = function (e) {
+        Ti.App.fireEvent("LoginProxyError");
     };
     
     onSessionExpire = function (e) {

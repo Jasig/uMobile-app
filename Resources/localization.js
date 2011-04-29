@@ -10,6 +10,7 @@ localDictionary.en_US = {
     go: "Go",
     back: "Back",
     error: "Error",
+    OK: "OK",
     update: "Update",
     home: "Home",
     doneEditing: "Done Editing",
@@ -46,6 +47,7 @@ localDictionary.en_US = {
     
     //Directory Window
     directory: "Directory",
+    directoryRequiresNetwork: "Directory search requires a network connection. Please connect to a network prior to searching.",
     noContactData: "No contact data is available.",
     directorySearchHintText: "John Doe, Jdoe@myschool.edu, 555 555 5555",
     phoneDirectory: "Phone Directory",

@@ -56,11 +56,12 @@ var SessionProxy = function (facade) {
     };
     
     self.isActive = function (context) {
+        Ti.API.debug("self.isActive() in SessionProxy, with context: " + context);
         if (timers[context]) {
             return timers[context].isActive;
         }
         else {
-            return "Context does not exist.";
+            return false;
         }
     };
     
