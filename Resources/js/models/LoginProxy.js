@@ -124,12 +124,7 @@ var LoginProxy = function (facade) {
     };
     self.isValidWebViewSession = function () {
         // if(!networkSessionTimer.isActive && Ti.Platform.osname === 'android') {
-        if(!sessionProxy.isActive(LoginProxy.sessionTimeContexts.WEBVIEW)) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return sessionProxy.isActive(LoginProxy.sessionTimeContexts.WEBVIEW);
     };
     
     self.isValidNetworkSession = function () {

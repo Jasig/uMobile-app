@@ -49,7 +49,7 @@ var SharedWebView = function (facade) {
         activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.resetDimensions();
         activityIndicator.showAnimate();
-        Ti.App.fireEvent("SharedWebViewBeforeLoad");
+        Ti.App.fireEvent("SharedWebViewBeforeLoad", {url: e.url});
     }
     
     load = function (url) {
@@ -59,55 +59,60 @@ var SharedWebView = function (facade) {
         */
         
         webView.stopLoading();
-        if (url.indexOf('/') === 0 || url.indexOf(app.UPM.BASE_PORTAL_URL) > -1) {
-            //We only need to check the session if it's a link to the portal.
-            Ti.API.debug("load() in SharedWebView. Is valid webview session?" + app.models.loginProxy.isValidWebViewSession());
-            Ti.API.debug("URL to load is: " + url);
-            if (!app.models.loginProxy.isValidWebViewSession()) {
-                var doCas, doLocal;
-                doLocal = function () {
-                    Ti.API.debug("load > doLocal() in SharedWebView");
-                    Ti.API.debug("Resulting URL: " + app.models.loginProxy.getLocalLoginURL(url));
-                    webView.url = app.models.loginProxy.getLocalLoginURL(url);
-                };
+        var stopLoadingTimer = setTimeout(function(){
+            //it seems that stopLoading() might not be finished before setting a new url, 
+            //which causes the webview to hang
+            if (url.indexOf('/') === 0 || url.indexOf(app.UPM.BASE_PORTAL_URL) > -1) {
+                //We only need to check the session if it's a link to the portal.
+                Ti.API.debug("load() in SharedWebView. Is valid webview session?" + app.models.loginProxy.isValidWebViewSession());
+                Ti.API.debug("URL to load is: " + url);
+                if (!app.models.loginProxy.isValidWebViewSession()) {
+                    var doCas, doLocal;
+                    doLocal = function () {
+                        Ti.API.debug("load > doLocal() in SharedWebView");
+                        Ti.API.debug("Resulting URL: " + app.models.loginProxy.getLocalLoginURL(url));
+                        webView.url = app.models.loginProxy.getLocalLoginURL(url);
+                    };
 
-                doCas = function () {
-                    Ti.API.debug("load > doCas() in SharedWebView");
-                    Ti.API.debug("CAS URL is: " + app.models.loginProxy.getCASLoginURL(url));
-                    webView.url = app.models.loginProxy.getCASLoginURL(url);
-                };
+                    doCas = function () {
+                        Ti.API.debug("load > doCas() in SharedWebView");
+                        Ti.API.debug("CAS URL is: " + app.models.loginProxy.getCASLoginURL(url));
+                        webView.url = app.models.loginProxy.getCASLoginURL(url);
+                    };
 
-                switch (app.UPM.LOGIN_METHOD) {
-                    case app.models.loginProxy.loginMethods.CAS:
-                        doCas();
-                        break;
-                    case app.models.loginProxy.loginMethods.LOCAL_LOGIN:
-                        doLocal();
-                        break;
-                    default:
-                        Ti.API.debug("Unrecognized login method in SharedWebView.load()");
+                    switch (app.UPM.LOGIN_METHOD) {
+                        case app.models.loginProxy.loginMethods.CAS:
+                            doCas();
+                            break;
+                        case app.models.loginProxy.loginMethods.LOCAL_LOGIN:
+                            doLocal();
+                            break;
+                        default:
+                            Ti.API.debug("Unrecognized login method in SharedWebView.load()");
+                    }
+                }
+                else {
+                    if (url.indexOf('/') === 0) {
+                        Ti.API.info("Index of / in URL is 0");
+                        var newUrl = app.UPM.BASE_PORTAL_URL + url;
+                        Ti.API.info(newUrl);
+                        webView.url = newUrl;
+                        Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
+                    }
+                    else {
+                        Ti.API.info("Index of / in URL is NOT 0");
+                        webView.url = url;
+                        Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
+                    }
                 }
             }
             else {
-                if (url.indexOf('/') === 0) {
-                    Ti.API.info("Index of / in URL is 0");
-                    var newUrl = app.UPM.BASE_PORTAL_URL + url;
-                    Ti.API.info(newUrl);
-                    webView.url = newUrl;
-                    Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
-                }
-                else {
-                    Ti.API.info("Index of / in URL is NOT 0");
-                    webView.url = url;
-                    Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
-                }
+                Ti.API.debug("This is an external link. No session necessary");
+                webView.url = url;
             }
-        }
-        else {
-            Ti.API.debug("This is an external link. No session necessary");
-            webView.url = url;
-        }
-
+            
+            clearTimeout(stopLoadingTimer);
+        }, 100);
     };
     
     

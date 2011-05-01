@@ -109,9 +109,14 @@ var PortalProxy = function (facade) {
                     }
                 }
                 
-                for (module in nativeModules) {
+                for (var module in nativeModules) {
                     Ti.API.info("Remaining module: " + nativeModules[module]);
-                    portlets.push(nativeModules[module]);
+                    if(nativeModules[module].title) {
+                        portlets.push(nativeModules[module]);
+                    }
+                    else {
+                        Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
+                    }
                 }
                 
                 portlets.sort(sortPortlets);

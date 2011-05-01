@@ -100,7 +100,8 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             url: 'js/controllers/PortalWindowController.js',
             app: app,
             key: 'home',
-            exitOnClose: false
+            exitOnClose: false,
+            modal: false
         });
         
         //
@@ -110,7 +111,8 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             url: 'js/controllers/PortletWindowController.js',
             app: app,
             key: 'portlet',
-            exitOnClose: false
+            exitOnClose: false,
+            modal: true
         });
 
         //
@@ -123,10 +125,9 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             app: app,
             key: 'directory',
             id: 'directoryWindowController',
-            initialized: false,
-            exitOnClose: false
+            exitOnClose: false,
+            modal: true
         });
-        // windows.directory.open();
 
         //
         // MAP VIEW
@@ -136,9 +137,10 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             title: app.localDictionary.map,
             app: app,
             key: 'map',
-            exitOnClose: false
+            exitOnClose: false,
+            modal: true
         });
-        // windows.map.open();
+        
         //
         //  SETTINGS VIEW
         //
@@ -146,12 +148,10 @@ Titanium.include('js/controllers/MapDetailViewController.js');
             url: 'js/controllers/SettingsWindowController.js',
             app: app,
             key: 'settings',
-            exitOnClose: false
+            exitOnClose: false, 
+            modal: true
         });
     };
-    
-    // Event handlers
-    
     
     init();
     

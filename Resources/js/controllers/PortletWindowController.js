@@ -61,15 +61,12 @@
         win.add(navBar);
         navBackButton.addEventListener('click', function() { portletView.goBack(); });
 
-        activityIndicator.hideAnimate();
         win.add(activityIndicator);
         
         win.initialized = true;
     }
     
     function onIncludePortlet (portlet) {
-        activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.showAnimate();
         if (portletView) {
             Ti.API.debug('portletView exists, removing it.');
             portletView.stopLoading();
@@ -83,6 +80,13 @@
             portletView.externalModule = true;
         }
         titleBar.updateTitle(portlet.title);
+        
+        //Remove from the window and add again so that it's above its sibling. 
+        //z-index doesn't appear to do this for us.
+        win.remove(activityIndicator);
+        win.add(activityIndicator);
+        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.showAnimate();
     }
     
     function onPortletLoad(e) {

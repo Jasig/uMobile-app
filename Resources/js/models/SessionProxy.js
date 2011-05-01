@@ -37,6 +37,7 @@ var SessionProxy = function (facade) {
             timers[LoginProxy.sessionTimeContexts.NETWORK].counter = setTimeout(function() {
                 onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
+            timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
         }
         else if (timers[context]) {
             if(timers[context].counter) {
@@ -51,13 +52,25 @@ var SessionProxy = function (facade) {
             timers[context].isActive = true;
         }
         else {
-            Ti.API.debug("Not timers matched the context: " + context);
+            Ti.API.debug("No timers matched the context: " + context);
         }
     };
     
     self.isActive = function (context) {
         Ti.API.debug("self.isActive() in SessionProxy, with context: " + context);
-        if (timers[context]) {
+        if (Ti.Platform.osname === 'iphone') {
+            //If it's iphone, we only need to check that one context has an active session.
+            if(timers[app.models.loginProxy.sessionTimeContexts.NETWORK]) {
+                Ti.API.debug("in isActive() in SessionProxy, there IS a timer for the request, and is it active? " + timers[app.models.loginProxy.sessionTimeContexts.NETWORK].isActive);
+                return timers[app.models.loginProxy.sessionTimeContexts.NETWORK].isActive;
+            }
+            else {
+                Ti.API.debug("in isActive() in SessionProxy, there's no timer for the request.");
+                return false;
+            }
+        }
+        else if (timers[context]) {
+            //Not iPhone, so we need to check the specific context.
             return timers[context].isActive;
         }
         else {

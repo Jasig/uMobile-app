@@ -78,14 +78,15 @@
         usernameInputOpts.top = 50;
         usernameInputOpts.left = 100;
         usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
-        usernameInputOpts.value = credentials.username;
+        usernameInputOpts.value = credentials.username || '';
+        usernameInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
         usernameInput = Titanium.UI.createTextField(usernameInputOpts);
         win.add(usernameInput);
 
         // create the password label and input field
         passwordLabelOpts.top = 100;
         passwordLabelOpts.left = 10;
-        passwordLabelOpts.text = win.app.localDictionary.password;
+        passwordLabelOpts.text = win.app.localDictionary.password || '';
         passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
         win.add(passwordLabel);
 
@@ -94,6 +95,7 @@
         passwordInputOpts.top = 100;
         passwordInputOpts.left = 100;
         usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
+        usernameInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
         passwordInput = Titanium.UI.createTextField(passwordInputOpts);
         win.add(passwordInput);
 

@@ -25,7 +25,7 @@
 // library includes
 (function(){
     var win = Titanium.UI.currentWindow, app = win.app, loginProxy,
-        portalView, portletView, portalGridView, activityIndicator, pressedItem,
+        contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
         onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
         pathToRoot = '../../';
@@ -39,6 +39,11 @@
     	    homeButton: false
     	});
     	win.add(titleBar);
+    	
+    	win.setBackgroundColor("#f00");
+    	
+        contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
+        win.add(contentLayer);
 
     	activityIndicator = app.views.GlobalActivityIndicator;
         win.add(activityIndicator);
@@ -51,8 +56,6 @@
         Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', app.models.portalProxy.getPortletsForUser);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', showSettings);
-        
-    	win.addEventListener('focus', onWindowFocus);
 
         createPortalView();
 
@@ -62,13 +65,13 @@
     createPortalView = function () {
         if (portalView) {
             Ti.API.debug("Removing the existing portal home view");
-            win.remove(portalView);
+            contentLayer.remove(portalView);
         }
 
         Ti.API.debug("Creating a new portal home view");
     	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
 
-        win.add(portalView);
+        contentLayer.add(portalView);
     };
 
 
@@ -140,8 +143,6 @@
         activityIndicator.hideAnimate();
     };
 
-
-
     showSettings = function() {
         Ti.App.fireEvent(
             'showWindow', 
@@ -171,10 +172,6 @@
         else {
             Ti.API.debug("onGridItemPressUp condition wasn't met");
         }
-    };
-    
-    onWindowFocus = function (e) {
-        Ti.API.debug("PortalWindowController has gained focus.");
     };
     
     //PortalProxy events

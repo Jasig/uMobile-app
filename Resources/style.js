@@ -192,12 +192,16 @@ var Styles = function (app) {
             }
         },
         //PORTAL VIEW STYLES
-        homeGrid: {
+        portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT
+        },
+        homeGrid: {
+            top: 0,
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
-            backgroundImage: '../../images/home-background.png',
+            // backgroundImage: '../../images/home-background.png',
             zIndex: 1
         },
         gridIcon: {
@@ -365,7 +369,7 @@ var Styles = function (app) {
     	    width: Ti.Platform.displayCaps.platformWidth,
     	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
     	    color: '#fff',
-    	    zIndex: 100,
+    	    zIndex: 1000,
     	    backgroundImage: app.models.resourceProxy.getResourcePath('images/bgActivityIndicator.png')
     	},
     	activityIndicatorDialog: {
