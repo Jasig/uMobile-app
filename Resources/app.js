@@ -39,6 +39,7 @@ Titanium.include('js/views/SharedWebView.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
 Titanium.include('js/controllers/MapDetailViewController.js');
 Titanium.include('js/controllers/PortletWindowController.js');
+Titanium.include('js/controllers/SettingsWindowController.js');
 
 (function (){
     var windows = {},
@@ -56,7 +57,8 @@ Titanium.include('js/controllers/PortletWindowController.js');
         windowManager = app.models.windowManager;
         //Let the user know that they need a network connection to use this app.
         if (!Ti.Network.online) {
-            alert(app.localDictionary.networkConnectionRequired);
+            // alert(app.localDictionary.networkConnectionRequired);
+            Ti.API.debug("Network is offline");
         }
         
         Ti.App.addEventListener('LoginProxyError', onLoginProxyError);
@@ -88,7 +90,10 @@ Titanium.include('js/controllers/PortletWindowController.js');
         app.registerView('SecondaryNavBar', SecondaryNavBar);
         app.registerView('SharedWebView', new SharedWebView(app));
         
+        //Window controllers
         app.registerController('portletWindowController', new PortletWindowController(app));
+        app.registerController('settingsWindowController', new SettingsWindowController(app));
+        //Second class controllers
         app.registerController('DirectoryDetailController', DirectoryDetailController);
         app.registerController('MapDetailViewController', MapDetailViewController);
         
@@ -143,13 +148,8 @@ Titanium.include('js/controllers/PortletWindowController.js');
         //
         //  SETTINGS VIEW
         //
-        windowManager.addWindow({
-            url: 'js/controllers/SettingsWindowController.js',
-            app: app,
-            key: 'settings',
-            exitOnClose: false, 
-            modal: true
-        });
+        windowManager.addWindow(app.controllers.settingsWindowController);
+        Ti.API.info("Settings window controller: " + JSON.stringify(app.controllers.settingsWindowController));
     };
     
     init();

@@ -105,10 +105,12 @@
             gridItem = Titanium.UI.createView(gridItemDefaults);
 
             //Add a label to the grid item
-            var gridItemLabelDefaults = app.styles.gridItemLabel;
-            gridItemLabelDefaults.text =  _portlet.title.toLowerCase();
-            gridItemLabel = Titanium.UI.createLabel(gridItemLabelDefaults);
-            gridItem.add(gridItemLabel);
+            if (_portlet.title) {
+                var gridItemLabelDefaults = app.styles.gridItemLabel;
+                gridItemLabelDefaults.text =  _portlet.title.toLowerCase();
+                gridItemLabel = Titanium.UI.createLabel(gridItemLabelDefaults);
+                gridItem.add(gridItemLabel);                
+            }
 
             //Add an icon to the grid item
             gridItemIconDefaults = app.styles.gridIcon;

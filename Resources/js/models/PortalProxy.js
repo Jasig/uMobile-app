@@ -24,7 +24,10 @@ var PortalProxy = function (facade) {
     };
     
     sortPortlets = function(a, b) {
-
+        if (!a.title || !b.title) {
+            Ti.API.error("Missing a title for one of these:" + JSON.stringify(a) + " & " + JSON.stringify(b));
+            return -1;
+        }
         // get the values for the configured property from 
         // each object and transform them to lower case
         var aprop = a.title.toLowerCase();
@@ -102,14 +105,14 @@ var PortalProxy = function (facade) {
                 for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
                     
                     if(nativeModules[portlets[i].fname]) {
-                        Ti.API.info("We have a match for " + portlets[i].fname);
+                        Ti.API.info("We have a match for " + portlets[i].fname + ", and it is: " + JSON.stringify(nativeModules[portlets[i].fname]));
                         portlets[i] = nativeModules[portlets[i].fname];
                         delete nativeModules[portlets[i].fname];
                         Ti.API.info("New portlet: " + JSON.stringify(portlets[i]));
                     }
                 }
                 
-                for (var module in nativeModules) {
+                for (module in nativeModules) {
                     Ti.API.info("Remaining module: " + nativeModules[module]);
                     if(nativeModules[module].title) {
                         portlets.push(nativeModules[module]);

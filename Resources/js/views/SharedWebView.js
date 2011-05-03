@@ -6,7 +6,7 @@ var SharedWebView = function (facade) {
         Ti.API.debug("init() in SharedWebView");
         webView = Ti.UI.createWebView(app.styles.portletView);
         
-        webView.addEventListener('load', self.onWebViewLoad);
+        // webView.addEventListener('load', self.onWebViewLoad);
         
         Ti.API.debug("0 Is webview loading? " + webView.loading);
         

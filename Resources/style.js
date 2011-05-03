@@ -129,7 +129,8 @@ var Styles = function (app) {
         	textAlign: "center",
             color: '#fff',
             font: {
-                fontWeight: "bold"
+                fontWeight: "bold",
+                fontSize: 18
             }
         },
         titleBarHomeContainer: {

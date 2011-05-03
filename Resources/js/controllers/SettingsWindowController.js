@@ -22,16 +22,15 @@
  * user settings tab.
  */
 
-(function(){
-    var win = Titanium.UI.currentWindow,
-        app = win.app,
-        credentials, 
-        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, activityIndicator,
-        titlebar,
+var SettingsWindowController = function(facade){
+    var win, app = facade, self = {},
+        credentials, initialized,
+        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
         onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError;
 
     init = function () {
+        self.key = 'settings';
         Ti.API.debug("init() in SettingsWindowController");
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
@@ -40,9 +39,6 @@
         // to pre-populate the input fields
         credentials = app.models.loginProxy.getCredentials();
 
-        win.backgroundColor = win.app.styles.backgroundColor;
-        
-        Ti.App.addEventListener('showWindow', onWindowBlur);
         titleBar = new app.views.GenericTitleBar({
             app: app,
             windowKey: 'settings',
@@ -50,16 +46,41 @@
             settingsButton: false,
             homeButton: true
         });
-        win.add(titleBar);
-        
-        createCredentialsForm();
 
         activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         activityIndicator.resetDimensions();
-        win.add(activityIndicator);
-        activityIndicator.hide();
         
-        win.initialized = true;
+        initialized = true;
+    };
+    
+    self.open = function () {
+        Ti.API.debug("self.open() in SettingsWindowController");
+        if (!win) {
+            Ti.API.debug("Creating window");
+            win = Titanium.UI.createWindow({
+                title: 'settings',
+                key: 'settings',
+                exitOnClose: false, 
+                navBarHidden: true,
+                modal: true
+            });
+            win.open();
+            win.backgroundColor = app.styles.backgroundColor;
+            
+            win.add(titleBar);
+            createCredentialsForm();
+            win.add(activityIndicator);
+            activityIndicator.hide();
+            
+        }
+        else {
+            win.open();
+        }
+    };
+    
+    self.close = function () {
+        win.close();
+        onWindowBlur();
     };
 
     createCredentialsForm = function () {
@@ -70,7 +91,7 @@
             saveButtonOpts;
 
         // create the username label and input field
-        usernameLabelOpts.text = win.app.localDictionary.username;
+        usernameLabelOpts.text = app.localDictionary.username;
         usernameLabelOpts.top = 50;
         usernameLabelOpts.left = 10;
         usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
@@ -87,7 +108,7 @@
         // create the password label and input field
         passwordLabelOpts.top = 100;
         passwordLabelOpts.left = 10;
-        passwordLabelOpts.text = win.app.localDictionary.password || '';
+        passwordLabelOpts.text = app.localDictionary.password || '';
         passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
         win.add(passwordLabel);
 
@@ -106,7 +127,7 @@
         saveButtonOpts = app.styles.contentButton;
         saveButtonOpts.top = 150;
         saveButtonOpts.left = 10;
-        saveButtonOpts.title = win.app.localDictionary.update;
+        saveButtonOpts.title = app.localDictionary.update;
         saveButton = Titanium.UI.createButton(saveButtonOpts);
 
         win.add(saveButton);
@@ -129,14 +150,7 @@
             username: usernameInput.value, 
             password: passwordInput.value 
         });
-        app.models.loginProxy.establishNetworkSession({
-            onsuccess: function () {
-                
-            },
-            onauthfailure: function () {
-            
-            }
-        });
+        app.models.loginProxy.establishNetworkSession();
         activityIndicator.hide();
     };
     
@@ -152,21 +166,23 @@
     
     onWindowBlur = function (e) {
         Ti.API.debug("onWindowBlur in SettingsWindowController");
-        passwordInput.blur();
-        usernameInput.blur();
-        if(activityIndicator.visible) {
-            activityIndicator.hide();
+        if (win) {
+            passwordInput.blur();
+            usernameInput.blur();
+            if(activityIndicator.visible) {
+                activityIndicator.hide();
+            }            
         }
     };
     
     //LoginProxy events
     onSessionSuccess = function (e) {
-        if(win.key === Ti.UI.currentWindow.key) {
+        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow);
+        if(app.models.windowManager.getCurrentWindow() === self.key) {
             Ti.API.debug("onSessionSuccess() in SettingsWindowController");
             Ti.App.fireEvent(
                 'showWindow', 
                 {
-                    oldWindow: 'settings',
                     newWindow: 'home',
                     transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT
                 }
@@ -178,19 +194,18 @@
     };
     
     onSessionError = function (e) {
-        if(win.visible) {
+        if(win && win.visible) {
             Ti.API.debug("onSessionError() in SettingsWindowController");
-            if (win.visible) {
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
-                    message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
-                    }).show();            
-            }            
+            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+                }).show();
         }
     };
     
 
-    if (!win.initialized) {
+    if (!initialized) {
         init();
     }
     
-})();
+    return self;
+};

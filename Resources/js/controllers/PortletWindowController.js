@@ -35,7 +35,6 @@ var PortletWindowController = function (facade) {
         
         // Ti.App.addEventListener('includePortlet', onIncludePortlet);
 
-                
         titleBar = new app.views.GenericTitleBar({
             windowKey: 'portlet',
             app: app,
@@ -75,6 +74,7 @@ var PortletWindowController = function (facade) {
         Ti.App.addEventListener('SharedWebViewLoad', onPortletLoad);
         if (!win) {
             win = Titanium.UI.createWindow({
+                key: 'portlet',
                 backgroundColor: app.styles.backgroundColor,
                 exitOnClose: false,
                 modal: true,
@@ -86,16 +86,35 @@ var PortletWindowController = function (facade) {
                 win.addEventListener(winListeners[i].event, winListeners[i].callback);
             }
             
-            webView = sharedWebView.getWebView();
+            if (Ti.Platform.osname === 'iphone') {
+                webView = Titanium.UI.createWebView();                
+            }
+            else {
+                webView = sharedWebView.getWebView();
+            }
+
             
             win.add(titleBar);
             win.add(webView);
             win.add(navBar);
             win.add(activityIndicator);
-            onIncludePortlet(portlet);
+
+            
+            webView.addEventListener('load', sharedWebView.onWebViewLoad);
+            onIncludePortlet(portlet);            
+            Ti.API.info("is webView loading in self.open()? " + webView.loading);
+            Ti.API.info("is webView defined? " + webView);
         }
         else {
             win.open();
+            
+            if (Ti.Platform.osname === 'iphone') {
+                win.remove(webView);
+                webView = Titanium.UI.createWebView();
+                win.add(webView);
+                webView.addEventListener('load', sharedWebView.onWebViewLoad);                
+            }
+            
             onIncludePortlet(portlet);
         }
     };
@@ -110,16 +129,21 @@ var PortletWindowController = function (facade) {
     onIncludePortlet = function (portlet) {
         Ti.API.debug("onIncludePortlet() in PortletWindowController");
         
-        if (portlet.url.indexOf('/') == 0 || portlet.url.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
+        if (portlet.url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
-            sharedWebView.getLocalUrl(portlet.url);
+            // sharedWebView.getLocalUrl(portlet.url);
+            webView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
             sharedWebView.externalModule = false;
         } else {
             Ti.API.debug("Portlet URL is external");
-            sharedWebView.getExternalUrl(portlet.url);
+            // sharedWebView.getExternalUrl(portlet.url);
+            webView.url = portlet.url;
             sharedWebView.externalModule = true;
         }
         titleBar.updateTitle(portlet.title);
+        
+        Ti.API.info("is webView loading in onIncludePortlet()? " + webView.loading);
+        Ti.API.info("is webView defined? " + webView);
     };
     
     onPortletLoad = function (e) {

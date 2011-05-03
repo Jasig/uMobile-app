@@ -8,19 +8,19 @@ var WindowManager = function (facade) {
     };
     
     self.addWindow = function (windowParams) {
-        if (windowParams.key !== 'portlet') {
+        if (windowParams.key === 'portlet' || windowParams.key === 'settings') {
+            applicationWindows[windowParams.key] = windowParams;
+        }
+        else {
             applicationWindows[windowParams.key] = Titanium.UI.createWindow(windowParams);
             applicationWindows[windowParams.key].navBarHidden = true;
             applicationWindows[windowParams.key].addEventListener('android:back', onAndroidBack);
         }
-        else {
-            applicationWindows[windowParams.key] = windowParams;
-        }
     };
     
     self.openWindow = function (windowKey, portlet) {
+        Ti.API.debug("openWindow() in WindowManager");
         if (applicationWindows[windowKey]) {
-            
             if (activityStack.length == 0) {
                 applicationWindows[windowKey].open();
             }
@@ -34,10 +34,12 @@ var WindowManager = function (facade) {
                     //Home is always present, never needs opened or closed.
                     Ti.API.info("new window isn't home");
                     if (portlet) {
+                        Ti.API.debug("new window is a portlet");
                         applicationWindows[windowKey].open(portlet);
                     }
                     else {
-                        applicationWindows[windowKey].open();                        
+                        Ti.API.debug("new window is NOT a portlet" + applicationWindows[windowKey].key + '' + applicationWindows[windowKey]);
+                        applicationWindows[windowKey].open();
                     }
                 }
             }
@@ -48,7 +50,7 @@ var WindowManager = function (facade) {
             activityStack.push(windowKey);
         }
         else {
-            Ti.API.API.error('No window exists for that key');
+            Ti.API.error('No window exists for that key: ' + windowKey);
         }
     };
     
@@ -57,6 +59,10 @@ var WindowManager = function (facade) {
         if (activityStack.length >= 2) {
             self.openWindow(activityStack[activityStack.length - 2]);
         }
+    };
+    
+    self.getCurrentWindow = function () {
+        return activityStack[activityStack.length - 1];
     };
     
     hidePreviousWindow = function () {
