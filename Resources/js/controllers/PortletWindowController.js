@@ -17,19 +17,25 @@
  * under the License.
  */
 
-(function () {
-    var win = Titanium.UI.currentWindow,
-        app = win.app,
-        activityIndicator = app.views.GlobalActivityIndicator,
-        portletView, titleBar, navBar,
-        initialized,
+var PortletWindowController = function (facade) {
+    var win,
+        self = {},
+        app = facade,
+        activityIndicator, titleBar, navBar, sharedWebView, webView,
+        initialized, winListeners = [],
         pathToRoot = '../../',
-        onBackBtnPress, onBackButtonUp;
+        init, drawWindow, getQualifiedUrl,
+        onBackBtnPress, onBackButtonUp, onIncludePortlet, onPortletLoad, onWindowOpen;
 
-    function init() {
-        var portletViewOpts, navBarOptions;
+    init = function () {
+        var navBarOptions;
         
-        win.setBackgroundColor(app.styles.backgroundColor);
+        Ti.API.debug("init() in PortletWindowController");
+        self.key = 'portlet';
+        
+        // Ti.App.addEventListener('includePortlet', onIncludePortlet);
+
+                
         titleBar = new app.views.GenericTitleBar({
             windowKey: 'portlet',
             app: app,
@@ -37,87 +43,109 @@
             settingsButton: false,
             homeButton: true
         });
-        win.add(titleBar);   
         
-        portletView = app.views.SharedWebView;
-        win.add(portletView);
-        
-        Ti.App.addEventListener('includePortlet', onIncludePortlet);
-        Ti.App.addEventListener('SharedWebViewLoad', onPortletLoad);
-
         // initialize navigation back button for URLs outside of the portal
         navBarOptions = app.styles.secondaryNavBarButton;
         navBarOptions.title = app.localDictionary.back;
+        
         navBackButton = Titanium.UI.createButton(navBarOptions);
         navBackButton.addEventListener('touchstart', onBackBtnPress);
         navBackButton.addEventListener('touchend', onBackBtnUp);
-
+        navBackButton.addEventListener('click', function() { webView.goBack(); });
         // initialize navigation bar for URLs outside the portal
         navBar = new app.views.SecondaryNavBar(app,{
             backButton: navBackButton
         });
         navBar.top = 40;
         navBar.visible = false;
-        win.add(navBar);
-        navBackButton.addEventListener('click', function() { portletView.goBack(); });
-
-        win.add(activityIndicator);
         
-        win.initialized = true;
-    }
+        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+        activityIndicator.hide();
+        
+        sharedWebView = app.views.SharedWebView;
+        
+        self.initialized = true;
+    };
     
-    function onIncludePortlet (portlet) {
-        if (portletView) {
-            Ti.API.debug('portletView exists, removing it.');
-            portletView.stopLoading();
-            portletView.hide();
+    self.close = function () {
+        win.close();
+    };
+    
+    self.open = function (portlet) {
+        Ti.App.addEventListener('SharedWebViewLoad', onPortletLoad);
+        if (!win) {
+            win = Titanium.UI.createWindow({
+                backgroundColor: app.styles.backgroundColor,
+                exitOnClose: false,
+                modal: true,
+                navBarHidden: true
+            });
+            win.open();
+            
+            for (var i = 0, iLength = winListeners.length; i<iLength; i++) {
+                win.addEventListener(winListeners[i].event, winListeners[i].callback);
+            }
+            
+            webView = sharedWebView.getWebView();
+            
+            win.add(titleBar);
+            win.add(webView);
+            win.add(navBar);
+            win.add(activityIndicator);
+            onIncludePortlet(portlet);
         }
-        if (portlet.url.indexOf('/') == 0) {
-            portletView.load(portlet.url);
-            portletView.externalModule = false;
+        else {
+            win.open();
+            onIncludePortlet(portlet);
+        }
+    };
+    
+    self.addEventListener = function (event, callback) {
+        if (win) {
+            win.addEventListener(event, callback);
+        }
+        winListeners.push({event: event, callback: callback});
+    };
+    
+    onIncludePortlet = function (portlet) {
+        Ti.API.debug("onIncludePortlet() in PortletWindowController");
+        
+        if (portlet.url.indexOf('/') == 0 || portlet.url.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
+            Ti.API.debug("Portlet URL is local");
+            sharedWebView.getLocalUrl(portlet.url);
+            sharedWebView.externalModule = false;
         } else {
-            portletView.load(portlet.url);
-            portletView.externalModule = true;
+            Ti.API.debug("Portlet URL is external");
+            sharedWebView.getExternalUrl(portlet.url);
+            sharedWebView.externalModule = true;
         }
         titleBar.updateTitle(portlet.title);
-        
-        //Remove from the window and add again so that it's above its sibling. 
-        //z-index doesn't appear to do this for us.
-        win.remove(activityIndicator);
-        win.add(activityIndicator);
-        activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.showAnimate();
-    }
+    };
     
-    function onPortletLoad(e) {
-        Ti.API.debug("Porlet loaded");
-        activityIndicator.hideAnimate();
-        
-        var newUrl = e.url;
-        if (portletView.externalModule || newUrl.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
+    onPortletLoad = function (e) {
+         if (e.url.indexOf('/') == 0 || e.url.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
+            sharedWebView.externalModule = false;
             navBar.visible = false;
-            portletView.top = app.styles.titleBar.height;
+            // sharedWebView.setTop(app.styles.titleBar.height);
             app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
         } else {
+            sharedWebView.externalModule = true;
             navBar.visible = true;
-            portletView.top = app.styles.titleBar.height + navBar.height;
+            // sharedWebView.setTop(app.styles.titleBar.height + navBar.height);
         }
-
-        portletView.show();
-    }
+    };
     
     onBackBtnPress = function (e) {
+        Ti.API.debug("onBackBtnPress() in PortletWindowController");
         navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
     };
     
     onBackBtnUp = function (e) {
+        Ti.API.debug("onBackBtnUp() in PortletWindowController");
         navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
     };
-    
 
+    init();
     
-    if(!win.initialized) {
-        init();
-    }
-    
-})();
+    return self;
+};

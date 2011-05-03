@@ -54,9 +54,10 @@
         
         createCredentialsForm();
 
-        activityIndicator = app.views.GlobalActivityIndicator;
+        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         activityIndicator.resetDimensions();
         win.add(activityIndicator);
+        activityIndicator.hide();
         
         win.initialized = true;
     };
@@ -123,7 +124,7 @@
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
         activityIndicator.loadingMessage(app.localDictionary.loggingIn);
-        activityIndicator.showAnimate();
+        activityIndicator.show();
         app.models.loginProxy.saveCredentials({
             username: usernameInput.value, 
             password: passwordInput.value 
@@ -136,7 +137,7 @@
             
             }
         });
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
     };
     
     onSaveButtonPress = function(e) {
@@ -154,7 +155,7 @@
         passwordInput.blur();
         usernameInput.blur();
         if(activityIndicator.visible) {
-            activityIndicator.hideAnimate();
+            activityIndicator.hide();
         }
     };
     

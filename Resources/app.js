@@ -38,6 +38,7 @@ Titanium.include('js/views/SecondaryNavBar.js');
 Titanium.include('js/views/SharedWebView.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
 Titanium.include('js/controllers/MapDetailViewController.js');
+Titanium.include('js/controllers/PortletWindowController.js');
 
 (function (){
     var windows = {},
@@ -87,7 +88,11 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         app.registerView('SecondaryNavBar', SecondaryNavBar);
         app.registerView('SharedWebView', new SharedWebView(app));
         
-        activityIndicator = app.views.GlobalActivityIndicator;
+        app.registerController('portletWindowController', new PortletWindowController(app));
+        app.registerController('DirectoryDetailController', DirectoryDetailController);
+        app.registerController('MapDetailViewController', MapDetailViewController);
+        
+        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         
         Ti.App.fireEvent("FacadeInitialized");
     };
@@ -107,13 +112,7 @@ Titanium.include('js/controllers/MapDetailViewController.js');
         //
         // PORTLET VIEW
         //
-        windowManager.addWindow({
-            url: 'js/controllers/PortletWindowController.js',
-            app: app,
-            key: 'portlet',
-            exitOnClose: false,
-            modal: true
-        });
+        windowManager.addWindow(app.controllers.portletWindowController);
 
         //
         //Directory VIEW

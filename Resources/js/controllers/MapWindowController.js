@@ -43,12 +43,12 @@
         Ti.App.addEventListener('showWindow', onWindowBlur);
         
         mapProxy = app.models.mapProxy;
-        activityIndicator = app.views.GlobalActivityIndicator;
+        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         
         win.add(activityIndicator);
         
         activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.showAnimate();
+        activityIndicator.show();
 
         titleBar = app.views.GenericTitleBar({
             homeButton: true,
@@ -126,7 +126,7 @@
         // locationDetailViewOptions.url = app.app.models.resourceProxy.getResourcePath("/js/controllers/MapDetailViewController.js");
         Ti.API.debug('self.loadDetail');
         activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.showAnimate();
+        activityIndicator.show();
         searchBlur();
         if (!locationDetailView) {
             Ti.API.debug("locationDetailView not defined");
@@ -141,7 +141,7 @@
             locationDetailView.updateAndShow(e);
         }
         Ti.API.debug("Hiding Activity Indicator in loadDetail()");
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
     };
     
     plotPoints = function (points) {
@@ -162,7 +162,7 @@
             mapView.addAnnotation(_annotation);
         }
         Ti.API.debug("Hiding Activity Indicator in plotPoints()");
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
         mapView.setLocation(mapProxy.getMapCenter());
     };
 
@@ -202,23 +202,23 @@
     onProxySearching = function (e) {
         Ti.API.debug('onProxySearching' + e.query);
         activityIndicator.loadingMessage(app.localDictionary.searching);
-        activityIndicator.showAnimate();
+        activityIndicator.show();
     };
     
     onProxyLoading = function (e) {
         activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.showAnimate();
+        activityIndicator.show();
     };
     
     onProxyLoaded = function (e) {
         Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(mapProxy.getMapCenter()));
         mapView.setLocation(mapProxy.getMapCenter(true));
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
     };
     
     onProxySearchComplete = function (e) {
         Ti.API.debug('onProxySearchComplete');
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
         if(e.points.length < 1) {
             alert(app.localDictionary.mapNoSearchResults);
         }
@@ -229,13 +229,13 @@
     
     onProxyEmptySearch = function (e) {
         Ti.API.debug("Hiding activity indicator in onProxyEmptySearch()");
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
         Ti.API.debug('onProxyEmptySearch' + e);
     };
     
     onProxyLoadError = function (e) {
         Ti.API.debug("Hiding activity indicator in onProxyLoadError()");
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
         Ti.API.debug(JSON.stringify(e));
         switch (e.errorCode) {
             case mapProxy.requestErrors.NETWORK_UNAVAILABLE:

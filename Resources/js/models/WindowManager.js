@@ -8,41 +8,44 @@ var WindowManager = function (facade) {
     };
     
     self.addWindow = function (windowParams) {
-        applicationWindows[windowParams.key] = Titanium.UI.createWindow(windowParams);
-        applicationWindows[windowParams.key].navBarHidden = true;
-        applicationWindows[windowParams.key].addEventListener('android:back', onAndroidBack);
-        
+        if (windowParams.key !== 'portlet') {
+            applicationWindows[windowParams.key] = Titanium.UI.createWindow(windowParams);
+            applicationWindows[windowParams.key].navBarHidden = true;
+            applicationWindows[windowParams.key].addEventListener('android:back', onAndroidBack);
+        }
+        else {
+            applicationWindows[windowParams.key] = windowParams;
+        }
     };
     
-    self.openWindow = function (windowKey) {
+    self.openWindow = function (windowKey, portlet) {
         if (applicationWindows[windowKey]) {
-            app.views.GlobalActivityIndicator.hide();
-            if(activityStack.length == 0 || applicationWindows[activityStack[(activityStack.length - 1)]] != applicationWindows[windowKey]) {
+            
+            if (activityStack.length == 0) {
+                applicationWindows[windowKey].open();
+            }
+            else if (applicationWindows[activityStack[(activityStack.length - 1)]] != applicationWindows[windowKey]) {
                 //We don't want the webview to keep loading as the user navigates to a new window.
                 //If the user is navigating to a webView window, it will load the webview when it's ready.
                 app.views.SharedWebView.stopLoading();
-                
                 hidePreviousWindow();
                 
-                if (applicationWindows[windowKey].initialized) {
-                    Ti.API.debug("new window is initialized");
-                    if (windowKey !== 'home') {
-                        Ti.API.info("new window isn't home");
-                        //Home is always present.
-                        applicationWindows[windowKey].open();
+                if (windowKey !== 'home') {
+                    //Home is always present, never needs opened or closed.
+                    Ti.API.info("new window isn't home");
+                    if (portlet) {
+                        applicationWindows[windowKey].open(portlet);
                     }
-                }     
-                else {
-                    Ti.API.debug("new window is NOT initialized");
-                    applicationWindows[windowKey].open();
+                    else {
+                        applicationWindows[windowKey].open();                        
+                    }
                 }
-                
-                //We want the activity stack to know that this was the most recent window.
-                activityStack.push(windowKey);
             }
             else {
                 Ti.API.debug("You're trying to navigate to the same window you're already in.");
             }
+            //We want the activity stack to know that this was the most recent window.
+            activityStack.push(windowKey);
         }
         else {
             Ti.API.API.error('No window exists for that key');
@@ -77,17 +80,7 @@ var WindowManager = function (facade) {
     
     onShowPortlet = function (portlet) {
         Ti.API.info("Showing portlet window " + portlet.title);
-        if (applicationWindows.portlet.initialized) {
-            Titanium.App.fireEvent('includePortlet', portlet);
-            self.openWindow('portlet');
-        } 
-
-        else {
-            applicationWindows.portlet.addEventListener('open', function(e) {
-                Titanium.App.fireEvent('includePortlet', portlet);
-            });
-            self.openWindow('portlet');
-        }
+        self.openWindow('portlet', portlet);
     };
     
     init();

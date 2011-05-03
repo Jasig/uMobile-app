@@ -40,13 +40,12 @@
     	});
     	win.add(titleBar);
     	
-    	win.setBackgroundColor("#f00");
-    	
         contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
         win.add(contentLayer);
 
-    	activityIndicator = app.views.GlobalActivityIndicator;
+    	activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         win.add(activityIndicator);
+        activityIndicator.hide();
 
         loginProxy = app.models.loginProxy;
         loginProxy.establishNetworkSession();
@@ -140,7 +139,7 @@
             gridItem.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
         
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
     };
 
     showSettings = function() {
@@ -180,7 +179,7 @@
         // layout and creating the initial view
         activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.resetDimensions();
-        activityIndicator.showAnimate();
+        activityIndicator.show();
     };
     
     onPortletsLoaded = function (e) {

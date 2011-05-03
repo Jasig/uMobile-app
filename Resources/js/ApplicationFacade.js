@@ -1,14 +1,9 @@
 var ApplicationFacade = function () {
     var facade = {};
-
     facade.models = {};
-
     facade.views = {};
+    facade.controllers = {};
 
-    facade.controllers = {
-        DirectoryDetailController: DirectoryDetailController,
-        MapDetailViewController: MapDetailViewController
-    };
     facade.registerMember = function (name, member) {
         facade[name] = member;
     };

@@ -120,9 +120,10 @@ Ti.API.info("Directory Window Opened");
         win.add(contactDetailView);
         Ti.API.debug('created contactDetailView' + contactDetailView);
 
-        activityIndicator = app.views.GlobalActivityIndicator;
+        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         activityIndicator.resetDimensions();
         win.add(activityIndicator);
+        activityIndicator.hide();
         
         win.initialized = true;
     };
@@ -162,7 +163,7 @@ Ti.API.info("Directory Window Opened");
         Ti.API.debug('openContactDetail called in DirectoryWindowController');
         Ti.API.debug(contactDetailView);
         Ti.API.debug(person);
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
         contactDetailView.update(person);
         contactDetailView.show();
     };
@@ -199,7 +200,7 @@ Ti.API.info("Directory Window Opened");
         directoryProxy.clear();
         blurSearch();
         peopleListTable.setData(defaultTableData);
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
     };
     
     //Contact Events
@@ -212,12 +213,12 @@ Ti.API.info("Directory Window Opened");
 
     onProxySearching = function (e) {
         activityIndicator.loadingMessage(app.localDictionary.searching + '...');
-        activityIndicator.showAnimate();
+        activityIndicator.show();
         Ti.API.info("Searching...");
     };
     
     onProxySearchComplete = function (e) {
-        activityIndicator.hideAnimate();
+        activityIndicator.hide();
         Ti.API.info("Directory Search Complete");
         if (!e.error) {
             displaySearchResults();
@@ -230,8 +231,8 @@ Ti.API.info("Directory Window Opened");
     onProxySearchError = function (e) {
         activityIndicator.loadingMessage(app.localDictionary.errorPerformingSearch);
         t = setTimeout(function() {
-            activityIndicator.hideAnimate();
-            },3000);
+            activityIndicator.hide();
+            }, 3000);
         Ti.API.info("Directory Proxy Search Error");
     };
     
