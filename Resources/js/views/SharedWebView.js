@@ -6,6 +6,10 @@ var SharedWebView = function (facade) {
         Ti.API.debug("init() in SharedWebView");
         webView = Ti.UI.createWebView(app.styles.portletView);
         
+        webView.addEventListener('load', self.onWebViewLoad);
+        
+        Ti.API.debug("0 Is webview loading? " + webView.loading);
+        
         activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         
         initialized = true;
@@ -35,14 +39,15 @@ var SharedWebView = function (facade) {
         }
     };
     
-    manualLoadingTimer = function () {
-        /*
-            Because the webview is quirky with loading events,
-            this timer will check every 500 ms to see if the webview is still loading, and if not, 
-            will keep checking for however many seconds have been set in loadingTimer.
-        */
+    /*manualLoadingTimer = function () {
+        
+            // Because the webview is quirky with loading events,
+            // this timer will check every 500 ms to see if the webview is still loading, and if not, 
+            // will keep checking for however many seconds have been set in loadingTimer.
+        
         
         Ti.API.debug("manualLoadingTimer() in SharedWebView");
+        Ti.API.info("Is webView loading? " + webView.loading);
         
         if (loadingTimer) {
             clearInterval(loadingTimer);
@@ -61,14 +66,14 @@ var SharedWebView = function (facade) {
                 Ti.API.debug("Waited 15 seconds for content to load");
                 return;
             }
-            loadingChecks += 500;
-        }, 500);
-    };
+            loadingChecks += 100;
+        }, 100);
+    };*/
     
     self.getExternalUrl = function (url) {
         Ti.API.debug("getExternalUrl() in SharedWebView");
         webView.url = url;
-        manualLoadingTimer();
+        // manualLoadingTimer();
     };
     
     self.getLocalUrl = function (url) {
@@ -77,7 +82,6 @@ var SharedWebView = function (facade) {
         This method determines if a session is valid for the webview, and will
         either modify the URL and load, or will load the URL as-is if session is active.
         */
-        
         webView.stopLoading();
 
         //We only need to check the session if it's a link to the portal.
@@ -122,13 +126,13 @@ var SharedWebView = function (facade) {
                 Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
             }
         }
-        manualLoadingTimer();
+        // manualLoadingTimer();
     };
     
     self.onWebViewLoad = function (e) {
         Ti.API.debug("Firing onWebViewLoad in SharedWebView: " + JSON.stringify(e));
         Ti.App.fireEvent('SharedWebViewLoad', {url: e.url});
-        clearInterval(loadingTimer);
+        //clearInterval(loadingTimer);
         
         if (e.url.indexOf(app.UPM.CAS_URL) > -1) {
             //This should be webView.hide() if there weren't a bug with evalJS on Android.
