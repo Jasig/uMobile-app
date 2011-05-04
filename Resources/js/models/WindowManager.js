@@ -8,7 +8,7 @@ var WindowManager = function (facade) {
     };
     
     self.addWindow = function (windowParams) {
-        if (windowParams.key === 'portlet' || windowParams.key === 'settings') {
+        if (windowParams.key === 'portlet' || windowParams.key === 'settings' || windowParams.key === 'directory') {
             applicationWindows[windowParams.key] = windowParams;
         }
         else {

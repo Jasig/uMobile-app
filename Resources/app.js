@@ -37,6 +37,7 @@ Titanium.include('js/views/PersonDetailTableView.js');
 Titanium.include('js/views/SecondaryNavBar.js');
 Titanium.include('js/views/SharedWebView.js');
 Titanium.include('js/controllers/DirectoryDetailController.js');
+Titanium.include('js/controllers/DirectoryWindowController.js');
 Titanium.include('js/controllers/MapDetailViewController.js');
 Titanium.include('js/controllers/PortletWindowController.js');
 Titanium.include('js/controllers/SettingsWindowController.js');
@@ -89,13 +90,15 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app));
         app.registerView('SecondaryNavBar', SecondaryNavBar);
         app.registerView('SharedWebView', new SharedWebView(app));
-        
-        //Window controllers
-        app.registerController('portletWindowController', new PortletWindowController(app));
-        app.registerController('settingsWindowController', new SettingsWindowController(app));
-        //Second class controllers
+
+        //Second class controllers, but required for first class controllers to load.
         app.registerController('DirectoryDetailController', DirectoryDetailController);
         app.registerController('MapDetailViewController', MapDetailViewController);
+        
+        //Window controllers
+        app.registerController('directoryWindowController', new DirectoryWindowController(app));
+        app.registerController('portletWindowController', new PortletWindowController(app));
+        app.registerController('settingsWindowController', new SettingsWindowController(app));
         
         activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         
@@ -122,16 +125,7 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         //
         //Directory VIEW
         //
-        windowManager.addWindow({
-            url: 'js/controllers/DirectoryWindowController.js',
-            backgroundColor: app.styles.backgroundColor,
-            title: app.localDictionary.directory,
-            app: app,
-            key: 'directory',
-            id: 'directoryWindowController',
-            exitOnClose: false,
-            modal: true
-        });
+        windowManager.addWindow(app.controllers.directoryWindowController);
 
         //
         // MAP VIEW

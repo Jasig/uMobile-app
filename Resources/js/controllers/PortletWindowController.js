@@ -80,7 +80,10 @@ var PortletWindowController = function (facade) {
                 modal: true,
                 navBarHidden: true
             });
-            win.open();
+            win.open({
+                modal: true,
+                modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_CURRENT_CONTEXT
+            });
             
             for (var i = 0, iLength = winListeners.length; i<iLength; i++) {
                 win.addEventListener(winListeners[i].event, winListeners[i].callback);
@@ -106,7 +109,11 @@ var PortletWindowController = function (facade) {
             Ti.API.info("is webView defined? " + webView);
         }
         else {
-            win.open();
+            win.top = Ti.Platform.osname === 'iphone' ? 20 : 0;
+            win.open({
+                modal: true
+            });
+            
             
             if (Ti.Platform.osname === 'iphone') {
                 win.remove(webView);

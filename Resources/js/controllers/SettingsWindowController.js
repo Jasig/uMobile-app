@@ -62,10 +62,11 @@ var SettingsWindowController = function(facade){
                 key: 'settings',
                 exitOnClose: false, 
                 navBarHidden: true,
-                modal: true
+                modal: true,
+                backgroundColor: app.styles.backgroundColor
             });
+            win.top = Ti.Platform.osname === 'iphone' ? 20 : 0;
             win.open();
-            win.backgroundColor = app.styles.backgroundColor;
             
             win.add(titleBar);
             createCredentialsForm();
