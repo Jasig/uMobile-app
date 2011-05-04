@@ -93,22 +93,6 @@ var DirectoryWindowController = function (facade) {
             win.add(titleBar);            
         }
         
-        Ti.API.debug("Adding searchBar in DirectoryWindowController");
-        if (!searchBar) {
-            searchBarOptions = app.styles.searchBar;
-            searchBarOptions.top = viewBottom;
-            searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
-            //Create and add a search bar at the top of the table to search for contacts
-            searchBar = Titanium.UI.createSearchBar(searchBarOptions);
-
-            win.add(searchBar);
-            searchBar.addEventListener('cancel', onSearchCancel);
-            searchBar.addEventListener('return', onSearchSubmit);
-            searchBar.addEventListener('change', onSearchChange);
-
-            viewBottom += searchBarOptions.height;            
-        }
-        
         Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
         if (!phoneDirectorySection) {
             //Create the section and one row to display the phone number for the phone directory
@@ -160,6 +144,22 @@ var DirectoryWindowController = function (facade) {
             win.add(peopleListTable);
             peopleListTable.addEventListener('touchstart', blurSearch);
             peopleListTable.addEventListener('move', blurSearch);            
+        }
+        
+        Ti.API.debug("Adding searchBar in DirectoryWindowController");
+        if (!searchBar) {
+            searchBarOptions = app.styles.searchBar;
+            searchBarOptions.top = viewBottom;
+            searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
+            //Create and add a search bar at the top of the table to search for contacts
+            searchBar = Titanium.UI.createSearchBar(searchBarOptions);
+
+            win.add(searchBar);
+            searchBar.addEventListener('cancel', onSearchCancel);
+            searchBar.addEventListener('return', onSearchSubmit);
+            searchBar.addEventListener('change', onSearchChange);
+
+            viewBottom += searchBarOptions.height;            
         }
 
         if (!contactDetailView) {

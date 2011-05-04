@@ -36,7 +36,8 @@ var Styles = function (app) {
             top: defaults.TITLEBAR_HEIGHT
         },
         portletView: {
-            top: defaults.TITLEBAR_HEIGHT
+            top: defaults.TITLEBAR_HEIGHT,
+            height: 'auto'
         },
         textField: {
             height: OS === 'iphone' ? 35 : 45,
@@ -202,7 +203,7 @@ var Styles = function (app) {
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
-            // backgroundImage: '../../images/home-background.png',
+            backgroundImage: 'images/home-background.png',
             zIndex: 1
         },
         gridIcon: {

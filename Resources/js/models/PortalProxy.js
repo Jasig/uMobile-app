@@ -112,13 +112,15 @@ var PortalProxy = function (facade) {
                     }
                 }
                 
-                for (module in nativeModules) {
-                    Ti.API.info("Remaining module: " + nativeModules[module]);
-                    if(nativeModules[module].title) {
-                        portlets.push(nativeModules[module]);
-                    }
-                    else {
-                        Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
+                for (var module in nativeModules) {
+                    if (nativeModules.hasOwnProperty(module)) {
+                        Ti.API.info("Remaining module: " + nativeModules[module]);
+                        if(nativeModules[module].title) {
+                            portlets.push(nativeModules[module]);
+                        }
+                        else {
+                            Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
+                        }                        
                     }
                 }
                 

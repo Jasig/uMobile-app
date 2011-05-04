@@ -25,7 +25,7 @@ var MapWindowController = function(facade) {
     var win, app = facade, self = {}, initialized, mapProxy, //Standard utility vars
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], //Data objects
     locationDetailView, activityIndicator, mapView, searchBar, loadingIndicator, titleBar, //View objects
-    createMainView, loadPointDetail, //Methods
+    createMainView, loadPointDetail, resetMapLocation, //Methods
     onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur; //Events
 
     init = function() {
@@ -61,6 +61,7 @@ var MapWindowController = function(facade) {
         }
         else {
             win.open();
+            resetMapLocation();
         }
         createMainView();
     };
@@ -103,7 +104,7 @@ var MapWindowController = function(facade) {
                 mapViewOpts = app.styles.mapView;
                 if (app.UPM.DEFAULT_MAP_REGION) {
                     Ti.API.info("Temporarily disabled default region in map.");
-                    // mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
+                    mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
                 }
 
                 mapView = Titanium.Map.createView(mapViewOpts);
@@ -144,6 +145,17 @@ var MapWindowController = function(facade) {
             Ti.API.error("No window exists in which to place the map view.");
         }
 
+    };
+    
+    resetMapLocation = function () {
+        Ti.API.debug("resetMapLocation() in MapWindowController, with default location: " + JSON.stringify(mapProxy.getMapCenter(true)));
+        if (mapView && mapProxy) {
+            // mapView.setLocation(mapProxy.getMapCenter(true));
+            mapView.region = mapProxy.getMapCenter(true);
+        }
+        else {
+            Ti.API.error("Either mapView or mapProxy isn't set: " + mapView + ', ' + mapProxy);
+        }
     };
     
     loadDetail = function(e) {
@@ -231,7 +243,7 @@ var MapWindowController = function(facade) {
     
     onProxyLoaded = function (e) {
         Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(mapProxy.getMapCenter()));
-        mapView.setLocation(mapProxy.getMapCenter(true));
+        resetMapLocation();
         activityIndicator.hide();
     };
     

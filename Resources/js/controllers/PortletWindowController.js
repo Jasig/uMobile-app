@@ -141,11 +141,13 @@ var PortletWindowController = function (facade) {
             // sharedWebView.getLocalUrl(portlet.url);
             webView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
             sharedWebView.externalModule = false;
+            webView.top = titleBar.height;
         } else {
             Ti.API.debug("Portlet URL is external");
             // sharedWebView.getExternalUrl(portlet.url);
             webView.url = portlet.url;
             sharedWebView.externalModule = true;
+            
         }
         titleBar.updateTitle(portlet.title);
         
@@ -157,11 +159,16 @@ var PortletWindowController = function (facade) {
          if (e.url.indexOf('/') == 0 || e.url.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
             sharedWebView.externalModule = false;
             navBar.visible = false;
+            webView.top = titleBar.height;
             // sharedWebView.setTop(app.styles.titleBar.height);
             app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
         } else {
             sharedWebView.externalModule = true;
-            navBar.visible = true;
+            if (webView.canGoBack()) {
+                navBar.visible = true;
+                webView.top = titleBar.height + navBar.height;
+            }
+            
             // sharedWebView.setTop(app.styles.titleBar.height + navBar.height);
         }
     };
