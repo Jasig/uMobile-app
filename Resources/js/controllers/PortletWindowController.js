@@ -90,7 +90,7 @@ var PortletWindowController = function (facade) {
             }
             
             if (Ti.Platform.osname === 'iphone') {
-                webView = Titanium.UI.createWebView();                
+                webView = Titanium.UI.createWebView(app.styles.portletView); 
             }
             else {
                 webView = sharedWebView.getWebView();
@@ -115,9 +115,9 @@ var PortletWindowController = function (facade) {
             });
             
             
-            if (Ti.Platform.osname === 'iphone') {
+            if (Ti.Platform.osname === 'iphone' && webView) {
                 win.remove(webView);
-                webView = Titanium.UI.createWebView();
+                webView = Titanium.UI.createWebView(app.styles.portletView);
                 win.add(webView);
                 webView.addEventListener('load', sharedWebView.onWebViewLoad);                
             }

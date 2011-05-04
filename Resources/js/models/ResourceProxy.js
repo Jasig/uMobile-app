@@ -24,7 +24,7 @@ var ResourceProxy = function (facade) {
         resolution = '_' + resolutionMatrix[Ti.Platform.osname][Ti.Platform.displayCaps.density];
         
         if (app.UPM.nativeIcons[fname]) {
-            var path = '../../' + (app.UPM.nativeIcons[fname]).replace('.png', resolution + '.png');
+            var path = (app.UPM.nativeIcons[fname]).replace('.png', resolution + '.png');
             Ti.API.debug("Trying to load image from path: " + path);
             return path;
         }

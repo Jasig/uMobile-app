@@ -21,43 +21,16 @@
  * map tab.
  */
 
- (function() {
-    var win = Titanium.UI.currentWindow,
-    locationDetailViewOptions,
-    locationDetailView,
-    activityIndicator,
-    app = win.app,
-    mapView,
-    searchBar,
-    createMapView,
-    mapPoints = [],
-    loadPointDetail,
-    rawAnnotations = [],
-    loadingIndicator,
-    mapProxy,
-    titleBar,
-    //Proxy Events
-    onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur;
+var MapWindowController = function(facade) {
+    var win, app = facade, self = {}, initialized, mapProxy, //Standard utility vars
+    locationDetailViewOptions, mapPoints = [], rawAnnotations = [], //Data objects
+    locationDetailView, activityIndicator, mapView, searchBar, loadingIndicator, titleBar, //View objects
+    createMainView, loadPointDetail, //Methods
+    onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur; //Events
 
     init = function() {
-        Ti.App.addEventListener('showWindow', onWindowBlur);
-        
+        self.key = 'map';
         mapProxy = app.models.mapProxy;
-        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
-        
-        win.add(activityIndicator);
-        
-        activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.show();
-
-        titleBar = app.views.GenericTitleBar({
-            homeButton: true,
-            app: app,
-            settingsButton: false,
-            title: app.localDictionary.map,
-            windowKey: 'map'
-        });
-        win.add(titleBar);
         
         Ti.App.addEventListener('MapProxySearching', onProxySearching);
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
@@ -66,60 +39,113 @@
         Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
         Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
-        
-        
-        searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
-        win.add(searchBar);
-        searchBar.addEventListener('return', searchSubmit);
-        searchBar.addEventListener('cancel', searchBlur);
-        
-        createMapView();
-        
-        win.initialized = true;
+        initialized = true;
     };
-
-    createMapView = function() {
-        var annotations, buttonBar, mapViewOpts;
-
-        // create the map view
-        mapViewOpts = app.styles.mapView;
-        if (app.UPM.DEFAULT_MAP_REGION) {
-            Ti.API.info("Temporarily disabled default region in map.");
-            // mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
-        }
-        
-        mapView = Titanium.Map.createView(mapViewOpts);
-        win.add(mapView);
-        
-        Ti.API.info("Map added with dimensions of: " + JSON.stringify(mapView.size) );
-
-        //Initialize the mapProxy, which manages the data for points on the map,
-        //including retrieval of data and searching array of points
-        mapProxy.init();
-
-        //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
-        mapView.addEventListener('touchstart', searchBlur);
-        mapView.addEventListener('loaddetail', loadDetail);
-        mapView.addEventListener("click", onMapViewClick);
-        mapView.addEventListener('regionChanged', searchBlur);
-
-        // create controls for zoomin / zoomout
-        // included in Android by default
-        if (Titanium.Platform.osname === "iphone") {
-            buttonBar = Titanium.UI.createButtonBar(app.styles.mapButtonBar);
-            mapView.add(buttonBar);
-
-            // add event listeners for the zoom buttons
-            buttonBar.addEventListener('click',
-            function(e) {
-                if (e.index == 0) {
-                    mapView.zoom(1);
-                } else {
-                    mapView.zoom( - 1);
-                }
+    
+    self.open = function () {
+        if (!win) {
+            win = Titanium.UI.createWindow({
+                backgroundColor: app.styles.backgroundColor,
+                exitOnClose: false,
+                navBarHidden: true,
+                modal: true
             });
+            if (Ti.Platform.osname === 'iphone') {
+                win.top = 20;
+            }
+            win.open();
+            
+            //Initialize the mapProxy, which manages the data for points on the map,
+            //including retrieval of data and searching array of points
+            mapProxy.init();
         }
+        else {
+            win.open();
+        }
+        createMainView();
     };
+    
+    self.close = function () {
+        if (win) {
+            win.close();
+        }
+        searchBlur();
+    };
+
+    createMainView = function() {
+        var annotations, buttonBar, mapViewOpts;
+        if (win) {
+            if (!titleBar) {
+                titleBar = app.views.GenericTitleBar({
+                    homeButton: true,
+                    app: app,
+                    settingsButton: false,
+                    title: app.localDictionary.map,
+                    windowKey: 'map'
+                });
+                win.add(titleBar);
+            }
+
+            if (!activityIndicator) {
+                activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+                win.add(activityIndicator);
+            }
+
+            if (!searchBar) {
+                searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+                win.add(searchBar);
+                searchBar.addEventListener('return', searchSubmit);
+                searchBar.addEventListener('cancel', searchBlur);            
+            }
+
+            if (!mapView) {
+                // create the map view
+                mapViewOpts = app.styles.mapView;
+                if (app.UPM.DEFAULT_MAP_REGION) {
+                    Ti.API.info("Temporarily disabled default region in map.");
+                    // mapViewOpts.region = app.UPM.DEFAULT_MAP_REGION;
+                }
+
+                mapView = Titanium.Map.createView(mapViewOpts);
+                win.add(mapView);
+
+                //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
+                mapView.addEventListener('touchstart', searchBlur);
+                mapView.addEventListener('loaddetail', loadDetail);
+                mapView.addEventListener("click", onMapViewClick);
+                mapView.addEventListener('regionChanged', searchBlur);
+
+                Ti.API.info("Map added with dimensions of: " + JSON.stringify(mapView.size) );
+            }
+
+            if (!buttonBar && Titanium.Platform.osname === "iphone") {
+                // create controls for zoomin / zoomout
+                // included in Android by default
+
+                buttonBar = Titanium.UI.createButtonBar(app.styles.mapButtonBar);
+                if (mapView) {
+                    mapView.add(buttonBar);
+                }
+                else {
+                    Ti.API.error("mapView doesn't exist to place the buttonBar into.");
+                }
+
+                // add event listeners for the zoom buttons
+                buttonBar.addEventListener('click', function(e) {
+                    if (e.index == 0) {
+                        mapView.zoom(1);
+                    } else {
+                        mapView.zoom( - 1);
+                    }
+                });
+            }
+        }
+        else {
+            Ti.API.error("No window exists in which to place the map view.");
+        }
+
+    };
+    
     loadDetail = function(e) {
         //Create and open the view for the map detail
         // locationDetailWinOptions = app.styles.view;
@@ -174,13 +200,6 @@
         Ti.API.debug('searchSubmit() in MapWindowController');
         searchBlur();
         mapProxy.search(searchBar.value);
-    };
-
-    // Event Handlers
-    //Controller Events
-    onWindowBlur = function (e) {
-        Ti.API.info("Map blur event fired");
-        searchBlur();
     };
     
     onMapViewClick = function (e) {
@@ -258,5 +277,10 @@
         }
     };
 
-    init();
-})();
+    if (!initialized) {
+        init();
+    }
+    
+    
+    return self;
+};

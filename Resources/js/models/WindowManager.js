@@ -8,13 +8,11 @@ var WindowManager = function (facade) {
     };
     
     self.addWindow = function (windowParams) {
-        if (windowParams.key === 'portlet' || windowParams.key === 'settings' || windowParams.key === 'directory') {
+        if (windowParams && windowParams.key) {
             applicationWindows[windowParams.key] = windowParams;
         }
         else {
-            applicationWindows[windowParams.key] = Titanium.UI.createWindow(windowParams);
-            applicationWindows[windowParams.key].navBarHidden = true;
-            applicationWindows[windowParams.key].addEventListener('android:back', onAndroidBack);
+            Ti.API.error("Incomplete windowParams were passed in to addWindow() in WindowManager" + JSON.stringify(windowParams));
         }
     };
     

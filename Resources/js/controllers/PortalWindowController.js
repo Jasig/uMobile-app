@@ -23,30 +23,15 @@
  */
 
 // library includes
-(function(){
-    var win = Titanium.UI.currentWindow, app = win.app, loginProxy,
-        contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem,
+var PortalWindowController = function(facade) {
+    var win, app = facade, self = {}, loginProxy, initialized,
+        contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
         onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
         pathToRoot = '../../';
 
     init = function () {
-        var titleBar = new app.views.GenericTitleBar({
-    	    app: app,
-    	    windowKey: 'home',
-    	    title: app.localDictionary.uMobile,
-    	    settingsButton: true,
-    	    homeButton: false
-    	});
-    	win.add(titleBar);
-    	
-        contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
-        win.add(contentLayer);
-
-    	activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
-        win.add(activityIndicator);
-        activityIndicator.hide();
-
+        self.key = 'home';
         loginProxy = app.models.loginProxy;
         loginProxy.establishNetworkSession();
     	
@@ -56,21 +41,72 @@
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', app.models.portalProxy.getPortletsForUser);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', showSettings);
 
+    	initialized = true;
+    };
+    
+    self.open = function () {
+        if (!win) {
+            win = Titanium.UI.createWindow({
+                exitOnClose: false,
+                navBarHidden: true,
+                modal: false
+            });
+            win.open();
+        }
+        else {
+            win.open();
+        }
         createPortalView();
-
-    	win.initialized = true;
+    };
+    
+    self.close = function () {
+        if (win) {
+            win.close();
+        }
     };
 
     createPortalView = function () {
-        if (portalView) {
-            Ti.API.debug("Removing the existing portal home view");
-            contentLayer.remove(portalView);
+        if (win) {
+            if (!titleBar) {
+                titleBar = new app.views.GenericTitleBar({
+            	    app: app,
+            	    windowKey: 'home',
+            	    title: app.localDictionary.uMobile,
+            	    settingsButton: true,
+            	    homeButton: false
+            	});
+            	win.add(titleBar);
+            }
+            
+            if (!contentLayer) {
+            	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
+                win.add(contentLayer);                
+            }
+            
+            if (!activityIndicator) {
+                activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+                win.add(activityIndicator);
+                activityIndicator.hide();                
+            }
+
+            if (portalView) {
+                Ti.API.debug("Removing the existing portal home view");
+                contentLayer.remove(portalView);
+            }
+
+            Ti.API.debug("Creating a new portal home view");
+        	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
+            if (contentLayer) {
+                contentLayer.add(portalView);
+            }
+            else {
+                Ti.API.error("No contentLayer to which to add the portalView");
+            }
+            
         }
-
-        Ti.API.debug("Creating a new portal home view");
-    	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
-
-        contentLayer.add(portalView);
+        else {
+            Ti.API.error("No win exists in PortalWindowController>createPortalView()");
+        }
     };
 
 
@@ -195,7 +231,9 @@
             }).show();
     };
     
-    if(!win.initialized) {
+    if(!initialized) {
         init();
     }
-})();
+    
+    return self;
+};

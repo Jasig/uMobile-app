@@ -32,7 +32,7 @@ var DirectoryWindowController = function (facade) {
         //UI Elements
         peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
         //Methods
-        drawDefaultView, searchSubmit, openContactDetail, blurSearch, displaySearchResults,
+        drawDefaultView, resetHome, searchSubmit, openContactDetail, blurSearch, displaySearchResults,
         //Event Handlers
         onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onSearchChange, onContactRowClick, onWindowBlur, onProxySearching, onProxySearchComplete, onProxySearchError;
     
@@ -62,6 +62,7 @@ var DirectoryWindowController = function (facade) {
         }
         else {
             win.open();
+            resetHome();
             onSearchCancel();
         }
         drawDefaultView();
@@ -179,6 +180,14 @@ var DirectoryWindowController = function (facade) {
         }
     };
     
+    resetHome = function () {
+        Ti.API.debug("resetHome() in DirectoryWindowController");
+        directoryProxy.clear();
+        blurSearch();
+        peopleListTable.setData(defaultTableData);
+        activityIndicator.hide();
+    };
+    
     displaySearchResults = function () {
         var _peopleTableData = [], _people;
                 
@@ -245,10 +254,7 @@ var DirectoryWindowController = function (facade) {
 
     onSearchCancel = function (e) {
         Ti.API.debug('onSearchCancel');
-        directoryProxy.clear();
-        blurSearch();
-        peopleListTable.setData(defaultTableData);
-        activityIndicator.hide();
+        resetHome();
     };
     
     //Contact Events
