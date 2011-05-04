@@ -174,9 +174,9 @@ var PortalWindowController = function(facade) {
             Ti.API.debug("Placing the portlet in the portalView");
             //Place the item in the scrollview and listen for singletaps
             portalView.add(gridItem);
-            gridItem.addEventListener("singletap", onGridItemClick);
-            gridItem.addEventListener("touchstart", onGridItemPressDown);
-            gridItem.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
+            gridItemIcon.addEventListener("singletap", onGridItemClick);
+            gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
+            gridItemIcon.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
         
         activityIndicator.hide();

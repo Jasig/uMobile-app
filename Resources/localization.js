@@ -16,6 +16,7 @@ localDictionary.en_US = {
     doneEditing: "Done Editing",
     loading: 'Loading',
     searching: "Searching",
+    noResults: "No Results",
     errorPerformingSearch: "There was an error while performing your search request.",
     searchResults: "Search Results",
     noSearchResults: "No results matched your search",

@@ -73,8 +73,14 @@ var DirectoryWindowController = function (facade) {
     };
     
     checkNetwork = function () {
+        var alertDialog;
         if (!Ti.Network.online) {
-            alert(app.localDictionary.directoryRequiresNetwork);
+            alertDialog = Titanium.UI.createAlertDialog({
+                title: app.localDictionary.error,
+                message: app.localDictionary.networkConnectionRequired,
+                buttonNames: [app.localDictionary.OK]
+            });
+            alertDialog.show();
         }
     };
     
@@ -187,7 +193,7 @@ var DirectoryWindowController = function (facade) {
     };
     
     displaySearchResults = function () {
-        var _peopleTableData = [], _people;
+        var _peopleTableData = [], _people, alertDialog;
                 
         //Get array of people from search results from proxy
         _people = directoryProxy.getPeople();
@@ -207,7 +213,12 @@ var DirectoryWindowController = function (facade) {
         }
         else {
             Ti.API.debug("Not more than 0 results");
-            alert(app.localDictionary.noSearchResults);
+            alertDialog = Titanium.UI.createAlertDialog({
+                title: app.localDictionary.noResults,
+                message: app.localDictionary.noSearchResults,
+                buttonNames: [app.localDictionary.OK]
+            });
+            alertDialog.show();
             peopleListTable.setData(defaultTableData);
         }
     };
@@ -270,13 +281,21 @@ var DirectoryWindowController = function (facade) {
     };
     
     onProxySearchComplete = function (e) {
+        var alertDialog;
+        
         activityIndicator.hide();
         Ti.API.info("Directory Search Complete");
+        
         if (!e.error) {
             displaySearchResults();
         }
         else {
-            alert(e.error);
+            alertDialog = Titanium.UI.createAlertDialog({
+                title: app.localDictionary.error,
+                message: e.error,
+                buttonNames: [app.localDictionary.OK]
+            });
+            alertDialog.show();
         }
     };
     

@@ -81,7 +81,7 @@ var PortalProxy = function (facade) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
                 Ti.API.debug('ResponseText is' + layoutClient.responseText);
                 
-                var responseXML, nativeModules = app.UPM.LOCAL_MODULES;
+                var responseXML, nativeModules = app.UPM.getLocalModules();
                 
                 if (layoutClient.responseXML == null) {
                     if (typeof DOMParser != "undefined") {
@@ -108,15 +108,14 @@ var PortalProxy = function (facade) {
                     if(nativeModules[portlets[i].fname]) {
                         Ti.API.info("We have a match for " + portlets[i].fname + ", and it is: " + JSON.stringify(nativeModules[portlets[i].fname]));
                         portlets[i] = nativeModules[portlets[i].fname];
-                        delete nativeModules[portlets[i].fname];
-                        Ti.API.info("New portlet: " + JSON.stringify(portlets[i]));
+                        nativeModules[portlets[i].fname].added = true;
                     }
                 }
                 
                 for (var module in nativeModules) {
                     if (nativeModules.hasOwnProperty(module)) {
-                        Ti.API.info("Remaining module: " + nativeModules[module]);
-                        if(nativeModules[module].title) {
+                        Ti.API.info("Remaining module: " + JSON.stringify(nativeModules[module]));
+                        if(nativeModules[module].title && !nativeModules[module].added) {
                             portlets.push(nativeModules[module]);
                         }
                         else {

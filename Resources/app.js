@@ -48,7 +48,7 @@ Titanium.include('js/controllers/PortletWindowController.js');
 Titanium.include('js/controllers/SettingsWindowController.js');
 
 (function (){
-    var app, windowManager, init, setUpWindows;
+    var app, windowManager, init, setUpWindows, alertDialog;
     
     init = function () {
         Ti.API.info("Hello. You're on an: " + Ti.Platform.osname);
@@ -60,7 +60,12 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         
         //Let the user know that they need a network connection to use this app.
         if (!Ti.Network.online) {
-            alert(app.localDictionary.networkConnectionRequired);
+            alertDialog = Titanium.UI.createAlertDialog({
+                title: app.localDictionary.error,
+                message: app.localDictionary.networkConnectionRequired,
+                buttonNames: [app.localDictionary.OK]
+            });
+            alertDialog.show();
             Ti.API.debug("Network is offline");
         }
         

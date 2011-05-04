@@ -248,10 +248,18 @@ var MapWindowController = function(facade) {
     };
     
     onProxySearchComplete = function (e) {
+        var alertDialog;
+        
         Ti.API.debug('onProxySearchComplete');
         activityIndicator.hide();
+        
         if(e.points.length < 1) {
-            alert(app.localDictionary.mapNoSearchResults);
+            alertDialog = Titanium.UI.createAlertDialog({
+                title: app.localDictionary.noResults,
+                message: app.localDictionary.mapNoSearchResults,
+                buttonNames: [app.localDictionary.OK]
+            });
+            alertDialog.show();
         }
         else {
             plotPoints(e.points);
@@ -265,27 +273,60 @@ var MapWindowController = function(facade) {
     };
     
     onProxyLoadError = function (e) {
+        var alertDialog;
+        
         Ti.API.debug("Hiding activity indicator in onProxyLoadError()");
         activityIndicator.hide();
         Ti.API.debug(JSON.stringify(e));
+        
         switch (e.errorCode) {
             case mapProxy.requestErrors.NETWORK_UNAVAILABLE:
-                alert(app.localDictionary.map_NETWORK_UNAVAILABLE);
+                alertDialog = Titanium.UI.createAlertDialog({
+                    title: app.localDictionary.error,
+                    message: app.localDictionary.map_NETWORK_UNAVAILABLE,
+                    buttonNames: [app.localDictionary.OK]
+                });
+                alertDialog.show();
                 break;
             case mapProxy.requestErrors.REQUEST_TIMEOUT:
-                alert(app.localDictionary.map_REQUEST_TIMEOUT);
+                alertDialog = Titanium.UI.createAlertDialog({
+                    title: app.localDictionary.error,
+                    message: app.localDictionary.map_REQUEST_TIMEOUT,
+                    buttonNames: [app.localDictionary.OK]
+                });
+                alertDialog.show();
                 break;
             case mapProxy.requestErrors.SERVER_ERROR:
-                alert(app.localDictionary.map_SERVER_ERROR);
+                alertDialog = Titanium.UI.createAlertDialog({
+                    title: app.localDictionary.error,
+                    message: app.localDictionary.map_SERVER_ERROR,
+                    buttonNames: [app.localDictionary.OK]
+                });
+                alertDialog.show();
                 break;
             case mapProxy.requestErrors.NO_DATA_RETURNED:
-                alert(app.localDictionary.map_NO_DATA_RETURNED);
+                alertDialog = Titanium.UI.createAlertDialog({
+                    title: app.localDictionary.error,
+                    message: app.localDictionary.map_NO_DATA_RETURNED,
+                    buttonNames: [app.localDictionary.OK]
+                });
+                alertDialog.show();
                 break;
             case mapProxy.requestErrors.INVALID_DATA_RETURNED: 
-                alert(app.localDictionary.map_INVALID_DATA_RETURNED);
+                alertDialog = Titanium.UI.createAlertDialog({
+                    title: app.localDictionary.error,
+                    message: app.localDictionary.map_INVALID_DATA_RETURNED,
+                    buttonNames: [app.localDictionary.OK]
+                });
+                alertDialog.show();
                 break;
             default:
-                alert(app.localDictionary.map_GENERAL_ERROR);
+                alertDialog = Titanium.UI.createAlertDialog({
+                    title: app.localDictionary.error,
+                    message: app.localDictionary.map_GENERAL_ERROR,
+                    buttonNames: [app.localDictionary.OK]
+                });
+                alertDialog.show();
         }
     };
 

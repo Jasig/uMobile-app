@@ -69,7 +69,7 @@ var Config = function (app) {
         jobTitle: 'title',
         organization: 'department'
     };
-
+    
     UPM.LOCAL_MODULES = [];
     UPM.LOCAL_MODULES.map = {
         title: 'map',
@@ -89,6 +89,10 @@ var Config = function (app) {
         fname: 'twitter',
         url: 'http://mobile.twitter.com/searches?q=jasig11+OR+sakai11',
         externalModule: true
+    };
+    
+    UPM.getLocalModules = function () {
+        return UPM.LOCAL_MODULES;
     };
 
     UPM.GLOBAL_STYLES = {
