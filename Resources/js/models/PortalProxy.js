@@ -3,6 +3,7 @@ var PortalProxy = function (facade) {
         pathToRoot = '../../';
     
     self.getShowPortletFunc = function (portlet) {
+        Ti.API.debug("getShowPortletFunc() in PortalProxy");
         return function () {
             if (portlet.url) {
                 Titanium.App.fireEvent('showPortlet', portlet);

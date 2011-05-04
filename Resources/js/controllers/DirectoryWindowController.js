@@ -27,7 +27,7 @@ Ti.API.info("Directory Window Opened");
 var DirectoryWindowController = function (facade) {
     var win, app = facade, self = {}, directoryProxy = app.models.directoryProxy,
         // Data and variables
-        initialized, peopleResult = [], defaultTableData = [], viewBottom, //Used for absolute positioning of new elements at the bottom of the view.
+        initialized, peopleResult = [], defaultTableData = [], 
         contactDetailViewOptions, searchBarOptions,
         //UI Elements
         peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
@@ -79,7 +79,6 @@ var DirectoryWindowController = function (facade) {
     };
     
     drawDefaultView = function () {
-        viewBottom = 0;
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
         if(!titleBar) {
             //Create a title bar from the generic title bar partial view
@@ -89,7 +88,6 @@ var DirectoryWindowController = function (facade) {
                 homeButton: true,
                 settingsButton: false
             });
-            viewBottom += app.styles.titleBar.height;
             win.add(titleBar);            
         }
         
@@ -136,7 +134,7 @@ var DirectoryWindowController = function (facade) {
             //Create the main table
             peopleListTable = Titanium.UI.createTableView({
                 data: defaultTableData,
-                top: viewBottom
+                top: app.styles.titleBar.height + app.styles.searchBar.height
             });
             if (Titanium.Platform.osname === 'iphone') {
                 peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
@@ -149,8 +147,8 @@ var DirectoryWindowController = function (facade) {
         Ti.API.debug("Adding searchBar in DirectoryWindowController");
         if (!searchBar) {
             searchBarOptions = app.styles.searchBar;
-            searchBarOptions.top = viewBottom;
-            searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
+            searchBarOptions.top = app.styles.titleBar.height;
+            // searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
             //Create and add a search bar at the top of the table to search for contacts
             searchBar = Titanium.UI.createSearchBar(searchBarOptions);
 
@@ -158,8 +156,6 @@ var DirectoryWindowController = function (facade) {
             searchBar.addEventListener('cancel', onSearchCancel);
             searchBar.addEventListener('return', onSearchSubmit);
             searchBar.addEventListener('change', onSearchChange);
-
-            viewBottom += searchBarOptions.height;            
         }
 
         if (!contactDetailView) {
@@ -182,10 +178,12 @@ var DirectoryWindowController = function (facade) {
     
     resetHome = function () {
         Ti.API.debug("resetHome() in DirectoryWindowController");
-        directoryProxy.clear();
         blurSearch();
-        peopleListTable.setData(defaultTableData);
-        activityIndicator.hide();
+        if (searchBar) { searchBar.value = ''; }
+        if (directoryProxy) { directoryProxy.clear(); }
+        if (peopleListTable) { peopleListTable.setData(defaultTableData); }
+        if (contactDetailView) { contactDetailView.hide(); }
+        if (activityIndicator) { activityIndicator.hide(); }
     };
     
     displaySearchResults = function () {

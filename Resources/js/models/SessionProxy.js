@@ -25,10 +25,11 @@ var SessionProxy = function (facade) {
     };
     
     self.resetTimer = function(context) {
-        //There should only be multiple context timers if the OS is Android.
+        // There should only be multiple context timers if the OS is Android.
+        // Because Android Appcelerator doesn't share cookies between Async requests and webview requests.
+        // It also doesn't share cookies between separate webviews.
         
         Ti.API.info("Reset the timer for: " + context + " & timer= " + sessionLifeTimeMilli);
-        Ti.API.debug("Currently " + timers.length + " timers running.");
         if (Ti.Platform.osname !== 'android') {
             if(timers[LoginProxy.sessionTimeContexts.NETWORK].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
@@ -101,6 +102,7 @@ var SessionProxy = function (facade) {
     };
     
     onSessionActivity = function (e) {
+        Ti.API.debug("onSessionActivity() in SessionProxy");
         if (e.context) {
             Ti.API.debug("Resetting " + e.context + " session");
             self.resetTimer(e.context);

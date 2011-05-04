@@ -1,6 +1,5 @@
 var SharedWebView = function (facade) {
-    var app = facade, self = {}, webView, init, initialized, 
-    loadingTimer, loadingChecks, loadingTimeout = 15, manualLoadingTimer;
+    var app = facade, self = {}, webView, init, initialized;
     
     init = function () {
         Ti.API.debug("init() in SharedWebView");
@@ -38,37 +37,6 @@ var SharedWebView = function (facade) {
             Ti.API.debug("value passed to setTop() in SharedWebView was of type " + typeof t);
         }
     };
-    
-    /*manualLoadingTimer = function () {
-        
-            // Because the webview is quirky with loading events,
-            // this timer will check every 500 ms to see if the webview is still loading, and if not, 
-            // will keep checking for however many seconds have been set in loadingTimer.
-        
-        
-        Ti.API.debug("manualLoadingTimer() in SharedWebView");
-        Ti.API.info("Is webView loading? " + webView.loading);
-        
-        if (loadingTimer) {
-            clearInterval(loadingTimer);
-        }
-        loadingChecks = 0; //How many times we've checked for loaded content.
-        loadingTimer = setInterval(function(){
-            Ti.API.debug("loading interval... " + webView.loading);
-            if (!webView.loading) {
-                clearInterval(loadingTimer);
-                Ti.API.debug("Webview isn't loading");
-                Ti.App.fireEvent('SharedWebViewLoad', { url: webView.url });
-                return;
-            }
-            else if (loadingChecks >= (loadingTimeout * 1000)) {
-                clearInterval(loadingTimer);
-                Ti.API.debug("Waited 15 seconds for content to load");
-                return;
-            }
-            loadingChecks += 100;
-        }, 100);
-    };*/
     
     self.getExternalUrl = function (url) {
         Ti.API.debug("getExternalUrl() in SharedWebView");

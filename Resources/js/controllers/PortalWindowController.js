@@ -27,7 +27,7 @@ var PortalWindowController = function(facade) {
     var win, app = facade, self = {}, loginProxy, initialized,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
-        onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
+        onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
         pathToRoot = '../../';
 
     init = function () {
@@ -139,6 +139,8 @@ var PortalWindowController = function(facade) {
             gridItemDefaults.top = top;
             gridItemDefaults.left = left;
             gridItem = Titanium.UI.createView(gridItemDefaults);
+            
+            gridItem.portlet = _portlet;
 
             //Add a label to the grid item
             if (_portlet.title) {
@@ -172,7 +174,7 @@ var PortalWindowController = function(facade) {
             Ti.API.debug("Placing the portlet in the portalView");
             //Place the item in the scrollview and listen for singletaps
             portalView.add(gridItem);
-            gridItem.addEventListener("singletap", app.models.portalProxy.getShowPortletFunc(_portlet));
+            gridItem.addEventListener("singletap", onGridItemClick);
             gridItem.addEventListener("touchstart", onGridItemPressDown);
             gridItem.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
@@ -190,11 +192,28 @@ var PortalWindowController = function(facade) {
             }
         );
     };
+    
+    onGridItemClick = function (e) {
+        var func;
+        Ti.API.debug("onGridItemClick() in PortalWindowController " + JSON.stringify(e.source.portlet));
+         if (e.source.type === 'gridIcon') {
+                func = app.models.portalProxy.getShowPortletFunc(e.source.getParent().portlet);
+            }
+            else {
+                func = app.models.portalProxy.getShowPortletFunc(e.source.portlet);
+            }
+        func();
+    };
 
     onGridItemPressDown = function (e) {
-        Ti.API.debug("Home button pressed down");
+        Ti.API.debug("Home button pressed down, source: " + e.source.type);
         if(Ti.Platform.osname === 'iphone') {
-            e.source.opacity = app.styles.gridItem.pressOpacity;
+            if (e.source.type === 'gridIcon') {
+                e.source.getParent().opacity = app.styles.gridItem.pressOpacity;
+            }
+            else {
+                e.source.opacity = app.styles.gridItem.pressOpacity;
+            }
         }
         else {
             Ti.API.debug("Not setting opacity of icon because Android doesn't support it.");
@@ -204,7 +223,13 @@ var PortalWindowController = function(facade) {
     onGridItemPressUp = function (e) {
         Ti.API.debug("Home button pressed up");
         if(Ti.Platform.osname === 'iphone') {
-            e.source.setOpacity(1.0);
+            if (e.source.type === 'gridIcon') {
+                e.source.getParent().setOpacity(1.0);
+            }
+            else {
+                e.source.setOpacity(1.0);
+            }
+            
         }
         else {
             Ti.API.debug("onGridItemPressUp condition wasn't met");

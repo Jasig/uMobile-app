@@ -210,13 +210,15 @@ var Styles = function (app) {
             top: 0,
             canScale: false,
             width: 57,
-            height: 57
+            height: 57,
+            type: 'gridIcon'
         },
         gridItem: {
             width: 80,
             height: 57 + 20,
             padding: 10,
-            pressOpacity: 0.5
+            pressOpacity: 0.5,
+            type: 'gridItem'
         },
         gridItemLabel: {
             textAlign: "center",

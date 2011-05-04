@@ -103,6 +103,7 @@ var SettingsWindowController = function(facade){
         usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
         usernameInputOpts.value = credentials.username || '';
         usernameInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
+        usernameInputOpts.autocorrect = false;
         usernameInput = Titanium.UI.createTextField(usernameInputOpts);
         win.add(usernameInput);
 
@@ -117,8 +118,9 @@ var SettingsWindowController = function(facade){
         passwordInputOpts.passwordMask = true;
         passwordInputOpts.top = 100;
         passwordInputOpts.left = 100;
-        usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
-        usernameInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
+        passwordInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
+        passwordInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
+        passwordInputOpts.autocorrect = false;
         passwordInput = Titanium.UI.createTextField(passwordInputOpts);
         win.add(passwordInput);
 
