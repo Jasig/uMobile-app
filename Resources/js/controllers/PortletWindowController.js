@@ -25,7 +25,7 @@ var PortletWindowController = function (facade) {
         initialized, winListeners = [],
         pathToRoot = '../../',
         init, drawWindow, getQualifiedUrl,
-        onBackBtnPress, onBackButtonUp, onIncludePortlet, onPortletLoad, onWindowOpen;
+        onBackBtnPress, onBackButtonUp, onIncludePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen;
 
     init = function () {
         var navBarOptions;
@@ -96,6 +96,7 @@ var PortletWindowController = function (facade) {
             win.add(activityIndicator);
             
             webView.addEventListener('load', onPortletLoad);
+            webView.addEventListener('beforeload', onPortletBeforeLoad);
             onIncludePortlet(portlet);
         }
         else {
@@ -107,10 +108,12 @@ var PortletWindowController = function (facade) {
             
             if (Ti.Platform.osname === 'iphone' && webView) {
                 webView.removeEventListener('load', onPortletLoad);
+                webView.removeEventListener('beforeload', onPortletBeforeLoad);
                 win.remove(webView);
                 webView = Titanium.UI.createWebView(app.styles.portletView);
                 win.add(webView);
                 webView.addEventListener('load', onPortletLoad);
+                webView.addEventListener('beforeload', onPortletBeforeLoad);
             }
             
             onIncludePortlet(portlet);
@@ -147,6 +150,10 @@ var PortletWindowController = function (facade) {
         
         Ti.API.info("is webView loading in onIncludePortlet()? " + webView.loading);
         Ti.API.info("is webView defined? " + webView);
+    };
+    
+    onPortletBeforeLoad = function (e) {
+        Ti.API.debug("Webview is loading");
     };
     
     onPortletLoad = function (e) {

@@ -237,7 +237,8 @@ var Styles = function (app) {
             top: 0, 
             right: 11,
             height: 20,
-            width: 20
+            width: 20,
+            image: app.models.resourceProxy.getResourcePath('icons/badgeBackground.png')
         },
         gridBadgeNumber: {
             textAlign: "center",

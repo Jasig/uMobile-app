@@ -161,7 +161,6 @@ var PortalWindowController = function(facade) {
             // add a badge number to the home screen icon
             if (_portlet.newItemCount > 0) {
                 var gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
-                gridBadgeBackgroundDefaults.image = "../../icons/badgeBackground.png";
                 gridBadgeBackground = Titanium.UI.createImageView(gridBadgeBackgroundDefaults);
                 gridItem.add(gridBadgeBackground);
 
