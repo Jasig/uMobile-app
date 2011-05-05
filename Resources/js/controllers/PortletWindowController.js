@@ -158,8 +158,10 @@ var PortletWindowController = function (facade) {
     };
     
     onPortletLoad = function (e) {
-        Ti.API.debug("onPortletLoad() in PortletWindowController");
-        if (webView.url.indexOf('/') == 0 || webView.url.indexOf(app.UPM.BASE_PORTAL_URL) >= 0) {
+        var portalIndex = e.url.indexOf(app.UPM.BASE_PORTAL_URL);
+        Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
+        if (portalIndex >= 0) {
+            Ti.API.debug("Visiting a portal link");
             Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
             webView.externalModule = false;
             navBar.visible = false;
@@ -169,11 +171,15 @@ var PortletWindowController = function (facade) {
             app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
         } 
         else {
+            Ti.API.debug("Visiting an external link");
             webView.externalModule = true;
             if (webView.canGoBack()) {
                 navBar.visible = true;
                 webView.top = titleBar.height + navBar.height;
                 webView.height = win.height - titleBar.height - navBar.height;
+            }
+            else {
+                Ti.API.info("Webview can't go back");
             }
             // webView.setTop(app.styles.titleBar.height + navBar.height);
         }
