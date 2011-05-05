@@ -55,7 +55,8 @@ var Config = function (app) {
     UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/api/people.json';
     UPM.DIRECTORY_SERVICE_SEARCH_FIELDS = [
         'given',
-        'sn'
+        'sn',
+        'organization'
     ];
     UPM.DIRECTORY_SERVICE_RESULT_FIELDS = {
         fullName: 'displayName',
@@ -67,7 +68,8 @@ var Config = function (app) {
         firstName: 'givenName',
         lastName: 'sn',
         jobTitle: 'title',
-        organization: 'department'
+        department: 'department',
+        organization: 'organization'
     };
     
     UPM.LOCAL_MODULES = [];

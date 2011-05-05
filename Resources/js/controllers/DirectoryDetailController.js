@@ -61,6 +61,7 @@ var DirectoryDetailController = function (facade,opts) {
         person.address = {};
         person.email = {};
         person.phone = {};
+        person.URL = {};
         Ti.API.info('created person');
         Ti.API.info(person.address);
         
@@ -71,12 +72,14 @@ var DirectoryDetailController = function (facade,opts) {
         person.address.home = getAttribute('homeAddress', attributes);
         person.email.home = getAttribute('homeEmail', attributes);
         person.phone.home = getAttribute('homePhone', attributes);
+        person.URL.home = getAttribute('URL', attributes);
         
         person.organization = getAttribute('organization', attributes);
+        person.department = getAttribute('department', attributes);
         person.firstName = getAttribute('firstName', attributes);
         person.fullName = getAttribute('fullName', attributes);
         person.jobTitle = getAttribute('jobTitle', attributes);
-        person.lastName = getAttribute('lastName', attributes);
+        person.lastName = getAttribute('lastName', attributes);        
         Ti.API.info(person);
 
         return person;

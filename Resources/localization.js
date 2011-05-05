@@ -60,7 +60,9 @@ localDictionary.en_US = {
     phone: "Phone",
     title: "Title",
     organization:"Org",
+    department: "Dept",
     address:"Address",
+    url: "Url",
     emailAddress: "Email Address",
     emailAddresses: "Email Addresses",
     directoryErrorFetching: "There was an error fetching the results for your query. Please try a different query."

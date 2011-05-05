@@ -38,6 +38,11 @@ var PersonDetailTableView = function (facade,opts) {
             self.appendRow(createRow({label: app.localDictionary.title, value: person.jobTitle}));
         }
         
+        Ti.API.debug("checking department " + person.department);
+        if (person.department) {
+            self.appendRow(createRow({label: app.localDictionary.department, value: person.department}));
+        }
+        
         Ti.API.debug("checking org " + person.organization);
         if (person.organization) {
             self.appendRow(createRow({label: app.localDictionary.organization, value: person.organization}));
@@ -47,6 +52,15 @@ var PersonDetailTableView = function (facade,opts) {
         if (person.address.home) {
             self.appendRow(createRow({label: app.localDictionary.address, value: person.address.home}));
         }
+        
+        Ti.API.debug("checking url " + person.url);
+        if (person.URL.home) {
+            var _urlRow = createRow({label: app.localDictionary.url, value: person.URL.home, link: true});
+
+            self.appendRow(_urlRow);
+            _urlRow.addEventListener('click', onUrlSelect);
+        }
+        
     };
     function createRow (attributes) {
         var _row, _rowOptions, _label, _value, _valueOpts;
@@ -101,6 +115,10 @@ var PersonDetailTableView = function (facade,opts) {
     
     onPhoneSelect = function (e) {
         Ti.Platform.openURL('tel:' + e.source.title);
+    };
+    
+    onUrlSelect = function (e) {
+        Ti.Platform.openURL(e.source.data);
     };
     
     return self;
