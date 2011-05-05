@@ -54,7 +54,7 @@ localDictionary.en_US = {
     phoneDirectory: "Phone Directory",
     phoneDirectoryNumber: "(555) 555-5555",
     phoneNumber: "Phone Number",
-    emergencyContacts: "Emergency Contacts",
+    emergencyContacts: "Contacts",
     contactDetail: "Contact Detail",
     email: "Email",
     phone: "Phone",

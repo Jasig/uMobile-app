@@ -123,9 +123,20 @@ var Config = function (app) {
         weather: 'icons/weather.png'
     };
 
-    UPM.directoryEmergencyContacts = [];
-    UPM.directoryEmergencyContacts.push({ displayName: ["Campus Police"], telephoneNumber: ['555 555 5555'] });
-    UPM.directoryEmergencyContacts.push({ displayName: ["Campus Ambulance"], telephoneNumber: ['555 555 5555'] });
+    UPM.directoryEmergencyContacts = [
+        { 
+            displayName: ["Jasig Hotel"],
+            telephoneNumber: ['(866) 716-8137'],
+            postalAddress: ['10600 Westminster Boulevard$Westminster, CO 80020'],
+            url: ['http://www.westindenverboulder.com/']
+        },
+        { 
+            displayName: ["Sakai Hotel"],
+            telephoneNumber: ['(213) 624-1000'],
+            postalAddress: ['404 South Figueroa Street$Los Angeles , CA 90071'],
+            url: ['http://www.thebonaventure.com/']
+        }
+    ];
     
     return UPM;
 };
