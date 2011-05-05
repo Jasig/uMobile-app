@@ -234,8 +234,8 @@ var Styles = function (app) {
 
         },
         gridBadgeBackground: {
-            top: 15, 
-            right: 15,
+            top: 0, 
+            right: 11,
             height: 20,
             width: 20
         },
@@ -248,8 +248,8 @@ var Styles = function (app) {
                 fontSize: 12,
                 fontWeight: "bold"
             },
-            top: 16, //Magic number, consider constant or another approach
-            right: 17,
+            top: 1, //Magic number, consider constant or another approach
+            right: 13,
             touchEnabled: false
 
         },
