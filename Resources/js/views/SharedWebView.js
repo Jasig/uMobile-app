@@ -45,28 +45,28 @@ var SharedWebView = function (facade) {
     };
     
     self.getLocalUrl = function (url) {
+        var localUrl, isValidSession;
         Ti.API.debug("getLocalUrl() in SharedWebView");
         /*
         This method determines if a session is valid for the webview, and will
         either modify the URL and load, or will load the URL as-is if session is active.
+        This method only returns a URL, doesn't actually set the url property of the webview.
         */
-        webView.stopLoading();
 
         //We only need to check the session if it's a link to the portal.
-        Ti.API.debug("getLocalUrl() in SharedWebView. Is valid webview session?" + app.models.loginProxy.isValidWebViewSession());
-        Ti.API.debug("URL to load is: " + url);
-        if (!app.models.loginProxy.isValidWebViewSession()) {
+        isValidSession = app.models.loginProxy.isValidWebViewSession();
+        if (!isValidSession) {
             var doCas, doLocal;
             doLocal = function () {
                 Ti.API.debug("load > doLocal() in SharedWebView");
                 Ti.API.debug("Resulting URL: " + app.models.loginProxy.getLocalLoginURL(url));
-                webView.url = app.models.loginProxy.getLocalLoginURL(url);
+                localUrl = app.models.loginProxy.getLocalLoginURL(url);
             };
 
             doCas = function () {
                 Ti.API.debug("load > doCas() in SharedWebView");
                 Ti.API.debug("CAS URL is: " + app.models.loginProxy.getCASLoginURL(url));
-                webView.url = app.models.loginProxy.getCASLoginURL(url);
+                localUrl = app.models.loginProxy.getCASLoginURL(url);
             };
 
             switch (app.UPM.LOGIN_METHOD) {
@@ -85,16 +85,14 @@ var SharedWebView = function (facade) {
                 Ti.API.info("Index of / in URL is 0");
                 var newUrl = app.UPM.BASE_PORTAL_URL + url;
                 Ti.API.info(newUrl);
-                webView.url = newUrl;
-                Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
+                localUrl = newUrl;
             }
             else {
                 Ti.API.info("Index of / in URL is NOT 0");
-                webView.url = url;
-                Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
+                localUrl = url;
             }
         }
-        // manualLoadingTimer();
+        return localUrl;
     };
     
     self.onWebViewLoad = function (e) {

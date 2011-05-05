@@ -39,6 +39,8 @@ var SessionProxy = function (facade) {
                 onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
             timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
+            timers[LoginProxy.sessionTimeContexts.NETWORK].lastUpdated = (new Date()).getTime();
+            Ti.API.info("Network timer updated at " + timers[LoginProxy.sessionTimeContexts.NETWORK].lastUpdated);
         }
         else if (timers[context]) {
             if(timers[context].counter) {
@@ -51,6 +53,7 @@ var SessionProxy = function (facade) {
             }, parseInt(sessionLifeTimeMilli, 10));
             
             timers[context].isActive = true;
+            timers[context].lastUpdated = (new Date()).getTime();
         }
         else {
             Ti.API.debug("No timers matched the context: " + context);
@@ -98,6 +101,27 @@ var SessionProxy = function (facade) {
         }
         else {
             Ti.API.debug("The platform wasn't android, or the context wasn't network. No need for another context.");
+        }
+    };
+    
+    self.validateSessions = function () {
+        var currentTime;
+        Ti.API.debug("validateSessions() in SessionProxy");
+        // This compares the timestamps of all timers against the current time
+        // and the UPM.SERVER_SESSION_TIMEOUT property in config.js
+        
+        currentTime = (new Date()).getTime();
+        
+        for (var timer in timers) {
+            if (timers.hasOwnProperty(timer)) {
+                if (currentTime - timers[timer].lastUpdated < app.UPM.SERVER_SESSION_TIMEOUT * 1000) {
+                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (currentTime - timers[timer].lastUpdated));
+                }
+                else {
+                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (currentTime - timers[timer].lastUpdated));
+                    self.stopTimer(timer);
+                }
+            }
         }
     };
     

@@ -20,7 +20,7 @@
 var PortletWindowController = function (facade) {
     var win,
         self = {},
-        app = facade,
+        app = facade, sharedWebView,
         activityIndicator, titleBar, navBar, webView,
         initialized, winListeners = [],
         pathToRoot = '../../',
@@ -29,6 +29,8 @@ var PortletWindowController = function (facade) {
 
     init = function () {
         var navBarOptions;
+        
+        sharedWebView = app.views.SharedWebView;
         
         Ti.API.debug("init() in PortletWindowController");
         self.key = 'portlet';
@@ -136,7 +138,7 @@ var PortletWindowController = function (facade) {
         if (portlet.url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
             // webView.getLocalUrl(portlet.url);
-            webView.url = app.UPM.BASE_PORTAL_URL + portlet.url;
+            webView.url = sharedWebView.getLocalUrl(portlet.url);
             webView.externalModule = false;
             webView.top = titleBar.height;
         } else {
@@ -144,7 +146,6 @@ var PortletWindowController = function (facade) {
             // webView.getExternalUrl(portlet.url);
             webView.url = portlet.url;
             webView.externalModule = true;
-            
         }
         titleBar.updateTitle(portlet.title);
         
@@ -153,7 +154,7 @@ var PortletWindowController = function (facade) {
     };
     
     onPortletBeforeLoad = function (e) {
-        Ti.API.debug("Webview is loading");
+        Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + webView.url);
     };
     
     onPortletLoad = function (e) {
