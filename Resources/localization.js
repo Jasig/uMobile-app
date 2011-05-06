@@ -52,7 +52,6 @@ localDictionary.en_US = {
     noContactData: "No contact data is available.",
     directorySearchHintText: "John Doe, Jdoe@myschool.edu, 555 555 5555",
     phoneDirectory: "Phone Directory",
-    phoneDirectoryNumber: "(555) 555-5555",
     phoneNumber: "Phone Number",
     emergencyContacts: "Contacts",
     contactDetail: "Contact Detail",

@@ -141,5 +141,7 @@ var Config = function (app) {
         }
     ];
     
+    UPM.phoneDirectoryNumber = false;
+    
     return UPM;
 };

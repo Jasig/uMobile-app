@@ -98,12 +98,12 @@ var DirectoryWindowController = function (facade) {
         }
         
         Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
-        if (!phoneDirectorySection) {
+        if (!phoneDirectorySection && app.UPM.phoneDirectoryNumber) {
             //Create the section and one row to display the phone number for the phone directory
             phoneDirectorySection = Titanium.UI.createTableViewSection();
             phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
             phoneDirectoryRow = Titanium.UI.createTableViewRow({
-                title: app.localDictionary.phoneDirectoryNumber
+                title: app.UPM.phoneDirectoryNumber
             });
             phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
             phoneDirectorySection.add(phoneDirectoryRow);
@@ -245,7 +245,7 @@ var DirectoryWindowController = function (facade) {
     // Search Events
     onPhoneDirectoryClick = function (e) {
         Ti.API.debug("Clicked the phone directory button");
-        Ti.Platform.openURL('tel:' + app.localDictionary.phoneDirectoryNumber);
+        Ti.Platform.openURL('tel:' + app.UPM.phoneDirectoryNumber);
     };
     
     onSearchSubmit = function(e) {
