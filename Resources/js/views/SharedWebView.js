@@ -40,6 +40,7 @@ var SharedWebView = function (facade) {
     
     self.getExternalUrl = function (url) {
         Ti.API.debug("getExternalUrl() in SharedWebView");
+        app.models.deviceProxy.checkNetwork();
         webView.url = url;
         // manualLoadingTimer();
     };
@@ -52,6 +53,10 @@ var SharedWebView = function (facade) {
         either modify the URL and load, or will load the URL as-is if session is active.
         This method only returns a URL, doesn't actually set the url property of the webview.
         */
+
+        if (!app.models.deviceProxy.checkNetwork()) {
+            return;
+        }
 
         //We only need to check the session if it's a link to the portal.
         isValidSession = app.models.loginProxy.isValidWebViewSession();

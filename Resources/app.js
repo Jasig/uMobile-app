@@ -25,6 +25,7 @@ Titanium.include('localization.js');
 Titanium.include('js/gibberish-aes.js');
 
 Titanium.include('js/models/MapProxy.js');
+Titanium.include('js/models/DeviceProxy.js');
 Titanium.include('js/models/DirectoryProxy.js');
 Titanium.include('js/models/LoginProxy.js');
 Titanium.include('js/models/PortalProxy.js');
@@ -93,6 +94,7 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         app.registerModel('mapProxy', new MapService(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
         app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
         app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
+        app.registerModel('deviceProxy', new DeviceProxy(app));
 
         app.registerView('MapDetailTop', MapDetailTop); // Partial view used at the top of the map detail view
         app.registerView('GenericTitleBar', GenericTitleBar); // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.

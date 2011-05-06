@@ -147,14 +147,16 @@ var SettingsWindowController = function(facade){
 
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
-        activityIndicator.loadingMessage(app.localDictionary.loggingIn);
-        activityIndicator.show();
-        app.models.loginProxy.saveCredentials({
-            username: usernameInput.value, 
-            password: passwordInput.value 
-        });
-        app.models.loginProxy.establishNetworkSession();
-        activityIndicator.hide();
+        if (app.models.deviceProxy.checkNetwork()) {
+            activityIndicator.loadingMessage(app.localDictionary.loggingIn);
+            activityIndicator.show();
+            app.models.loginProxy.saveCredentials({
+                username: usernameInput.value, 
+                password: passwordInput.value 
+            });
+            app.models.loginProxy.establishNetworkSession();
+            activityIndicator.hide();
+        }
     };
     
     onSaveButtonPress = function(e) {

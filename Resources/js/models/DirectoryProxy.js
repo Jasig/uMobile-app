@@ -17,6 +17,10 @@ var DirectoryProxy = function (facade,opts) {
     };
     
     self.search = function (query) {
+        if (!app.models.deviceProxy.checkNetwork()) {
+            return;
+        }
+        
         if (query === '') {
             people = [];
             Ti.App.fireEvent('DirectoryProxySearchComplete');

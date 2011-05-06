@@ -38,7 +38,6 @@ var DirectoryWindowController = function (facade) {
     
     init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
-        checkNetwork();
         self.key = 'directory';
         
         Ti.App.addEventListener('showWindow', onWindowBlur);
@@ -70,18 +69,6 @@ var DirectoryWindowController = function (facade) {
     
     self.close = function () {
         win.close();
-    };
-    
-    checkNetwork = function () {
-        var alertDialog;
-        if (!Ti.Network.online) {
-            alertDialog = Titanium.UI.createAlertDialog({
-                title: app.localDictionary.error,
-                message: app.localDictionary.networkConnectionRequired,
-                buttonNames: [app.localDictionary.OK]
-            });
-            alertDialog.show();
-        }
     };
     
     drawDefaultView = function () {

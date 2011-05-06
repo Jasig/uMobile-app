@@ -115,16 +115,17 @@ var MapService = function (facade) {
         //Default returns all points for an institution.
         Ti.API.info("loadMapPoints()");
         Ti.App.fireEvent('MapProxyLoading');
-        request = Titanium.Network.createHTTPClient ({
-            connectionType : 'GET',
-            location : app.UPM.MAP_SERVICE_URL,
-            onload : self.newPointsLoaded,
-            onerror : onLoadError
-        });
-        request.open("GET", app.UPM.MAP_SERVICE_URL);
-        request.send();
-
-        Ti.API.debug("MapService.updateMapPoints() request sent");
+        if (app.models.deviceProxy.checkNetwork()) {
+            request = Titanium.Network.createHTTPClient ({
+                connectionType : 'GET',
+                location : app.UPM.MAP_SERVICE_URL,
+                onload : self.newPointsLoaded,
+                onerror : onLoadError
+            });
+            request.open("GET", app.UPM.MAP_SERVICE_URL);
+            request.send();
+            Ti.API.debug("MapService.updateMapPoints() request sent");
+        }
 
     };
     self.newPointsLoaded = function (e) {
