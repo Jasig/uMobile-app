@@ -49,7 +49,8 @@ var PortalWindowController = function(facade) {
             win = Titanium.UI.createWindow({
                 exitOnClose: false,
                 navBarHidden: true,
-                modal: false
+                modal: false,
+                orientationModes: [Ti.UI.PORTRAIT]
             });
             win.open();
         }

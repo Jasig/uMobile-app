@@ -180,7 +180,10 @@ var PortletWindowController = function (facade) {
             }
             else {
                 Ti.API.info("Webview can't go back");
+                webView.top = titleBar.height;
+                webView.height = win.height - titleBar.height;
             }
+            Ti.API.debug("WebView height is: " + webView.height);
             // webView.setTop(app.styles.titleBar.height + navBar.height);
         }
         activityIndicator.hide();
