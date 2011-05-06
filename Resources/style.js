@@ -297,7 +297,7 @@ var Styles = function (app) {
     	    color: "#4365af"
     	},
     	directoryDetailRowValue: {
-    	    color: '#f00',
+    	    color: '#000',
     	    font: {
     	        fontSize: 14
     	    },

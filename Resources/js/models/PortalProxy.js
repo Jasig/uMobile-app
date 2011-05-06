@@ -102,7 +102,12 @@ var PortalProxy = function (facade) {
                 layoutText = responseXML.getElementsByTagName('json-layout').item(0).text;
 
                 portlets = JSON.parse(layoutText).layout;
-                
+                var module;
+                for (module in nativeModules) {
+                    if (nativeModules.hasOwnProperty(module)) {
+                        nativeModules[module].added = false;
+                    }
+                }
                 for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
                     
                     if(nativeModules[portlets[i].fname]) {
@@ -112,10 +117,12 @@ var PortalProxy = function (facade) {
                     }
                 }
                 
-                for (var module in nativeModules) {
+                for (module in nativeModules) {
                     if (nativeModules.hasOwnProperty(module)) {
                         Ti.API.info("Remaining module: " + JSON.stringify(nativeModules[module]));
-                        if(nativeModules[module].title && !nativeModules[module].added) {
+                        if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
+                            // As long as the module has a title, hasn't already been added, and doesn't 
+                            // require the fname for the module to be returned in the personalized layout.
                             portlets.push(nativeModules[module]);
                         }
                         else {

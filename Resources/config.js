@@ -84,6 +84,7 @@ var Config = function (app) {
         title: 'directory',
         fname: 'directory',
         iconUrl: 'icons/directory.png',
+        doesRequireLayout: true,
         window: 'directory'
     };
     UPM.LOCAL_MODULES.twitter = {
