@@ -4,6 +4,8 @@ var PersonDetailTableView = function (facade,opts) {
         person,
         //Event Handlers
         onEmailSelect,
+        onPhoneSelect,
+        onMapSelect,
         emptyRow,
         isDataEmpty = false;
     
@@ -30,7 +32,9 @@ var PersonDetailTableView = function (facade,opts) {
         
         Ti.API.debug("checking phone " + person.phone.home);
         if (person.phone.home) {
-            self.appendRow(createRow({label: app.localDictionary.phone, value: person.phone.home}));
+            var _phoneRow = createRow({label: app.localDictionary.phone, value: person.phone.home, link: true });
+            self.appendRow(_phoneRow);
+            _phoneRow.addEventListener('click', onPhoneSelect);
         }
         
         Ti.API.debug("checking job " + person.jobTitle);
@@ -50,7 +54,9 @@ var PersonDetailTableView = function (facade,opts) {
         
         Ti.API.debug("checking address " + person.address.home);
         if (person.address.home) {
-            self.appendRow(createRow({label: app.localDictionary.address, value: person.address.home}));
+            var _addressRow = createRow({label: app.localDictionary.address, value: person.address.home, link: true });
+            self.appendRow(_addressRow);
+            _addressRow.addEventListener('click', onMapSelect);
         }
         
         Ti.API.debug("checking url " + person.url);
@@ -114,7 +120,15 @@ var PersonDetailTableView = function (facade,opts) {
     };
     
     onPhoneSelect = function (e) {
-        Ti.Platform.openURL('tel:' + e.source.title);
+        var url = 'tel:' + e.source.data.replace(/[^0-9]/g, '');
+        Ti.API.info(url);
+        Ti.Platform.openURL(url);
+    };
+    
+    onMapSelect = function (e) {
+        var url = 'http://maps.google.com/maps?q=' + e.source.data.replace('$', ' ');
+        Ti.API.debug('Opening map url ' + url);
+        Ti.Platform.openURL(url);
     };
     
     onUrlSelect = function (e) {
