@@ -24,10 +24,10 @@
 
 // library includes
 var PortalWindowController = function(facade) {
-    var win, app = facade, self = {}, loginProxy, initialized,
+    var win, app = facade, self = {}, loginProxy, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
-        init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, showSettings,
-        onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, 
+        init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
+        onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, onNetworkSessionSuccess, onNetworkSessionFailure,
         pathToRoot = '../../';
 
     init = function () {
@@ -38,8 +38,8 @@ var PortalWindowController = function(facade) {
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
         Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
-        Ti.App.addEventListener('EstablishNetworkSessionSuccess', app.models.portalProxy.getPortletsForUser);
-        Ti.App.addEventListener('EstablishNetworkSessionFailure', showSettings);
+        Ti.App.addEventListener('EstablishNetworkSessionSuccess', onNetworkSessionSuccess);
+        Ti.App.addEventListener('EstablishNetworkSessionFailure', onNetworkSessionFailure);
 
     	initialized = true;
     };
@@ -81,7 +81,7 @@ var PortalWindowController = function(facade) {
             
             if (!contentLayer) {
             	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
-                win.add(contentLayer);                
+                win.add(contentLayer);       
             }
             
             if (!activityIndicator) {
@@ -97,11 +97,28 @@ var PortalWindowController = function(facade) {
 
             Ti.API.debug("Creating a new portal home view");
         	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
+        	portalView.height = isGuestLayout ? win.height - titleBar.height - app.styles.homeGuestNote.height : win.height - titleBar.height;
             if (contentLayer) {
                 contentLayer.add(portalView);
             }
             else {
                 Ti.API.error("No contentLayer to which to add the portalView");
+            }
+            
+            if (isGuestLayout) {
+                guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
+                guestNotificationView.top = win.height - titleBar.height - app.styles.homeGuestNote.height;
+                guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+                guestNotificationLabel.text = app.localDictionary.viewingGuestLayout;
+                guestNotificationView.add(guestNotificationLabel);
+                contentLayer.add(guestNotificationView);
+                
+                guestNotificationView.addEventListener('click', function (e){
+                    app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+                });
+            }
+            else {
+                Ti.API.info("isGuestLayout: " + isGuestLayout);
             }
             
         }
@@ -181,16 +198,26 @@ var PortalWindowController = function(facade) {
         
         activityIndicator.hide();
     };
-
-    showSettings = function() {
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'home',
-                newWindow: 'settings',
-                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT 
-            }
-        );
+    
+    onNetworkSessionSuccess = function (e) {
+        if (e.user && e.user === 'guest') {
+            isGuestLayout = true;
+        }
+        else {
+            isGuestLayout = false;
+        }
+        app.models.portalProxy.getPortletsForUser();
+    };
+    
+    onNetworkSessionFailure = function(e) {
+        Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
+        if (e.user && e.user === 'guest') {
+            isGuestLayout = true;
+            app.models.portalProxy.getPortletsForUser();
+        }
+        else {
+            isGuestLayout = false;
+        }
     };
     
     onGridItemClick = function (e) {

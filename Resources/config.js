@@ -44,6 +44,7 @@ var Config = function (app) {
     UPM.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
     UPM.ENCRYPTION_KEY = 'um0b1le';
+    UPM.FORGOT_PASSWORD_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/p/forgot-password';
 
     //------- MAP SERVICE -------
 

@@ -23,6 +23,7 @@ localDictionary.en_US = {
     activityIndicatorMessage: "Loading...",
     networkConnectionRequired: "A network connection is required to use this application. Please connect to the internet and come back to this application.",
     couldNotConnectToPortal: "Sorry, your portlets could not be loaded from the portal.",
+    viewingGuestLayout: "You are viewing the guest layout. Click here to log in.",
     
     //Map Window & Map Detail Window
     map: "Map",
@@ -43,7 +44,10 @@ localDictionary.en_US = {
     settings: "Settings",
     username: "Username",
     password: "Password",
-    authenticationFailed: "Authentication failed",
+    authenticationFailed: "Authentication failed. Please check your username and password and try again.",
+    enterAUserName: "Please enter a valid username.",
+    resetPasswordTitle: "Reset Password",
+    resetPasswordLink: "To set or reset your password, visit: ",
     loggingIn: "Logging in",
     
     //Directory Window

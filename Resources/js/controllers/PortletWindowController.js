@@ -36,9 +36,20 @@ var PortletWindowController = function (facade) {
         initialized = true;
     };
     
-    self.close = function () {
+    self.close = function (options) {
         Ti.API.info("close() in PortletWindowController");
-        win.close();
+        if (win) {
+            if (options && options.callback) {
+                win.addEventListener('close', function winCallback (e) {
+                    win.removeEventListener('close', winCallback);
+                    options.callback();
+                });
+            }
+            win.close();            
+        }
+        else {
+            Ti.API.error("Portlet Window isn't open");
+        }
     };
     
     self.open = function (portlet) {

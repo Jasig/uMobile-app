@@ -1,7 +1,7 @@
 var LoginProxy = function (facade) {
     var app = facade,
         self = {}, sessionProxy,
-        init, updateSessionTimeout, establishSilentNetworkSession, loginMethod,
+        init, updateSessionTimeout, establishSilentNetworkSession, loginMethod, getLayoutUser,
         networkSessionTimer, webViewSessionTimer, onSessionExpire, onNetworkError;
 
     
@@ -175,25 +175,26 @@ var LoginProxy = function (facade) {
      * Establish a session on the uPortal server.
      */
     self.establishNetworkSession = function(options) {
+        var credentials, url, onAuthComplete, onAuthError, authenticator;
         /* 
         Possible options: 
             isUnobtrusive (Bool), tells it not to reload anything, just establish-the session again behind the scenes
         */
-        Ti.API.info("Establishing Session");
-        var credentials, url, onAuthComplete, onAuthError, authenticator;
-
+        Ti.API.info("Establishing Network Session");
         onAuthError = function (e) {
+            var _user = getLayoutUser(authenticator);
             Ti.API.info("onAuthError in LoginProxy.establishNetworkSession");
             sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent("EstablishNetworkSessionFailure");
+            Ti.App.fireEvent("EstablishNetworkSessionFailure", {user: _user});
         };
         
         onAuthComplete = function (e) {
+            var _user = getLayoutUser(authenticator);
             Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
             sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             
             if (!options || !options.isUnobtrusive) {
-                Ti.App.fireEvent("EstablishNetworkSessionSuccess");
+                Ti.App.fireEvent("EstablishNetworkSessionSuccess", {user: _user});
             }
         };
 
@@ -234,13 +235,24 @@ var LoginProxy = function (facade) {
     };
     self.doLocalLogin = function (credentials, options) {
         Ti.API.info("LoginProxy doLocalLogin");
-        var url, onLoginComplete, onLoginError;
+        var client, url, onLoginComplete, onLoginError;
         
         onLoginComplete = function (e) {
-            sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            if (!options || !options.isUnobtrusive) {
-                Ti.App.fireEvent('EstablishNetworkSessionSuccess');
+            var _responseXML, _layout, _layoutUser;
+            Ti.API.info("doLocalLogin() -> onLoginComplete() in LoginProxy");
+            _layoutUser = getLayoutUser(client);
+            Ti.API.info("_layoutUser is: " + _layoutUser);
+            
+            if (_layoutUser === credentials.username) {
+                sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+                if (!options || !options.isUnobtrusive) {
+                    Ti.App.fireEvent('EstablishNetworkSessionSuccess', {user: _layoutUser});
+                }                
             }
+            else {
+                Ti.App.fireEvent('EstablishNetworkSessionFailure', {user: _layoutUser});
+            }
+            
         };
         
         onLoginError = function (e) {
@@ -341,6 +353,35 @@ var LoginProxy = function (facade) {
         client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
         
         client.send();
+    };
+    
+    getLayoutUser = function (client) {
+        var _layout, _username;
+        if (!client.responseXML) {
+            Ti.API.info("No responseXML");
+            if (typeof DOMParser != "undefined") {
+                Ti.API.info("No DOMParser");
+                // Titanium Desktop 1.0 doesn't fill out responseXML.
+                // We'll use WebKit's XML parser...
+                _responseXML = (new DOMParser()).parseFromString(client.responseText, "text/xml");
+            } 
+            else {
+                Ti.API.info("There is a DOMParser");
+                // Titanium Mobile 1.3 doesn't fill out responseXML on Android.
+                // We'll use Titanium's XML parser...
+                _responseXML = Titanium.XML.parseString(client.responseText);
+            }
+        } 
+        else {
+            Ti.API.info("There IS responseXML");
+            _responseXML = client.responseXML;
+        }
+        
+        _layout = _responseXML.getElementsByTagName('json-layout').item(0).text;
+
+        _username = JSON.parse(_layout).user;
+        
+        return _username;
     };
     
     onNetworkError = function (e) {

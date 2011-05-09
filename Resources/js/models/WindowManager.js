@@ -19,17 +19,31 @@ var WindowManager = function (facade) {
     self.openWindow = function (windowKey, portlet) {
         Ti.API.debug("openWindow() in WindowManager");
         //Opens a window based on key string provided.
+        Ti.API.info("The current window is " + self.getCurrentWindow());
         if (applicationWindows[windowKey]) {
             if (activityStack.length == 0) {
-                applicationWindows[windowKey].open();
+                applicationWindows[app.controllers.portalWindowController.key].open();
             }
-            else if (applicationWindows[activityStack[(activityStack.length - 1)]] != applicationWindows[windowKey]) {
-                //We don't want the webview to keep loading as the user navigates to a new window.
-                //If the user is navigating to a webView window, it will load the webview when it's ready.
-                app.views.SharedWebView.stopLoading();
-                hidePreviousWindow();
+            else if (self.getCurrentWindow() != applicationWindows[windowKey]) {
+                //If the current window isn't the same window we're trying to open
                 
-                if (windowKey !== 'home') {
+                if (self.getCurrentWindow() != app.controllers.portalWindowController.key && windowKey !== app.controllers.portalWindowController.key) {
+                    //if the current window isn't the home window
+                    //We need to make sure we wait for the transition to complete for the previous window
+                    hidePreviousWindow({callback: function () {
+                        Ti.API.info("complete() in openWindow");
+                        if (portlet) {
+                            Ti.API.debug("new window is a portlet");
+                            applicationWindows[windowKey].open(portlet);
+                        }
+                        else {
+                            Ti.API.debug("new window is NOT a portlet" + applicationWindows[windowKey].key + '' + applicationWindows[windowKey]);
+                            applicationWindows[windowKey].open();
+                        }
+                    }});
+                }
+                else if (windowKey !== app.controllers.portalWindowController.key) {
+                    hidePreviousWindow();
                     //Home is always present, never needs opened or closed.
                     Ti.API.info("new window isn't home");
                     if (portlet) {
@@ -40,6 +54,10 @@ var WindowManager = function (facade) {
                         Ti.API.debug("new window is NOT a portlet" + applicationWindows[windowKey].key + '' + applicationWindows[windowKey]);
                         applicationWindows[windowKey].open();
                     }
+                }
+                else {
+                    //It must be the home window
+                    hidePreviousWindow();
                 }
             }
             else {
@@ -86,12 +104,13 @@ var WindowManager = function (facade) {
         return lastWindow;
     };
     
-    hidePreviousWindow = function () {
+    hidePreviousWindow = function (options) {
         // This will hide the previous window, presuming that the previous window
         // exists, and that it isn't the home screen.
-        if (activityStack.length > 0 && activityStack[activityStack.length - 1] !== 'home') {
+        if (activityStack.length > 0 && self.getCurrentWindow() !== app.controllers.portalWindowController.key) {
+            //If there IS a previous window, and the current window isn't home.
             Ti.API.debug("Hiding previous window: " + activityStack[activityStack.length - 1]);
-            applicationWindows[activityStack[activityStack.length - 1]].close();
+            applicationWindows[activityStack[activityStack.length - 1]].close(options);
         }
     };
     

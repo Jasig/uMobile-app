@@ -79,7 +79,17 @@ var SettingsWindowController = function(facade){
         }
     };
     
-    self.close = function () {
+    self.close = function (options) {
+        if (options.callback) {
+            win.addEventListener('close', function winCallback(e) {
+                Ti.API.info("Settings Window close event fired.");
+                win.removeEventListener('close', winCallback);
+                options.callback();
+            });
+        }
+        else {
+            Ti.API.error("There's no callback in the close options for SettingsWindowController");
+        }
         win.close();
         onWindowBlur();
     };
@@ -134,6 +144,7 @@ var SettingsWindowController = function(facade){
         saveButton = Titanium.UI.createButton(saveButtonOpts);
 
         win.add(saveButton);
+        
 
         saveButton.addEventListener('click', onUpdateCredentials);
         if(Ti.Platform.osname === 'iphone') {
@@ -142,20 +153,42 @@ var SettingsWindowController = function(facade){
         }
         passwordInput.addEventListener('return', onUpdateCredentials);
         usernameInput.addEventListener('return', onUpdateCredentials);
+        
+        resetPassword = Ti.UI.createLabel(app.styles.textFieldLabel);
+        resetPassword.top = 200;
+        resetPassword.left = 10;
+        resetPassword.height = 40;
+        resetPassword.textDecoration = 'underline';
+        resetPassword.text = app.localDictionary.resetPasswordLink + app.UPM.FORGOT_PASSWORD_URL;
+        resetPassword.addEventListener('click', function (e){
+            app.models.windowManager.openWindow(app.controllers.portletWindowController.key, {
+                url: app.UPM.FORGOT_PASSWORD_URL + '?isNativeDevice=true', 
+                title: app.localDictionary.resetPasswordTitle,
+                externalModule: true
+            });
+        });
+        win.add(resetPassword);
+        
 
     };
 
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
         if (app.models.deviceProxy.checkNetwork()) {
-            activityIndicator.loadingMessage(app.localDictionary.loggingIn);
-            activityIndicator.show();
-            app.models.loginProxy.saveCredentials({
-                username: usernameInput.value, 
-                password: passwordInput.value 
-            });
-            app.models.loginProxy.establishNetworkSession();
-            activityIndicator.hide();
+            if (usernameInput.value === '') {
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                    message: app.localDictionary.enterAUserName, buttonNames: [app.localDictionary.OK]
+                    }).show();
+            }
+            else {
+                activityIndicator.loadingMessage(app.localDictionary.loggingIn);
+                activityIndicator.show();
+                app.models.loginProxy.saveCredentials({
+                    username: usernameInput.value, 
+                    password: passwordInput.value 
+                });
+                app.models.loginProxy.establishNetworkSession();                
+            }
         }
     };
     
@@ -182,16 +215,13 @@ var SettingsWindowController = function(facade){
     
     //LoginProxy events
     onSessionSuccess = function (e) {
+        if (activityIndicator) {
+            activityIndicator.hide();
+        }
         Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow);
         if(app.models.windowManager.getCurrentWindow() === self.key) {
             Ti.API.debug("onSessionSuccess() in SettingsWindowController");
-            Ti.App.fireEvent(
-                'showWindow', 
-                {
-                    newWindow: 'home',
-                    transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_RIGHT
-                }
-            );            
+            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
         }
         else {
             Ti.API.debug("SettingsWindow isn't visible apparently...");
@@ -199,8 +229,14 @@ var SettingsWindowController = function(facade){
     };
     
     onSessionError = function (e) {
-        if(win && win.visible) {
-            Ti.API.debug("onSessionError() in SettingsWindowController");
+        Ti.API.debug("onSessionError() in SettingsWindowController");
+        if (activityIndicator) {
+            activityIndicator.hide();
+        }
+        if (e.user && e.user != app.models.loginProxy.getCredentials().username) {
+            if (!win || !win.visible) {
+                app.models.windowManager.openWindow(self.key);
+            }
             Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                 message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
                 }).show();

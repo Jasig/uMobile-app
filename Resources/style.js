@@ -206,6 +206,17 @@ var Styles = function (app) {
             backgroundImage: 'images/home-background.png',
             zIndex: 1
         },
+        homeGuestNote: {
+            height: 40,
+            backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+        },
+        homeGuestNoteLabel: {
+            color: "#fff",
+            textAlign: 'center',
+            font: {
+                fontSize: 12
+            }
+        },
         gridIcon: {
             top: 0,
             canScale: false,

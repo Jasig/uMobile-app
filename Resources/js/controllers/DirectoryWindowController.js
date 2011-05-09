@@ -60,7 +60,13 @@ var DirectoryWindowController = function (facade) {
         drawDefaultView();
     };
     
-    self.close = function () {
+    self.close = function (options) {
+        if (options.callback) {
+            win.addEventListener('close', function winCallback(e) {
+                win.removeEventListener('close', winCallback);
+                options.callback();
+            });
+        }
         win.close();
     };
     

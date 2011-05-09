@@ -67,9 +67,15 @@ var MapWindowController = function(facade) {
         resetMapLocation();
     };
     
-    self.close = function () {
+    self.close = function (options) {
         if (win) {
             win.close();
+            if (options.callback) {
+                win.addEventListener('close', function winCallback(e) {
+                    win.removeEventListener('close', winCallback);
+                    options.callback();
+                });
+            }
         }
         searchBlur();
     };

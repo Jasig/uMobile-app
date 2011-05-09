@@ -6,16 +6,10 @@ var PortalProxy = function (facade) {
         Ti.API.debug("getShowPortletFunc() in PortalProxy");
         return function () {
             if (portlet.url) {
-                Titanium.App.fireEvent('showPortlet', portlet);
+                app.models.windowManager.openWindow(app.controllers.portletWindowController.key, portlet);
             } 
             else {
-                Titanium.App.fireEvent(
-                    'showWindow', 
-                    {
-                        oldWindow: 'home',
-                        newWindow: portlet.window
-                    }
-                );
+                app.models.windowManager.openWindow(portlet.window);
             }
         };
     };
