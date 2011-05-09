@@ -39,31 +39,32 @@ var MapWindowController = function(facade) {
         Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
         Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
+        
+        
         initialized = true;
     };
     
     self.open = function () {
         if (!win) {
-            win = Titanium.UI.createWindow({
-                backgroundColor: app.styles.backgroundColor,
-                exitOnClose: false,
-                navBarHidden: true,
-                modal: true
-            });
-            if (Ti.Platform.osname === 'iphone') {
-                win.top = 20;
-            }
-            win.open();
-            
             //Initialize the mapProxy, which manages the data for points on the map,
             //including retrieval of data and searching array of points
             mapProxy.init();
         }
         else {
-            win.open();
-            resetMapLocation();
+            win.close();
         }
+        win = Titanium.UI.createWindow({
+            backgroundColor: app.styles.backgroundColor,
+            exitOnClose: false,
+            navBarHidden: true,
+            modal: true
+        });
+        if (Ti.Platform.osname === 'iphone') {
+            win.top = 20;
+        }
+        win.open();
         createMainView();
+        resetMapLocation();
     };
     
     self.close = function () {
@@ -76,30 +77,27 @@ var MapWindowController = function(facade) {
     createMainView = function() {
         var annotations, buttonBar, mapViewOpts;
         if (win) {
-            if (!titleBar) {
-                titleBar = app.views.GenericTitleBar({
-                    homeButton: true,
-                    app: app,
-                    settingsButton: false,
-                    title: app.localDictionary.map,
-                    windowKey: 'map'
-                });
-                win.add(titleBar);
-            }
+            titleBar = app.views.GenericTitleBar({
+                homeButton: true,
+                app: app,
+                settingsButton: false,
+                title: app.localDictionary.map,
+                windowKey: 'map'
+            });
+            win.add(titleBar);
 
-            if (!activityIndicator) {
-                activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
-                win.add(activityIndicator);
-            }
 
-            if (!searchBar) {
-                searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
-                win.add(searchBar);
-                searchBar.addEventListener('return', searchSubmit);
-                searchBar.addEventListener('cancel', searchBlur);            
-            }
 
-            if (!mapView) {
+            activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+            win.add(activityIndicator);
+            activityIndicator.hide();
+
+            searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+            win.add(searchBar);
+            searchBar.addEventListener('return', searchSubmit);
+            searchBar.addEventListener('cancel', searchBlur);            
+
+            if ((Ti.Platform.osname === 'android' && !mapView) || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
                 // create the map view
                 mapViewOpts = app.styles.mapView;
                 if (app.UPM.DEFAULT_MAP_REGION) {
@@ -119,7 +117,7 @@ var MapWindowController = function(facade) {
                 Ti.API.info("Map added with dimensions of: " + JSON.stringify(mapView.size) );
             }
 
-            if (!buttonBar && Titanium.Platform.osname === "iphone") {
+            if (Titanium.Platform.osname === "iphone") {
                 // create controls for zoomin / zoomout
                 // included in Android by default
 
