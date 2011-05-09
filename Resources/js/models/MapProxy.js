@@ -214,7 +214,7 @@ var MapService = function (facade) {
             mapCenter.latitudeDelta = (mapCenter.latHigh - mapCenter.latLow) > 0.005 ? mapCenter.latHigh - mapCenter.latLow : 0.005;
             mapCenter.longitudeDelta = (mapCenter.longHigh - mapCenter.longLow) > 0.005 ? mapCenter.longHigh - mapCenter.longLow : 0.005;
             Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(mapCenter));
-            return mapCenter;            
+            return mapCenter;
         }
     };
     

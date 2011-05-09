@@ -1,5 +1,5 @@
 var WindowManager = function (facade) {
-    var app=facade, init, hidePreviousWindow, self = {}, applicationWindows = [], activityStack = [],
+    var app=facade, init, hidePreviousWindow, self = {}, applicationWindows = [], activityStack = [], saveLastWindow,
         onAndroidBack, onShowWindow, onShowPortlet, ensureOpenTimer;
 
     init = function () {
@@ -18,6 +18,7 @@ var WindowManager = function (facade) {
     
     self.openWindow = function (windowKey, portlet) {
         Ti.API.debug("openWindow() in WindowManager");
+        //Opens a window based on key string provided.
         if (applicationWindows[windowKey]) {
             if (activityStack.length == 0) {
                 applicationWindows[windowKey].open();
@@ -45,7 +46,11 @@ var WindowManager = function (facade) {
                 Ti.API.debug("You're trying to navigate to the same window you're already in.");
             }
             //We want the activity stack to know that this was the most recent window.
+            Ti.App.Properties.setString('lastWindow', windowKey);
             activityStack.push(windowKey);
+            if (portlet) {
+                Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
+            }
         }
         else {
             Ti.API.error('No window exists for that key: ' + windowKey);
@@ -60,7 +65,25 @@ var WindowManager = function (facade) {
     };
     
     self.getCurrentWindow = function () {
-        return activityStack[activityStack.length - 1];
+        return activityStack.length > 0 ? activityStack[activityStack.length - 1] : false;
+    };
+    
+    self.getCurrentPortlet = function () {
+        // var _currentPortlet = (activityStack.length > 0 && activityStack[activityStack.length -1].portlet) ? activityStack[activityStack.length - 1].portlet : false;
+        var _currentPortlet = activityStack[activityStack.length -1].portlet;
+        Ti.API.info("getCurrentPortlet() in WindowManager: " + JSON.stringify(_currentPortlet));
+        return _currentPortlet;
+    };
+    
+    self.getPreviousSessionWindow = function () {
+        var db, resultSet, lastWindow = false;
+        db = Titanium.Database.open('umobile');
+        resultSet = db.execute("SELECT value FROM prefs WHERE name='lastwindow' LIMIT 1");
+        while (resultSet.isValidRow()) {
+            lastWindow = resultSet.fieldByName('value');
+        }
+        db.close();
+        return lastWindow;
     };
     
     hidePreviousWindow = function () {

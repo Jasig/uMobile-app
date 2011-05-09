@@ -48,6 +48,8 @@ Titanium.include('js/controllers/PortalWindowController.js');
 Titanium.include('js/controllers/PortletWindowController.js');
 Titanium.include('js/controllers/SettingsWindowController.js');
 
+Titanium.include('js/controllers/commands/StartupCommand.js');
+
 (function (){
     var app, windowManager, init, setUpWindows, alertDialog, onResume, onPause;
     
@@ -55,7 +57,8 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         Ti.API.info("Hello. You're on an: " + Ti.Platform.osname);
         Ti.API.info("Your resolution is: " + Ti.Platform.displayCaps.density);
         Ti.API.info("With a DPI of: " + Ti.Platform.displayCaps.dpi);
-        Ti.App.addEventListener('resume', onResume);
+        Ti.API.info("Last Portlet is: " + Ti.App.Properties.getString('lastPortlet', 'none'));
+        Ti.API.info("Last Window is: " + Ti.App.Properties.getString('lastWindow', 'none'));
 
         setUpFacade();
         windowManager = app.models.windowManager;
@@ -72,7 +75,7 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         }
         
         setUpWindows();
-        windowManager.openWindow('home');
+        StartupCommand(app);
     };
     
     setUpFacade = function () {
@@ -128,11 +131,6 @@ Titanium.include('js/controllers/SettingsWindowController.js');
         windowManager.addWindow(app.controllers.directoryWindowController);
         windowManager.addWindow(app.controllers.mapWindowController);
         windowManager.addWindow(app.controllers.settingsWindowController);
-    };
-    
-    onResume = function (e) {
-        Ti.API.debug("onResume() in app");
-        app.models.sessionProxy.validateSessions();
     };
     
     init();

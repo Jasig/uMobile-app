@@ -39,7 +39,8 @@ var SessionProxy = function (facade) {
                 onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
             timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
-            timers[LoginProxy.sessionTimeContexts.NETWORK].lastUpdated = (new Date()).getTime();
+            Ti.App.Properties.setInt('timer_' + context, (new Date()).getTime());
+            
             Ti.API.info("Network timer updated at " + timers[LoginProxy.sessionTimeContexts.NETWORK].lastUpdated);
         }
         else if (timers[context]) {
@@ -53,7 +54,7 @@ var SessionProxy = function (facade) {
             }, parseInt(sessionLifeTimeMilli, 10));
             
             timers[context].isActive = true;
-            timers[context].lastUpdated = (new Date()).getTime();
+            Ti.App.Properties.setInt('timer_' + context, (new Date()).getTime());
         }
         else {
             Ti.API.debug("No timers matched the context: " + context);
@@ -89,6 +90,7 @@ var SessionProxy = function (facade) {
                 clearTimeout(timers[context].counter);
             }
             timers[context].isActive = false;
+            Ti.App.Properties.removeProperty('timer_' + context);
         }
     };
     
@@ -105,24 +107,28 @@ var SessionProxy = function (facade) {
     };
     
     self.validateSessions = function () {
-        var currentTime;
+        var _currentTime, _sessions = [];
         Ti.API.debug("validateSessions() in SessionProxy");
         // This compares the timestamps of all timers against the current time
         // and the UPM.SERVER_SESSION_TIMEOUT property in config.js
         
-        currentTime = (new Date()).getTime();
+        _currentTime = (new Date()).getTime();
         
         for (var timer in timers) {
             if (timers.hasOwnProperty(timer)) {
-                if (currentTime - timers[timer].lastUpdated < app.UPM.SERVER_SESSION_TIMEOUT * 1000) {
-                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (currentTime - timers[timer].lastUpdated));
+                if (_currentTime - Ti.App.Properties.getInt('timer_' + timer) < app.UPM.SERVER_SESSION_TIMEOUT * 1000) {
+                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (_currentTime - Ti.App.Properties.getInt('timer_' + timer)));
+                    _sessions[timer] = true;
                 }
                 else {
-                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (currentTime - timers[timer].lastUpdated));
+                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (_currentTime - Ti.App.Properties.getInt('timer_' + timer)));
+                    _sessions[timer] = false;
                     self.stopTimer(timer);
                 }
             }
         }
+        
+        return _sessions;
     };
     
     onSessionActivity = function (e) {
