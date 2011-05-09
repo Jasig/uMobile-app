@@ -46,24 +46,17 @@ var DirectoryWindowController = function (facade) {
     };
     
     self.open = function () {
-        if (!win) {
-            win = Titanium.UI.createWindow({
-                backgroundColor: app.styles.backgroundColor,
-                title: app.localDictionary.directory,
-                exitOnClose: false,
-                navBarHidden: true,
-                modal: true
-            });
-            if (Ti.Platform.osname === 'iphone') {
-                win.top = 20;
-            }
-            win.open();
+        win = Titanium.UI.createWindow({
+            backgroundColor: app.styles.backgroundColor,
+            title: app.localDictionary.directory,
+            exitOnClose: false,
+            navBarHidden: true,
+            modal: true
+        });
+        if (Ti.Platform.osname === 'iphone') {
+            win.top = 20;
         }
-        else {
-            win.open();
-            resetHome();
-            onSearchCancel();
-        }
+        win.open();
         drawDefaultView();
     };
     
@@ -73,7 +66,7 @@ var DirectoryWindowController = function (facade) {
     
     drawDefaultView = function () {
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
-        if(!titleBar) {
+        if (win) {
             //Create a title bar from the generic title bar partial view
             titleBar = new app.views.GenericTitleBar({
                 app: app,
@@ -81,28 +74,26 @@ var DirectoryWindowController = function (facade) {
                 homeButton: true,
                 settingsButton: false
             });
-            win.add(titleBar);            
-        }
-        
-        Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
-        if (!phoneDirectorySection && app.UPM.phoneDirectoryNumber) {
-            //Create the section and one row to display the phone number for the phone directory
-            phoneDirectorySection = Titanium.UI.createTableViewSection();
-            phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
-            phoneDirectoryRow = Titanium.UI.createTableViewRow({
-                title: app.UPM.phoneDirectoryNumber
-            });
-            phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
-            phoneDirectorySection.add(phoneDirectoryRow);
-            defaultTableData.push(phoneDirectorySection);
-        }
-        
-        
-        Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
-        
-        if (!emergencyContactSection) {
+            win.add(titleBar);
+
+
+            Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
+            if (app.UPM.phoneDirectoryNumber) {
+                //Create the section and one row to display the phone number for the phone directory
+                phoneDirectorySection = Titanium.UI.createTableViewSection();
+                phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
+                phoneDirectoryRow = Titanium.UI.createTableViewRow({
+                    title: app.UPM.phoneDirectoryNumber
+                });
+                phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
+                phoneDirectorySection.add(phoneDirectoryRow);
+                defaultTableData.push(phoneDirectorySection);
+            }
+
+
+            Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
             //Create a section to display emergency contact numbers
-            if(directoryProxy.getEmergencyContacts().length > 0) {
+            if (!emergencyContactSection && directoryProxy.getEmergencyContacts().length > 0) {
                 emergencyContactSection = Titanium.UI.createTableViewSection();
                 emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
                 for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
@@ -120,10 +111,8 @@ var DirectoryWindowController = function (facade) {
             else {
                 Ti.API.info("There aren't any emergency contacts");
             }
-        }
-        
-        Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
-        if (!peopleListTable) {
+
+            Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
             //Create the main table
             peopleListTable = Titanium.UI.createTableView({
                 data: defaultTableData,
@@ -134,39 +123,30 @@ var DirectoryWindowController = function (facade) {
             }
             win.add(peopleListTable);
             peopleListTable.addEventListener('touchstart', blurSearch);
-            peopleListTable.addEventListener('move', blurSearch);            
-        }
-        
-        Ti.API.debug("Adding searchBar in DirectoryWindowController");
-        if (!searchBar) {
+            peopleListTable.addEventListener('move', blurSearch);
+
+            Ti.API.debug("Adding searchBar in DirectoryWindowController");
             searchBarOptions = app.styles.searchBar;
             searchBarOptions.top = app.styles.titleBar.height;
             // searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
             //Create and add a search bar at the top of the table to search for contacts
             searchBar = Titanium.UI.createSearchBar(searchBarOptions);
-
             win.add(searchBar);
             searchBar.addEventListener('cancel', onSearchCancel);
             searchBar.addEventListener('return', onSearchSubmit);
             searchBar.addEventListener('change', onSearchChange);
-        }
 
-        if (!contactDetailView) {
             //Create the contact detail view but don't show it yet.
             contactDetailViewOptions = app.styles.contactDetailView;
             contactDetailView = new app.controllers.DirectoryDetailController(app, contactDetailViewOptions);
-
-            Ti.API.debug('created contactDetailView');
             win.add(contactDetailView);
-        }
 
-        if (!activityIndicator) {
             activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
             activityIndicator.resetDimensions();
-            
             win.add(activityIndicator);
             activityIndicator.hide();
         }
+
     };
     
     resetHome = function () {
