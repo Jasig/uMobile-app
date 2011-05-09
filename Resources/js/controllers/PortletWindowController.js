@@ -30,7 +30,6 @@ var PortletWindowController = function (facade) {
     init = function () {
         var navBarOptions;
         Ti.API.debug("init() in PortletWindowController");
-        Ti.App.addEventListener('resume', onAppResume);
         self.key = 'portlet';
         sharedWebView = app.views.SharedWebView;
         
@@ -197,26 +196,6 @@ var PortletWindowController = function (facade) {
         navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
     };
     
-    onAppResume = function (e) {
-        //Fired when the user opens the app back up (at least in iOS, untested in Android)
-        Ti.API.debug("onAppResume() in PortletWindowController");
-        
-        if (app.models.windowManager.getCurrentWindow() === self.key) {
-            win.addEventListener('close', function _onWinClose (e) {
-                win.removeEventListener('close', _onWinClose);
-                win = undefined;
-                self.open();
-            });
-            win.close();            
-        }
-        else {
-            Ti.API.debug("Current window isn't portlet, it's " + app.models.windowManager.getCurrentWindow());
-        }
-
-        
-        
-    };
-
     if (!initialized) {
         init();
     }
