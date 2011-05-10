@@ -24,7 +24,7 @@
 
 var SettingsWindowController = function(facade){
     var win, app = facade, self = {},
-        credentials, initialized,
+        credentials, initialized, wasFormSubmitted = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
         onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
@@ -159,6 +159,7 @@ var SettingsWindowController = function(facade){
                     }).show();
             }
             else {
+                wasFormSubmitted = true;
                 activityIndicator.loadingMessage(app.localDictionary.loggingIn);
                 activityIndicator.show();
                 app.models.loginProxy.saveCredentials({
@@ -219,7 +220,7 @@ var SettingsWindowController = function(facade){
             activityIndicator.hide();
         }
         Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
-        if(app.models.windowManager.getCurrentWindow() === self.key) {
+        if(app.models.windowManager.getCurrentWindow() === self.key && e.user === credentials.username && wasFormSubmitted) {
             Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
                 message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
                 }).show();
@@ -230,7 +231,7 @@ var SettingsWindowController = function(facade){
     };
     
     onPortalProxyPortletsLoaded = function (e) {
-        if (e.user === credentials.username && app.models.windowManager.getPreviousWindow()) {
+        if (wasFormSubmitted) {
             app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
         }
         else {
