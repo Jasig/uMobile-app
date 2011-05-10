@@ -34,7 +34,6 @@ var WindowManager = function (facade) {
             }
             Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
         }
-        
     };
     
     self.goBack = function () {
@@ -44,8 +43,12 @@ var WindowManager = function (facade) {
         }
     };
     
-    self.getCurrentWindow = function () {
+    self.getCurrentWindow = function (offset) {
         return activityStack.length > 0 ? activityStack[activityStack.length - 1] : false;
+    };
+    
+    self.getPreviousWindow = function () {
+        return activityStack.length > 1 ? activityStack[activityStack.length - 2] : false;
     };
     
     self.getCurrentPortlet = function () {

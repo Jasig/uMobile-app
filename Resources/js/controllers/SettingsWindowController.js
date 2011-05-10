@@ -27,13 +27,16 @@ var SettingsWindowController = function(facade){
         credentials, initialized,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
-        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
+        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
 
     init = function () {
         self.key = 'settings';
         Ti.API.debug("init() in SettingsWindowController");
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
+        Ti.App.addEventListener('PortalProxyPortletsLoaded', onPortalProxyPortletsLoaded);
+        
+        credentials = app.models.loginProxy.getCredentials();
         
         initialized = true;
     };
@@ -118,7 +121,7 @@ var SettingsWindowController = function(facade){
         
         logOutButtonOpts.left = 100 + 10 * 2;
         logOutButtonOpts.top = 150;
-        logOutButtonOpts.title = "log out";
+        logOutButtonOpts.title = app.localDictionary.logOut;
         logOutButton = Ti.UI.createButton(logOutButtonOpts);
         
         win.add(logOutButton);
@@ -147,6 +150,8 @@ var SettingsWindowController = function(facade){
 
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
+        if (passwordInput) { passwordInput.blur(); }
+        if (usernameInput) { usernameInput.blur(); }
         if (app.models.deviceProxy.checkNetwork()) {
             if (usernameInput.value === '') {
                 Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
@@ -172,13 +177,15 @@ var SettingsWindowController = function(facade){
     
     onSaveButtonUp = function (e) {
         Ti.API.debug("onSaveButtonUp() in SettingsWindowController");
-        saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+        if (saveButton) { saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient; }
     };
     
     onLogOutButtonClick = function (e) {
+        if (passwordInput) { passwordInput.blur(); }
+        if (usernameInput) { usernameInput.blur(); }
         app.models.loginProxy.saveCredentials({
             username: '', 
-            password: '' 
+            password: ''
         });
         usernameInput.value = '';
         passwordInput.value = '';
@@ -190,7 +197,9 @@ var SettingsWindowController = function(facade){
     };
     
     onLogOutButtonUp = function (e) {
-        logOutButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+        if (passwordInput) { passwordInput.blur(); }
+        if (usernameInput) { usernameInput.blur(); }
+        if (logOutButton) { logOutButton.backgroundGradient = app.styles.contentButton.backgroundGradient; }
     };
     
     onWindowBlur = function (e) {
@@ -209,13 +218,23 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
-        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow);
+        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
         if(app.models.windowManager.getCurrentWindow() === self.key) {
-            Ti.API.debug("onSessionSuccess() in SettingsWindowController");
-            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+            Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
+                message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
+                }).show();
         }
         else {
             Ti.API.debug("SettingsWindow isn't visible apparently...");
+        }
+    };
+    
+    onPortalProxyPortletsLoaded = function (e) {
+        if (e.user === credentials.username && app.models.windowManager.getPreviousWindow()) {
+            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+        }
+        else {
+            Ti.API.debug("The portlets loaded are for " + e.user + " and not for " + credentials.username);
         }
     };
     

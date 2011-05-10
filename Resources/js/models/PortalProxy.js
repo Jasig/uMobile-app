@@ -1,5 +1,5 @@
 var PortalProxy = function (facade) {
-    var app = facade, self = {}, portlets = [], getPortletsForUser, getShowPortletFunc, sortPortlets, 
+    var app = facade, self = {}, portlets = [], sortPortlets, 
         pathToRoot = '../../';
     
     self.getShowPortletFunc = function (portlet) {
@@ -67,7 +67,7 @@ var PortalProxy = function (facade) {
      * This method is currently blocking.
      */
     getPortletList = function() {
-        Ti.API.debug('getPortletList');
+        Ti.API.debug('getPortletList() in PortalProxy');
         var layoutUrl, layoutClient, layoutText,
             onRequestComplete, onRequestError, onGetPortletsComplete, onGetPortletsError;
 
@@ -133,7 +133,7 @@ var PortalProxy = function (facade) {
                 // array as the initial module list.
                 // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
 
-                Ti.App.fireEvent('PortalProxyPortletsLoaded');
+                Ti.App.fireEvent('PortalProxyPortletsLoaded', {user: JSON.parse(layoutText).user});
             };
 
             onGetPortletsError = function (e) {
