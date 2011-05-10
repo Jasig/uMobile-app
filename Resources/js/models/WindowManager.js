@@ -32,7 +32,9 @@ var WindowManager = function (facade) {
             if (portlet) {
                 Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
             }
+            Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
         }
+        
     };
     
     self.goBack = function () {

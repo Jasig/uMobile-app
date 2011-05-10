@@ -34,13 +34,17 @@ var DirectoryWindowController = function (facade) {
         //Methods
         drawDefaultView, resetHome, searchSubmit, openContactDetail, blurSearch, displaySearchResults,
         //Event Handlers
-        onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onSearchChange, onContactRowClick, onWindowBlur, onProxySearching, onProxySearchComplete, onProxySearchError;
+        onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onSearchChange, onContactRowClick, onNewWindowOpened, onProxySearching, onProxySearchComplete, onProxySearchError;
     
     init = function () {
         Ti.API.debug("DirectoryWindowController.init()");
         self.key = 'directory';
         
-        Ti.App.addEventListener('showWindow', onWindowBlur);
+        Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
+        //Listene for events, mostly fired from models.DirectoryProxy
+        Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
+        Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
+        Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
         
         initialized = true;
     };
@@ -204,8 +208,10 @@ var DirectoryWindowController = function (facade) {
     };
     
     // Controller Events
-    onWindowBlur = function (e) {
-        blurSearch();
+    onNewWindowOpened = function (e) {
+        if (e.key !== self.key) {
+            blurSearch();
+        }
     };
     // Search Events
     onPhoneDirectoryClick = function (e) {
@@ -271,12 +277,6 @@ var DirectoryWindowController = function (facade) {
             }, 3000);
         Ti.API.info("Directory Proxy Search Error");
     };
-    
-    //Listene for events, mostly fired from models.DirectoryProxy
-    Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
-    Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
-    Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
-    Titanium.App.addEventListener('showWindow', blurSearch);
     
     if(!initialized) {
         init();

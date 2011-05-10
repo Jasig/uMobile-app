@@ -58,9 +58,6 @@ var MapWindowController = function(facade) {
             exitOnClose: false,
             navBarHidden: true
         });
-        if (Ti.Platform.osname === 'iphone') {
-            win.top = 20;
-        }
         win.open();
         createMainView();
         resetMapLocation();

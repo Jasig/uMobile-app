@@ -1,11 +1,11 @@
 // Ti.include('config.js');
 
 var GenericTitleBar = function (opts) {
-    //Required: opts.app, opts.windowKey
+    //Required: app, opts.windowKey
     //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
-    var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
-        titleBar = Titanium.UI.createView(opts.app.styles.titleBar),
-        labelStyle = opts.app.styles.titleBarLabel,
+    var app = opts.app, title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
+        titleBar = Titanium.UI.createView(app.styles.titleBar),
+        labelStyle = app.styles.titleBarLabel,
         onSettingsClick, onSettingsPressDown, onSettingsPressUp, onHomeClick, onHomePressUp, onHomePressDown;
         
     function init() {
@@ -28,10 +28,10 @@ var GenericTitleBar = function (opts) {
         if (opts.homeButton && !opts.backButton) {
             //Expects homeButton to be a boolean indicating whether or not to show the home button
             //There shouldn't be a home button and back button, as then the bar just gets too cluttered. Back button wins in a fight.
-            homeButtonContainer = Titanium.UI.createView(opts.app.styles.titleBarHomeContainer);
+            homeButtonContainer = Titanium.UI.createView(app.styles.titleBarHomeContainer);
             titleBar.add(homeButtonContainer);
             
-            homeButton = Titanium.UI.createImageView(opts.app.styles.titleBarHomeButton);
+            homeButton = Titanium.UI.createImageView(app.styles.titleBarHomeButton);
             homeButtonContainer.add(homeButton);
 
             homeButtonContainer.addEventListener('singletap', onHomeClick);
@@ -40,11 +40,11 @@ var GenericTitleBar = function (opts) {
             
         }
         if (opts.settingsButton) {
-            settingsButtonContainer = Titanium.UI.createView(opts.app.styles.titleBarSettingsContainer);
+            settingsButtonContainer = Titanium.UI.createView(app.styles.titleBarSettingsContainer);
             titleBar.add(settingsButtonContainer);
             
             //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
-            settingsButton = Titanium.UI.createImageView(opts.app.styles.titleBarSettingsButton);
+            settingsButton = Titanium.UI.createImageView(app.styles.titleBarSettingsButton);
         	settingsButtonContainer.add(settingsButton);
 
             settingsButtonContainer.addEventListener('singletap', onSettingsClick);
@@ -54,58 +54,45 @@ var GenericTitleBar = function (opts) {
     }
     onHomeClick = function (e) {
         Ti.API.debug("Home button clicked in GenericTitleBar");
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: opts.windowKey,
-                newWindow: 'home'
-            }
-        );
+        app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
     };
     
     onHomePressDown = function (e) {
         var timeUp;
         
-        homeButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColorPressed;
+        homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColorPressed;
         if (Ti.Platform.osname === 'android') {
             //Because Android doesn't consistently register touchcancel or touchend, especially
             //when the window changes in the middle of a press
             timeUp = setTimeout(function(){
-                homeButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColor;
+                homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColor;
                 clearTimeout(timeUp);
             }, 1000);
         }
     };
     
     onHomePressUp = function (e) {
-        homeButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColor;
+        homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColor;
     };
     onSettingsClick = function (e) {
-        Ti.App.fireEvent(
-            'showWindow', 
-            {
-                oldWindow: 'home',
-                newWindow: 'settings',
-                transition: Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT 
-            }
-        );
+        app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
     };
     
     onSettingsPressDown = function (e) {
         var timeUp;
-        settingsButtonContainer.backgroundColor = opts.app.styles.titleBarSettingsContainer.backgroundColorPressed;
+        settingsButtonContainer.backgroundColor = app.styles.titleBarSettingsContainer.backgroundColorPressed;
         if (Ti.Platform.osname === 'android') {
             //Because Android doesn't consistently register touchcancel or touchend, especially
             //when the window changes in the middle of a press
             timeUp = setTimeout(function(){
-                settingsButtonContainer.backgroundColor = opts.app.styles.titleBarHomeContainer.backgroundColor;
+                settingsButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColor;
                 clearTimeout(timeUp);
             }, 1000);            
         }
     };
     
     onSettingsPressUp = function (e) {
-        settingsButtonContainer.backgroundColor = opts.app.styles.titleBarSettingsContainer.backgroundColor;
+        settingsButtonContainer.backgroundColor = app.styles.titleBarSettingsContainer.backgroundColor;
     };
 
     init();

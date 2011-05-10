@@ -15,6 +15,9 @@ var StartupCommand = function (facade) {
             _lastPortlet = JSON.parse(_lastPortlet);
             app.models.windowManager.openWindow(_lastWindow, _lastPortlet);
         }
+        else {
+            app.models.windowManager.openWindow(_lastWindow);
+        }
     }
     else {
         alert("No session. currentTime: " + currentTime + " & timeDifference: " + timeDifference + " & timer_network: " + Ti.App.Properties.getInt('timer_Network'));
