@@ -119,7 +119,7 @@ var SettingsWindowController = function(facade){
         logOutButtonOpts.left = 100 + 10 * 2;
         logOutButtonOpts.top = 150;
         logOutButtonOpts.title = "log out";
-        logOutButton = Ti.UI.createLabel(logOutButtonOpts);
+        logOutButton = Ti.UI.createButton(logOutButtonOpts);
         
         win.add(logOutButton);
         

@@ -153,9 +153,12 @@ var PortletWindowController = function (facade) {
     
     onPortletBeforeLoad = function (e) {
         Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + webView.url);
+        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.show();
     };
     
     onPortletLoad = function (e) {
+        activityIndicator.hide();
         var portalIndex = e.url.indexOf(app.UPM.BASE_PORTAL_URL);
         Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
         if (portalIndex >= 0) {
