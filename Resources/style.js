@@ -52,7 +52,6 @@ var Styles = function (app) {
         //Settings Properties
         settingsPasswordInput: {
             height: OS === 'iphone' ? 35 : 45,
-        	width: 150,
         	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
             passwordMask: true,
             top: 100,
@@ -70,7 +69,6 @@ var Styles = function (app) {
         },
         settingsUsernameInput: {
             height: OS === 'iphone' ? 35 : 45,
-        	width: 150,
         	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
             top: 50,
             left: 100,

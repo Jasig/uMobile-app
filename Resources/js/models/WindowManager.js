@@ -55,15 +55,28 @@ var WindowManager = function (facade) {
         return _currentPortlet;
     };
     
-    self.getPreviousSessionWindow = function () {
-        var db, resultSet, lastWindow = false;
-        db = Titanium.Database.open('umobile');
-        resultSet = db.execute("SELECT value FROM prefs WHERE name='lastwindow' LIMIT 1");
-        while (resultSet.isValidRow()) {
-            lastWindow = resultSet.fieldByName('value');
+    self.openPreviousSessionWindow = function () {
+        // If a session exists, open the previous window. If not, establish a session and then open previous (or home(default))
+        // If the last window was a portlet, get the last portlet and parse/pass it as a parameter.
+        // Otherwise, just open the last window
+        
+        var _lastWindow, _lastPortlet;
+        _lastWindow = Ti.App.Properties.getString('lastWindow', app.controllers.portalWindowController.key);
+        _lastPortlet = Ti.App.Properties.getString('lastPortlet', '');
+        
+        if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.NETWORK]) {
+            if (_lastWindow === app.controllers.portletWindowController.key && _lastPortlet != '') {
+                _lastPortlet = JSON.parse(_lastPortlet);
+                app.models.windowManager.openWindow(_lastWindow, _lastPortlet);
+            }
+            else {
+                app.models.windowManager.openWindow(_lastWindow);
+            }
         }
-        db.close();
-        return lastWindow;
+        else {
+            app.models.windowManager.openWindow(_lastWindow);
+            app.models.loginProxy.establishNetworkSession();
+        }
     };
     
     hidePreviousWindow = function (options) {

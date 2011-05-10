@@ -24,7 +24,7 @@
 
 // library includes
 var PortalWindowController = function(facade) {
-    var win, app = facade, self = {}, loginProxy, portalProxy, initialized, isGuestLayout = true,
+    var win, app = facade, self = {}, portalProxy, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
         onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, onNetworkSessionSuccess, onNetworkSessionFailure,
@@ -32,9 +32,7 @@ var PortalWindowController = function(facade) {
 
     init = function () {
         self.key = 'home';
-        loginProxy = app.models.loginProxy;
         portalProxy = app.models.portalProxy;
-        loginProxy.establishNetworkSession();
     	
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
