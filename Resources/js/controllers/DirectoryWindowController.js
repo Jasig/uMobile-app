@@ -50,24 +50,16 @@ var DirectoryWindowController = function (facade) {
             backgroundColor: app.styles.backgroundColor,
             title: app.localDictionary.directory,
             exitOnClose: false,
-            navBarHidden: true,
-            modal: true
+            navBarHidden: true
         });
-        if (Ti.Platform.osname === 'iphone') {
-            win.top = 20;
-        }
         win.open();
         drawDefaultView();
     };
     
     self.close = function (options) {
-        if (options.callback) {
-            win.addEventListener('close', function winCallback(e) {
-                win.removeEventListener('close', winCallback);
-                options.callback();
-            });
+        if (win) {
+            win.close();
         }
-        win.close();
     };
     
     drawDefaultView = function () {

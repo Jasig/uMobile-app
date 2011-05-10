@@ -24,7 +24,7 @@
 
 // library includes
 var PortalWindowController = function(facade) {
-    var win, app = facade, self = {}, loginProxy, initialized, isGuestLayout = true,
+    var win, app = facade, self = {}, loginProxy, portalProxy, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
         onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, onNetworkSessionSuccess, onNetworkSessionFailure,
@@ -33,6 +33,7 @@ var PortalWindowController = function(facade) {
     init = function () {
         self.key = 'home';
         loginProxy = app.models.loginProxy;
+        portalProxy = app.models.portalProxy;
         loginProxy.establishNetworkSession();
     	
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
@@ -45,18 +46,14 @@ var PortalWindowController = function(facade) {
     };
     
     self.open = function () {
-        if (!win) {
-            win = Titanium.UI.createWindow({
-                exitOnClose: false,
-                navBarHidden: true,
-                modal: false,
-                orientationModes: [Ti.UI.PORTRAIT]
-            });
-            win.open();
-        }
-        else {
-            win.open();
-        }
+        win = Titanium.UI.createWindow({
+            exitOnClose: false,
+            navBarHidden: true,
+            modal: false,
+            orientationModes: [Ti.UI.PORTRAIT]
+        });
+        win.open();
+
         createPortalView();
     };
     
@@ -68,42 +65,27 @@ var PortalWindowController = function(facade) {
 
     createPortalView = function () {
         if (win) {
-            if (!titleBar) {
-                titleBar = new app.views.GenericTitleBar({
-            	    app: app,
-            	    windowKey: 'home',
-            	    title: app.localDictionary.uMobile,
-            	    settingsButton: true,
-            	    homeButton: false
-            	});
-            	win.add(titleBar);
-            }
-            
-            if (!contentLayer) {
-            	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
-                win.add(contentLayer);       
-            }
-            
-            if (!activityIndicator) {
-                activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
-                win.add(activityIndicator);
-                activityIndicator.hide();                
-            }
+            titleBar = new app.views.GenericTitleBar({
+        	    app: app,
+        	    windowKey: 'home',
+        	    title: app.localDictionary.uMobile,
+        	    settingsButton: true,
+        	    homeButton: false
+        	});
+        	win.add(titleBar);
 
-            if (portalView) {
-                Ti.API.debug("Removing the existing portal home view");
-                contentLayer.remove(portalView);
-            }
+        	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
+            win.add(contentLayer);
+            
+            activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+            win.add(activityIndicator);
+            activityIndicator.hide();
 
             Ti.API.debug("Creating a new portal home view");
         	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
         	portalView.height = isGuestLayout ? win.height - titleBar.height - app.styles.homeGuestNote.height : win.height - titleBar.height;
-            if (contentLayer) {
-                contentLayer.add(portalView);
-            }
-            else {
-                Ti.API.error("No contentLayer to which to add the portalView");
-            }
+
+            contentLayer.add(portalView);
             
             if (isGuestLayout) {
                 guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
@@ -117,10 +99,10 @@ var PortalWindowController = function(facade) {
                     app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
                 });
             }
-            else {
-                Ti.API.info("isGuestLayout: " + isGuestLayout);
-            }
             
+            if (portalProxy.getPortlets().length > 0) {
+                drawHomeGrid(portalProxy.getPortlets());
+            }
         }
         else {
             Ti.API.error("No win exists in PortalWindowController>createPortalView()");
@@ -129,25 +111,19 @@ var PortalWindowController = function(facade) {
 
 
     drawHomeGrid = function (portlets) {
+        var completeWidth, completeHeight, numColumns, leftPadding;
         Ti.API.debug("Preparing to iterate through portlets in drawHomeGrid: " + portlets.length);
         
-        createPortalView();
+        completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        numColumns = Math.floor(Ti.Platform.displayCaps.platformWidth / completeWidth);
+        leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
         
         for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
             Ti.API.debug("Portlet iteration " + i + ", " + portlets[i].title);
             var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
             _portlet = portlets[i];
-
-            var completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-            var completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-
-            // calculate the appropriate number of columns based on the device
-            // width and desired item size
-            var numColumns = Math.floor(Ti.Platform.displayCaps.platformWidth / completeWidth);
-
-            // calculate extra left padding to add to center the item grid
-            var leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
-
+            
             // Calculate the position for this grid item
             top = app.styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight;
             left = leftPadding + app.styles.gridItem.padding + (i % numColumns) * completeWidth;
@@ -174,7 +150,6 @@ var PortalWindowController = function(facade) {
             gridItemIcon = Titanium.UI.createImageView(gridItemIconDefaults);
             gridItem.add(gridItemIcon);
 
-
             // if the module has a new item count of more than zero (no new items)
             // add a badge number to the home screen icon
             if (_portlet.newItemCount > 0) {
@@ -195,7 +170,7 @@ var PortalWindowController = function(facade) {
             gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
             gridItemIcon.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
-        
+        Ti.API.info("Done placing portlets");
         activityIndicator.hide();
     };
     
@@ -256,7 +231,6 @@ var PortalWindowController = function(facade) {
             else {
                 e.source.setOpacity(1.0);
             }
-            
         }
         else {
             Ti.API.debug("onGridItemPressUp condition wasn't met");
@@ -265,15 +239,16 @@ var PortalWindowController = function(facade) {
     
     //PortalProxy events
     onGettingPortlets = function (e) {
+        Ti.API.debug("onGettingPortlets() in PortalWindowController");
         // Display a loading indicator until we can finish downloading the user
         // layout and creating the initial view
         activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.resetDimensions();
-        activityIndicator.show();
+        // activityIndicator.show();
     };
     
     onPortletsLoaded = function (e) {
-        drawHomeGrid(app.models.portalProxy.getPortlets());
+        createPortalView();
     };
     
     onPortalProxyNetworkError = function (e) {

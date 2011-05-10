@@ -56,8 +56,7 @@ var MapWindowController = function(facade) {
         win = Titanium.UI.createWindow({
             backgroundColor: app.styles.backgroundColor,
             exitOnClose: false,
-            navBarHidden: true,
-            modal: true
+            navBarHidden: true
         });
         if (Ti.Platform.osname === 'iphone') {
             win.top = 20;
@@ -70,12 +69,6 @@ var MapWindowController = function(facade) {
     self.close = function (options) {
         if (win) {
             win.close();
-            if (options.callback) {
-                win.addEventListener('close', function winCallback(e) {
-                    win.removeEventListener('close', winCallback);
-                    options.callback();
-                });
-            }
         }
         searchBlur();
     };

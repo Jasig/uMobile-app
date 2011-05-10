@@ -62,10 +62,8 @@ var SettingsWindowController = function(facade){
                 key: 'settings',
                 exitOnClose: false, 
                 navBarHidden: true,
-                modal: true,
                 backgroundColor: app.styles.backgroundColor
             });
-            win.top = Ti.Platform.osname === 'iphone' ? 20 : 0;
             win.open();
             
             win.add(titleBar);
@@ -80,72 +78,49 @@ var SettingsWindowController = function(facade){
     };
     
     self.close = function (options) {
-        if (options.callback) {
-            win.addEventListener('close', function winCallback(e) {
-                Ti.API.info("Settings Window close event fired.");
-                win.removeEventListener('close', winCallback);
-                options.callback();
-            });
+        if (win) {
+            win.close();
         }
-        else {
-            Ti.API.error("There's no callback in the close options for SettingsWindowController");
-        }
-        win.close();
         onWindowBlur();
     };
 
     createCredentialsForm = function () {
-        var usernameLabelOpts = app.styles.textFieldLabel,
-            usernameInputOpts = app.styles.textField,
-            passwordLabelOpts = app.styles.textFieldLabel,
-            passwordInputOpts = app.styles.textField,
-            saveButtonOpts;
+        var usernameLabelOpts = app.styles.settingsUsernameLabel,
+            usernameInputOpts = app.styles.settingsUsernameInput,
+            passwordLabelOpts = app.styles.settingsPasswordLabel,
+            passwordInputOpts = app.styles.settingsPasswordInput,
+            saveButtonOpts = app.styles.contentButton,
+            resetPasswordOpts = app.styles.settingsResetPasswordLabel;
 
         // create the username label and input field
         usernameLabelOpts.text = app.localDictionary.username;
-        usernameLabelOpts.top = 50;
-        usernameLabelOpts.left = 10;
         usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
         win.add(usernameLabel);
 
-        usernameInputOpts.top = 50;
-        usernameInputOpts.left = 100;
-        usernameInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
         usernameInputOpts.value = credentials.username || '';
-        usernameInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
-        usernameInputOpts.autocorrect = false;
         usernameInput = Titanium.UI.createTextField(usernameInputOpts);
         win.add(usernameInput);
 
         // create the password label and input field
-        passwordLabelOpts.top = 100;
-        passwordLabelOpts.left = 10;
+        
         passwordLabelOpts.text = app.localDictionary.password || '';
         passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
         win.add(passwordLabel);
 
         passwordInputOpts.value = credentials.password;
-        passwordInputOpts.passwordMask = true;
-        passwordInputOpts.top = 100;
-        passwordInputOpts.left = 100;
-        passwordInputOpts.width = Ti.Platform.displayCaps.platformWidth - 100 - 10;
-        passwordInputOpts.autocapitalization = Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE;
-        passwordInputOpts.autocorrect = false;
+        
         passwordInput = Titanium.UI.createTextField(passwordInputOpts);
         win.add(passwordInput);
 
         // create the save button and configure it to persist
         // the new credentials when pressed
-
-        saveButtonOpts = app.styles.contentButton;
+        saveButtonOpts.title = app.localDictionary.update;
         saveButtonOpts.top = 150;
         saveButtonOpts.left = 10;
-        saveButtonOpts.title = app.localDictionary.update;
         saveButton = Titanium.UI.createButton(saveButtonOpts);
 
         win.add(saveButton);
         
-
         saveButton.addEventListener('click', onUpdateCredentials);
         if(Ti.Platform.osname === 'iphone') {
             saveButton.addEventListener('touchstart', onSaveButtonPress);
@@ -154,11 +129,7 @@ var SettingsWindowController = function(facade){
         passwordInput.addEventListener('return', onUpdateCredentials);
         usernameInput.addEventListener('return', onUpdateCredentials);
         
-        resetPassword = Ti.UI.createLabel(app.styles.textFieldLabel);
-        resetPassword.top = 200;
-        resetPassword.left = 10;
-        resetPassword.height = 40;
-        resetPassword.textDecoration = 'underline';
+        resetPassword = Ti.UI.createLabel(resetPasswordOpts);
         resetPassword.text = app.localDictionary.resetPasswordLink + app.UPM.FORGOT_PASSWORD_URL;
         resetPassword.addEventListener('click', function (e){
             app.models.windowManager.openWindow(app.controllers.portletWindowController.key, {
@@ -168,8 +139,6 @@ var SettingsWindowController = function(facade){
             });
         });
         win.add(resetPassword);
-        
-
     };
 
     onUpdateCredentials = function (e) {

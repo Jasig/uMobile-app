@@ -39,13 +39,7 @@ var PortletWindowController = function (facade) {
     self.close = function (options) {
         Ti.API.info("close() in PortletWindowController");
         if (win) {
-            if (options && options.callback) {
-                win.addEventListener('close', function winCallback (e) {
-                    win.removeEventListener('close', winCallback);
-                    options.callback();
-                });
-            }
-            win.close();            
+            win.close();
         }
         else {
             Ti.API.error("Portlet Window isn't open");
@@ -62,12 +56,8 @@ var PortletWindowController = function (facade) {
                 key: 'portlet',
                 backgroundColor: app.styles.backgroundColor,
                 exitOnClose: false,
-                modal: true,
                 navBarHidden: true
             });
-            if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
-                win.top = 20;
-            }
             for (var i = 0, iLength = winListeners.length; i<iLength; i++) {
                 win.addEventListener(winListeners[i].event, winListeners[i].callback);
             }

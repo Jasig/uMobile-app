@@ -41,7 +41,7 @@ var SessionProxy = function (facade) {
             timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
             Ti.App.Properties.setInt('timer_' + context, (new Date()).getTime());
             
-            Ti.API.info("Network timer updated at " + timers[LoginProxy.sessionTimeContexts.NETWORK].lastUpdated);
+            Ti.API.info("Network timer updated at ");
         }
         else if (timers[context]) {
             if(timers[context].counter) {
@@ -107,6 +107,10 @@ var SessionProxy = function (facade) {
     };
     
     self.validateSessions = function () {
+        // This method does two things. It checks any existing timers to see 
+        // if the time since their last timestamp is greater than the global
+        // session timeout, and if so, stops them.
+        // secondly, it returns
         var _currentTime, _sessions = [];
         Ti.API.debug("validateSessions() in SessionProxy");
         // This compares the timestamps of all timers against the current time

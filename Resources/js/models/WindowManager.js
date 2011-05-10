@@ -17,61 +17,21 @@ var WindowManager = function (facade) {
     };
     
     self.openWindow = function (windowKey, portlet) {
-        Ti.API.debug("openWindow() in WindowManager");
-        //Opens a window based on key string provided.
-        Ti.API.info("The current window is " + self.getCurrentWindow());
-        if (applicationWindows[windowKey]) {
-            if (activityStack.length == 0) {
-                applicationWindows[app.controllers.portalWindowController.key].open();
+        var callback, 
+            homeKey = app.controllers.portalWindowController.key,
+            portletKey = app.controllers.portletWindowController.key;
+        
+        if (applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()) {
+            if (activityStack.length > 0) {
+                applicationWindows[self.getCurrentWindow()].close();
             }
-            else if (self.getCurrentWindow() != applicationWindows[windowKey]) {
-                //If the current window isn't the same window we're trying to open
-                
-                if (self.getCurrentWindow() != app.controllers.portalWindowController.key && windowKey !== app.controllers.portalWindowController.key) {
-                    //if the current window isn't the home window
-                    //We need to make sure we wait for the transition to complete for the previous window
-                    hidePreviousWindow({callback: function () {
-                        Ti.API.info("complete() in openWindow");
-                        if (portlet) {
-                            Ti.API.debug("new window is a portlet");
-                            applicationWindows[windowKey].open(portlet);
-                        }
-                        else {
-                            Ti.API.debug("new window is NOT a portlet" + applicationWindows[windowKey].key + '' + applicationWindows[windowKey]);
-                            applicationWindows[windowKey].open();
-                        }
-                    }});
-                }
-                else if (windowKey !== app.controllers.portalWindowController.key) {
-                    hidePreviousWindow();
-                    //Home is always present, never needs opened or closed.
-                    Ti.API.info("new window isn't home");
-                    if (portlet) {
-                        Ti.API.debug("new window is a portlet");
-                        applicationWindows[windowKey].open(portlet);
-                    }
-                    else {
-                        Ti.API.debug("new window is NOT a portlet" + applicationWindows[windowKey].key + '' + applicationWindows[windowKey]);
-                        applicationWindows[windowKey].open();
-                    }
-                }
-                else {
-                    //It must be the home window
-                    hidePreviousWindow();
-                }
-            }
-            else {
-                Ti.API.debug("You're trying to navigate to the same window you're already in.");
-            }
-            //We want the activity stack to know that this was the most recent window.
-            Ti.App.Properties.setString('lastWindow', windowKey);
+            applicationWindows[windowKey].open(portlet ? portlet : null );
+            
             activityStack.push(windowKey);
+            Ti.App.Properties.setString('lastWindow', windowKey);
             if (portlet) {
                 Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
             }
-        }
-        else {
-            Ti.API.error('No window exists for that key: ' + windowKey);
         }
     };
     

@@ -49,6 +49,50 @@ var Styles = function (app) {
             width:'auto',
             color: '#000'
         },
+        //Settings Properties
+        settingsPasswordInput: {
+            height: OS === 'iphone' ? 35 : 45,
+        	width: 150,
+        	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+            passwordMask: true,
+            top: 100,
+            left: 100,
+            width: Ti.Platform.displayCaps.platformWidth - 100 - 10,
+            autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
+            autocorrect: false
+        },
+        settingsPasswordLabel: {
+            height:35,
+            width:'auto',
+            color: '#000',
+            top: 100,
+            left: 10
+        },
+        settingsUsernameInput: {
+            height: OS === 'iphone' ? 35 : 45,
+        	width: 150,
+        	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+            top: 50,
+            left: 100,
+            width: Ti.Platform.displayCaps.platformWidth - 100 - 10,
+            autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
+            autocorrect: false
+            
+        },
+        settingsUsernameLabel: {
+            height:35,
+            width:'auto',
+            color: '#000',
+            top: 50,
+            left: 10
+        },
+        settingsResetPasswordLabel: {
+            top: 200,
+            left: 10,
+            height: 40,
+            color: "#036",
+            textDecoration: 'underline'
+        },
         contentButton: {
             font: {
                 fontSize: 14,

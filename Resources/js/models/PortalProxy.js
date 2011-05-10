@@ -1,5 +1,5 @@
 var PortalProxy = function (facade) {
-    var app = facade, self = {}, portlets, getPortletsForUser, getShowPortletFunc, sortPortlets, 
+    var app = facade, self = {}, portlets = [], getPortletsForUser, getShowPortletFunc, sortPortlets, 
         pathToRoot = '../../';
     
     self.getShowPortletFunc = function (portlet) {
