@@ -111,8 +111,8 @@ var Config = function (app) {
     };
     
     UPM.DEFAULT_MAP_REGION = {
-        latitude: 41.3137919,
-        longitude: -72.9234645,
+        latitude: 39.890822,
+        longitude: -105.064509,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
     };
