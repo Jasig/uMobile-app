@@ -39,8 +39,7 @@ var Config = function (app) {
 
     //------- AUTHENTICATION -------
 
-    // UPM.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;//in seconds = two hours
-    UPM.SERVER_SESSION_TIMEOUT = 15;
+    UPM.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;//in seconds = two hours
     UPM.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
     UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
     UPM.ENCRYPTION_KEY = 'um0b1le';
