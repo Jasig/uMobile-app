@@ -120,7 +120,7 @@ var SessionProxy = function (facade) {
         // and the UPM.SERVER_SESSION_TIMEOUT property in config.js
         
         _currentTime = (new Date()).getTime();
-        
+
         for (var timer in timers) {
             if (timers.hasOwnProperty(timer)) {
                 if (_currentTime - Ti.App.Properties.getInt('timer_' + timer) < app.UPM.SERVER_SESSION_TIMEOUT * 1000) {
@@ -133,6 +133,11 @@ var SessionProxy = function (facade) {
                     self.stopTimer(timer);
                 }
             }
+        }
+        
+        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            //Because we only maintain one timer in iOS, we'll make Webview equal network
+            _sessions[LoginProxy.sessionTimeContexts.WEBVIEW] = _sessions[LoginProxy.sessionTimeContexts.NETWORK];
         }
         
         return _sessions;

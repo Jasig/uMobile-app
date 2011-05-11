@@ -40,7 +40,9 @@ var WindowManager = function (facade) {
             Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
         }
         else {
-            Ti.API.error("Error opening window. applicationWindows[windowKey] = " + applicationWindows[windowKey] + " & windowKey !== self.getCurrentWindow() = " + windowKey !== self.getCurrentWindow());
+            Ti.API.error("Error opening window.");
+            Ti.API.error(" applicationWindows[windowKey]" + applicationWindows[windowKey]);
+            Ti.API.error("windowKey= " + windowKey + " & self.getCurrentWindow() = " + self.getCurrentWindow());
         }
     };
     
@@ -88,8 +90,8 @@ var WindowManager = function (facade) {
             }
         }
         else {
-            app.models.windowManager.openWindow(_lastWindow);
             app.models.loginProxy.establishNetworkSession();
+            self.openWindow(app.controllers.portalWindowController.key);
         }
     };
     

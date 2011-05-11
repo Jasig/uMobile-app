@@ -116,7 +116,7 @@ var PortletWindowController = function (facade) {
         
         if (portlet.url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
-            if (app.models.windowManager.validateSessions()[app.models.sessionProxy.sessionTimeContexts.WEBVIEW].isActive) {
+            if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW].isActive) {
                 webView.url = sharedWebView.getLocalUrl(portlet.url);
             }
             else {
