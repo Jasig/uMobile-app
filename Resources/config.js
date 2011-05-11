@@ -91,7 +91,7 @@ var Config = function (app) {
     UPM.LOCAL_MODULES.twitter = {
         title: 'Twitter',
         fname: 'twitter',
-        url: 'http://mobile.twitter.com/searches?q=jasig11+OR+sakai11',
+        url: 'http://mobile.twitter.com/searches?q=jasig11',
         externalModule: true
     };
     
@@ -133,12 +133,6 @@ var Config = function (app) {
             telephoneNumber: ['(866) 716-8137'],
             postalAddress: ['10600 Westminster Boulevard$Westminster, CO 80020'],
             url: ['http://www.westindenverboulder.com/']
-        },
-        { 
-            displayName: ["Sakai Hotel"],
-            telephoneNumber: ['(213) 624-1000'],
-            postalAddress: ['404 South Figueroa Street$Los Angeles , CA 90071'],
-            url: ['http://www.thebonaventure.com/']
         }
     ];
     
