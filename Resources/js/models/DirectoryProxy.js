@@ -1,56 +1,52 @@
 var DirectoryProxy = function (facade,opts) {
-    var app=facade,
-        self = {},
-        init,
-        xhrSearch,
-        xhrSearchOnLoad,
-        xhrSearchOnError,
-        person,
-        people = [];
+    var app=facade, self = {}, init,
+        getQualifiedURL, xhrSearchClient, doXhrSearch,
+        xhrSearchOnLoad, xhrSearchOnError,
+        person, people = [];
 
     init = function () {
         //Generate the HTTP request to be used each time a search is performed
-        xhrSearch = Titanium.Network.createHTTPClient({
+        xhrSearchClient = Titanium.Network.createHTTPClient({
             onload: onXhrSearchLoad,
             onerror: onXhrSearchError
         });
     };
     
     self.search = function (query) {
+        var onSessionFailure, onSessionSuccess;
+        onSessionSuccess = function (e) {
+            Ti.App.removeEventListener('EstablishNetworkSessionFailure', onSessionFailure);
+            Ti.App.removeEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
+            doXhrSearch(query);
+        };
+        onSessionFailure = function (e) {
+            Ti.App.removeEventListener('EstablishNetworkSessionFailure', onSessionFailure);
+            Ti.App.removeEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
+            onXhrSearchError(e);
+        };
+        
         if (!app.models.deviceProxy.checkNetwork()) {
             return;
         }
         
-        if (query === '') {
+        else if (query === '') {
             people = [];
             Ti.App.fireEvent('DirectoryProxySearchComplete');
             return;
         }
-        Ti.API.info("query: " + query);
-        var url = app.UPM.DIRECTORY_SERVICE_URL;
-        var separator = '?';
-        Ti.API.info("url: " + url);
-        var i = 0;
-        for (i = 0; i < app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
-            url += separator + 'searchTerms[]=' + app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS[i];
-            separator = '&';
+        else if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.NETWORK].isActive) {
+            doXhrSearch(query);
         }
-        separator = '&';
-        Ti.API.info("query: " + query);
-        Ti.API.info("url: " + url);
-        for (i = 0; i < app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
-            url += separator + app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
-            separator = '&';
+        else {
+            app.models.loginProxy.establishNetworkSession();
+            Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
+            Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionFailure);
         }
-        
-        Ti.API.info('Query: ' + url);
-        xhrSearch.open('GET', url);
-        xhrSearch.send();
-        Ti.App.fireEvent('DirectoryProxySearching');
+
     };
     self.clear = function () {
         people = [];
-        xhrSearch.abort();
+        xhrSearchClient.abort();
     };
     
     self.getPeople = function (index) {
@@ -62,8 +58,30 @@ var DirectoryProxy = function (facade,opts) {
             return people[index];
         }
     };
+    
     self.getEmergencyContacts = function () {
         return app.UPM.directoryEmergencyContacts || false;
+    };
+    
+    doXhrSearch = function (query) {
+        var url, separator;
+        Ti.API.info("query: " + query);
+        url = app.UPM.DIRECTORY_SERVICE_URL;
+        separator = '?';
+        
+        for (var i = 0; i < app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
+            url += separator + 'searchTerms[]=' + app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS[i];
+            separator = '&';
+        }
+        separator = '&';
+        for (i = 0; i < app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
+            url += separator + app.UPM.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
+            separator = '&';
+        }
+
+        xhrSearchClient.open('GET', url);
+        xhrSearchClient.send();
+        Ti.App.fireEvent('DirectoryProxySearching');
     };
     
     onXhrSearchLoad = function (e) {
@@ -72,7 +90,7 @@ var DirectoryProxy = function (facade,opts) {
         people = [];
         (function() {
             try {
-                var _people = JSON.parse(xhrSearch.responseText).people;
+                var _people = JSON.parse(xhrSearchClient.responseText).people;
                 for (var i=0, iLength=_people.length; i<iLength; i++) {
                     Ti.API.info('calling method');
                     people.push(_people[i].attributes);

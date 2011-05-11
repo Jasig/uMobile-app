@@ -230,7 +230,7 @@ var LoginProxy = function (facade) {
         Expects a fully qualified URL to be passed in
         */
         credentials = self.getCredentials();
-        return app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + url;
+        return app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + Ti.Network.encodeURIComponent(url);
         
     };
     self.doLocalLogin = function (credentials, options) {
