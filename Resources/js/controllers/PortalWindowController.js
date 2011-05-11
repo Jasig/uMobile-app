@@ -119,7 +119,6 @@ var PortalWindowController = function(facade) {
         leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
         
         for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
-            Ti.API.debug("Portlet iteration " + i + ", " + portlets[i].title);
             var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
             _portlet = portlets[i];
             
@@ -162,7 +161,6 @@ var PortalWindowController = function(facade) {
                 gridItem.add(gridBadgeNumber);
             }
 
-            Ti.API.debug("Placing the portlet in the portalView");
             //Place the item in the scrollview and listen for singletaps
             portalView.add(gridItem);
             gridItemIcon.addEventListener("singletap", onGridItemClick);

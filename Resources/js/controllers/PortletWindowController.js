@@ -24,7 +24,7 @@ var PortletWindowController = function (facade) {
         activityIndicator, titleBar, navBar, webView,
         initialized, winListeners = [], activePortlet,
         pathToRoot = '../../',
-        init, drawWindow, getQualifiedUrl,
+        init, drawWindow, getQualifiedURL,
         onBackBtnPress, onBackButtonUp, includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume;
 
     init = function () {
@@ -114,27 +114,40 @@ var PortletWindowController = function (facade) {
         activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.show();
         
-        if (portlet.url.indexOf('/') == 0) {
+        webView.url = getQualifiedURL(portlet.url);
+        
+        titleBar.updateTitle(portlet.title);
+    };
+    
+    getQualifiedURL = function (url) {
+        var _url;
+        if (url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
             if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW].isActive) {
-                webView.url = sharedWebView.getLocalUrl(portlet.url);
+                _url = sharedWebView.getLocalUrl(url);
             }
             else {
-                webView.url = app.models.loginProxy.getLocalLoginURL(portlet.url);
+                _url = app.models.loginProxy.getLocalLoginURL(url);
             }
             webView.externalModule = false;
             webView.top = titleBar.height;
         } else {
             Ti.API.debug("Portlet URL is external");
             // webView.getExternalUrl(portlet.url);
-            webView.url = portlet.url;
+            _url = url;
             webView.externalModule = true;
         }
-        titleBar.updateTitle(portlet.title);
+        
+        return _url;
     };
     
     onPortletBeforeLoad = function (e) {
         Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + webView.url);
+        //We want to make sure we don't need to re-establish a session.
+        if (webView.url !== getQualifiedURL(webView.url)) {
+            webView.stopLoading();
+            webView.url = getQualifiedURL(webView.url);
+        }
         activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.show();
     };
@@ -170,7 +183,7 @@ var PortletWindowController = function (facade) {
             // webView.setTop(app.styles.titleBar.height + navBar.height);
         }
         activityIndicator.hide();
-        };
+    };
     
     onBackBtnPress = function (e) {
         Ti.API.debug("onBackBtnPress() in PortletWindowController");

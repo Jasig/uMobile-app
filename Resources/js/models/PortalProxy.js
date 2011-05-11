@@ -75,7 +75,6 @@ var PortalProxy = function (facade) {
 
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
-                Ti.API.debug('ResponseText is' + layoutClient.responseText);
                 
                 var responseXML, nativeModules = app.UPM.getLocalModules();
                 

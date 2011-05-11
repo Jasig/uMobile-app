@@ -76,13 +76,15 @@ var WindowManager = function (facade) {
         var _lastWindow, _lastPortlet;
         _lastWindow = Ti.App.Properties.getString('lastWindow', app.controllers.portalWindowController.key);
         if (Ti.App.Properties.hasProperty('lastPortlet')) {
-            _lastPortlet = JSON.parse(Ti.App.Properties.getString('lastPortlet', ''));
+            _lastPortlet = Ti.App.Properties.getString('lastPortlet');
         }
+        
+        Ti.API.debug("_lastWindow= " + _lastWindow + " & _lastPortlet=" + _lastPortlet);
         
         if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.NETWORK]) {
             if (_lastWindow === app.controllers.portletWindowController.key && _lastPortlet) {
                 Ti.App.debug("_lastWindow is portlet, and the _lastPortlet property was defined.");
-                app.models.windowManager.openWindow(_lastWindow, _lastPortlet);
+                app.models.windowManager.openWindow(_lastWindow, JSON.parse(_lastPortlet));
             }
             else {
                 Ti.App.debug("_lastWindow is not portlet, or the _lastPortlet property was not defined.");
