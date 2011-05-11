@@ -160,18 +160,13 @@ var MapWindowController = function(facade) {
         activityIndicator.loadingMessage(app.localDictionary.loading);
         activityIndicator.show();
         searchBlur();
-        if (!locationDetailView) {
-            Ti.API.debug("locationDetailView not defined");
-            locationDetailViewOptions = app.styles.view;
-            locationDetailViewOptions.data = e;
-            locationDetailView = new app.controllers.MapDetailViewController(app, locationDetailViewOptions);
-            win.add(locationDetailView);
-            locationDetailView.show();
-        }
-        else {
-            Ti.API.debug("locationDetailView defined");
-            locationDetailView.updateAndShow(e);
-        }
+
+        locationDetailViewOptions = app.styles.view;
+        locationDetailViewOptions.data = e;
+        locationDetailView = new app.controllers.MapDetailViewController(app, locationDetailViewOptions);
+        win.add(locationDetailView);
+        locationDetailView.show();
+
         Ti.API.debug("Hiding Activity Indicator in loadDetail()");
         activityIndicator.hide();
     };

@@ -66,7 +66,7 @@ var PortalWindowController = function(facade) {
             titleBar = new app.views.GenericTitleBar({
         	    app: app,
         	    windowKey: 'home',
-        	    title: app.localDictionary.uMobile,
+        	    title: app.localDictionary.jasig11,
         	    settingsButton: true,
         	    homeButton: false
         	});

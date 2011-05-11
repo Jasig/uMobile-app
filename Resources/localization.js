@@ -6,6 +6,7 @@ var localDictionary = [];
 localDictionary.en_US = {
     //Global Text
     uMobile: "uMobile",
+    jasig11: "Jasig '11",
     search: "Search",
     go: "Go",
     back: "Back",
