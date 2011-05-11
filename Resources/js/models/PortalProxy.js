@@ -45,11 +45,9 @@ var PortalProxy = function (facade) {
     };
         
     self.getIconUrl = function (p) {
-        Ti.API.debug("Getting icon url for: " + JSON.stringify(p));
         var _iconUrl;
         
         if (app.models.resourceProxy.getPortletIcon(p.fname)) {
-            Ti.API.debug("getNativeIcon returns icon for " + p.fname);
             _iconUrl = app.models.resourceProxy.getPortletIcon(p.fname);
         }
         else if (p.iconUrl && p.iconUrl.indexOf('/') == 0) {

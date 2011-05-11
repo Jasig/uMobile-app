@@ -88,6 +88,8 @@ var WindowManager = function (facade) {
             }
             else {
                 Ti.App.debug("_lastWindow is not portlet, or the _lastPortlet property was not defined.");
+                //We don't want to try opening the portlet window if it was the last window,
+                //because we don't have a portlet to pass it. So just open the home window.
                 app.models.windowManager.openWindow(_lastWindow === app.controllers.portletWindowController.key ? app.controllers.portalWindowController.key : _lastWindow);
             }
         }
@@ -119,7 +121,7 @@ var WindowManager = function (facade) {
     
     onShowPortlet = function (portlet) {
         Ti.API.info("Showing portlet window " + portlet.title);
-        self.openWindow('portlet', portlet);
+        self.openWindow(app.controllers.portletWindowController.key, portlet);
     };
     
     init();

@@ -3,11 +3,11 @@ var SharedWebView = function (facade) {
     
     init = function () {
         Ti.API.debug("init() in SharedWebView");
-        webView = Ti.UI.createWebView(app.styles.portletView);
+        // webView = Ti.UI.createWebView(app.styles.portletView);
         
         // webView.addEventListener('load', self.onWebViewLoad);
         
-        Ti.API.debug("0 Is webview loading? " + webView.loading);
+        // Ti.API.debug("0 Is webview loading? " + webView.loading);
         
         activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
         
@@ -55,7 +55,7 @@ var SharedWebView = function (facade) {
         */
 
         if (!app.models.deviceProxy.checkNetwork()) {
-            return;
+            return false;
         }
 
         //We only need to check the session if it's a link to the portal.

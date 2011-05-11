@@ -59,24 +59,9 @@ Titanium.include('js/controllers/commands/StartupCommand.js');
         Ti.API.debug("With a DPI of: " + Ti.Platform.displayCaps.dpi);
         Ti.API.debug("Last Portlet is: " + Ti.App.Properties.getString('lastPortlet', 'none'));
         Ti.API.debug("Last Window is: " + Ti.App.Properties.getString('lastWindow', 'none'));
-        
-        Ti.App.addEventListener('resume', function () {
-            alert("App resumed");
-        });
 
         setUpFacade();
         windowManager = app.models.windowManager;
-        
-        //Let the user know that they need a network connection to use this app.
-        if (!Ti.Network.online) {
-            alertDialog = Titanium.UI.createAlertDialog({
-                title: app.localDictionary.error,
-                message: app.localDictionary.networkConnectionRequired,
-                buttonNames: [app.localDictionary.OK]
-            });
-            alertDialog.show();
-            Ti.API.debug("Network is offline");
-        }
         
         setUpWindows();
         StartupCommand(app);
