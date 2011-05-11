@@ -212,22 +212,6 @@ var Styles = function (app) {
         	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
         	width: Titanium.Platform.displayCaps.platformWidth
         },
-        secondaryNavBarButton: {
-            style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-            left: 10,
-            width: 50,
-            height: 30,
-        	backgroundImage: 'none',
-        	color: '#fff',
-            borderWidth: 1,
-            borderRadius: 10,
-            borderColor: '#000',
-        	font: {
-        	    fontSize: 14,
-        	    fontWeight: 'bold'
-        	},
-        	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
-        },
         secondaryNavBarLabel: {
             textAlign: "center",
             color: '#fff',
