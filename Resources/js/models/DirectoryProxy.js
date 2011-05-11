@@ -13,36 +13,16 @@ var DirectoryProxy = function (facade,opts) {
     };
     
     self.search = function (query) {
-        var onSessionFailure, onSessionSuccess;
-        onSessionSuccess = function (e) {
-            Ti.App.removeEventListener('EstablishNetworkSessionFailure', onSessionFailure);
-            Ti.App.removeEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
-            doXhrSearch(query);
-        };
-        onSessionFailure = function (e) {
-            Ti.App.removeEventListener('EstablishNetworkSessionFailure', onSessionFailure);
-            Ti.App.removeEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
-            onXhrSearchError(e);
-        };
-        
         if (!app.models.deviceProxy.checkNetwork()) {
             return;
-        }
-        
+        }        
         else if (query === '') {
             people = [];
             Ti.App.fireEvent('DirectoryProxySearchComplete');
-            return;
-        }
-        else if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.NETWORK].isActive) {
-            doXhrSearch(query);
         }
         else {
-            app.models.loginProxy.establishNetworkSession();
-            Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
-            Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionFailure);
+            doXhrSearch(query);
         }
-
     };
     self.clear = function () {
         people = [];
