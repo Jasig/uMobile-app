@@ -51,7 +51,7 @@ Titanium.include('js/controllers/SettingsWindowController.js');
 Titanium.include('js/controllers/commands/StartupCommand.js');
 
 (function (){
-    var app, windowManager, init, setUpWindows, alertDialog, validateSessions, onPause;
+    var app, windowManager, init, setUpWindows, setUpFacade, alertDialog;
     
     init = function () {
         Ti.API.debug("Hello. You're on an: " + Ti.Platform.osname);
@@ -60,8 +60,9 @@ Titanium.include('js/controllers/commands/StartupCommand.js');
         Ti.API.debug("Last Portlet is: " + Ti.App.Properties.getString('lastPortlet', 'none'));
         Ti.API.debug("Last Window is: " + Ti.App.Properties.getString('lastWindow', 'none'));
         
-        Ti.Platform.addEventListener('resume', validateSessions);
-        Ti.App.addEventListener('FacadeInitialized', validateSessions);
+        Ti.App.addEventListener('resume', function () {
+            alert("App resumed");
+        });
 
         setUpFacade();
         windowManager = app.models.windowManager;
@@ -134,10 +135,6 @@ Titanium.include('js/controllers/commands/StartupCommand.js');
         windowManager.addWindow(app.controllers.directoryWindowController);
         windowManager.addWindow(app.controllers.mapWindowController);
         windowManager.addWindow(app.controllers.settingsWindowController);
-    };
-    
-    validateSessions = function (e) {
-        app.models.sessionProxy.validateSessions();
     };
     
     init();

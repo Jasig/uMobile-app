@@ -31,6 +31,8 @@ var SessionProxy = function (facade) {
         
         Ti.API.info("Reset the timer for: " + context + " & timer= " + sessionLifeTimeMilli);
         if (Ti.Platform.osname !== 'android') {
+            // In iPhone we only maintain one timer since cookies are shared
+            // between network requests and webviews.
             if(timers[LoginProxy.sessionTimeContexts.NETWORK].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
                 clearTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK].counter);
@@ -44,6 +46,7 @@ var SessionProxy = function (facade) {
             Ti.API.info("Network timer updated at ");
         }
         else if (timers[context]) {
+            
             if(timers[context].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
                 clearTimeout(timers[context].counter);

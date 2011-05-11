@@ -15,7 +15,7 @@ var MapDetailViewController = function (facade,opts) {
     init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
         Ti.API.debug("Creating titleBackButton in MapDetailViewController");
-        titleBackButtonOptions = app.styles.secondaryNavBarButton;
+        titleBackButtonOptions = app.styles.secondaryBarButton;
         titleBackButtonOptions.title = app.localDictionary.back;
         titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
         

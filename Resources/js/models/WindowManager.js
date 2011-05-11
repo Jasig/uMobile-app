@@ -17,12 +17,15 @@ var WindowManager = function (facade) {
     };
     
     self.openWindow = function (windowKey, portlet) {
+        Ti.API.debug("openWindow() in WindowManager");
         var callback, 
             homeKey = app.controllers.portalWindowController.key,
             portletKey = app.controllers.portletWindowController.key;
         
         if (applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()) {
+            Ti.API.debug("Passes condition: applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()");
             if (activityStack.length > 0) {
+                Ti.API.debug("Passes condition: activityStack.length > 0");
                 applicationWindows[self.getCurrentWindow()].close();
             }
             applicationWindows[windowKey].open(portlet ? portlet : null );
@@ -30,9 +33,14 @@ var WindowManager = function (facade) {
             activityStack.push(windowKey);
             Ti.App.Properties.setString('lastWindow', windowKey);
             if (portlet) {
+                Ti.API.debug("Passes condition: portlet");
+                Ti.API.debug("Adding portlet to lastPortlet: " + JSON.stringify(portlet));
                 Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
             }
             Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
+        }
+        else {
+            Ti.API.error("Error opening window. applicationWindows[windowKey] = " + applicationWindows[windowKey] + " & windowKey !== self.getCurrentWindow() = " + windowKey !== self.getCurrentWindow());
         }
     };
     
@@ -65,15 +73,18 @@ var WindowManager = function (facade) {
         
         var _lastWindow, _lastPortlet;
         _lastWindow = Ti.App.Properties.getString('lastWindow', app.controllers.portalWindowController.key);
-        _lastPortlet = Ti.App.Properties.getString('lastPortlet', '');
+        if (Ti.App.Properties.hasProperty('lastPortlet')) {
+            _lastPortlet = JSON.parse(Ti.App.Properties.getString('lastPortlet', ''));
+        }
         
         if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.NETWORK]) {
-            if (_lastWindow === app.controllers.portletWindowController.key && _lastPortlet != '') {
-                _lastPortlet = JSON.parse(_lastPortlet);
+            if (_lastWindow === app.controllers.portletWindowController.key && _lastPortlet) {
+                Ti.App.debug("_lastWindow is portlet, and the _lastPortlet property was defined.");
                 app.models.windowManager.openWindow(_lastWindow, _lastPortlet);
             }
             else {
-                app.models.windowManager.openWindow(_lastWindow);
+                Ti.App.debug("_lastWindow is not portlet, or the _lastPortlet property was not defined.");
+                app.models.windowManager.openWindow(_lastWindow === app.controllers.portletWindowController.key ? app.controllers.portalWindowController.key : _lastWindow);
             }
         }
         else {

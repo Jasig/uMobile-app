@@ -51,7 +51,7 @@ var PortalWindowController = function(facade) {
             orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
-
+        
         createPortalView();
     };
     
@@ -75,9 +75,9 @@ var PortalWindowController = function(facade) {
         	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
             win.add(contentLayer);
             
-            activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+            /*activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
             win.add(activityIndicator);
-            activityIndicator.hide();
+            activityIndicator.show();*/
 
             Ti.API.debug("Creating a new portal home view");
         	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
@@ -101,6 +101,7 @@ var PortalWindowController = function(facade) {
             if (portalProxy.getPortlets().length > 0) {
                 drawHomeGrid(portalProxy.getPortlets());
             }
+            
         }
         else {
             Ti.API.error("No win exists in PortalWindowController>createPortalView()");
@@ -169,7 +170,6 @@ var PortalWindowController = function(facade) {
             gridItemIcon.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
         Ti.API.info("Done placing portlets");
-        activityIndicator.hide();
     };
     
     onNetworkSessionSuccess = function (e) {
@@ -240,9 +240,6 @@ var PortalWindowController = function(facade) {
         Ti.API.debug("onGettingPortlets() in PortalWindowController");
         // Display a loading indicator until we can finish downloading the user
         // layout and creating the initial view
-        activityIndicator.loadingMessage(app.localDictionary.loading);
-        activityIndicator.resetDimensions();
-        // activityIndicator.show();
     };
     
     onPortletsLoaded = function (e) {

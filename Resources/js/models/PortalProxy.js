@@ -6,9 +6,11 @@ var PortalProxy = function (facade) {
         Ti.API.debug("getShowPortletFunc() in PortalProxy");
         return function () {
             if (portlet.url) {
+                Ti.API.debug("portlet.url exists in getShowPortletFunc() in PortalProxy");
                 app.models.windowManager.openWindow(app.controllers.portletWindowController.key, portlet);
             } 
             else {
+                Ti.API.error("portlet.url doesn't exist in getShowPortletFunc() in PortalProxy");
                 app.models.windowManager.openWindow(portlet.window);
             }
         };

@@ -50,84 +50,62 @@ var PortletWindowController = function (facade) {
         if (portlet) {
             activePortlet = portlet;
         }
+        else {
+            Ti.API.error("No portlet was passed to includePortlet() in PortletWindowController");
+            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+            return;
+        }
         
-        if (!win) {
-            win = Titanium.UI.createWindow({
-                key: 'portlet',
-                backgroundColor: app.styles.backgroundColor,
-                exitOnClose: false,
-                navBarHidden: true
-            });
-            for (var i = 0, iLength = winListeners.length; i<iLength; i++) {
-                win.addEventListener(winListeners[i].event, winListeners[i].callback);
-            }
-        }
-    
-        if (webView) {
-            webView.removeEventListener('load', onPortletLoad);
-            webView.removeEventListener('beforeload', onPortletBeforeLoad);
-            win.remove(webView);
-        }
+        win = Titanium.UI.createWindow({
+            key: 'portlet',
+            backgroundColor: app.styles.backgroundColor,
+            exitOnClose: false,
+            navBarHidden: true
+        });
+
         if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
-            webView = Titanium.UI.createWebView(app.styles.portletView); 
+            webView = Titanium.UI.createWebView(app.styles.portletView);
         }
         else {
             webView = sharedWebView.getWebView();
         }
         
-        win.add(webView);
-        webView.addEventListener('load', onPortletLoad);
-        webView.addEventListener('beforeload', onPortletBeforeLoad);
+        titleBar = new app.views.GenericTitleBar({
+            windowKey: 'portlet',
+            app: app,
+            title: app.localDictionary.uMobile,
+            settingsButton: false,
+            homeButton: true
+        });
         
-        
-        if (!titleBar) {
-            titleBar = new app.views.GenericTitleBar({
-                windowKey: 'portlet',
-                app: app,
-                title: app.localDictionary.uMobile,
-                settingsButton: false,
-                homeButton: true
-            });            
-        }
-        
-        if (!navBar) {
-            navBarOptions = app.styles.secondaryNavBarButton;
-            navBarOptions.title = app.localDictionary.back;
+        navBarOptions = app.styles.secondaryBarButton;
+        navBarOptions.title = app.localDictionary.back;
 
-            navBackButton = Titanium.UI.createButton(navBarOptions);
-            navBackButton.addEventListener('touchstart', onBackBtnPress);
-            navBackButton.addEventListener('touchend', onBackBtnUp);
-            navBackButton.addEventListener('click', function() { webView.goBack(); });
-            // initialize navigation bar for URLs outside the portal
-            navBar = new app.views.SecondaryNavBar(app,{
-                backButton: navBackButton
-            });
-            navBar.top = 40;
-            navBar.visible = false;
-        }
+        navBackButton = Titanium.UI.createButton(navBarOptions);
+        navBackButton.addEventListener('touchstart', onBackBtnPress);
+        navBackButton.addEventListener('touchend', onBackBtnUp);
+        navBackButton.addEventListener('click', function() { webView.goBack(); });
+        // initialize navigation bar for URLs outside the portal
+        navBar = new app.views.SecondaryNavBar(app,{
+            backButton: navBackButton
+        });
+        navBar.top = 40;
+        navBar.visible = false;
 
-        if (!activityIndicator) {
-            activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
-            activityIndicator.hide();            
-        }
+        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+        activityIndicator.hide();
 
         win.add(titleBar);
-        win.add(webView);
         win.add(navBar);
+        win.add(webView);
         win.add(activityIndicator);
         
         webView.addEventListener('load', onPortletLoad);
         webView.addEventListener('beforeload', onPortletBeforeLoad);
+        
         includePortlet(activePortlet);
 
         win.open();
-    };
-    
-    self.addEventListener = function (event, callback) {
-        if (win) {
-            win.addEventListener(event, callback);
-        }
-        winListeners.push({event: event, callback: callback});
     };
     
     includePortlet = function (portlet) {
@@ -138,8 +116,12 @@ var PortletWindowController = function (facade) {
         
         if (portlet.url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
-            // webView.getLocalUrl(portlet.url);
-            webView.url = sharedWebView.getLocalUrl(portlet.url);
+            if (app.models.windowManager.validateSessions()[app.models.sessionProxy.sessionTimeContexts.WEBVIEW].isActive) {
+                webView.url = sharedWebView.getLocalUrl(portlet.url);
+            }
+            else {
+                webView.url = app.models.loginProxy.getLocalLoginURL(portlet.url);
+            }
             webView.externalModule = false;
             webView.top = titleBar.height;
         } else {
