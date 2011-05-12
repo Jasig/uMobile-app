@@ -15,7 +15,7 @@ var SessionProxy = function (facade) {
     init = function () {
         //Gets the session expiration time from the config in seconds,
         //converts to milliseconds for use in the setTimeout
-        sessionLifeTimeMilli = app.UPM.SERVER_SESSION_TIMEOUT * 1000;
+        sessionLifeTimeMilli = parseInt(app.UPM.SERVER_SESSION_TIMEOUT * 1000, 10);
         Ti.App.addEventListener('SessionActivity', onSessionActivity);
     };
     
@@ -41,12 +41,11 @@ var SessionProxy = function (facade) {
                 onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
             timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
-            Ti.App.Properties.setInt('timer_' + context, (new Date()).getTime());
+            Ti.App.Properties.setInt('timer_' + context, getLastDigits(new Date().getTime()));
             
             Ti.API.info("Network timer updated at ");
         }
         else if (timers[context]) {
-            
             if(timers[context].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
                 clearTimeout(timers[context].counter);
@@ -57,11 +56,18 @@ var SessionProxy = function (facade) {
             }, parseInt(sessionLifeTimeMilli, 10));
             
             timers[context].isActive = true;
-            Ti.App.Properties.setInt('timer_' + context, (new Date()).getTime());
+            Ti.App.Properties.setInt('timer_' + context, getLastDigits(new Date().getTime()));
         }
         else {
             Ti.API.debug("No timers matched the context: " + context);
         }
+    };
+    
+    var getLastDigits = function (number) {
+        //Returns just the last 6 digits of an integer so it's not too big for Java
+        var _number = String(number).slice(1, -3);
+        Ti.API.info("getLastDigits() in SessionProxy. Number in: " + number + " Number out: " + _number);
+        return parseInt(_number, 10);
     };
     
     self.isActive = function (context) {
@@ -119,16 +125,16 @@ var SessionProxy = function (facade) {
         // This compares the timestamps of all timers against the current time
         // and the UPM.SERVER_SESSION_TIMEOUT property in config.js
         
-        _currentTime = (new Date()).getTime();
+        _currentTime = getLastDigits(new Date().getTime());
 
         for (var timer in timers) {
             if (timers.hasOwnProperty(timer)) {
-                if (_currentTime - Ti.App.Properties.getInt('timer_' + timer) < app.UPM.SERVER_SESSION_TIMEOUT * 1000) {
-                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (_currentTime - Ti.App.Properties.getInt('timer_' + timer)));
+                if (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0)) < parseInt(app.UPM.SERVER_SESSION_TIMEOUT * 1000, 10)) {
+                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0))));
                     _sessions[timer] = true;
                 }
                 else {
-                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (_currentTime - Ti.App.Properties.getInt('timer_' + timer)));
+                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0))));
                     _sessions[timer] = false;
                     self.stopTimer(timer);
                 }

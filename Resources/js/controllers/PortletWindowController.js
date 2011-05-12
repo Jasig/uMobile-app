@@ -63,7 +63,7 @@ var PortletWindowController = function (facade) {
             navBarHidden: true
         });
 
-        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad' || Ti.Platform.osname === 'android') {
             webView = Titanium.UI.createWebView(app.styles.portletView);
         }
         else {

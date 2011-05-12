@@ -27,7 +27,7 @@ var PortalWindowController = function(facade) {
     var win, app = facade, self = {}, portalProxy, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
-        onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, onNetworkSessionSuccess, onNetworkSessionFailure,
+        onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, onAppWindowOpening, onAppWindowOpened, onNetworkSessionSuccess, onNetworkSessionFailure,
         pathToRoot = '../../';
 
     init = function () {
@@ -39,16 +39,17 @@ var PortalWindowController = function(facade) {
         Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onNetworkSessionSuccess);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onNetworkSessionFailure);
+        Ti.App.addEventListener('OpeningNewWindow', onAppWindowOpening);
+        Ti.App.addEventListener('NewWindowOpened', onAppWindowOpened);
 
     	initialized = true;
     };
     
     self.open = function () {
         win = Titanium.UI.createWindow({
-            exitOnClose: false,
+            exitOnClose: true,
             navBarHidden: true,
-            modal: false,
-            orientationModes: [Ti.UI.PORTRAIT]
+            fullScreen: false
         });
         win.open();
         
@@ -249,6 +250,19 @@ var PortalWindowController = function(facade) {
         Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
             message: e.message, buttonNames: [app.localDictionary.OK]
             }).show();
+    };
+    
+    onAppWindowOpened = function (e) {
+        if (activityIndicator) {
+            activityIndicator.hide();
+        }
+    };
+    
+    onAppWindowOpening = function (e) {
+        if (win && win.visible && activityIndicator) {
+            activityIndicator.loadingMessage(app.localDictionary.loading);
+            activityIndicator.show();
+        }
     };
     
     if(!initialized) {

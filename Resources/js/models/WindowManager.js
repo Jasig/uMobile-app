@@ -23,12 +23,23 @@ var WindowManager = function (facade) {
             portletKey = app.controllers.portletWindowController.key;
         
         if (applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()) {
+            Ti.App.fireEvent('OpeningNewWindow', {key: windowKey, portlet: portlet ? portlet : false});
+            //Make sure the requested window exists, and that it isn't the current window.
             Ti.API.debug("Passes condition: applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()");
-            if (activityStack.length > 0) {
-                Ti.API.debug("Passes condition: activityStack.length > 0");
-                applicationWindows[self.getCurrentWindow()].close();
+            if (Ti.Platform.osname === 'android') {
+                applicationWindows[windowKey].open(portlet ? portlet : null );
+                if (activityStack.length > 0) {
+                    Ti.API.debug("Passes condition: activityStack.length > 0");
+                    applicationWindows[self.getCurrentWindow()].close();
+                }
             }
-            applicationWindows[windowKey].open(portlet ? portlet : null );
+            else {
+                if (activityStack.length > 0) {
+                    Ti.API.debug("Passes condition: activityStack.length > 0");
+                    applicationWindows[self.getCurrentWindow()].close();
+                }
+                applicationWindows[windowKey].open(portlet ? portlet : null );
+            }
             
             activityStack.push(windowKey);
             Ti.App.Properties.setString('lastWindow', windowKey);
@@ -73,7 +84,7 @@ var WindowManager = function (facade) {
         // If the last window was a portlet, get the last portlet and parse/pass it as a parameter.
         // Otherwise, just open the last window
         
-        var _lastWindow, _lastPortlet;
+        /*var _lastWindow, _lastPortlet;
         _lastWindow = Ti.App.Properties.getString('lastWindow', app.controllers.portalWindowController.key);
         if (Ti.App.Properties.hasProperty('lastPortlet')) {
             _lastPortlet = Ti.App.Properties.getString('lastPortlet');
@@ -87,7 +98,7 @@ var WindowManager = function (facade) {
                 app.models.windowManager.openWindow(_lastWindow, JSON.parse(_lastPortlet));
             }
             else {
-                Ti.App.debug("_lastWindow is not portlet, or the _lastPortlet property was not defined.");
+                Ti.API.debug("_lastWindow is not portlet, or the _lastPortlet property was not defined.");
                 //We don't want to try opening the portlet window if it was the last window,
                 //because we don't have a portlet to pass it. So just open the home window.
                 app.models.windowManager.openWindow(_lastWindow === app.controllers.portletWindowController.key ? app.controllers.portalWindowController.key : _lastWindow);
@@ -96,7 +107,10 @@ var WindowManager = function (facade) {
         else {
             app.models.loginProxy.establishNetworkSession();
             self.openWindow(app.controllers.portalWindowController.key);
-        }
+        }*/
+        
+        //Let's forego this feature in version 1.0, too many cross-platform issues when trying to go-live.
+        self.openWindow(app.controllers.portalWindowController);
     };
     
     hidePreviousWindow = function (options) {
