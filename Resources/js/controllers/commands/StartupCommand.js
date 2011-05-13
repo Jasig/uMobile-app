@@ -1,5 +1,0 @@
-
-
-var StartupCommand = function (facade) {
-    
-};
