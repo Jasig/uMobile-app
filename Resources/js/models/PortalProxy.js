@@ -1,8 +1,15 @@
 var PortalProxy = function (facade) {
-    var app = facade, self = {}, portlets = [], sortPortlets, 
+    var app = facade, self = {}, portlets = [], sortPortlets, loadPortletList, init,
         pathToRoot = '../../';
     
+    init = function () {
+        //Nothing to see here
+    };
+    
     self.getShowPortletFunc = function (portlet) {
+        //Returns a function to the PortalWindowController to open the appropriate window 
+        //when an icon is clicked in the home screen grid.
+        
         Ti.API.debug("getShowPortletFunc() in PortalProxy");
         return function () {
             if (portlet.url) {
@@ -62,12 +69,9 @@ var PortalProxy = function (facade) {
 
         return _iconUrl;
     };
-    
-    /**
-     * This method is currently blocking.
-     */
-    getPortletList = function() {
-        Ti.API.debug('getPortletList() in PortalProxy');
+
+    loadPortletList = function() {
+        Ti.API.debug('loadPortletList() in PortalProxy');
         var layoutUrl, layoutClient, layoutText,
             onRequestComplete, onRequestError, onGetPortletsComplete, onGetPortletsError;
 
@@ -150,16 +154,17 @@ var PortalProxy = function (facade) {
         layoutClient.send();
     };
     
-    self.getPortletsForUser = function(onload) {
+    self.getPortletsForUser = function() {
         var _portlets;
 
         Ti.App.fireEvent('PortalProxyGettingPortlets');
 
         // Get the module list for this user from the portal server and create a 
         // layout based on this list.
-        _portlets = getPortletList();
-        app.lastUpdate = new Date();
+        _portlets = loadPortletList();
     };
+    
+    init();
     
     return self;
 };

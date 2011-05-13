@@ -1,5 +1,3 @@
-
-
 var DeviceProxy = function (facade) {
     var app = facade, self = {};
     

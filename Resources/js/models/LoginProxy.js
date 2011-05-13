@@ -12,7 +12,6 @@ var LoginProxy = function (facade) {
         
         //Implement constants for what contexts are available for session timeouts.
         self.sessionTimeContexts = LoginProxy.sessionTimeContexts;
-        Ti.API.debug("Session Time contexts are: " + JSON.stringify(LoginProxy.sessionTimeContexts));
         
         sessionProxy = app.models.sessionProxy;
         

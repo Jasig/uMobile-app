@@ -154,9 +154,9 @@ var SettingsWindowController = function(facade){
         if (usernameInput) { usernameInput.blur(); }
         if (app.models.deviceProxy.checkNetwork()) {
             if (usernameInput.value === '') {
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                /*Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                     message: app.localDictionary.enterAUserName, buttonNames: [app.localDictionary.OK]
-                    }).show();
+                    }).show();*/
             }
             else {
                 wasFormSubmitted = true;
@@ -221,9 +221,9 @@ var SettingsWindowController = function(facade){
         }
         Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
         if(app.models.windowManager.getCurrentWindow() === self.key && e.user === credentials.username && wasFormSubmitted) {
-            Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
+            /*Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
                 message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
-                }).show();
+                }).show();*/
         }
         else {
             Ti.API.debug("SettingsWindow isn't visible apparently...");
@@ -248,9 +248,9 @@ var SettingsWindowController = function(facade){
             if (!win || !win.visible) {
                 app.models.windowManager.openWindow(self.key);
             }
-            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+            /*Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                 message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
-                }).show();
+                }).show();*/
         }
     };
     

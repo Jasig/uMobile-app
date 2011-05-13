@@ -21,6 +21,7 @@
  * map tab.
  */
 
+
 var MapWindowController = function(facade) {
     var win, app = facade, self = {}, initialized, mapProxy, //Standard utility vars
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], //Data objects
@@ -30,7 +31,10 @@ var MapWindowController = function(facade) {
 
     init = function() {
         self.key = 'map';
-        mapProxy = app.models.mapProxy;
+        
+        Titanium.include(app.models.resourceProxy.getResourcePath('js/models/MapProxy.js'));
+        Titanium.include(app.models.resourceProxy.getResourcePath('js/views/MapDetailTop.js'));
+        Titanium.include(app.models.resourceProxy.getResourcePath('js/controllers/MapDetailViewController.js'));
         
         Ti.App.addEventListener('MapProxySearching', onProxySearching);
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
@@ -39,12 +43,21 @@ var MapWindowController = function(facade) {
         Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
         Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
-        
-        
         initialized = true;
     };
     
     self.open = function () {
+        if (!app.models.mapProxy) {
+            app.registerModel('mapProxy', new MapService(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
+            mapProxy = app.models.mapProxy;
+        }
+        if (!app.views.MapDetailTop) {
+            app.registerView('MapDetailTop', MapDetailTop); // Partial view used at the top of the map detail view
+        }
+        if (!app.controllers.MapDetailViewController) {
+            app.registerController('MapDetailViewController', MapDetailViewController); // Subcontext in MapWindowController to show details of a location on the map
+        }
+        
         if (!win) {
             //Initialize the mapProxy, which manages the data for points on the map,
             //including retrieval of data and searching array of points
@@ -243,12 +256,12 @@ var MapWindowController = function(facade) {
         activityIndicator.hide();
         
         if(e.points.length < 1) {
-            alertDialog = Titanium.UI.createAlertDialog({
+            /*alertDialog = Titanium.UI.createAlertDialog({
                 title: app.localDictionary.noResults,
                 message: app.localDictionary.mapNoSearchResults,
                 buttonNames: [app.localDictionary.OK]
             });
-            alertDialog.show();
+            alertDialog.show();*/
         }
         else {
             plotPoints(e.points);

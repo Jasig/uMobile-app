@@ -465,6 +465,5 @@ var Styles = function (app) {
         stylesheet.secondaryBar.backgroundImage = '/images/secondarybarbg.png';
         stylesheet.mapAnnotation.image = '/images/mapPin.png';
     }
-    Ti.API.info("OS is: " + OS + " and contentButton borderRadius is" + stylesheet.contentButton.borderRadius);
     return stylesheet;
 };

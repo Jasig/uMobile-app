@@ -22,7 +22,8 @@
  * main portal navigation tab.
  */
 
-// library includes
+
+
 var PortalWindowController = function(facade) {
     var win, app = facade, self = {}, portalProxy, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
@@ -32,8 +33,9 @@ var PortalWindowController = function(facade) {
 
     init = function () {
         self.key = 'home';
+        
         portalProxy = app.models.portalProxy;
-    	
+        
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
         Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
@@ -46,8 +48,9 @@ var PortalWindowController = function(facade) {
     };
     
     self.open = function () {
+
         win = Titanium.UI.createWindow({
-            exitOnClose: true,
+            exitOnClose: false,
             navBarHidden: true,
             fullScreen: false
         });
@@ -178,14 +181,14 @@ var PortalWindowController = function(facade) {
         else {
             isGuestLayout = false;
         }
-        app.models.portalProxy.getPortletsForUser();
+        portalProxy.getPortletsForUser();
     };
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
         if (e.user && e.user === 'guest') {
             isGuestLayout = true;
-            app.models.portalProxy.getPortletsForUser();
+            portalProxy.getPortletsForUser();
         }
         else {
             isGuestLayout = false;
@@ -242,7 +245,9 @@ var PortalWindowController = function(facade) {
     };
     
     onPortletsLoaded = function (e) {
-        createPortalView();
+        if (win && win.visible) {
+            createPortalView();
+        }
     };
     
     onPortalProxyNetworkError = function (e) {

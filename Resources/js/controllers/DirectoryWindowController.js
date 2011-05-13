@@ -22,10 +22,8 @@
  * user settings tab.
  */
 
-Ti.API.info("Directory Window Opened");
-
 var DirectoryWindowController = function (facade) {
-    var win, app = facade, self = {}, directoryProxy = app.models.directoryProxy,
+    var win, app = facade, self = {}, directoryProxy,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
         contactDetailViewOptions, searchBarOptions,
@@ -37,8 +35,12 @@ var DirectoryWindowController = function (facade) {
         onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onSearchChange, onContactRowClick, onNewWindowOpened, onProxySearching, onProxySearchComplete, onProxySearchError;
     
     init = function () {
-        Ti.API.debug("DirectoryWindowController.init()");
+        Ti.API.debug("init() in DirectoryWindowController");
         self.key = 'directory';
+        
+        Titanium.include(app.models.resourceProxy.getResourcePath('js/models/DirectoryProxy.js'));
+        Titanium.include(app.models.resourceProxy.getResourcePath('js/views/PersonDetailTableView.js'));
+        Titanium.include(app.models.resourceProxy.getResourcePath('js/controllers/DirectoryDetailController.js'));
         
         Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
         //Listene for events, mostly fired from models.DirectoryProxy
@@ -50,6 +52,20 @@ var DirectoryWindowController = function (facade) {
     };
     
     self.open = function () {
+        if (!app.models.directoryProxy) {
+            app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
+            directoryProxy = app.models.directoryProxy;
+        }
+        else {
+            directoryProxy = app.models.directoryProxy;
+        }
+        if (!app.views.PersonDetailTableView) {
+            app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
+        }
+        if (!app.controllers.DirectoryDetailController) {
+            app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 
+        }
+        
         win = Titanium.UI.createWindow({
             backgroundColor: app.styles.backgroundColor,
             title: app.localDictionary.directory,
