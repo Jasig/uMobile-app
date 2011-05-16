@@ -9,7 +9,7 @@ var Styles = function (app) {
     var defaults, stylesheet, OS = Ti.Platform.osname;
     defaults = {
         TITLEBAR_HEIGHT: 40,
-        SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 50 : 40,
+        SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 45 : 40,
         DETAIL_TOP_TITLE_COLOR: '#333',
         DETAIL_TOP_BACKGROUND_COLOR: '#eee',
         PRIMARY_BAR_BACKGROUND_COLOR: "#000",
@@ -117,7 +117,7 @@ var Styles = function (app) {
         },
         searchBarInput: {
             width: Ti.Platform.displayCaps.platformWidth - 5 - 5,
-            height: defaults.SEARCHBAR_HEIGHT - 10,
+            height: defaults.SEARCHBAR_HEIGHT - 7,
             top: 5,
             borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
         },
@@ -436,6 +436,7 @@ var Styles = function (app) {
     	    }
     	}
     };
+    
     //iPhone-specific overrides
     if (Ti.Platform.osname === 'iphone') {
         stylesheet.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.PLAIN;
@@ -465,9 +466,12 @@ var Styles = function (app) {
         };
         stylesheet.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
     }
+    
     if(Ti.Platform.osname === 'android') {
         stylesheet.titleBar.backgroundImage = '/img/titlebarbg.png';
         stylesheet.secondaryBar.backgroundImage = '/img/secondarybarbg.png';
+        stylesheet.searchBar.backgroundImage = '/img/secondarybarbg.png';
+        stylesheet.secondaryNavBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.secondaryBarButton.backgroundImage = '/img/secondarybarbtnbg.png';
         stylesheet.secondaryBarButton.backgroundImagePress = '/img/secondarybarbtnbg_press.png';
         stylesheet.mapAnnotation.image = '/img/mapPin.png';

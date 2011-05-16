@@ -67,7 +67,7 @@ var SettingsWindowController = function(facade){
         win.add(titleBar);
         createCredentialsForm();
         
-        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+        activityIndicator = app.UI.createActivityIndicator();
         activityIndicator.resetDimensions();
         
         win.add(activityIndicator);

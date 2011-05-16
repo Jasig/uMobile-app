@@ -159,7 +159,7 @@ var DirectoryWindowController = function (facade) {
             contactDetailView = new app.controllers.DirectoryDetailController(app, contactDetailViewOptions);
             win.add(contactDetailView);
 
-            activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+            activityIndicator = app.UI.createActivityIndicator();
             activityIndicator.resetDimensions();
             win.add(activityIndicator);
             activityIndicator.hide();

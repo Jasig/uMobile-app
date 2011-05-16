@@ -24,9 +24,10 @@ startup = function (e) {
 
     Titanium.include('js/ApplicationFacade.js');
 
-    Titanium.include('config.js');
-    Titanium.include('localization.js');
-    Titanium.include('style.js');
+    Titanium.include('js/config.js');
+    Titanium.include('js/localization.js');
+    Titanium.include('js/style.js');
+    Titanium.include('js/UI.js');
 
     Titanium.include('js/gibberish-aes.js');
 
@@ -38,7 +39,6 @@ startup = function (e) {
     Titanium.include('js/models/WindowManager.js');
 
     Titanium.include('js/views/GenericTitleBar.js');
-    Titanium.include('js/views/GlobalActivityIndicator.js');
     Titanium.include('js/views/SecondaryNavBar.js');
 
     Titanium.include('js/controllers/DirectoryWindowController.js');
@@ -56,6 +56,7 @@ startup = function (e) {
     //The facade is always called "app" in each controller, and depending on the type of member,
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
+    app.registerMember('UI', new UI(app));
     app.registerMember('UPM', new Config(app)); //Global config object
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
@@ -70,7 +71,6 @@ startup = function (e) {
     app.registerModel('deviceProxy', new DeviceProxy(app));
 
     app.registerView('GenericTitleBar', GenericTitleBar); // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
-    app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app)); //A view factory to create activity indicator instances in the controllers to be shown during time-intensive operations.
     app.registerView('SecondaryNavBar', SecondaryNavBar); // A partial view used in some controllers to place a nav bar just below the titleBar
 
     //Window controllers

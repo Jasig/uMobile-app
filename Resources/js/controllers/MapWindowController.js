@@ -118,7 +118,7 @@ var MapWindowController = function(facade) {
 
 
 
-            activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+            activityIndicator = app.UI.createActivityIndicator();
             win.add(activityIndicator);
             activityIndicator.hide();
 
@@ -128,7 +128,7 @@ var MapWindowController = function(facade) {
                 
             }
             else {
-                var searchBarContainer = Titanium.UI.createView(app.styles.secondaryBar);
+                var searchBarContainer = Titanium.UI.createView(app.styles.searchBar);
                 searchBar = Titanium.UI.createTextField(app.styles.searchBarInput);
                 searchBarContainer.add(searchBar);
                 win.add(searchBarContainer);

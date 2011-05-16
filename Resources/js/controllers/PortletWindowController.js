@@ -97,7 +97,7 @@ var PortletWindowController = function (facade) {
         navBar.top = 40;
         navBar.visible = false;
 
-        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+        activityIndicator = app.UI.createActivityIndicator();
         activityIndicator.hide();
 
         win.add(titleBar);

@@ -1,12 +1,15 @@
-GlobalActivityIndicator = function (app) {
-    /*
-        This is a view factory to create separate, but identical activity indicators 
-        for the different controllers to indicate time-intensive activity to a user.
-        The activity indicator is NOT hidden by default, so controllers need to hide
-        it right away unless they want to show it. This is to keep it consistent with
-        other view components that are always shown by default when added to another view.
-    */
-    this.createActivityIndicator = function () {
+var UI = function (facade) {
+    var self = {}, app=facade, init;
+    
+    init = function () {
+        
+    };
+    
+    self.createTitleBar = function () {
+        
+    };
+    
+    self.createActivityIndicator = function () {
         var messageLabel,
             indicator = Ti.UI.createView(app.styles.globalActivityIndicator),
             dialog = Ti.UI.createView(app.styles.activityIndicatorDialog);
@@ -36,4 +39,8 @@ GlobalActivityIndicator = function (app) {
         
         return indicator;
     };
+    
+    init();
+    
+    return self;
 };

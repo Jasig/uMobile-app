@@ -79,7 +79,7 @@ var PortalWindowController = function(facade) {
         	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
             win.add(contentLayer);
             
-            /*activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+            /*activityIndicator = app.UI.createActivityIndicator();
             win.add(activityIndicator);
             activityIndicator.show();*/
 

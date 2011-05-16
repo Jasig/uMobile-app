@@ -9,7 +9,7 @@ var SharedWebView = function (facade) {
         
         // Ti.API.debug("0 Is webview loading? " + webView.loading);
         
-        activityIndicator = app.views.GlobalActivityIndicator.createActivityIndicator();
+        activityIndicator = app.UI.createActivityIndicator();
         
         initialized = true;
     };
