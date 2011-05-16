@@ -88,11 +88,21 @@ var MapDetailViewController = function (facade,opts) {
     };
     
     onBackButtonPress = function (e) {
-        titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+        }
+        else {
+            titleBackButton.backgroundImage = app.styles.secondaryBarButton.backgroundImagePress;
+        }
     };
     
     onBackButtonUp = function (e) {
-        titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
+        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
+        }
+        else {
+            titleBackButton.backgroundImage = app.styles.secondaryBarButton.backgroundImage;
+        }
     };
     
     init();

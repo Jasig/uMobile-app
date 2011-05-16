@@ -101,7 +101,6 @@ startup = function (e) {
     Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
         Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
         app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
-        loadingWindow.close();  
     });
 };
 startup();

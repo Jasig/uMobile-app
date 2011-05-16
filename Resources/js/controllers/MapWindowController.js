@@ -47,6 +47,8 @@ var MapWindowController = function(facade) {
     };
     
     self.open = function () {
+        //We want to make sure dependencies for the map window are added to the facade.
+        //For iOS we want to close() and open() the window, but android we only want to hide() and show()
         if (!app.models.mapProxy) {
             app.registerModel('mapProxy', new MapService(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
             mapProxy = app.models.mapProxy;
@@ -63,24 +65,43 @@ var MapWindowController = function(facade) {
             //including retrieval of data and searching array of points
             mapProxy.init();
         }
-        else {
+        else if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
             win.close();
         }
-        win = Titanium.UI.createWindow({
-            backgroundColor: app.styles.backgroundColor,
-            exitOnClose: false,
-            navBarHidden: true
-        });
-        win.open();
-        createMainView();
-        resetMapLocation();
+        
+        if (!win && Ti.Platform.osname === 'android') {
+            win = Titanium.UI.createWindow({
+                backgroundColor: app.styles.backgroundColor,
+                exitOnClose: false,
+                navBarHidden: true
+            });
+            win.open();
+            createMainView();
+            resetMapLocation();
+        }
+        else if (win && Ti.Platform.osname === 'android') {
+            win.show();
+        }
+        else {
+            win = Titanium.UI.createWindow({
+                backgroundColor: app.styles.backgroundColor,
+                exitOnClose: false,
+                navBarHidden: true
+            });
+            win.open();
+            createMainView();
+            resetMapLocation();
+        }
     };
     
     self.close = function (options) {
-        if (win) {
+        searchBlur();
+        if (win && (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')) {
             win.close();
         }
-        searchBlur();
+        else {
+            win.hide();
+        }
     };
 
     createMainView = function() {
@@ -101,10 +122,19 @@ var MapWindowController = function(facade) {
             win.add(activityIndicator);
             activityIndicator.hide();
 
-            searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
-            win.add(searchBar);
+            if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+                searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+                win.add(searchBar);
+                
+            }
+            else {
+                var searchBarContainer = Titanium.UI.createView(app.styles.secondaryBar);
+                searchBar = Titanium.UI.createTextField(app.styles.searchBarInput);
+                searchBarContainer.add(searchBar);
+                win.add(searchBarContainer);
+            }
             searchBar.addEventListener('return', searchSubmit);
-            searchBar.addEventListener('cancel', searchBlur);            
+            searchBar.addEventListener('cancel', searchBlur);
 
             if ((Ti.Platform.osname === 'android' && !mapView) || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
                 // create the map view
@@ -118,7 +148,7 @@ var MapWindowController = function(facade) {
                 win.add(mapView);
 
                 //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
-                mapView.addEventListener('touchstart', searchBlur);
+                // mapView.addEventListener('touchstart', searchBlur);
                 mapView.addEventListener('loaddetail', loadDetail);
                 mapView.addEventListener("click", onMapViewClick);
                 mapView.addEventListener('regionChanged', searchBlur);
@@ -151,7 +181,6 @@ var MapWindowController = function(facade) {
         else {
             Ti.API.error("No window exists in which to place the map view.");
         }
-
     };
     
     resetMapLocation = function () {
@@ -256,12 +285,12 @@ var MapWindowController = function(facade) {
         activityIndicator.hide();
         
         if(e.points.length < 1) {
-            /*alertDialog = Titanium.UI.createAlertDialog({
+            alertDialog = Titanium.UI.createAlertDialog({
                 title: app.localDictionary.noResults,
                 message: app.localDictionary.mapNoSearchResults,
                 buttonNames: [app.localDictionary.OK]
             });
-            alertDialog.show();*/
+            alertDialog.show();
         }
         else {
             plotPoints(e.points);

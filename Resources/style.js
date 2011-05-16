@@ -9,7 +9,7 @@ var Styles = function (app) {
     var defaults, stylesheet, OS = Ti.Platform.osname;
     defaults = {
         TITLEBAR_HEIGHT: 40,
-        SEARCHBAR_HEIGHT: 40,
+        SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 50 : 40,
         DETAIL_TOP_TITLE_COLOR: '#333',
         DETAIL_TOP_BACKGROUND_COLOR: '#eee',
         PRIMARY_BAR_BACKGROUND_COLOR: "#000",
@@ -75,7 +75,6 @@ var Styles = function (app) {
             width: Ti.Platform.displayCaps.platformWidth - 100 - 10,
             autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
             autocorrect: false
-            
         },
         settingsUsernameLabel: {
             height:35,
@@ -115,6 +114,12 @@ var Styles = function (app) {
             backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
             showCancel: OS === 'android' ? false : true,
             width: Ti.Platform.displayCaps.platformWidth
+        },
+        searchBarInput: {
+            width: Ti.Platform.displayCaps.platformWidth - 5 - 5,
+            height: defaults.SEARCHBAR_HEIGHT - 10,
+            top: 5,
+            borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
         },
         secondaryBar: {
             top: defaults.TITLEBAR_HEIGHT,
@@ -463,6 +468,8 @@ var Styles = function (app) {
     if(Ti.Platform.osname === 'android') {
         stylesheet.titleBar.backgroundImage = '/img/titlebarbg.png';
         stylesheet.secondaryBar.backgroundImage = '/img/secondarybarbg.png';
+        stylesheet.secondaryBarButton.backgroundImage = '/img/secondarybarbtnbg.png';
+        stylesheet.secondaryBarButton.backgroundImagePress = '/img/secondarybarbtnbg_press.png';
         stylesheet.mapAnnotation.image = '/img/mapPin.png';
     }
     return stylesheet;
