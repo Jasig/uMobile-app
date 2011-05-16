@@ -229,7 +229,7 @@ var Styles = function (app) {
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
-            backgroundImage: 'images/home-background.png',
+            backgroundImage: 'img/home-background.png',
             zIndex: 1
         },
         homeGuestNote: {
@@ -412,7 +412,7 @@ var Styles = function (app) {
     	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
     	    color: '#fff',
     	    zIndex: 1000,
-    	    backgroundImage: app.models.resourceProxy.getResourcePath('images/bgActivityIndicator.png')
+    	    backgroundImage: app.models.resourceProxy.getResourcePath('img/bgActivityIndicator.png')
     	},
     	activityIndicatorDialog: {
     	    width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
@@ -420,7 +420,7 @@ var Styles = function (app) {
     	    borderRadius: 10,
     	    borderWidth: 1,
     	    borderColor: "#fff",
-    	    backgroundImage: app.models.resourceProxy.getResourcePath('images/bgActivityIndicatorDialog.png')
+    	    backgroundImage: app.models.resourceProxy.getResourcePath('img/bgActivityIndicatorDialog.png')
     	},
     	activityIndicatorMessage: {
     	    textAlign: 'center',
@@ -461,9 +461,9 @@ var Styles = function (app) {
         stylesheet.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
     }
     if(Ti.Platform.osname === 'android') {
-        stylesheet.titleBar.backgroundImage = '/images/titlebarbg.png';
-        stylesheet.secondaryBar.backgroundImage = '/images/secondarybarbg.png';
-        stylesheet.mapAnnotation.image = '/images/mapPin.png';
+        stylesheet.titleBar.backgroundImage = '/img/titlebarbg.png';
+        stylesheet.secondaryBar.backgroundImage = '/img/secondarybarbg.png';
+        stylesheet.mapAnnotation.image = '/img/mapPin.png';
     }
     return stylesheet;
 };

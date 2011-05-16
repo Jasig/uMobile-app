@@ -17,89 +17,91 @@
  * under the License.
  */
 
-// library includes
+var loadingWindow, app, windowManager, startup;
 
-Titanium.include('js/ApplicationFacade.js');
-Titanium.include('js/controllers/commands/StartupCommand.js');
+startup = function (e) {
+    // library includes
 
-Titanium.include('config.js');
-Titanium.include('localization.js');
-Titanium.include('style.js');
+    Titanium.include('js/ApplicationFacade.js');
 
-Titanium.include('js/gibberish-aes.js');
+    Titanium.include('config.js');
+    Titanium.include('localization.js');
+    Titanium.include('style.js');
 
-Titanium.include('js/models/DeviceProxy.js');
-Titanium.include('js/models/ResourceProxy.js');
-Titanium.include('js/models/LoginProxy.js');
-Titanium.include('js/models/PortalProxy.js');
-Titanium.include('js/models/SessionProxy.js');
-Titanium.include('js/models/WindowManager.js');
+    Titanium.include('js/gibberish-aes.js');
 
-Titanium.include('js/views/GenericTitleBar.js');
-Titanium.include('js/views/GlobalActivityIndicator.js');
-Titanium.include('js/views/SecondaryNavBar.js');
+    Titanium.include('js/models/DeviceProxy.js');
+    Titanium.include('js/models/ResourceProxy.js');
+    Titanium.include('js/models/LoginProxy.js');
+    Titanium.include('js/models/PortalProxy.js');
+    Titanium.include('js/models/SessionProxy.js');
+    Titanium.include('js/models/WindowManager.js');
 
-Titanium.include('js/controllers/DirectoryWindowController.js');
+    Titanium.include('js/views/GenericTitleBar.js');
+    Titanium.include('js/views/GlobalActivityIndicator.js');
+    Titanium.include('js/views/SecondaryNavBar.js');
 
-Titanium.include('js/controllers/MapWindowController.js');
-Titanium.include('js/controllers/PortalWindowController.js');
-Titanium.include('js/controllers/PortletWindowController.js');
-Titanium.include('js/controllers/SettingsWindowController.js');
+    Titanium.include('js/controllers/DirectoryWindowController.js');
 
-var app = new ApplicationFacade(), windowManager;
+    Titanium.include('js/controllers/MapWindowController.js');
+    Titanium.include('js/controllers/PortalWindowController.js');
+    Titanium.include('js/controllers/PortletWindowController.js');
+    Titanium.include('js/controllers/SettingsWindowController.js');
 
-Ti.API.debug("StartupCommand()");
+    app = new ApplicationFacade();
 
-//Adds  members to the facade singleton, so they can be accessed.
-//Only necessary members are added here, secondary members are added from controllers when opened, for performance.
-//from any model, view, controller throughout the application
-//The facade is always called "app" in each controller, and depending on the type of member,
-//It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
+    //Adds  members to the facade singleton, so they can be accessed.
+    //Only necessary members are added here, secondary members are added from controllers when opened, for performance.
+    //from any model, view, controller throughout the application
+    //The facade is always called "app" in each controller, and depending on the type of member,
+    //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
-app.registerMember('UPM', new Config(app)); //Global config object
-app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
-app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
-app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
-app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
+    app.registerMember('UPM', new Config(app)); //Global config object
+    app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
+    app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
+    app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
+    app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
 
-app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
-app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
-app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
-app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
+    app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
+    app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
+    app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
+    app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
 
-app.registerModel('deviceProxy', new DeviceProxy(app));
+    app.registerModel('deviceProxy', new DeviceProxy(app));
 
-app.registerView('GenericTitleBar', GenericTitleBar); // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
-app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app)); //A view factory to create activity indicator instances in the controllers to be shown during time-intensive operations.
-app.registerView('SecondaryNavBar', SecondaryNavBar); // A partial view used in some controllers to place a nav bar just below the titleBar
+    app.registerView('GenericTitleBar', GenericTitleBar); // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
+    app.registerView('GlobalActivityIndicator', new GlobalActivityIndicator(app)); //A view factory to create activity indicator instances in the controllers to be shown during time-intensive operations.
+    app.registerView('SecondaryNavBar', SecondaryNavBar); // A partial view used in some controllers to place a nav bar just below the titleBar
 
-//Window controllers
-app.registerController('portalWindowController', new PortalWindowController(app));
-app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
-app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
-app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
-app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
+    //Window controllers
+    app.registerController('portalWindowController', new PortalWindowController(app));
+    app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
+    app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
+    app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
+    app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
 
-// Add window controllers to the window manager,
-// which manages the stack of window activities, and manages opening and closing
-// of windows so that controllers don't have to be concerned with details,
-// they just tell the window manager what to open, and it handles the rest.
-windowManager = app.models.windowManager;
+    // Add window controllers to the window manager,
+    // which manages the stack of window activities, and manages opening and closing
+    // of windows so that controllers don't have to be concerned with details,
+    // they just tell the window manager what to open, and it handles the rest.
+    windowManager = app.models.windowManager;
 
-windowManager.addWindow(app.controllers.portalWindowController); //Home controller
-windowManager.addWindow(app.controllers.portletWindowController);
-windowManager.addWindow(app.controllers.directoryWindowController);
-windowManager.addWindow(app.controllers.mapWindowController);
-windowManager.addWindow(app.controllers.settingsWindowController);
+    windowManager.addWindow(app.controllers.portalWindowController); //Home controller
+    windowManager.addWindow(app.controllers.portletWindowController);
+    windowManager.addWindow(app.controllers.directoryWindowController);
+    windowManager.addWindow(app.controllers.mapWindowController);
+    windowManager.addWindow(app.controllers.settingsWindowController);
 
-// This will determine if a network session exists, and what 
-// window was open last time the app closed, and will manage the process
-// of establishing a session and opening the window.
-app.models.deviceProxy.checkNetwork();
-Ti.API.debug("About to open the home window, and the key is: " + app.controllers.portalWindowController.key + " and the controller is: " + app.controllers.portalWindowController); 
-app.models.loginProxy.establishNetworkSession();
-Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
-    Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
-    app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
-});
-
+    // This will determine if a network session exists, and what 
+    // window was open last time the app closed, and will manage the process
+    // of establishing a session and opening the window.
+    app.models.deviceProxy.checkNetwork();
+    Ti.API.debug("About to open the home window, and the key is: " + app.controllers.portalWindowController.key + " and the controller is: " + app.controllers.portalWindowController); 
+    app.models.loginProxy.establishNetworkSession();
+    Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
+        Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
+        app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+        loadingWindow.close();  
+    });
+};
+startup();
