@@ -143,7 +143,7 @@ var Styles = function (app) {
         	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
         	backgroundGradientPress: defaults.SECONDARY_BAR_BTN_DOWN_BG
         },
-        //Styles for GenericTitleBar.js
+        //Styles for TitleBar
         titleBar: {
             top: 0,
         	left: 0,

@@ -56,9 +56,7 @@ var SettingsWindowController = function(facade){
         });
         win.open();
         
-        titleBar = new app.views.GenericTitleBar({
-            app: app,
-            windowKey: 'settings',
+        titleBar = app.UI.createTitleBar({
             title: app.localDictionary.settings,
             settingsButton: false,
             homeButton: true

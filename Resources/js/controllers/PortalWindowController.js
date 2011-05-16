@@ -67,9 +67,7 @@ var PortalWindowController = function(facade) {
 
     createPortalView = function () {
         if (win) {
-            titleBar = new app.views.GenericTitleBar({
-        	    app: app,
-        	    windowKey: 'home',
+            titleBar = app.UI.createTitleBar({
         	    title: app.localDictionary.jasig11,
         	    settingsButton: true,
         	    homeButton: false

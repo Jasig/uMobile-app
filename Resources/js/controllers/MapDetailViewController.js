@@ -38,7 +38,7 @@ var MapDetailViewController = function (facade,opts) {
         Ti.API.debug("Creating locationDetailTitleBar in MapDetailViewController");
         //Create the title bar for the top of the detail view
         if(!locationDetailTitleBar) {
-            locationDetailTitleBar = new app.views.SecondaryNavBar(app,{
+            locationDetailTitleBar = app.UI.createSecondaryNavBar({
                 backButton: titleBackButton
             });
             Ti.API.debug("Here's what the Secondary Nav Title Bar came back as: " + locationDetailTitleBar);

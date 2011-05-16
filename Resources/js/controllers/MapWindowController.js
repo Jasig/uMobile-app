@@ -107,12 +107,10 @@ var MapWindowController = function(facade) {
     createMainView = function() {
         var annotations, buttonBar, mapViewOpts;
         if (win) {
-            titleBar = app.views.GenericTitleBar({
+            titleBar = app.UI.createTitleBar({
                 homeButton: true,
-                app: app,
                 settingsButton: false,
-                title: app.localDictionary.map,
-                windowKey: 'map'
+                title: app.localDictionary.map
             });
             win.add(titleBar);
 

@@ -38,9 +38,6 @@ startup = function (e) {
     Titanium.include('js/models/SessionProxy.js');
     Titanium.include('js/models/WindowManager.js');
 
-    Titanium.include('js/views/GenericTitleBar.js');
-    Titanium.include('js/views/SecondaryNavBar.js');
-
     Titanium.include('js/controllers/DirectoryWindowController.js');
 
     Titanium.include('js/controllers/MapWindowController.js');
@@ -69,9 +66,6 @@ startup = function (e) {
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
 
     app.registerModel('deviceProxy', new DeviceProxy(app));
-
-    app.registerView('GenericTitleBar', GenericTitleBar); // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
-    app.registerView('SecondaryNavBar', SecondaryNavBar); // A partial view used in some controllers to place a nav bar just below the titleBar
 
     //Window controllers
     app.registerController('portalWindowController', new PortalWindowController(app));

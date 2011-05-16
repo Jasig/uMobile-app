@@ -86,8 +86,7 @@ var DirectoryWindowController = function (facade) {
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
         if (win) {
             //Create a title bar from the generic title bar partial view
-            titleBar = new app.views.GenericTitleBar({
-                app: app,
+            titleBar = app.UI.createTitleBar({
                 title: app.localDictionary.directory,
                 homeButton: true,
                 settingsButton: false

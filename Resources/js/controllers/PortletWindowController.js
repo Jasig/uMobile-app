@@ -75,9 +75,7 @@ var PortletWindowController = function (facade) {
             webView = sharedWebView.getWebView();
         }
         
-        titleBar = new app.views.GenericTitleBar({
-            windowKey: 'portlet',
-            app: app,
+        titleBar = app.UI.createTitleBar({
             title: app.localDictionary.uMobile,
             settingsButton: false,
             homeButton: true
@@ -91,7 +89,7 @@ var PortletWindowController = function (facade) {
         navBackButton.addEventListener('touchend', onBackBtnUp);
         navBackButton.addEventListener('click', function() { webView.goBack(); });
         // initialize navigation bar for URLs outside the portal
-        navBar = new app.views.SecondaryNavBar(app,{
+        navBar = app.UI.createSecondaryNavBar({
             backButton: navBackButton
         });
         navBar.top = 40;
