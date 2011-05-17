@@ -17,13 +17,14 @@ var PortalProxy = function (facade) {
                 app.models.windowManager.openWindow(app.controllers.portletWindowController.key, portlet);
             } 
             else {
-                Ti.API.error("portlet.url doesn't exist in getShowPortletFunc() in PortalProxy");
+                Ti.API.debug("portlet.url doesn't exist in getShowPortletFunc() in PortalProxy");
                 app.models.windowManager.openWindow(portlet.window);
             }
         };
     };
     
     self.getPortlets = function () {
+        Ti.API.debug("getPortlets() in PortalProxy");
         return portlets;
     };
     

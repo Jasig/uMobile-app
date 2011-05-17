@@ -23,10 +23,10 @@
  */
 
 var DirectoryWindowController = function (facade) {
-    var win, app = facade, self = {}, directoryProxy,
+    var win, app = facade, self = {}, directoryProxy, init,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
-        contactDetailViewOptions, searchBarOptions,
+        contactDetailViewOptions,
         //UI Elements
         peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
         //Methods
@@ -65,13 +65,25 @@ var DirectoryWindowController = function (facade) {
         if (!app.controllers.DirectoryDetailController) {
             app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 
         }
-        
-        win = Titanium.UI.createWindow({
-            backgroundColor: app.styles.backgroundColor,
-            title: app.localDictionary.directory,
-            exitOnClose: false,
-            navBarHidden: true
-        });
+        if (!win || (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')){
+            
+        }
+        if (!win && Ti.Platform.osname === 'android') {
+            win = Titanium.UI.createWindow({
+                backgroundColor: app.styles.backgroundColor,
+                title: app.localDictionary.directory,
+                exitOnClose: false,
+                navBarHidden: true
+            });
+        }
+        else if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            win = Titanium.UI.createWindow({
+                backgroundColor: app.styles.backgroundColor,
+                title: app.localDictionary.directory,
+                exitOnClose: false,
+                navBarHidden: true
+            });
+        }
         win.open();
         drawDefaultView();
     };
@@ -85,91 +97,185 @@ var DirectoryWindowController = function (facade) {
     drawDefaultView = function () {
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
         if (win) {
-            //Create a title bar from the generic title bar partial view
-            titleBar = app.UI.createTitleBar({
-                title: app.localDictionary.directory,
-                homeButton: true,
-                settingsButton: false
-            });
-            win.add(titleBar);
-
-
-            Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
-            if (app.UPM.phoneDirectoryNumber) {
-                //Create the section and one row to display the phone number for the phone directory
-                phoneDirectorySection = Titanium.UI.createTableViewSection();
-                phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
-                phoneDirectoryRow = Titanium.UI.createTableViewRow({
-                    title: app.UPM.phoneDirectoryNumber
-                });
-                phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
-                phoneDirectorySection.add(phoneDirectoryRow);
-                defaultTableData.push(phoneDirectorySection);
-            }
-
-
-            Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
-            //Create a section to display emergency contact numbers
-            if (!emergencyContactSection && directoryProxy.getEmergencyContacts().length > 0) {
-                emergencyContactSection = Titanium.UI.createTableViewSection();
-                emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
-                for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
-                    var _contact = directoryProxy.getEmergencyContacts()[i],
-                    _emergencyContactRow = Titanium.UI.createTableViewRow({
-                        title: _contact.displayName[0],
-                        hasChild: true,
-                        data: _contact
+            if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+                (function () {
+                    //Create a title bar from the generic title bar partial view
+                    titleBar = app.UI.createTitleBar({
+                        title: app.localDictionary.directory,
+                        homeButton: true,
+                        settingsButton: false
                     });
-                    emergencyContactSection.add(_emergencyContactRow);
-                    _emergencyContactRow.addEventListener('click',onContactRowClick);
-                }
-                defaultTableData.push(emergencyContactSection);            
+                    win.add(titleBar);
+
+                    Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
+                    if (app.UPM.phoneDirectoryNumber) {
+                        //Create the section and one row to display the phone number for the phone directory
+                        phoneDirectorySection = Titanium.UI.createTableViewSection();
+                        phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
+                        phoneDirectoryRow = Titanium.UI.createTableViewRow({
+                            title: app.UPM.phoneDirectoryNumber
+                        });
+                        phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
+                        phoneDirectorySection.add(phoneDirectoryRow);
+                        defaultTableData.push(phoneDirectorySection);
+                    }
+
+                    Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
+                    //Create a section to display emergency contact numbers
+                    if (!emergencyContactSection && directoryProxy.getEmergencyContacts().length > 0) {
+                        emergencyContactSection = Titanium.UI.createTableViewSection();
+                        emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
+                        for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
+                            var _contact = directoryProxy.getEmergencyContacts()[i],
+                            _emergencyContactRow = Titanium.UI.createTableViewRow({
+                                title: _contact.displayName[0],
+                                hasChild: true,
+                                data: _contact
+                            });
+                            emergencyContactSection.add(_emergencyContactRow);
+                            _emergencyContactRow.addEventListener('click',onContactRowClick);
+                        }
+                        defaultTableData.push(emergencyContactSection);            
+                    }
+                    else {
+                        Ti.API.info("There aren't any emergency contacts");
+                    }
+
+                    Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
+                    //Create the main table
+                    peopleListTable = Titanium.UI.createTableView({
+                        data: defaultTableData,
+                        top: app.styles.titleBar.height + app.styles.searchBar.height
+                    });
+
+                    peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+
+                    win.add(peopleListTable);
+                    peopleListTable.addEventListener('touchstart', blurSearch);
+                    peopleListTable.addEventListener('move', blurSearch);
+
+                    Ti.API.debug("Adding searchBar in DirectoryWindowController");
+
+                    //Create and add a search bar at the top of the table to search for contacts
+                    searchBar = app.UI.createSearchBar();
+                    Ti.API.info("searchBar: " + searchBar);
+                    win.add(searchBar.container);
+                    searchBar.input.addEventListener('cancel', onSearchCancel);
+                    searchBar.input.addEventListener('return', onSearchSubmit);
+                    searchBar.input.addEventListener('change', onSearchChange);
+
+                    //Create the contact detail view but don't show it yet.
+                    contactDetailViewOptions = app.styles.contactDetailView;
+                    contactDetailView = new app.controllers.DirectoryDetailController(app, contactDetailViewOptions);
+                    win.add(contactDetailView);
+
+                    activityIndicator = app.UI.createActivityIndicator();
+                    activityIndicator.resetDimensions();
+                    win.add(activityIndicator);
+                    activityIndicator.hide();
+                })();
             }
             else {
-                Ti.API.info("There aren't any emergency contacts");
+                (function () {
+                    //For Android, we don't want to redraw the view every time.
+
+                    if (!titleBar) {
+                        //Create a title bar from the generic title bar partial view
+                        titleBar = app.UI.createTitleBar({
+                            title: app.localDictionary.directory,
+                            homeButton: true,
+                            settingsButton: false
+                        });
+                        win.add(titleBar);
+                    }
+
+
+                    Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
+                    if (app.UPM.phoneDirectoryNumber) {
+                        //Create the section and one row to display the phone number for the phone directory
+                        if (!phoneDirectorySection) {
+                            phoneDirectorySection = Titanium.UI.createTableViewSection();
+                            phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
+                        }
+
+                        if (!phoneDirectoryRow) {
+                            phoneDirectoryRow = Titanium.UI.createTableViewRow({
+                                title: app.UPM.phoneDirectoryNumber
+                            });
+                            phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
+                            phoneDirectorySection.add(phoneDirectoryRow);
+                        }
+
+                        defaultTableData.push(phoneDirectorySection);
+                    }
+
+                    Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
+                    //Create a section to display emergency contact numbers
+                    if (!emergencyContactSection && directoryProxy.getEmergencyContacts().length > 0) {
+                        emergencyContactSection = Titanium.UI.createTableViewSection();
+                        emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
+                        for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
+                            var _contact = directoryProxy.getEmergencyContacts()[i],
+                            _emergencyContactRow = Titanium.UI.createTableViewRow({
+                                title: _contact.displayName[0],
+                                hasChild: true,
+                                data: _contact
+                            });
+                            emergencyContactSection.add(_emergencyContactRow);
+                            _emergencyContactRow.addEventListener('click',onContactRowClick);
+                        }
+                        defaultTableData.push(emergencyContactSection);            
+                    }
+                    else {
+                        Ti.API.info("There aren't any emergency contacts");
+                    }
+
+                    if (!peopleListTable) {
+                        Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
+                        //Create the main table
+                        peopleListTable = Titanium.UI.createTableView({
+                            data: defaultTableData,
+                            top: app.styles.titleBar.height + app.styles.searchBar.height
+                        });
+                        win.add(peopleListTable);
+                        peopleListTable.addEventListener('touchstart', blurSearch);
+                        peopleListTable.addEventListener('move', blurSearch);
+                    }
+
+
+                    Ti.API.debug("Adding searchBar in DirectoryWindowController");
+
+                    if (!searchBar) {
+                        //Create and add a search bar at the top of the table to search for contacts
+                        searchBar = app.UI.createSearchBar();
+                        win.add(searchBar.container);
+                        searchBar.input.addEventListener('cancel', onSearchCancel);
+                        searchBar.input.addEventListener('return', onSearchSubmit);
+                        searchBar.input.addEventListener('change', onSearchChange);
+                    }
+
+                    if (!contactDetailView) {
+                        //Create the contact detail view but don't show it yet.
+                        contactDetailViewOptions = app.styles.contactDetailView;
+                        contactDetailView = new app.controllers.DirectoryDetailController(app, contactDetailViewOptions);
+                        win.add(contactDetailView);
+                    }
+
+                    if (!activityIndicator) {
+                        activityIndicator = app.UI.createActivityIndicator();
+                        activityIndicator.resetDimensions();
+                        win.add(activityIndicator);
+                        activityIndicator.hide();
+                    }
+                })();
             }
-
-            Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
-            //Create the main table
-            peopleListTable = Titanium.UI.createTableView({
-                data: defaultTableData,
-                top: app.styles.titleBar.height + app.styles.searchBar.height
-            });
-            if (Titanium.Platform.osname === 'iphone') {
-                peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
-            }
-            win.add(peopleListTable);
-            peopleListTable.addEventListener('touchstart', blurSearch);
-            peopleListTable.addEventListener('move', blurSearch);
-
-            Ti.API.debug("Adding searchBar in DirectoryWindowController");
-            searchBarOptions = app.styles.searchBar;
-            searchBarOptions.top = app.styles.titleBar.height;
-            // searchBarOptions.hintText = app.localDictionary.directorySearchHintText;
-            //Create and add a search bar at the top of the table to search for contacts
-            searchBar = Titanium.UI.createSearchBar(searchBarOptions);
-            win.add(searchBar);
-            searchBar.addEventListener('cancel', onSearchCancel);
-            searchBar.addEventListener('return', onSearchSubmit);
-            searchBar.addEventListener('change', onSearchChange);
-
-            //Create the contact detail view but don't show it yet.
-            contactDetailViewOptions = app.styles.contactDetailView;
-            contactDetailView = new app.controllers.DirectoryDetailController(app, contactDetailViewOptions);
-            win.add(contactDetailView);
-
-            activityIndicator = app.UI.createActivityIndicator();
-            activityIndicator.resetDimensions();
-            win.add(activityIndicator);
-            activityIndicator.hide();
         }
-
     };
     
     resetHome = function () {
         Ti.API.debug("resetHome() in DirectoryWindowController");
         blurSearch();
-        if (searchBar) { searchBar.value = ''; }
+        if (searchBar) { searchBar.input.value = ''; }
         if (directoryProxy) { directoryProxy.clear(); }
         if (peopleListTable) { peopleListTable.setData(defaultTableData); }
         if (contactDetailView) { contactDetailView.hide(); }
@@ -218,7 +324,7 @@ var DirectoryWindowController = function (facade) {
     
     blurSearch = function () {
         if (searchBar) {
-            searchBar.blur();
+            searchBar.input.blur();
         }
     };
     
@@ -236,12 +342,12 @@ var DirectoryWindowController = function (facade) {
     
     onSearchSubmit = function(e) {
         Ti.API.debug('onSearchSubmit');
-        searchBar.blur();
-        directoryProxy.search(searchBar.value);
+        blurSearch();
+        directoryProxy.search(searchBar.input.value);
     };
     
     onSearchChange = function (e) {
-        if(searchBar.value === '') {
+        if(searchBar.input.value === '') {
             directoryProxy.clear();
             peopleListTable.setData(defaultTableData);
         }
@@ -261,7 +367,7 @@ var DirectoryWindowController = function (facade) {
     //Proxy events
 
     onProxySearching = function (e) {
-        activityIndicator.loadingMessage(app.localDictionary.searching + '...');
+        activityIndicator.setLoadingMessage(app.localDictionary.searching + '...');
         activityIndicator.show();
         Ti.API.info("Searching...");
     };
@@ -286,7 +392,8 @@ var DirectoryWindowController = function (facade) {
     };
     
     onProxySearchError = function (e) {
-        activityIndicator.loadingMessage(app.localDictionary.errorPerformingSearch);
+        var t;
+        activityIndicator.setLoadingMessage(app.localDictionary.errorPerformingSearch);
         t = setTimeout(function() {
             activityIndicator.hide();
             }, 3000);

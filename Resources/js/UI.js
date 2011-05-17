@@ -2,7 +2,26 @@ var UI = function (facade) {
     var self = {}, app=facade, init;
     
     init = function () {
+        //Nothing happening here.
+    };
+    
+    self.createSearchBar = function () {
+        var searchBar, searchBarObject = {}, searchBarInput;
         
+        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+            searchBarObject.container = searchBar;
+            searchBarObject.input = searchBar;
+        }
+        else {
+            searchBar = Titanium.UI.createView(app.styles.searchBar);
+            searchBarInput = Titanium.UI.createTextField(app.styles.searchBarInput);
+            searchBar.add(searchBarInput);
+            searchBarObject.container = searchBar;
+            searchBarObject.input = searchBarInput;
+        }
+        
+        return searchBarObject;
     };
     
     self.createTitleBar = function (opts) {
@@ -134,7 +153,7 @@ var UI = function (facade) {
         messageLabel.text = app.localDictionary.loading;
         dialog.add(messageLabel);
         
-        indicator.loadingMessage = function (m) {
+        indicator.setLoadingMessage = function (m) {
             Ti.API.info("loadingMessage() in GlobalActivityIndicator");
             if (typeof m == 'string') {
                 Ti.API.debug("Setting activity indicator text to: " + m);

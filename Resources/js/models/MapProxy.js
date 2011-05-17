@@ -13,8 +13,8 @@ var MapService = function (facade) {
             longHigh: false
         };
         defaultMapCenter = {
-            latitudeDelta: 0.02, 
-            longitudeDelta: 0.02
+            latitudeDelta: 0.005, 
+            longitudeDelta: 0.005
         };
     
     self.requestErrors = {

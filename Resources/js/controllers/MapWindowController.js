@@ -65,7 +65,7 @@ var MapWindowController = function(facade) {
             //including retrieval of data and searching array of points
             mapProxy.init();
         }
-        else if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        else if (win && (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')) {
             win.close();
         }
         
@@ -76,31 +76,30 @@ var MapWindowController = function(facade) {
                 navBarHidden: true
             });
             win.open();
-            createMainView();
-            resetMapLocation();
         }
-        else if (win && Ti.Platform.osname === 'android') {
-            win.show();
-        }
-        else {
+        else if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
             win = Titanium.UI.createWindow({
                 backgroundColor: app.styles.backgroundColor,
                 exitOnClose: false,
                 navBarHidden: true
             });
             win.open();
-            createMainView();
-            resetMapLocation();
         }
+        else {
+            win.open();
+        }
+        createMainView();
+        resetMapLocation();
     };
     
     self.close = function (options) {
+        Ti.API.debug("close() in MapWindowController");
         searchBlur();
-        if (win && (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')) {
+        if (win) {
+            // Ideally, we would just hide the window, but ANdroid doesn't hide
+            // well if we've opened up the location detail view for some reason.
+            Ti.API.debug("win exists and it's iPhone");
             win.close();
-        }
-        else {
-            win.hide();
         }
     };
 
@@ -114,25 +113,14 @@ var MapWindowController = function(facade) {
             });
             win.add(titleBar);
 
-
-
             activityIndicator = app.UI.createActivityIndicator();
             win.add(activityIndicator);
             activityIndicator.hide();
 
-            if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
-                searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
-                win.add(searchBar);
-                
-            }
-            else {
-                var searchBarContainer = Titanium.UI.createView(app.styles.searchBar);
-                searchBar = Titanium.UI.createTextField(app.styles.searchBarInput);
-                searchBarContainer.add(searchBar);
-                win.add(searchBarContainer);
-            }
-            searchBar.addEventListener('return', searchSubmit);
-            searchBar.addEventListener('cancel', searchBlur);
+            searchBar = app.UI.createSearchBar();
+            win.add(searchBar.container);
+            searchBar.input.addEventListener('return', searchSubmit);
+            searchBar.input.addEventListener('cancel', searchBlur);
 
             if ((Ti.Platform.osname === 'android' && !mapView) || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
                 // create the map view
@@ -152,6 +140,9 @@ var MapWindowController = function(facade) {
                 mapView.addEventListener('regionChanged', searchBlur);
 
                 Ti.API.info("Map added with dimensions of: " + JSON.stringify(mapView.size) );
+            }
+            else {
+                win.add(mapView);
             }
 
             if (Titanium.Platform.osname === "iphone") {
@@ -197,7 +188,7 @@ var MapWindowController = function(facade) {
         // locationDetailWinOptions = app.styles.view;
         // locationDetailViewOptions.url = app.app.models.resourceProxy.getResourcePath("/js/controllers/MapDetailViewController.js");
         Ti.API.debug('self.loadDetail');
-        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.setLoadingMessage(app.localDictionary.loading);
         activityIndicator.show();
         searchBlur();
 
@@ -234,13 +225,13 @@ var MapWindowController = function(facade) {
     };
 
     searchBlur = function (e) {
-        searchBar.blur();
+        searchBar.input.blur();
     };
 
     searchSubmit = function (e) {
         Ti.API.debug('searchSubmit() in MapWindowController');
         searchBlur();
-        mapProxy.search(searchBar.value);
+        mapProxy.search(searchBar.input.value);
     };
     
     onMapViewClick = function (e) {
@@ -261,12 +252,12 @@ var MapWindowController = function(facade) {
     //Proxy Events
     onProxySearching = function (e) {
         Ti.API.debug('onProxySearching' + e.query);
-        activityIndicator.loadingMessage(app.localDictionary.searching);
+        activityIndicator.setLoadingMessage(app.localDictionary.searching);
         activityIndicator.show();
     };
     
     onProxyLoading = function (e) {
-        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.setLoadingMessage(app.localDictionary.loading);
         activityIndicator.show();
     };
     

@@ -26,9 +26,11 @@
 
 var PortalWindowController = function(facade) {
     var win, app = facade, self = {}, portalProxy, initialized, isGuestLayout = true,
-        contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar,
+        contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar, guestNotificationView, guestNotificationLabel,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
-        onGridItemClick, onGridItemPressUp, onGettingPortlets, onPortletsLoaded, onWindowFocus, onAppWindowOpening, onAppWindowOpened, onNetworkSessionSuccess, onNetworkSessionFailure,
+        onGridItemClick, onGridItemPressUp, onGridItemPressDown,
+        onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError,
+        onWindowFocus, onAppWindowOpening, onAppWindowOpened, 
         pathToRoot = '../../';
 
     init = function () {
@@ -48,62 +50,138 @@ var PortalWindowController = function(facade) {
     };
     
     self.open = function () {
-
-        win = Titanium.UI.createWindow({
-            exitOnClose: false,
-            navBarHidden: true,
-            fullScreen: false
-        });
-        win.open();
-        
+        Ti.API.debug("open() in PortalWindowController");
+        if (!win || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            Ti.API.debug("Create and open the portal window");
+            //We want to create a new window and redraw the whole UI each time on iOS
+            win = Titanium.UI.createWindow({
+                exitOnClose: false,
+                navBarHidden: true,
+                fullScreen: false
+            });
+            win.open();
+        }
+        else if (win && !win.visible) {
+            Ti.API.debug("Just show the portal window");
+            win.show();
+        }
         createPortalView();
     };
     
     self.close = function () {
-        if (win) {
+        if (win && (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')) {
             win.close();
+        }
+        else if (win) {
+            win.hide();
         }
     };
 
     createPortalView = function () {
         if (win) {
-            titleBar = app.UI.createTitleBar({
-        	    title: app.localDictionary.jasig11,
-        	    settingsButton: true,
-        	    homeButton: false
-        	});
-        	win.add(titleBar);
-
-        	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
-            win.add(contentLayer);
-            
-            /*activityIndicator = app.UI.createActivityIndicator();
-            win.add(activityIndicator);
-            activityIndicator.show();*/
-
-            Ti.API.debug("Creating a new portal home view");
-        	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
-        	portalView.height = isGuestLayout ? win.height - titleBar.height - app.styles.homeGuestNote.height : win.height - titleBar.height;
-
-            contentLayer.add(portalView);
-            
-            if (isGuestLayout) {
-                guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
-                guestNotificationView.top = win.height - titleBar.height - app.styles.homeGuestNote.height;
-                guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
-                guestNotificationLabel.text = app.localDictionary.viewingGuestLayout;
-                guestNotificationView.add(guestNotificationLabel);
-                contentLayer.add(guestNotificationView);
+            if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+                Ti.API.debug("Platform is iOS in createPortalView() in PortalWindowController");
+                titleBar = app.UI.createTitleBar({
+            	    title: app.localDictionary.jasig11,
+            	    settingsButton: true,
+            	    homeButton: false
+            	});
+            	win.add(titleBar);
+            	
+            	contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
+                win.add(contentLayer);
                 
-                guestNotificationView.addEventListener('click', function (e){
-                    app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
-                });
+                activityIndicator = app.UI.createActivityIndicator();
+                win.add(activityIndicator);
+                activityIndicator.show();
+                
+                Ti.API.debug("Creating a new portal home view");
+            	portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
+            	portalView.height = isGuestLayout ? win.height - titleBar.height - app.styles.homeGuestNote.height : win.height - titleBar.height;
+                contentLayer.add(portalView);
+                
+                if (isGuestLayout) {
+                    guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
+                    guestNotificationView.top = win.height - titleBar.height - app.styles.homeGuestNote.height;
+                    guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+                    guestNotificationLabel.text = app.localDictionary.viewingGuestLayout;
+                    guestNotificationView.add(guestNotificationLabel);
+                    contentLayer.add(guestNotificationView);
+
+                    guestNotificationView.addEventListener('click', function (e){
+                        app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+                    });
+                }
+                
+                if (portalProxy.getPortlets().length > 0) {
+                    drawHomeGrid(portalProxy.getPortlets());
+                }
             }
-            
-            if (portalProxy.getPortlets().length > 0) {
-                drawHomeGrid(portalProxy.getPortlets());
+            else if (Ti.Platform.osname === 'android') {
+                Ti.API.debug("Platform is Android in createPortalView() in PortalWindowController");
+                if (!titleBar) {
+                    Ti.API.debug("Creating and adding titleBar");
+                    titleBar = app.UI.createTitleBar({
+                	    title: app.localDictionary.jasig11,
+                	    settingsButton: true,
+                	    homeButton: false
+                	});
+                	win.add(titleBar);
+                }
+                
+                if (!contentLayer) {
+                    Ti.API.debug("Creating and adding contentLayer");
+                    contentLayer = Titanium.UI.createView(app.styles.portalContentLayer);
+                    win.add(contentLayer);
+                }
+                
+                if (!activityIndicator) {
+                    Ti.API.debug("Creating and adding activityIndicator");
+                    activityIndicator = app.UI.createActivityIndicator();
+                    win.add(activityIndicator);
+                }
+                activityIndicator.show();
+                
+                if (!portalView) {
+                    Ti.API.debug("Creating and adding portalView");
+                    portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
+                	portalView.height = isGuestLayout ? win.height - titleBar.height - app.styles.homeGuestNote.height : win.height - titleBar.height;
+                    contentLayer.add(portalView);
+                }
+                
+                if (isGuestLayout) {
+                    Ti.API.debug("Creating and adding Guest Layout Note");
+                    if (!guestNotificationView) {
+                        Ti.API.debug("No guestNotificationView...");
+                        guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
+                        guestNotificationView.top = win.height - titleBar.height - app.styles.homeGuestNote.height;
+                        guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+                        guestNotificationLabel.text = app.localDictionary.viewingGuestLayout;
+                        guestNotificationView.add(guestNotificationLabel);
+                        contentLayer.add(guestNotificationView);
+                        guestNotificationView.addEventListener('click', function (e){
+                            app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+                        });
+                    }
+                    else {
+                        Ti.API.debug("Yes guestNotificationView");
+                        contentLayer.add(guestNotificationView);
+                        guestNotificationView.show();
+                    }
+                }
+                
+                if (portalProxy.getPortlets().length > 0) {
+                    Ti.API.debug("portalProxy.getPortlets().length is greater than 0: " + portalProxy.getPortlets().length);
+                    if (portalView) { contentLayer.remove(portalView); }
+                    portalView = Titanium.UI.createScrollView(app.styles.homeGrid);
+                	portalView.height = isGuestLayout ? win.height - titleBar.height - app.styles.homeGuestNote.height : win.height - titleBar.height;
+                    contentLayer.add(portalView);
+                    drawHomeGrid(portalProxy.getPortlets());
+                }
+                else {
+                    Ti.API.debug("portalProxy.getPortlets().length is NOT greater than 0: " + portalProxy.getPortlets().length);
+                }
             }
-            
         }
         else {
             Ti.API.error("No win exists in PortalWindowController>createPortalView()");
@@ -121,7 +199,7 @@ var PortalWindowController = function(facade) {
         leftPadding = Math.floor(((Ti.Platform.displayCaps.platformWidth - (completeWidth * numColumns))) / 2);
         
         for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
-            var _portlet, top, left, gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
+            var _portlet, top, left, gridItem, gridItemLabel, gridItemIconDefaults, gridItemIcon, gridBadgeBackground, gridBadgeNumber;
             _portlet = portlets[i];
             
             // Calculate the position for this grid item
@@ -263,7 +341,7 @@ var PortalWindowController = function(facade) {
     
     onAppWindowOpening = function (e) {
         if (win && win.visible && activityIndicator) {
-            activityIndicator.loadingMessage(app.localDictionary.loading);
+            activityIndicator.setLoadingMessage(app.localDictionary.loading);
             activityIndicator.show();
         }
     };

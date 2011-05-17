@@ -22,6 +22,10 @@ var Styles = function (app) {
             type:'linear',
             colors:['#4682B4','#294D6B']
         },
+        SECONDARY_BAR_BTN_BACKGROUND_GRADIENT: {
+            type:'linear',
+            colors:['#eee','#ccc']
+        },
         SECONDARY_BAR_BTN_DOWN_BG: {
             type: 'linear',
             colors: ['#294D6B','#4682B4']
@@ -133,14 +137,13 @@ var Styles = function (app) {
             width: 50,
             height: 30,
         	backgroundImage: 'none',
-        	color: '#fff',
+        	color: '#333',
             borderWidth: 1,
             borderRadius: 5,
-            borderColor: '#333',
         	font: {
         	    fontSize: 14
         	},
-        	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
+        	backgroundGradient: defaults.SECONDARY_BAR_BTN_BACKGROUND_GRADIENT,
         	backgroundGradientPress: defaults.SECONDARY_BAR_BTN_DOWN_BG
         },
         //Styles for TitleBar
@@ -472,6 +475,7 @@ var Styles = function (app) {
         stylesheet.secondaryBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.searchBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.secondaryNavBar.backgroundImage = '/img/secondarybarbg.png';
+        stylesheet.homeGuestNote.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.secondaryBarButton.backgroundImage = '/img/secondarybarbtnbg.png';
         stylesheet.secondaryBarButton.backgroundImagePress = '/img/secondarybarbtnbg_press.png';
         stylesheet.mapAnnotation.image = '/img/mapPin.png';

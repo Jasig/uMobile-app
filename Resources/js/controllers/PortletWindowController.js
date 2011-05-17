@@ -114,7 +114,7 @@ var PortletWindowController = function (facade) {
     includePortlet = function (portlet) {
         Ti.API.debug("includePortlet() in PortletWindowController");
         
-        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.setLoadingMessage(app.localDictionary.loading);
         activityIndicator.show();
         
         webView.url = getQualifiedURL(portlet.url);
@@ -151,7 +151,7 @@ var PortletWindowController = function (facade) {
             webView.stopLoading();
             webView.url = getQualifiedURL(webView.url);
         }
-        activityIndicator.loadingMessage(app.localDictionary.loading);
+        activityIndicator.setLoadingMessage(app.localDictionary.loading);
         activityIndicator.show();
     };
     

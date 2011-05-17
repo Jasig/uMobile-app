@@ -158,7 +158,7 @@ var SettingsWindowController = function(facade){
             }
             else {
                 wasFormSubmitted = true;
-                activityIndicator.loadingMessage(app.localDictionary.loggingIn);
+                activityIndicator.setLoadingMessage(app.localDictionary.loggingIn);
                 activityIndicator.show();
                 app.models.loginProxy.saveCredentials({
                     username: usernameInput.value, 

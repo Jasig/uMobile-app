@@ -90,7 +90,6 @@ startup = function (e) {
     // window was open last time the app closed, and will manage the process
     // of establishing a session and opening the window.
     app.models.deviceProxy.checkNetwork();
-    Ti.API.debug("About to open the home window, and the key is: " + app.controllers.portalWindowController.key + " and the controller is: " + app.controllers.portalWindowController); 
     app.models.loginProxy.establishNetworkSession();
     Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
         Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);

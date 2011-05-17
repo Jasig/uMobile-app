@@ -17,17 +17,18 @@ var WindowManager = function (facade) {
     };
     
     self.openWindow = function (windowKey, portlet) {
-        Ti.API.debug("openWindow() in WindowManager");
+        Ti.API.debug("openWindow() in WindowManager, key: " + windowKey);
         var callback, 
             homeKey = app.controllers.portalWindowController.key,
             portletKey = app.controllers.portletWindowController.key;
         
         if (applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()) {
-            Ti.App.fireEvent('OpeningNewWindow', {key: windowKey, portlet: portlet ? portlet : false});
             //Make sure the requested window exists, and that it isn't the current window.
+            Ti.App.fireEvent('OpeningNewWindow', {key: windowKey, portlet: portlet ? portlet : false});
+            
             Ti.API.debug("Passes condition: applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()");
             if (Ti.Platform.osname === 'android') {
-                applicationWindows[windowKey].open(portlet ? portlet : null );
+                applicationWindows[windowKey].open(portlet ? portlet : undefined);
                 if (activityStack.length > 0) {
                     Ti.API.debug("Passes condition: activityStack.length > 0");
                     applicationWindows[self.getCurrentWindow()].close();
@@ -54,6 +55,11 @@ var WindowManager = function (facade) {
             Ti.API.error("Error opening window.");
             Ti.API.error(" applicationWindows[windowKey]" + applicationWindows[windowKey]);
             Ti.API.error("windowKey= " + windowKey + " & self.getCurrentWindow() = " + self.getCurrentWindow());
+            Ti.API.debug("Just in case the previous window didn't close, we'll try again");
+            if (activityStack.length >= 2) {
+                Ti.API.debug("The window to close is: " + activityStack[activityStack.length-2]);
+                applicationWindows[activityStack[activityStack.length-2]].close();
+            }
         }
     };
     
