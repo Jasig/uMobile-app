@@ -145,7 +145,7 @@ var MapWindowController = function(facade) {
                 win.add(mapView);
             }
 
-            if (Titanium.Platform.osname === "iphone") {
+            if (Titanium.Platform.osname === "iphone" || Titanium.Platform.osname === "iphone") {
                 // create controls for zoomin / zoomout
                 // included in Android by default
 

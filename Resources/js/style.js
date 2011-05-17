@@ -140,6 +140,7 @@ var Styles = function (app) {
         	color: '#333',
             borderWidth: 1,
             borderRadius: 5,
+            borderColor: '#CCC',
         	font: {
         	    fontSize: 14
         	},
@@ -164,7 +165,7 @@ var Styles = function (app) {
         	backgroundImage: 'none',
         	color: '#fff',
             borderWidth: 1,
-            borderRadius: 5,
+            borderRadius: 10,
             borderColor: '#000',
         	font: {
         	    fontSize: 14

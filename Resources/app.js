@@ -32,14 +32,17 @@ startup = function (e) {
     Titanium.include('js/gibberish-aes.js');
 
     Titanium.include('js/models/DeviceProxy.js');
+    Titanium.include('js/models/DirectoryProxy.js');
     Titanium.include('js/models/ResourceProxy.js');
     Titanium.include('js/models/LoginProxy.js');
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
     Titanium.include('js/models/WindowManager.js');
 
-    Titanium.include('js/controllers/DirectoryWindowController.js');
+    Titanium.include('js/views/PersonDetailTableView.js');
 
+    Titanium.include('js/controllers/DirectoryWindowController.js');
+    Titanium.include('js/controllers/DirectoryDetailController.js');
     Titanium.include('js/controllers/MapWindowController.js');
     Titanium.include('js/controllers/PortalWindowController.js');
     Titanium.include('js/controllers/PortletWindowController.js');
@@ -64,10 +67,14 @@ startup = function (e) {
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
+    app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
 
     app.registerModel('deviceProxy', new DeviceProxy(app));
+    
+    app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
 
     //Window controllers
+    app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 
     app.registerController('portalWindowController', new PortalWindowController(app));
     app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
     app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
