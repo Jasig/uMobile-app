@@ -32,10 +32,6 @@ var MapWindowController = function(facade) {
     init = function() {
         self.key = 'map';
         
-        Titanium.include(app.models.resourceProxy.getResourcePath('js/models/MapProxy.js'));
-        Titanium.include(app.models.resourceProxy.getResourcePath('js/views/MapDetailTop.js'));
-        Titanium.include(app.models.resourceProxy.getResourcePath('js/controllers/MapDetailViewController.js'));
-        
         Ti.App.addEventListener('MapProxySearching', onProxySearching);
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
         Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
@@ -43,51 +39,30 @@ var MapWindowController = function(facade) {
         Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
         Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
+        mapProxy = app.models.mapProxy;
+        
         initialized = true;
     };
     
     self.open = function () {
-        //We want to make sure dependencies for the map window are added to the facade.
-        //For iOS we want to close() and open() the window, but android we only want to hide() and show()
-        if (!app.models.mapProxy) {
-            app.registerModel('mapProxy', new MapService(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
-            mapProxy = app.models.mapProxy;
-        }
-        if (!app.views.MapDetailTop) {
-            app.registerView('MapDetailTop', MapDetailTop); // Partial view used at the top of the map detail view
-        }
-        if (!app.controllers.MapDetailViewController) {
-            app.registerController('MapDetailViewController', MapDetailViewController); // Subcontext in MapWindowController to show details of a location on the map
-        }
+
         
         if (!win) {
             //Initialize the mapProxy, which manages the data for points on the map,
             //including retrieval of data and searching array of points
             mapProxy.init();
         }
-        else if (win && (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')) {
+        else if (win) {
             win.close();
         }
         
-        if (!win && Ti.Platform.osname === 'android') {
-            win = Titanium.UI.createWindow({
-                backgroundColor: app.styles.backgroundColor,
-                exitOnClose: false,
-                navBarHidden: true
-            });
-            win.open();
-        }
-        else if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
-            win = Titanium.UI.createWindow({
-                backgroundColor: app.styles.backgroundColor,
-                exitOnClose: false,
-                navBarHidden: true
-            });
-            win.open();
-        }
-        else {
-            win.open();
-        }
+        win = Titanium.UI.createWindow({
+            backgroundColor: app.styles.backgroundColor,
+            exitOnClose: false,
+            navBarHidden: true
+        });
+        win.open();
+
         createMainView();
         resetMapLocation();
     };
@@ -96,9 +71,6 @@ var MapWindowController = function(facade) {
         Ti.API.debug("close() in MapWindowController");
         searchBlur();
         if (win) {
-            // Ideally, we would just hide the window, but ANdroid doesn't hide
-            // well if we've opened up the location detail view for some reason.
-            Ti.API.debug("win exists and it's iPhone");
             win.close();
         }
     };

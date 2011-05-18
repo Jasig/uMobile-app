@@ -325,6 +325,7 @@ var Styles = function (app) {
     	directoryDetailRow: {
     	    backgroundColor: "#fff",
     	    color: '#333',
+    	    fontColor: "#333",
     	    textAlign: 'center',
     	    fontSize: 14,
     	    fontWeight: 'bold'
@@ -332,7 +333,9 @@ var Styles = function (app) {
     	directoryDetailRowLabel: {
     	    font: {
     	        fontWeight: 'bold',
-    	        fontSize: 14
+    	        fontSize: 14,
+    	        color: "#333",
+    	        fontColor: "#333"
     	    },
     	    textAlign: 'right',
     	    color: '#333',
