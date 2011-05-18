@@ -29,9 +29,10 @@ var PortletWindowController = function (facade) {
         onBackBtnPress, onBackButtonUp, includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume;
 
     init = function () {
-        Titanium.include(app.models.resourceProxy.getResourcePath('js/views/SharedWebView.js'));
         Ti.API.debug("init() in PortletWindowController");
         self.key = 'portlet';
+        
+        sharedWebView = app.views.SharedWebView;
         
         initialized = true;
     };
@@ -40,9 +41,6 @@ var PortletWindowController = function (facade) {
         Ti.API.info("close() in PortletWindowController");
         if (win) {
             win.close();
-        }
-        else {
-            Ti.API.error("Portlet Window isn't open");
         }
     };
     
@@ -56,10 +54,6 @@ var PortletWindowController = function (facade) {
             app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
             return;
         }
-        if (!app.views.SharedWebView) {
-            app.registerView('SharedWebView', new SharedWebView(app)); // A single webview shared between all web-based portlets, necessary for cookie-sharing in Android. (Titanium bug)
-        }
-        sharedWebView = app.views.SharedWebView;
         
         win = Titanium.UI.createWindow({
             key: 'portlet',
@@ -67,11 +61,14 @@ var PortletWindowController = function (facade) {
             exitOnClose: false,
             navBarHidden: true
         });
+        win.open();
 
         if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad' || Ti.Platform.osname === 'android') {
             webView = Titanium.UI.createWebView(app.styles.portletView);
         }
         else {
+            // Due to a Titanium Android SDK bug which prevents cookies from being shared
+            // between webviews, we need to share one webview on Android
             webView = sharedWebView.getWebView();
         }
         
@@ -108,7 +105,7 @@ var PortletWindowController = function (facade) {
         
         includePortlet(activePortlet);
 
-        win.open();
+        
     };
     
     includePortlet = function (portlet) {

@@ -41,7 +41,7 @@ startup = function (e) {
     Titanium.include('js/models/WindowManager.js');
 
     Titanium.include('js/views/MapDetailTop.js');
-    
+    Titanium.include('js/views/SharedWebView.js');
     Titanium.include('js/views/PersonDetailTableView.js');
 
     Titanium.include('js/controllers/DirectoryWindowController.js');
@@ -78,6 +78,7 @@ startup = function (e) {
     
     app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
     app.registerView('MapDetailTop', MapDetailTop);
+    app.registerView('SharedWebView', new SharedWebView(app));
 
     //Window controllers
     app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 

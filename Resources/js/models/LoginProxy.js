@@ -64,7 +64,10 @@ var LoginProxy = function (facade) {
         // make sure the database has been initialized
         db = Ti.Database.install('umobile.sqlite','umobile');
 
-        credentials = {};
+        credentials = {
+            username: '',
+            password: ''
+        };
 
         rows = db.execute('SELECT value from prefs where name="username"');
         if (rows.isValidRow()) {

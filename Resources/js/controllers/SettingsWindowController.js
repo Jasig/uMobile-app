@@ -43,13 +43,10 @@ var SettingsWindowController = function(facade){
     
     self.open = function () {
         Ti.API.debug("self.open() in SettingsWindowController");
-
-        Ti.API.debug("Creating window");
         
         credentials = app.models.loginProxy.getCredentials();
         
         win = Titanium.UI.createWindow({
-            title: 'settings',
             exitOnClose: false, 
             navBarHidden: true,
             backgroundColor: app.styles.backgroundColor
