@@ -9,7 +9,7 @@ var Styles = function (app) {
     var defaults, stylesheet, OS = Ti.Platform.osname;
     defaults = {
         TITLEBAR_HEIGHT: 40,
-        SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 45 : 40,
+        SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 48 : 40,
         DETAIL_TOP_TITLE_COLOR: '#333',
         DETAIL_TOP_BACKGROUND_COLOR: '#eee',
         PRIMARY_BAR_BACKGROUND_COLOR: "#000",

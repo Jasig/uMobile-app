@@ -49,6 +49,7 @@ localDictionary.en_US = {
     logOut: "Sign Out",
     authenticationFailed: "Authentication failed. Please check your username and password and try again.",
     authenticationSuccessful: "You've successfully logged in.",
+    logOutSuccessful: "You have successfully logged out.",
     enterAUserName: "Please enter a valid username.",
     resetPasswordTitle: "Reset Password",
     resetPasswordLink: "To set or reset your password, visit: ",

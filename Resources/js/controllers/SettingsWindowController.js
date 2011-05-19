@@ -24,7 +24,7 @@
 
 var SettingsWindowController = function(facade){
     var win, app = facade, self = {},
-        credentials, initialized, wasFormSubmitted = false,
+        credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
         onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
@@ -149,9 +149,9 @@ var SettingsWindowController = function(facade){
         if (usernameInput) { usernameInput.blur(); }
         if (app.models.deviceProxy.checkNetwork()) {
             if (usernameInput.value === '') {
-                /*Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                     message: app.localDictionary.enterAUserName, buttonNames: [app.localDictionary.OK]
-                    }).show();*/
+                    }).show();
             }
             else {
                 wasFormSubmitted = true;
@@ -186,6 +186,7 @@ var SettingsWindowController = function(facade){
         usernameInput.value = '';
         passwordInput.value = '';
         app.models.loginProxy.establishNetworkSession();
+        wasLogOutClicked = true;
     };
     
     onLogOutButtonPress = function (e) {
@@ -215,19 +216,41 @@ var SettingsWindowController = function(facade){
             activityIndicator.hide();
         }
         Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
-        if(app.models.windowManager.getCurrentWindow() === self.key && e.user === credentials.username && wasFormSubmitted) {
-            /*Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
-                message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
-                }).show();*/
+        if(app.models.windowManager.getCurrentWindow() === self.key && (wasFormSubmitted || wasLogOutClicked)) {
+            if (e.user === usernameInput.value) {
+                logOutButton.show();
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
+                    message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
+                    }).show();
+            }
+            else if (e.user === 'guest' && wasLogOutClicked) {
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
+                    message: app.localDictionary.logOutSuccessful, buttonNames: [app.localDictionary.OK]
+                    }).show();
+                    logOutButton.hide();
+            }
+            else if (e.user === 'guest') {
+                wasFormSubmitted = false;
+                logOutButton.hide();
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                    message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+                    }).show();
+            }
+            else {
+                Ti.API.error("Logout must not've worked, user: " + e.user);
+            }
         }
         else {
             Ti.API.debug("SettingsWindow isn't visible apparently...");
         }
+        wasLogOutClicked = false;
     };
     
     onPortalProxyPortletsLoaded = function (e) {
         if (wasFormSubmitted) {
             app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+            wasFormSubmitted = false;
+            wasLogOutClicked = false;
         }
         else {
             Ti.API.debug("The portlets loaded are for " + e.user + " and not for " + credentials.username);
@@ -239,14 +262,16 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
-        if (e.user && e.user != app.models.loginProxy.getCredentials().username) {
-            if (!win || !win.visible) {
+        if (e.user && e.user != app.models.loginProxy.getCredentials().username && wasFormSubmitted) {
+            /*if (!win || !win.visible) {
                 app.models.windowManager.openWindow(self.key);
-            }
-            /*Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+            }*/
+            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                 message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
-                }).show();*/
+                }).show();
         }
+        wasFormSubmitted = false;
+        wasLogOutClicked = false;
     };
     
 
