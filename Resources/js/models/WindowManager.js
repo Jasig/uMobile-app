@@ -22,7 +22,7 @@ var WindowManager = function (facade) {
             homeKey = app.controllers.portalWindowController.key,
             portletKey = app.controllers.portletWindowController.key;
         
-        if (applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()) {
+        if (applicationWindows[windowKey]) {
             //Make sure the requested window exists, and that it isn't the current window.
             Ti.App.fireEvent('OpeningNewWindow', {key: windowKey, portlet: portlet ? portlet : false});
             

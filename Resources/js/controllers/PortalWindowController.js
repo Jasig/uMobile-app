@@ -226,6 +226,7 @@ var PortalWindowController = function(facade) {
             gridItemIconDefaults = app.styles.gridIcon;
             gridItemIconDefaults.image = app.models.portalProxy.getIconUrl(_portlet);
             gridItemIcon = Titanium.UI.createImageView(gridItemIconDefaults);
+            gridItemIcon.portlet = _portlet;
             gridItem.add(gridItemIcon);
 
             // if the module has a new item count of more than zero (no new items)
@@ -274,13 +275,13 @@ var PortalWindowController = function(facade) {
     onGridItemClick = function (e) {
         var func;
         Ti.API.debug("onGridItemClick() in PortalWindowController " + JSON.stringify(e.source.portlet));
-         if (e.source.type === 'gridIcon') {
-                func = app.models.portalProxy.getShowPortletFunc(e.source.getParent().portlet);
-            }
-            else {
-                func = app.models.portalProxy.getShowPortletFunc(e.source.portlet);
-            }
-        func();
+        if (e.source.portlet) {
+            func = app.models.portalProxy.getShowPortletFunc(e.source.portlet);
+            func();
+        }
+        else {
+            Ti.API.error("No portlet was attached to the icon.");
+        }
     };
 
     onGridItemPressDown = function (e) {
