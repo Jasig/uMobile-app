@@ -34,6 +34,7 @@ var WindowManager = function (facade) {
             
             activityStack.push(windowKey);
             Ti.App.Properties.setString('lastWindow', windowKey);
+            
             if (portlet) {
                 Ti.API.debug("Passes condition: portlet");
                 Ti.API.debug("Adding portlet to lastPortlet: " + JSON.stringify(portlet));
