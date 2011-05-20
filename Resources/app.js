@@ -17,7 +17,52 @@
  * under the License.
  */
 
-var loadingWindow, app, windowManager, startup;
+var app, loadingWindow, windowManager, startup;
+(function () {
+    //Show a loading screen
+    var messageLabel, indicator, dialog;
+    loadingWindow = Titanium.UI.createWindow({
+        fullscreen: true,
+        backgroundImage: '/images/DefaultBlur.png',
+        navBarHidden: true,
+        orientationModes: [Ti.UI.PORTRAIT]
+    });
+    loadingWindow.open();
+    
+    indicator = Ti.UI.createView({
+        top: 0,
+	    width: Ti.Platform.displayCaps.platformWidth,
+	    height: Ti.Platform.displayCaps.platformHeight,
+	    color: '#fff',
+	    zIndex: 1000,
+	    backgroundImage: 'img/bgActivityIndicator.png'
+    });
+    dialog = Ti.UI.createView({
+        width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
+	    height: 75,
+	    borderRadius: 10,
+	    borderWidth: 1,
+	    borderColor: "#fff",
+	    backgroundImage: 'img/bgActivityIndicatorDialog.png'
+    });
+
+    indicator.add(dialog);
+
+    messageLabel = Ti.UI.createLabel({
+        textAlign: 'center',
+        fontSize: 18,
+        color: "#fff",
+        font: {
+            fontWeight: 'bold'
+        }
+    });
+    messageLabel.text = "Loading";
+    dialog.add(messageLabel);
+
+    loadingWindow.add(indicator);
+    indicator.show();
+})();
+
 
 startup = function (e) {
     // library includes
@@ -28,7 +73,6 @@ startup = function (e) {
     Titanium.include('js/localization.js');
     Titanium.include('js/style.js');
     Titanium.include('js/UI.js');
-
     Titanium.include('js/gibberishAES.js');
 
     Titanium.include('js/models/DeviceProxy.js');
@@ -108,6 +152,7 @@ startup = function (e) {
     app.models.loginProxy.establishNetworkSession();
     Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
         Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
+        loadingWindow.close();
         app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
     });
 };

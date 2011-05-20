@@ -229,6 +229,13 @@ var Styles = function (app) {
             }
         },
         //PORTAL VIEW STYLES
+        portalWindow: {
+            exitOnClose: true,
+            navBarHidden: true,
+            fullScreen: false,
+            orientationModes: [Ti.UI.PORTRAIT],
+            backgroundImage: 'img/home-background.png'
+        },
         portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
             height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT
@@ -238,7 +245,6 @@ var Styles = function (app) {
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
-            backgroundImage: 'img/home-background.png',
             zIndex: 1
         },
         homeGuestNote: {

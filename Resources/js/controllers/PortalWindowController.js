@@ -53,12 +53,7 @@ var PortalWindowController = function(facade) {
         if (!win || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
             Ti.API.debug("Create and open the portal window");
             //We want to create a new window and redraw the whole UI each time on iOS
-            win = Titanium.UI.createWindow({
-                exitOnClose: true,
-                navBarHidden: true,
-                fullScreen: false,
-                orientationModes: [Ti.UI.PORTRAIT]
-            });
+            win = Titanium.UI.createWindow(app.styles.portalWindow);
             win.open();
         }
         else if (win && !win.visible) {

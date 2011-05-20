@@ -27,12 +27,12 @@ var UI = function (facade) {
     self.createTitleBar = function (opts) {
         // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
         //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
-        var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
+        var initTitleBar, title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
             titleBar = Titanium.UI.createView(app.styles.titleBar),
             labelStyle = app.styles.titleBarLabel,
             onSettingsClick, onSettingsPressDown, onSettingsPressUp, onHomeClick, onHomePressUp, onHomePressDown;
 
-        function init() {
+        initTitleBar = function () {
             if (opts.title) {
                 //Places the title in the center of the titlebar...
                 labelStyle.text = opts.title;
@@ -75,7 +75,8 @@ var UI = function (facade) {
                 settingsButtonContainer.addEventListener('touchstart', onSettingsPressDown);
                 settingsButtonContainer.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onSettingsPressUp);
             }
-        }
+        };
+        
         onHomeClick = function (e) {
             Ti.API.debug("Home button clicked in GenericTitleBar");
             app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
@@ -119,7 +120,7 @@ var UI = function (facade) {
             settingsButtonContainer.backgroundColor = app.styles.titleBarSettingsContainer.backgroundColor;
         };
 
-        init();
+        initTitleBar();
 
         return titleBar;
     };
