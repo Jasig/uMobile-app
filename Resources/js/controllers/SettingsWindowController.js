@@ -21,7 +21,6 @@
  * settings_window.js contains setup information for the
  * user settings tab.
  */
-
 var SettingsWindowController = function(facade){
     var win, app = facade, self = {},
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
@@ -49,7 +48,8 @@ var SettingsWindowController = function(facade){
         win = Titanium.UI.createWindow({
             exitOnClose: false, 
             navBarHidden: true,
-            backgroundColor: app.styles.backgroundColor
+            backgroundColor: app.styles.backgroundColor,
+            orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         

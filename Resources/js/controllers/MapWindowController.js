@@ -21,7 +21,6 @@
  * map tab.
  */
 
-
 var MapWindowController = function(facade) {
     var win, app = facade, self = {}, initialized, mapProxy, //Standard utility vars
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], //Data objects
@@ -59,7 +58,8 @@ var MapWindowController = function(facade) {
         win = Titanium.UI.createWindow({
             backgroundColor: app.styles.backgroundColor,
             exitOnClose: false,
-            navBarHidden: true
+            navBarHidden: true,
+            orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
 

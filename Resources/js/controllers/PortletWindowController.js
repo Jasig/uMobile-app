@@ -17,7 +17,6 @@
  * under the License.
  */
 
-
 var PortletWindowController = function (facade) {
     var win,
         self = {},
@@ -59,7 +58,8 @@ var PortletWindowController = function (facade) {
             key: 'portlet',
             backgroundColor: app.styles.backgroundColor,
             exitOnClose: false,
-            navBarHidden: true
+            navBarHidden: true,
+            orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
 

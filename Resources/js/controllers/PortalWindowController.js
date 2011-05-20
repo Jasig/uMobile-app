@@ -23,7 +23,6 @@
  */
 
 
-
 var PortalWindowController = function(facade) {
     var win, app = facade, self = {}, portalProxy, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar, guestNotificationView, guestNotificationLabel,
@@ -57,7 +56,8 @@ var PortalWindowController = function(facade) {
             win = Titanium.UI.createWindow({
                 exitOnClose: false,
                 navBarHidden: true,
-                fullScreen: false
+                fullScreen: false,
+                orientationModes: [Ti.UI.PORTRAIT]
             });
             win.open();
         }

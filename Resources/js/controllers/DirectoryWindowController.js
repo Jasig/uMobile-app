@@ -54,7 +54,8 @@ var DirectoryWindowController = function (facade) {
             backgroundColor: app.styles.backgroundColor,
             title: app.localDictionary.directory,
             exitOnClose: false,
-            navBarHidden: true
+            navBarHidden: true,
+            orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         drawDefaultView();
