@@ -148,7 +148,8 @@ var MapWindowController = function(facade) {
         Ti.API.debug("resetMapLocation() in MapWindowController, with default location: " + JSON.stringify(mapProxy.getMapCenter(true)));
         if (mapView && mapProxy) {
             // mapView.setLocation(mapProxy.getMapCenter(true));
-            mapView.region = mapProxy.getMapCenter(true);
+            mapView.setLocation(mapProxy.getMapCenter(true));
+
         }
         else {
             Ti.API.error("Either mapView or mapProxy isn't set: " + mapView + ', ' + mapProxy);
@@ -192,8 +193,9 @@ var MapWindowController = function(facade) {
             mapView.addAnnotation(_annotation);
         }
         Ti.API.debug("Hiding Activity Indicator in plotPoints()");
-        activityIndicator.hide();
+        
         mapView.setLocation(mapProxy.getMapCenter());
+        activityIndicator.hide();
     };
 
     searchBlur = function (e) {

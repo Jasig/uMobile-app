@@ -203,6 +203,7 @@ var MapService = function (facade) {
     };
     
     self.getMapCenter = function (isDefault) {
+        var _longDelta, _latDelta;
         if(isDefault) {
             //Wants the default map location returned from the service, 
             //not the dynamic one generated otherwise
@@ -213,6 +214,7 @@ var MapService = function (facade) {
             mapCenter.longitude = (mapCenter.longLow + mapCenter.longHigh) / 2;
             mapCenter.latitudeDelta = (mapCenter.latHigh - mapCenter.latLow) > 0.005 ? mapCenter.latHigh - mapCenter.latLow : 0.005;
             mapCenter.longitudeDelta = (mapCenter.longHigh - mapCenter.longLow) > 0.005 ? mapCenter.longHigh - mapCenter.longLow : 0.005;
+            
             Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(mapCenter));
             return mapCenter;
         }

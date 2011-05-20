@@ -374,7 +374,7 @@ var Styles = function (app) {
             top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
             // height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT),
             mapType: Titanium.Map.STANDARD_TYPE,
-            regionFit: Titanium.Platform.osname === 'android' ? false : true,
+            regionFit: true,
             animate: true,
             userLocation: false
     	},

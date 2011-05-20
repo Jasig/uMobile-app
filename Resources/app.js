@@ -34,8 +34,7 @@ var app, loadingWindow, windowManager, startup;
 	    width: Ti.Platform.displayCaps.platformWidth,
 	    height: Ti.Platform.displayCaps.platformHeight,
 	    color: '#fff',
-	    zIndex: 1000,
-	    backgroundImage: 'img/bgActivityIndicator.png'
+	    zIndex: 1000
     });
     dialog = Ti.UI.createView({
         width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
