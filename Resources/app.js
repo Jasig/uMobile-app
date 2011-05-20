@@ -29,7 +29,7 @@ startup = function (e) {
     Titanium.include('js/style.js');
     Titanium.include('js/UI.js');
 
-    Titanium.include('js/gibberish-aes.js');
+    Titanium.include('js/gibberishAES.js');
 
     Titanium.include('js/models/DeviceProxy.js');
     Titanium.include('js/models/DirectoryProxy.js');
