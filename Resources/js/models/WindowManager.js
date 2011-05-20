@@ -26,21 +26,11 @@ var WindowManager = function (facade) {
             //Make sure the requested window exists, and that it isn't the current window.
             Ti.App.fireEvent('OpeningNewWindow', {key: windowKey, portlet: portlet ? portlet : false});
             
-            Ti.API.debug("Passes condition: applicationWindows[windowKey] && windowKey !== self.getCurrentWindow()");
-            if (Ti.Platform.osname === 'android') {
-                applicationWindows[windowKey].open(portlet ? portlet : undefined);
-                if (activityStack.length > 0) {
-                    Ti.API.debug("Passes condition: activityStack.length > 0");
-                    applicationWindows[self.getCurrentWindow()].close();
-                }
+            if (activityStack.length > 0) {
+                Ti.API.debug("Passes condition: activityStack.length > 0");
+                applicationWindows[self.getCurrentWindow()].close();
             }
-            else {
-                if (activityStack.length > 0) {
-                    Ti.API.debug("Passes condition: activityStack.length > 0");
-                    applicationWindows[self.getCurrentWindow()].close();
-                }
-                applicationWindows[windowKey].open(portlet ? portlet : null );
-            }
+            applicationWindows[windowKey].open(portlet ? portlet : null );
             
             activityStack.push(windowKey);
             Ti.App.Properties.setString('lastWindow', windowKey);
@@ -55,11 +45,6 @@ var WindowManager = function (facade) {
             Ti.API.error("Error opening window.");
             Ti.API.error(" applicationWindows[windowKey]" + applicationWindows[windowKey]);
             Ti.API.error("windowKey= " + windowKey + " & self.getCurrentWindow() = " + self.getCurrentWindow());
-            Ti.API.debug("Just in case the previous window didn't close, we'll try again");
-            if (activityStack.length >= 2) {
-                Ti.API.debug("The window to close is: " + activityStack[activityStack.length-2]);
-                applicationWindows[activityStack[activityStack.length-2]].close();
-            }
         }
     };
     

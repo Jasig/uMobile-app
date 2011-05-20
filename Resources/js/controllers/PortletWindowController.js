@@ -73,7 +73,7 @@ var PortletWindowController = function (facade) {
         }
         
         titleBar = app.UI.createTitleBar({
-            title: app.localDictionary.uMobile,
+            title: portlet.title,
             settingsButton: false,
             homeButton: true
         });
