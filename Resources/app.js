@@ -18,50 +18,51 @@
  */
 
 var app, loadingWindow, windowManager, startup;
-(function () {
-    //Show a loading screen
-    var messageLabel, indicator, dialog;
-    loadingWindow = Titanium.UI.createWindow({
-        fullscreen: true,
-        backgroundImage: '/images/DefaultBlur.png',
-        navBarHidden: true,
-        orientationModes: [Ti.UI.PORTRAIT]
-    });
-    loadingWindow.open();
-    
-    indicator = Ti.UI.createView({
-        top: 0,
-	    width: Ti.Platform.displayCaps.platformWidth,
-	    height: Ti.Platform.displayCaps.platformHeight,
-	    color: '#fff',
-	    zIndex: 1000
-    });
-    dialog = Ti.UI.createView({
-        width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
-	    height: 75,
-	    borderRadius: 10,
-	    borderWidth: 1,
-	    borderColor: "#fff",
-	    backgroundImage: 'img/bgActivityIndicatorDialog.png'
-    });
+if (Titanium.Platform.osname == 'android' ) {
+    (function () {
+        //Show a loading screen
+        var messageLabel, indicator, dialog;
+        loadingWindow = Titanium.UI.createWindow({
+            fullscreen: true,
+            backgroundImage: '/images/DefaultBlur.png',
+            navBarHidden: true,
+            orientationModes: [Ti.UI.PORTRAIT]
+        });
+        loadingWindow.open();
 
-    indicator.add(dialog);
+        indicator = Ti.UI.createView({
+            top: 0,
+    	    width: Ti.Platform.displayCaps.platformWidth,
+    	    height: Ti.Platform.displayCaps.platformHeight,
+    	    color: '#fff',
+    	    zIndex: 1000
+        });
+        dialog = Ti.UI.createView({
+            width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
+    	    height: 75,
+    	    borderRadius: 10,
+    	    borderWidth: 1,
+    	    borderColor: "#fff",
+    	    backgroundImage: 'img/bgActivityIndicatorDialog.png'
+        });
 
-    messageLabel = Ti.UI.createLabel({
-        textAlign: 'center',
-        fontSize: 18,
-        color: "#fff",
-        font: {
-            fontWeight: 'bold'
-        }
-    });
-    messageLabel.text = "Loading";
-    dialog.add(messageLabel);
+        indicator.add(dialog);
 
-    loadingWindow.add(indicator);
-    indicator.show();
-})();
+        messageLabel = Ti.UI.createLabel({
+            textAlign: 'center',
+            fontSize: 18,
+            color: "#fff",
+            font: {
+                fontWeight: 'bold'
+            }
+        });
+        messageLabel.text = "Loading";
+        dialog.add(messageLabel);
 
+        loadingWindow.add(indicator);
+        indicator.show();
+    })();
+}
 
 startup = function (e) {
     // library includes
@@ -151,7 +152,7 @@ startup = function (e) {
     app.models.loginProxy.establishNetworkSession();
     Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
         Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
-        loadingWindow.close();
+        if (loadingWindow) { loadingWindow.close(); }
         app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
     });
     
