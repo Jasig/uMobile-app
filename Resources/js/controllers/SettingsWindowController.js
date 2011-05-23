@@ -143,6 +143,11 @@ var SettingsWindowController = function(facade){
         resetPassword.addEventListener('click', function (e){
             Ti.Platform.openURL(app.UPM.FORGOT_PASSWORD_URL);
         });
+        
+        Titanium.App.addEventListener('dimensionchanges', function (e) {
+            usernameInput.width = app.styles.settingsUsernameInput.width;
+            passwordInput.width = app.styles.settingsPasswordInput.width;
+        });
     };
 
     onUpdateCredentials = function (e) {

@@ -1,5 +1,6 @@
 var DirectoryDetailController = function (facade) {
     var app = facade,
+        device = app.models.deviceProxy,
         self = Titanium.UI.createView(app.styles.contactDetailView),
         //UI Components
         titleBar,
@@ -28,7 +29,8 @@ var DirectoryDetailController = function (facade) {
         backButton = Titanium.UI.createButton(backButtonOpts);
 
         backButton.addEventListener("click",function(e){
-            self.hide();
+            Ti.API.debug("self.hide() in DirectoryDetailController");
+                self.hide();
         });
         
         backButton.addEventListener('touchstart', onBackButtonPress);
@@ -36,7 +38,7 @@ var DirectoryDetailController = function (facade) {
         
         backBarOpts = app.styles.secondaryBar;
         backBarOpts.top = 0;
-        backBar = Titanium.UI.createView(app.styles.secondaryBar);
+        backBar = Titanium.UI.createView(backBarOpts);
         backBar.add(backButton);
         self.add(backBar);
         
@@ -49,6 +51,8 @@ var DirectoryDetailController = function (facade) {
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             if (backBar) { backBar.width = app.styles.secondaryBar.width; }
+            if (nameLabel) { nameLabel.width = app.styles.directoryDetailNameLabel; }
+            if (attributeTable) { attributeTable.width = app.styles.directoryDetailAttributeTable.width; }
         });
     };
     

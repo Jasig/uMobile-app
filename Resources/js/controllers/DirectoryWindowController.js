@@ -23,7 +23,7 @@
  */
 
 var DirectoryWindowController = function (facade) {
-    var win, app = facade, self = {}, directoryProxy, init,
+    var win, app = facade, self = {}, directoryProxy, device, init,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
         contactDetailViewOptions,
@@ -45,6 +45,7 @@ var DirectoryWindowController = function (facade) {
         Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
         
         directoryProxy = app.models.directoryProxy;
+        device = app.models.deviceProxy;
         
         initialized = true;
     };

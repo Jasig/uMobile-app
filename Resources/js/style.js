@@ -313,7 +313,8 @@ var Styles = function (app) {
             visible: false,
     	    top: defaults.TITLEBAR_HEIGHT,
             height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
-            width: Ti.Platform.displayCaps.platformWidth
+            width: OS === 'android' ? Ti.Platform.displayCaps.platformWidth : 'auto',
+            modal: true
     	},
     	directoryDetailNameLabel: {
             left: 70,
