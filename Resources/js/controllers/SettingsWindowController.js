@@ -50,8 +50,8 @@ var SettingsWindowController = function(facade){
         win = Titanium.UI.createWindow({
             exitOnClose: false, 
             navBarHidden: true,
-            backgroundColor: app.styles.backgroundColor,
-            orientationModes: [Ti.UI.PORTRAIT]
+            backgroundColor: app.styles.backgroundColor
+            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         

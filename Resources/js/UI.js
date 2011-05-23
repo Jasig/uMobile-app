@@ -21,6 +21,11 @@ var UI = function (facade) {
             searchBarObject.input = searchBarInput;
         }
         
+        Titanium.App.addEventListener('dimensionchanges', function (e) {
+            if (searchBar) { searchBar.width = app.styles.searchBar.width; }
+            if (searchBarInput) { searchBarInput.width = app.styles.searchBarInput.width; }
+        });
+        
         return searchBarObject;
     };
     
@@ -75,6 +80,12 @@ var UI = function (facade) {
                 settingsButtonContainer.addEventListener('touchstart', onSettingsPressDown);
                 settingsButtonContainer.addEventListener(device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
             }
+            
+            Titanium.App.addEventListener('dimensionchanges', function (e) {
+            	if (titleBar) { titleBar.width = app.styles.titleBar.width; }
+                if (settingsButtonContainer) { settingsButtonContainer.left = app.styles.titleBarSettingsContainer.left; }
+                if (homeButtonContainer) { homeButtonContainer.left = app.styles.titleBarHomeContainer.left; }
+            });
         };
         
         onHomeClick = function (e) {
@@ -140,6 +151,11 @@ var UI = function (facade) {
         if(opts.backButton) {
             secondaryNavBar.add(opts.backButton);
         }
+        
+        Titanium.App.addEventListener('dimensionchanges', function (e) {
+            secondaryNavBar.width = app.styles.secondaryNavBar.width;
+        });
+        
         return secondaryNavBar;
     };
     
@@ -170,6 +186,10 @@ var UI = function (facade) {
             indicator.height = app.styles.globalActivityIndicator.height;
             indicator.width = app.styles.globalActivityIndicator.width;
         };
+        
+        Titanium.App.addEventListener('dimensionchanges', function (e) {
+            indicator.resetDimensions();
+        });
         
         return indicator;
     };

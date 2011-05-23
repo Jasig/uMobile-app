@@ -1,6 +1,6 @@
-var DirectoryDetailController = function (facade,opts) {
+var DirectoryDetailController = function (facade) {
     var app = facade,
-        self = Titanium.UI.createView(opts),
+        self = Titanium.UI.createView(app.styles.contactDetailView),
         //UI Components
         titleBar,
         nameLabel,
@@ -46,6 +46,10 @@ var DirectoryDetailController = function (facade,opts) {
         
         attributeTable = new app.views.PersonDetailTableView(app, app.styles.directoryDetailAttributeTable);
         self.add(attributeTable);
+        
+        Titanium.App.addEventListener('dimensionchanges', function (e) {
+            if (backBar) { backBar.width = app.styles.secondaryBar.width; }
+        });
     };
     
     updateValues = function (attributes) {

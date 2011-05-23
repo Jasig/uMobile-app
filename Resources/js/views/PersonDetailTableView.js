@@ -1,4 +1,4 @@
-var PersonDetailTableView = function (facade,opts) {
+var PersonDetailTableView = function (facade) {
     var app = facade,
         self = Titanium.UI.createTableView(app.styles.directoryDetailAttributeTable),
         person,
@@ -134,6 +134,10 @@ var PersonDetailTableView = function (facade,opts) {
     onUrlSelect = function (e) {
         Ti.Platform.openURL(e.source.data);
     };
+    
+    Titanium.App.addEventListener('dimensionchanges', function (e) {
+        self.width = app.styles.directoryDetailAttributeTable.width;
+    });
     
     return self;
 };

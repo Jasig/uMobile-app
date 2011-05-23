@@ -59,8 +59,8 @@ var MapWindowController = function(facade) {
         win = Titanium.UI.createWindow({
             backgroundColor: app.styles.backgroundColor,
             exitOnClose: false,
-            navBarHidden: true,
-            orientationModes: [Ti.UI.PORTRAIT]
+            navBarHidden: true
+            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
 
@@ -129,6 +129,10 @@ var MapWindowController = function(facade) {
                 else {
                     Ti.API.error("mapView doesn't exist to place the buttonBar into.");
                 }
+                
+                Titanium.App.addEventListener('dimensionchanges', function (e) {
+                    buttonBar.top = app.styles.mapButtonBar.top;
+                });
 
                 // add event listeners for the zoom buttons
                 buttonBar.addEventListener('click', function(e) {

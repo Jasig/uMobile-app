@@ -41,7 +41,7 @@ var Styles = function (app) {
         },
         portletView: {
             top: defaults.TITLEBAR_HEIGHT,
-            height: 'auto'
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT
         },
         textField: {
             height: OS === 'iphone' ? 35 : 45,
@@ -127,6 +127,7 @@ var Styles = function (app) {
         },
         secondaryBar: {
             top: defaults.TITLEBAR_HEIGHT,
+            width: Ti.Platform.displayCaps.platformWidth,
             height: defaults.TITLEBAR_HEIGHT,
             barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
             backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
@@ -233,7 +234,7 @@ var Styles = function (app) {
             exitOnClose: true,
             navBarHidden: true,
             fullScreen: false,
-            orientationModes: [Ti.UI.PORTRAIT],
+            // orientationModes: [Ti.UI.PORTRAIT],
             backgroundImage: 'img/home-background.png'
         },
         portalContentLayer: {
@@ -326,7 +327,8 @@ var Styles = function (app) {
             }
     	},
     	directoryDetailAttributeTable: {
-    	    top: defaults.TITLEBAR_HEIGHT
+    	    top: defaults.TITLEBAR_HEIGHT,
+    	    width: Ti.Platform.displayCaps.platformWidth
     	},
     	directoryDetailRow: {
     	    backgroundColor: "#fff",
@@ -382,13 +384,13 @@ var Styles = function (app) {
     	    
     	},
     	mapButtonBar: {
-    	     labels: ['+', '-'],
-    	     color: '#fff',
-               backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
-               style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-               top: Ti.Platform.displayCaps.platformHeight - 140,
-               width: 100,
-               height: 35
+            labels: ['+', '-'],
+            color: '#fff',
+            backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+            style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+            top: Ti.Platform.displayCaps.platformHeight - 140,
+            width: 100,
+            height: 35
     	},
     	mapDetailTopView: {
     	    top: defaults.TITLEBAR_HEIGHT,

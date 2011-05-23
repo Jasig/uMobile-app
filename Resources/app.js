@@ -154,5 +154,10 @@ startup = function (e) {
         loadingWindow.close();
         app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
     });
+    
+    Titanium.Gesture.addEventListener('orientationchange', function callback(e){
+        app.styles = new Styles(app);
+        Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+    });
 };
 startup();

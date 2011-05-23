@@ -54,8 +54,8 @@ var DirectoryWindowController = function (facade) {
             backgroundColor: app.styles.backgroundColor,
             title: app.localDictionary.directory,
             exitOnClose: false,
-            navBarHidden: true,
-            orientationModes: [Ti.UI.PORTRAIT]
+            navBarHidden: true
+            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         drawDefaultView();
@@ -138,8 +138,7 @@ var DirectoryWindowController = function (facade) {
             searchBar.input.addEventListener('change', onSearchChange);
 
             //Create the contact detail view but don't show it yet.
-            contactDetailViewOptions = app.styles.contactDetailView;
-            contactDetailView = new app.controllers.DirectoryDetailController(app, contactDetailViewOptions);
+            contactDetailView = new app.controllers.DirectoryDetailController(app);
             win.add(contactDetailView);
 
 

@@ -59,8 +59,8 @@ var PortletWindowController = function (facade) {
             key: 'portlet',
             backgroundColor: app.styles.backgroundColor,
             exitOnClose: false,
-            navBarHidden: true,
-            orientationModes: [Ti.UI.PORTRAIT]
+            navBarHidden: true
+            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
 
@@ -106,7 +106,18 @@ var PortletWindowController = function (facade) {
         
         includePortlet(activePortlet);
 
-        
+        Titanium.App.addEventListener('dimensionchanges', function (e) {
+            if (webView.canGoBack()) {
+                navBar.visible = true;
+                webView.top = titleBar.height + navBar.height;
+                webView.height = win.height - titleBar.height - navBar.height;
+            }
+            else {
+                Ti.API.info("Webview can't go back");
+                webView.top = titleBar.height;
+                webView.height = win.height - titleBar.height;
+            }
+        });
     };
     
     includePortlet = function (portlet) {
