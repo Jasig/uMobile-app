@@ -20,7 +20,7 @@
 var PortletWindowController = function (facade) {
     var win,
         self = {},
-        app = facade, sharedWebView,
+        app = facade, sharedWebView, device,
         activityIndicator, titleBar, navBar, webView,
         initialized, winListeners = [], activePortlet,
         pathToRoot = '../../',
@@ -31,6 +31,7 @@ var PortletWindowController = function (facade) {
         Ti.API.debug("init() in PortletWindowController");
         self.key = 'portlet';
         
+        device = app.models.deviceProxy;
         sharedWebView = app.views.SharedWebView;
         
         initialized = true;
@@ -63,7 +64,7 @@ var PortletWindowController = function (facade) {
         });
         win.open();
 
-        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad' || Ti.Platform.osname === 'android') {
+        if (device.isIOS() || device.isAndroid()) {
             webView = Titanium.UI.createWebView(app.styles.portletView);
         }
         else {

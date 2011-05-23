@@ -1,6 +1,7 @@
 var MapDetailViewController = function (facade,opts) {   
     var app = facade,
         self = Titanium.UI.createView(app.styles.view),
+        device,
         locationData = opts.data,
         locationDetailTitleBar,
         locationDetailMap,
@@ -15,6 +16,9 @@ var MapDetailViewController = function (facade,opts) {
     init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
         Ti.API.debug("Creating titleBackButton in MapDetailViewController");
+        
+        device = app.models.deviceProxy;
+        
         titleBackButtonOptions = app.styles.secondaryBarButton;
         titleBackButtonOptions.title = app.localDictionary.back;
         titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
@@ -88,7 +92,7 @@ var MapDetailViewController = function (facade,opts) {
     };
     
     onBackButtonPress = function (e) {
-        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        if (device.isIOS()) {
             titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
         }
         else {
@@ -97,7 +101,7 @@ var MapDetailViewController = function (facade,opts) {
     };
     
     onBackButtonUp = function (e) {
-        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        if (device.isIOS()) {
             titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
         }
         else {

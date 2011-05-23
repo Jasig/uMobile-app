@@ -103,21 +103,21 @@ startup = function (e) {
     //The facade is always called "app" in each controller, and depending on the type of member,
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
-    app.registerMember('UI', new UI(app));
+    app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerMember('UPM', new Config(app)); //Global config object
+    app.registerModel('deviceProxy', new DeviceProxy(app));
+    app.registerMember('UI', new UI(app));
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
     app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
-    app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
+    
 
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
     app.registerModel('mapProxy', new MapService(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
-    app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
-
-    app.registerModel('deviceProxy', new DeviceProxy(app));
+    app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.    
     
     app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
     app.registerView('MapDetailTop', MapDetailTop);

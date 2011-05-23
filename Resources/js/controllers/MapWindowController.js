@@ -22,7 +22,7 @@
  */
 
 var MapWindowController = function(facade) {
-    var win, app = facade, self = {}, initialized, mapProxy, //Standard utility vars
+    var win, app = facade, self = {}, initialized, mapProxy, device, //Standard utility vars
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], //Data objects
     locationDetailView, activityIndicator, mapView, searchBar, loadingIndicator, titleBar, //View objects
     createMainView, loadPointDetail, resetMapLocation, //Methods
@@ -39,6 +39,7 @@ var MapWindowController = function(facade) {
         Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
         
         mapProxy = app.models.mapProxy;
+        device = app.models.deviceProxy;
         
         initialized = true;
     };
@@ -94,7 +95,7 @@ var MapWindowController = function(facade) {
             searchBar.input.addEventListener('return', searchSubmit);
             searchBar.input.addEventListener('cancel', searchBlur);
 
-            if ((Ti.Platform.osname === 'android' && !mapView) || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            if ((device.isAndroid() && !mapView) || device.isIOS()) {
                 // create the map view
                 mapViewOpts = app.styles.mapView;
                 if (app.UPM.DEFAULT_MAP_REGION) {
@@ -117,7 +118,7 @@ var MapWindowController = function(facade) {
                 win.add(mapView);
             }
 
-            if (Titanium.Platform.osname === "iphone" || Titanium.Platform.osname === "iphone") {
+            if (device.isIOS()) {
                 // create controls for zoomin / zoomout
                 // included in Android by default
 

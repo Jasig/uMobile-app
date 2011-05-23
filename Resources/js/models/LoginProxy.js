@@ -1,6 +1,6 @@
 var LoginProxy = function (facade) {
     var app = facade,
-        self = {}, sessionProxy,
+        self = {}, sessionProxy, device,
         init, updateSessionTimeout, establishSilentNetworkSession, loginMethod, getLayoutUser,
         networkSessionTimer, webViewSessionTimer, onSessionExpire, onNetworkError;
 
@@ -13,6 +13,7 @@ var LoginProxy = function (facade) {
         //Implement constants for what contexts are available for session timeouts.
         self.sessionTimeContexts = LoginProxy.sessionTimeContexts;
         
+        device = app.models.deviceProxy;
         sessionProxy = app.models.sessionProxy;
         
         Ti.API.info("Setting login method: " + app.UPM.LOGIN_METHOD);
@@ -124,7 +125,7 @@ var LoginProxy = function (facade) {
         db.close();
     };
     self.isValidWebViewSession = function () {
-        // if(!networkSessionTimer.isActive && Ti.Platform.osname === 'android') {
+        // if(!networkSessionTimer.isActive && device.isAndroid()) {
         return sessionProxy.isActive(LoginProxy.sessionTimeContexts.WEBVIEW);
     };
     

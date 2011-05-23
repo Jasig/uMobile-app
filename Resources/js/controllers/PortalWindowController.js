@@ -24,7 +24,7 @@
 
 
 var PortalWindowController = function(facade) {
-    var win, app = facade, self = {}, portalProxy, initialized, isGuestLayout = true,
+    var win, app = facade, self = {}, portalProxy, device, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar, guestNotificationView, guestNotificationLabel,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
         onGridItemClick, onGridItemPressUp, onGridItemPressDown,
@@ -36,6 +36,7 @@ var PortalWindowController = function(facade) {
         self.key = 'home';
         
         portalProxy = app.models.portalProxy;
+        device = app.models.deviceProxy;
         
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
@@ -50,7 +51,7 @@ var PortalWindowController = function(facade) {
     
     self.open = function () {
         Ti.API.debug("open() in PortalWindowController");
-        if (!win || Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        if (!win || device.isIOS()) {
             Ti.API.debug("Create and open the portal window");
             //We want to create a new window and redraw the whole UI each time on iOS
             win = Titanium.UI.createWindow(app.styles.portalWindow);
@@ -64,7 +65,7 @@ var PortalWindowController = function(facade) {
     };
     
     self.close = function () {
-        if (win && (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad')) {
+        if (win && (device.isIOS())) {
             win.close();
         }
         else if (win) {
@@ -74,7 +75,7 @@ var PortalWindowController = function(facade) {
 
     createPortalView = function () {
         if (win) {
-            if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            if (device.isIOS()) {
                 Ti.API.debug("Platform is iOS in createPortalView() in PortalWindowController");
                 titleBar = app.UI.createTitleBar({
             	    title: app.localDictionary.jasig11,
@@ -112,7 +113,7 @@ var PortalWindowController = function(facade) {
                     drawHomeGrid(portalProxy.getPortlets());
                 }
             }
-            else if (Ti.Platform.osname === 'android') {
+            else if (device.isAndroid()) {
                 Ti.API.debug("Platform is Android in createPortalView() in PortalWindowController");
                 if (!titleBar) {
                     Ti.API.debug("Creating and adding titleBar");
@@ -241,7 +242,7 @@ var PortalWindowController = function(facade) {
             portalView.add(gridItem);
             gridItemIcon.addEventListener("singletap", onGridItemClick);
             gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
-            gridItemIcon.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onGridItemPressUp);
+            gridItemIcon.addEventListener(device.isAndroid() ? 'touchcancel' : 'touchend', onGridItemPressUp);
         }
         Ti.API.info("Done placing portlets");
     };
@@ -281,7 +282,7 @@ var PortalWindowController = function(facade) {
 
     onGridItemPressDown = function (e) {
         Ti.API.debug("Home button pressed down, source: " + e.source.type);
-        if(Ti.Platform.osname === 'iphone') {
+        if(device.isIOS()) {
             if (e.source.type === 'gridIcon') {
                 e.source.getParent().opacity = app.styles.gridItem.pressOpacity;
             }
@@ -296,7 +297,7 @@ var PortalWindowController = function(facade) {
 
     onGridItemPressUp = function (e) {
         Ti.API.debug("Home button pressed up");
-        if(Ti.Platform.osname === 'iphone') {
+        if(device.isIOS()) {
             if (e.source.type === 'gridIcon') {
                 e.source.getParent().setOpacity(1.0);
             }

@@ -451,7 +451,7 @@ var Styles = function (app) {
     };
     
     //iPhone-specific overrides
-    if (Ti.Platform.osname === 'iphone') {
+    if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
         stylesheet.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.PLAIN;
         stylesheet.contentButton = {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,

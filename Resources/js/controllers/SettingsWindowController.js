@@ -22,7 +22,7 @@
  * user settings tab.
  */
 var SettingsWindowController = function(facade){
-    var win, app = facade, self = {},
+    var win, app = facade, self = {}, device,
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
@@ -34,6 +34,8 @@ var SettingsWindowController = function(facade){
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
         Ti.App.addEventListener('PortalProxyPortletsLoaded', onPortalProxyPortletsLoaded);
+        
+        device = app.models.deviceProxy;
         
         credentials = app.models.loginProxy.getCredentials();
         
@@ -126,12 +128,12 @@ var SettingsWindowController = function(facade){
         win.add(resetPassword);
         
         logOutButton.addEventListener('click', onLogOutButtonClick);
-        if(Ti.Platform.osname === 'iphone') {
+        if(device.isIOS()) {
             logOutButton.addEventListener('touchstart', onLogOutButtonPress);
             logOutButton.addEventListener('touchend', onLogOutButtonUp);
         }
         saveButton.addEventListener('click', onUpdateCredentials);
-        if(Ti.Platform.osname === 'iphone') {
+        if(device.isIOS()) {
             saveButton.addEventListener('touchstart', onSaveButtonPress);
             saveButton.addEventListener('touchend', onSaveButtonUp);
         }

@@ -1,14 +1,14 @@
 var UI = function (facade) {
-    var self = {}, app=facade, init;
+    var self = {}, app=facade, init, device;
     
     init = function () {
-        //Nothing happening here.
+        device = app.models.deviceProxy;
     };
     
     self.createSearchBar = function () {
         var searchBar, searchBarObject = {}, searchBarInput;
         
-        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        if (device.isIOS()) {
             searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
             searchBarObject.container = searchBar;
             searchBarObject.input = searchBar;
@@ -60,7 +60,7 @@ var UI = function (facade) {
 
                 homeButtonContainer.addEventListener('singletap', onHomeClick);
                 homeButtonContainer.addEventListener('touchstart', onHomePressDown);
-                homeButtonContainer.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onHomePressUp);
+                homeButtonContainer.addEventListener(device.isAndroid() ? 'touchcancel' : 'touchend', onHomePressUp);
 
             }
             if (opts.settingsButton) {
@@ -73,7 +73,7 @@ var UI = function (facade) {
 
                 settingsButtonContainer.addEventListener('singletap', onSettingsClick);
                 settingsButtonContainer.addEventListener('touchstart', onSettingsPressDown);
-                settingsButtonContainer.addEventListener(Ti.Platform.osname === 'android' ? 'touchcancel' : 'touchend', onSettingsPressUp);
+                settingsButtonContainer.addEventListener(device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
             }
         };
         
@@ -86,7 +86,7 @@ var UI = function (facade) {
             var timeUp;
 
             homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColorPressed;
-            if (Ti.Platform.osname === 'android') {
+            if (device.isAndroid()) {
                 //Because Android doesn't consistently register touchcancel or touchend, especially
                 //when the window changes in the middle of a press
                 timeUp = setTimeout(function(){
@@ -106,7 +106,7 @@ var UI = function (facade) {
         onSettingsPressDown = function (e) {
             var timeUp;
             settingsButtonContainer.backgroundColor = app.styles.titleBarSettingsContainer.backgroundColorPressed;
-            if (Ti.Platform.osname === 'android') {
+            if (device.isAndroid()) {
                 //Because Android doesn't consistently register touchcancel or touchend, especially
                 //when the window changes in the middle of a press
                 timeUp = setTimeout(function(){

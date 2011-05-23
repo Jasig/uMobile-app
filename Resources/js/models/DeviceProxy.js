@@ -20,6 +20,28 @@ var DeviceProxy = function (facade) {
         }
     };
     
+    self.isIOS = function () {
+        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    
+    self.isAndroid = function () {
+        if (Ti.Platform.osname === 'android') {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    
+    self.isBlackBerry = function () {
+        return false;
+    };
+    
     init();
     
     return self;

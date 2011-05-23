@@ -108,7 +108,7 @@ var PersonDetailTableView = function (facade,opts) {
     onEmailSelect = function (e) {
         var _address;
         Ti.API.info("onEmailSelect()" + e.source.data);
-        if(Ti.Platform.osname == 'iphone') {
+        if(device.isIOS()) {
             var emailDialog = Ti.UI.createEmailDialog({
                 toRecipients: [e.source.data]
             });
