@@ -17,8 +17,8 @@
  * under the License.
  */
 
-var app, loadingWindow, windowManager, startup,
-locale = Titanium.App.Properties.getString('locale');
+var app, loadingWindow, windowManager, startup, locale;
+
 if (Titanium.Platform.osname == 'android' ) {
     (function () {
         //Show a loading screen
@@ -105,8 +105,9 @@ startup = function (e) {
     //The facade is always called "app" in each controller, and depending on the type of member,
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
-    app.registerMember('localDictionary', localDictionary[locale]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerMember('UPM', new Config(app)); //Global config object
+    locale = Titanium.App.Properties.getString('locale');
+    app.registerMember('localDictionary', localDictionary[locale]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerModel('deviceProxy', new DeviceProxy(app));
     app.registerMember('UI', new UI(app));
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
