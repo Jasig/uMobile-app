@@ -2,6 +2,7 @@ var DirectoryDetailController = function (facade) {
     var app = facade,
         device = app.models.deviceProxy,
         self = Titanium.UI.createView(app.styles.contactDetailView),
+        init,
         //UI Components
         titleBar,
         nameLabel,
@@ -18,7 +19,7 @@ var DirectoryDetailController = function (facade) {
         onBackButtonPress,
         onBackButtonUp;
     
-    self.construct = function () {
+    init = function () {
         Ti.API.debug('DirectoryDetailController constructed');
         var backButtonOpts, backBarOpts, backBar;
         self.initialized = true;
@@ -116,7 +117,7 @@ var DirectoryDetailController = function (facade) {
 
     if (!self.initialized) {
         Ti.API.debug("initializing DirectoryDetailController");
-        self.construct();
+        init();
     }
     
     return self;

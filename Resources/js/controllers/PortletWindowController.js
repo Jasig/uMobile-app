@@ -20,11 +20,11 @@
 var PortletWindowController = function (facade) {
     var win,
         self = {},
-        app = facade, sharedWebView, device,
+        app = facade, device,
         activityIndicator, titleBar, navBar, webView,
         initialized, winListeners = [], activePortlet,
         pathToRoot = '../../',
-        init, drawWindow, getQualifiedURL,
+        init, drawWindow, getQualifiedURL, getLocalUrl,
         onBackBtnPress, onBackButtonUp, includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume;
 
     init = function () {
@@ -32,7 +32,6 @@ var PortletWindowController = function (facade) {
         self.key = 'portlet';
         
         device = app.models.deviceProxy;
-        sharedWebView = app.views.SharedWebView;
         
         initialized = true;
     };
@@ -64,13 +63,11 @@ var PortletWindowController = function (facade) {
         });
         win.open();
 
-        if (device.isIOS() || device.isAndroid()) {
+        if (device.isIOS() || !webView) {
             webView = Titanium.UI.createWebView(app.styles.portletView);
-        }
-        else {
-            // Due to a Titanium Android SDK bug which prevents cookies from being shared
-            // between webviews, we need to share one webview on Android
-            webView = sharedWebView.getWebView();
+            webView.addEventListener('load', onPortletLoad);
+            webView.addEventListener('beforeload', onPortletBeforeLoad);
+            webView.hide();
         }
         
         titleBar = app.UI.createTitleBar({
@@ -101,9 +98,6 @@ var PortletWindowController = function (facade) {
         win.add(webView);
         win.add(activityIndicator);
         
-        webView.addEventListener('load', onPortletLoad);
-        webView.addEventListener('beforeload', onPortletBeforeLoad);
-        
         includePortlet(activePortlet);
 
         Titanium.App.addEventListener('dimensionchanges', function (e) {
@@ -131,12 +125,67 @@ var PortletWindowController = function (facade) {
         titleBar.updateTitle(portlet.title);
     };
     
+    getLocalUrl = function (url) {
+        var localUrl, isValidSession;
+        Ti.API.debug("getLocalUrl() in SharedWebView");
+        /*
+        This method determines if a session is valid for the webview, and will
+        either modify the URL and load, or will load the URL as-is if session is active.
+        This method only returns a URL, doesn't actually set the url property of the webview.
+        */
+
+        if (!app.models.deviceProxy.checkNetwork()) {
+            return false;
+        }
+
+        //We only need to check the session if it's a link to the portal.
+        isValidSession = app.models.loginProxy.isValidWebViewSession();
+        if (!isValidSession) {
+            var doCas, doLocal;
+            doLocal = function () {
+                Ti.API.debug("load > doLocal() in SharedWebView");
+                Ti.API.debug("Resulting URL: " + app.models.loginProxy.getLocalLoginURL(url));
+                localUrl = app.models.loginProxy.getLocalLoginURL(url);
+            };
+
+            doCas = function () {
+                Ti.API.debug("load > doCas() in SharedWebView");
+                Ti.API.debug("CAS URL is: " + app.models.loginProxy.getCASLoginURL(url));
+                localUrl = app.models.loginProxy.getCASLoginURL(url);
+            };
+
+            switch (app.UPM.LOGIN_METHOD) {
+                case app.models.loginProxy.loginMethods.CAS:
+                    doCas();
+                    break;
+                case app.models.loginProxy.loginMethods.LOCAL_LOGIN:
+                    doLocal();
+                    break;
+                default:
+                    Ti.API.debug("Unrecognized login method in SharedWebView.load()");
+            }
+        }
+        else {
+            if (url.indexOf('/') === 0) {
+                Ti.API.info("Index of / in URL is 0");
+                var newUrl = app.UPM.BASE_PORTAL_URL + url;
+                Ti.API.info(newUrl);
+                localUrl = newUrl;
+            }
+            else {
+                Ti.API.info("Index of / in URL is NOT 0");
+                localUrl = url;
+            }
+        }
+        return localUrl;
+    };
+    
     getQualifiedURL = function (url) {
         var _url;
         if (url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
             if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW].isActive) {
-                _url = sharedWebView.getLocalUrl(url);
+                _url = getLocalUrl(url);
             }
             else {
                 _url = app.models.loginProxy.getLocalLoginURL(url);
@@ -176,7 +225,7 @@ var PortletWindowController = function (facade) {
             webView.top = titleBar.height;
             webView.height = win.height - titleBar.height;
             // webView.setTop(app.styles.titleBar.height);
-            app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
+            // app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
         } 
         else {
             Ti.API.debug("Visiting an external link");
@@ -194,6 +243,7 @@ var PortletWindowController = function (facade) {
             Ti.API.debug("WebView height is: " + webView.height);
             // webView.setTop(app.styles.titleBar.height + navBar.height);
         }
+        webView.show();
         activityIndicator.hide();
     };
     
