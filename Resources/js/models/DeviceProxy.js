@@ -1,11 +1,11 @@
 var DeviceProxy = function (facade) {
-    var app = facade, self = {};
+    var app = facade, _self = this;
     
     init = function () {
         // nothing to see here
     };
     
-    self.checkNetwork = function() {
+    this.checkNetwork = function() {
         if (!Ti.Network.online) {
             alertDialog = Titanium.UI.createAlertDialog({
                 title: app.localDictionary.error,
@@ -20,7 +20,7 @@ var DeviceProxy = function (facade) {
         }
     };
     
-    self.isIOS = function () {
+    this.isIOS = function () {
         if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
             return true;
         }
@@ -29,7 +29,7 @@ var DeviceProxy = function (facade) {
         }
     };
     
-    self.isAndroid = function () {
+    this.isAndroid = function () {
         if (Ti.Platform.osname === 'android') {
             return true;
         }
@@ -38,11 +38,9 @@ var DeviceProxy = function (facade) {
         }
     };
     
-    self.isBlackBerry = function () {
+    this.isBlackBerry = function () {
         return false;
     };
     
     init();
-    
-    return self;
 };

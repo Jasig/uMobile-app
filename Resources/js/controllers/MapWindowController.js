@@ -45,8 +45,6 @@ var MapWindowController = function(facade) {
     };
     
     self.open = function () {
-
-        
         if (!win) {
             //Initialize the mapProxy, which manages the data for points on the map,
             //including retrieval of data and searching array of points

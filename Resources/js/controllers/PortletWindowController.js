@@ -141,29 +141,8 @@ var PortletWindowController = function (facade) {
         //We only need to check the session if it's a link to the portal.
         isValidSession = app.models.loginProxy.isValidWebViewSession();
         if (!isValidSession) {
-            var doCas, doLocal;
-            doLocal = function () {
-                Ti.API.debug("load > doLocal() in SharedWebView");
-                Ti.API.debug("Resulting URL: " + app.models.loginProxy.getLocalLoginURL(url));
-                localUrl = app.models.loginProxy.getLocalLoginURL(url);
-            };
-
-            doCas = function () {
-                Ti.API.debug("load > doCas() in SharedWebView");
-                Ti.API.debug("CAS URL is: " + app.models.loginProxy.getCASLoginURL(url));
-                localUrl = app.models.loginProxy.getCASLoginURL(url);
-            };
-
-            switch (app.UPM.LOGIN_METHOD) {
-                case app.models.loginProxy.loginMethods.CAS:
-                    doCas();
-                    break;
-                case app.models.loginProxy.loginMethods.LOCAL_LOGIN:
-                    doLocal();
-                    break;
-                default:
-                    Ti.API.debug("Unrecognized login method in SharedWebView.load()");
-            }
+            app.models.loginProxy.getLoginURL(url);
+            localUrl = app.models.loginProxy.getLoginURL(url);
         }
         else {
             if (url.indexOf('/') === 0) {
@@ -188,7 +167,7 @@ var PortletWindowController = function (facade) {
                 _url = getLocalUrl(url);
             }
             else {
-                _url = app.models.loginProxy.getLocalLoginURL(url);
+                _url = app.models.loginProxy.getLoginURL(url);
             }
             webView.externalModule = false;
             webView.top = titleBar.height;

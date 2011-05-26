@@ -1,12 +1,12 @@
 var PortalProxy = function (facade) {
-    var app = facade, self = {}, portlets = [], sortPortlets, loadPortletList, init,
+    var app = facade, _self = this, portlets = [], sortPortlets, loadPortletList, init,
         pathToRoot = '../../';
     
     init = function () {
         //Nothing to see here
     };
     
-    self.getShowPortletFunc = function (portlet) {
+    this.getShowPortletFunc = function (portlet) {
         //Returns a function to the PortalWindowController to open the appropriate window 
         //when an icon is clicked in the home screen grid.
         
@@ -23,7 +23,7 @@ var PortalProxy = function (facade) {
         };
     };
     
-    self.getPortlets = function () {
+    this.getPortlets = function () {
         Ti.API.debug("getPortlets() in PortalProxy");
         return portlets;
     };
@@ -52,7 +52,7 @@ var PortalProxy = function (facade) {
 
     };
         
-    self.getIconUrl = function (p) {
+    this.getIconUrl = function (p) {
         var _iconUrl;
         
         if (app.models.resourceProxy.getPortletIcon(p.fname)) {
@@ -155,7 +155,7 @@ var PortalProxy = function (facade) {
         layoutClient.send();
     };
     
-    self.getPortletsForUser = function() {
+    this.getPortletsForUser = function() {
         var _portlets;
 
         Ti.App.fireEvent('PortalProxyGettingPortlets');
@@ -166,6 +166,4 @@ var PortalProxy = function (facade) {
     };
     
     init();
-    
-    return self;
 };

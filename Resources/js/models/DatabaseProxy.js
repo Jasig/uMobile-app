@@ -3,38 +3,38 @@
 //
 
 var DatabaseProxy = function (facade) {
-    var app = facade, self = {}, init, database;
+    var app = facade, _self = this, init, database;
     
     init = function () {
         database = Ti.Database.install('umobile.sqlite','umobile');
     };
     
-    self.createTable = function (createOpts) {
+    this.createTable = function (createOpts) {
         
     };
     
-    self.addRows = function (addOpts) {
+    this.addRows = function (addOpts) {
         
     };
     
-    self.getRows = function (queryOpts) {
+    this.getRows = function (queryOpts) {
         //Required: table, 
         //Optional: selColumns, matchColumn, id, limit, 
     };
     
-    self.updateRows = function (queryOpts) {
+    this.updateRows = function (queryOpts) {
         
     };
     
-    self.deleteRows = function (deleteOpts) {
+    this.deleteRows = function (deleteOpts) {
         
     };
     
-    self.search = function (queryOpts) {
+    this.search = function (queryOpts) {
         //Required: table
         //Optional: 
 
     };
     
-    return self;
+    init();
 };

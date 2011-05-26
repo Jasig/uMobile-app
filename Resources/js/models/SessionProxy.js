@@ -1,7 +1,5 @@
-
-
 var SessionProxy = function (facade) {
-    var app = facade, self = {}, device, timers = [], sessionLifeTimeMilli, init, onSessionActivity, onSessionExpire, onTimeout;
+    var app = facade, _self = this, device, timers = [], sessionLifeTimeMilli, init, onSessionExpire, onTimeout;
     
     /* 
     The SessionProxy acts as a sub-proxy for LoginProxy to maintain a local
@@ -26,7 +24,7 @@ var SessionProxy = function (facade) {
         Ti.App.fireEvent("SessionTimerExpired", {context: session.context});
     };
     
-    self.resetTimer = function(context) {
+    this.resetTimer = function(context) {
         // There should only be multiple context timers if the OS is Android.
         // Because Android Appcelerator doesn't share cookies between Async requests and webview requests.
         // It also doesn't share cookies between separate webviews.
@@ -45,7 +43,7 @@ var SessionProxy = function (facade) {
             timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
             Ti.App.Properties.setInt('timer_' + context, getLastDigits(new Date().getTime()));
             
-            Ti.API.info("Network timer updated at ");
+            Ti.API.debug("Network timer updated");
         }
         else if (timers[context]) {
             if(timers[context].counter) {
@@ -72,8 +70,8 @@ var SessionProxy = function (facade) {
         return parseInt(_number, 10);
     };
     
-    self.isActive = function (context) {
-        Ti.API.debug("self.isActive() in SessionProxy, with context: " + context);
+    this.isActive = function (context) {
+        Ti.API.debug("this.isActive() in SessionProxy, with context: " + context);
         if (device.isIOS()) {
             //If it's iphone, we only need to check that one context has an active session.
             if(timers[app.models.loginProxy.sessionTimeContexts.NETWORK]) {
@@ -94,7 +92,7 @@ var SessionProxy = function (facade) {
         }
     };
     
-    self.stopTimer = function (context) {
+    this.stopTimer = function (context) {
         Ti.API.info("SessionTimerModel.stop() for: " + context);
         if (timers[context]) {
             if(timers[context].counter) {
@@ -105,7 +103,7 @@ var SessionProxy = function (facade) {
         }
     };
     
-    self.createSessionTimer = function (context) {
+    this.createSessionTimer = function (context) {
         var session = {};
         if (device.isAndroid() || (context === LoginProxy.sessionTimeContexts.NETWORK && !timers[context])) {
             session.context = context;
@@ -117,7 +115,7 @@ var SessionProxy = function (facade) {
         }
     };
     
-    self.validateSessions = function () {
+    this.validateSessions = function () {
         // This method does two things. It checks any existing timers to see 
         // if the time since their last timestamp is greater than the global
         // session timeout, and if so, stops them.
@@ -138,7 +136,7 @@ var SessionProxy = function (facade) {
                 else {
                     Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0))));
                     _sessions[timer] = false;
-                    self.stopTimer(timer);
+                    _self.stopTimer(timer);
                 }
             }
         }
@@ -151,18 +149,16 @@ var SessionProxy = function (facade) {
         return _sessions;
     };
     
-    onSessionActivity = function (e) {
+     onSessionActivity = function (e) {
         Ti.API.debug("onSessionActivity() in SessionProxy");
         if (e.context) {
             Ti.API.debug("Resetting " + e.context + " session");
-            self.resetTimer(e.context);
+            _self.resetTimer(e.context);
         }
         else {
-            self.resetTimer();
+            _self.resetTimer();
         }
     };
     
     init();
-    
-    return self;
 };

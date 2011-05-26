@@ -1,7 +1,11 @@
-var MapService = function (facade) {
-    var app = facade,
-        self = {},
-        mapPoints = [],
+var MapProxy = function (facade) {
+    var app = facade, _self = this,
+        mapPoints = [], mapCenter, defaultMapCenter,
+        onPointsLoaded, onSearchComplete, onEmptySearch, onSearch, onLoadError;
+        
+    this.init = function () {
+        var _db;
+        
         mapCenter = {
             latitude: false,
             longitude: false,
@@ -12,28 +16,28 @@ var MapService = function (facade) {
             longLow: false,
             longHigh: false
         };
+        
         defaultMapCenter = {
             latitudeDelta: 0.005, 
             longitudeDelta: 0.005
         };
-    
-    self.requestErrors = {
-        NETWORK_UNAVAILABLE: 0,
-        REQUEST_TIMEOUT: 1,
-        SERVER_ERROR: 2,
-        NO_DATA_RETURNED: 3,
-        INVALID_DATA_RETURNED: 4,
-        GENERAL_ERROR: 5
-    };
-    
-    self.init = function () {
-        var _db = Titanium.Database.open('umobile');
+        
+        this.requestErrors = {
+            NETWORK_UNAVAILABLE: 0,
+            REQUEST_TIMEOUT: 1,
+            SERVER_ERROR: 2,
+            NO_DATA_RETURNED: 3,
+            INVALID_DATA_RETURNED: 4,
+            GENERAL_ERROR: 5
+        };
+        
+        _db = Titanium.Database.open('umobile');
         _db.execute('CREATE TABLE IF NOT EXISTS "map_locations" ("title" TEXT UNIQUE, "abbreviation" TEXT, "accuracy" INTEGER, "address" TEXT, "alternateName" TEXT, "latitude" REAL, "longitude" REAL, "searchText" TEXT, "zip" TEXT, "img" TEXT)');
         _db.close();
-        self.loadMapPoints();
+        this.loadMapPoints();
     };
     
-    self.search = function (query, opts) {
+    this.search = function (query, opts) {
 
         var result = [], _db, queryResult;
 
@@ -90,7 +94,7 @@ var MapService = function (facade) {
             onEmptySearch();
         }
     };
-    self.getAnnotationByTitle = function(t) {
+    this.getAnnotationByTitle = function(t) {
         var result = {}, resultSet, db;
         db = Titanium.Database.open('umobile');
         resultSet = db.execute("SELECT * FROM map_locations WHERE title IS ? LIMIT 1", t);
@@ -111,25 +115,25 @@ var MapService = function (facade) {
         
         return result;
     };
-    self.loadMapPoints = function () {
+    this.loadMapPoints = function () {
         //Default returns all points for an institution.
-        Ti.API.info("loadMapPoints()");
+        Ti.API.info("loadMapPoints() in MapProxy");
         Ti.App.fireEvent('MapProxyLoading');
         if (app.models.deviceProxy.checkNetwork()) {
             request = Titanium.Network.createHTTPClient ({
                 connectionType : 'GET',
                 location : app.UPM.MAP_SERVICE_URL,
-                onload : self.newPointsLoaded,
+                onload : newPointsLoaded,
                 onerror : onLoadError
             });
             request.open("GET", app.UPM.MAP_SERVICE_URL);
             request.send();
-            Ti.API.debug("MapService.updateMapPoints() request sent");
         }
 
     };
-    self.newPointsLoaded = function (e) {
-        // Customize the response and add it to the cached mapPoints array in the MapService object.
+    newPointsLoaded = function (e) {
+        Ti.API.info("newPointsLoaded() in MapProxy");
+        // Customize the response and add it to the cached mapPoints array in the MapProxy object.
         var response, responseLength, db;
         Ti.App.fireEvent('SessionActivity', {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
         (function(){
@@ -191,18 +195,18 @@ var MapService = function (facade) {
                 }
                 else {
                     //No location objects in the response, so fire an event so the controller is aware.
-                    Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.NO_DATA_RETURNED});
+                    Ti.App.fireEvent('MapProxyLoadError', {errorCode: _self.requestErrors.NO_DATA_RETURNED});
                 }
             }
             catch (err) {
                 Ti.API.info("Data was invalid, calling onInvalidData()");
                 //Data didn't parse, so fire an event so the controller is aware
-                Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.INVALID_DATA_RETURNED});
+                Ti.App.fireEvent('MapProxyLoadError', {errorCode: _self.requestErrors.INVALID_DATA_RETURNED});
             }
         })();
     };
     
-    self.getMapCenter = function (isDefault) {
+    this.getMapCenter = function (isDefault) {
         var _longDelta, _latDelta;
         if(isDefault) {
             //Wants the default map location returned from the service, 
@@ -220,28 +224,26 @@ var MapService = function (facade) {
         }
     };
     
-    function onLoadError (e) {
+    onLoadError = function (e) {
         var errorCode;
         Ti.API.debug("Error with map service" + JSON.stringify(e));
-        Ti.App.fireEvent('MapProxyLoadError', {errorCode: self.requestErrors.GENERAL_ERROR});
-    }
+        Ti.App.fireEvent('MapProxyLoadError', {errorCode: _self.requestErrors.GENERAL_ERROR});
+    };
     
-    function onSearch(query) {
+    onSearch = function (query) {
         Ti.App.fireEvent('MapProxySearching', {query: query});
-    }
+    };
     
-    function onEmptySearch () {
+    onEmptySearch = function () {
         Ti.App.fireEvent('MapProxyEmptySearch');
-    }
+    };
     
-    function onSearchComplete(result) {
+    onSearchComplete = function (result) {
         Ti.API.debug('onSearchComplete in MapProxy');
         Ti.App.fireEvent('MapProxySearchComplete', { points: result });
-    }
+    };
     
-    function onPointsLoaded () {
+    onPointsLoaded = function () {
         Ti.App.fireEvent('MapProxyPointsLoaded');
-    }
-    
-    return self;
+    };
 };

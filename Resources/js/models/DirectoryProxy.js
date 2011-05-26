@@ -1,5 +1,5 @@
 var DirectoryProxy = function (facade,opts) {
-    var app=facade, self = {}, init,
+    var app=facade, init, _self = this,
         getQualifiedURL, xhrSearchClient, doXhrSearch,
         xhrSearchOnLoad, xhrSearchOnError,
         person, people = [];
@@ -12,7 +12,7 @@ var DirectoryProxy = function (facade,opts) {
         });
     };
     
-    self.search = function (query) {
+    this.search = function (query) {
         if (!app.models.deviceProxy.checkNetwork()) {
             return;
         }        
@@ -24,12 +24,12 @@ var DirectoryProxy = function (facade,opts) {
             doXhrSearch(query);
         }
     };
-    self.clear = function () {
+    this.clear = function () {
         people = [];
         xhrSearchClient.abort();
     };
     
-    self.getPeople = function (index) {
+    this.getPeople = function (index) {
         //If no index is provided, return all people. Otherwise, provide one Person.
         if(!index) {
             return people;
@@ -39,7 +39,7 @@ var DirectoryProxy = function (facade,opts) {
         }
     };
     
-    self.getEmergencyContacts = function () {
+    this.getEmergencyContacts = function () {
         return app.UPM.directoryEmergencyContacts || false;
     };
     
@@ -88,6 +88,4 @@ var DirectoryProxy = function (facade,opts) {
     };
     
     init();
-    
-    return self;
 };

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-var app, loadingWindow, windowManager, startup, locale;
+var app, loadingWindow, windowManager, startup;
 
 if (Titanium.Platform.osname == 'android' ) {
     (function () {
@@ -80,6 +80,8 @@ startup = function (e) {
     Titanium.include('js/models/DirectoryProxy.js');
     Titanium.include('js/models/ResourceProxy.js');
     Titanium.include('js/models/LoginProxy.js');
+    Titanium.include('js/models/login/LocalLogin.js');
+    Titanium.include('js/models/login/CASLogin.js');
     Titanium.include('js/models/MapProxy.js');
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
@@ -105,8 +107,7 @@ startup = function (e) {
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
     app.registerMember('UPM', new Config(app)); //Global config object
-    locale = Titanium.App.Properties.getString('locale');
-    app.registerMember('localDictionary', localDictionary[locale]); // Dictionary contains all UI strings for the application for easy localization.
+    app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerModel('deviceProxy', new DeviceProxy(app));
     app.registerMember('UI', new UI(app));
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
@@ -115,11 +116,13 @@ startup = function (e) {
     
 
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
-    app.registerModel('mapProxy', new MapService(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
+    app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
+    app.registerModel('localLogin', new LocalLogin(app));
+    app.registerModel('CASLogin', new CASLogin(app));
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
-    app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.    
+    app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
     
     app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
     app.registerView('MapDetailTop', MapDetailTop);

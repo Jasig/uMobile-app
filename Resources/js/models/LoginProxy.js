@@ -1,40 +1,43 @@
 var LoginProxy = function (facade) {
-    var app = facade,
-        self = {}, sessionProxy, device,
-        init, updateSessionTimeout, establishSilentNetworkSession, loginMethod, getLayoutUser,
+    var app = facade, _self = this, 
+        sessionProxy, device, localLogin, CASLogin, loginMethod,
+        init, updateSessionTimeout, establishSilentNetworkSession,
         networkSessionTimer, webViewSessionTimer, onSessionExpire, onNetworkError;
 
     
     init = function () {
         // Create an instance of the static loginMethods variable, so other actors
         // can get the methods via the LoginProxy instance on the facade.
-        self.loginMethods = LoginProxy.loginMethods;
+        
+        _self.loginMethods = LoginProxy.loginMethods;
         
         //Implement constants for what contexts are available for session timeouts.
-        self.sessionTimeContexts = LoginProxy.sessionTimeContexts;
+        _self.sessionTimeContexts = LoginProxy.sessionTimeContexts;
         
         device = app.models.deviceProxy;
         sessionProxy = app.models.sessionProxy;
+        localLogin = app.models.localLogin;
+        CASLogin = app.models.CASLogin;
         
-        Ti.API.info("Setting login method: " + app.UPM.LOGIN_METHOD);
+        Ti.API.debug("Setting login method: " + app.UPM.LOGIN_METHOD);
         switch (app.UPM.LOGIN_METHOD) {
             case LoginProxy.loginMethods.CAS:
-                loginMethod = self.doCASLogin;
+                loginMethod = CASLogin.login;
                 break;
             case LoginProxy.loginMethods.LOCAL_LOGIN:
-                loginMethod = self.doLocalLogin;
+                loginMethod = localLogin.login;
                 break;
             default:
                 Ti.API.info("Login method not recognized in LoginProxy.init()");
         }
         
-        sessionProxy.createSessionTimer(self.sessionTimeContexts.NETWORK);
-        sessionProxy.createSessionTimer(self.sessionTimeContexts.WEBVIEW);
+        sessionProxy.createSessionTimer(_self.sessionTimeContexts.NETWORK);
+        sessionProxy.createSessionTimer(_self.sessionTimeContexts.WEBVIEW);
         
         Ti.App.addEventListener('SessionTimerExpired', onSessionExpire);
     };
     
-    self.updateSessionTimeout = function(context) {
+    this.updateSessionTimeout = function(context) {
         /* If Android, this method will reset the timer for either the network session or 
         portlet session so we can be sure to log the user back in if necessary.
         It's a public method so that other controllers can call it each time an
@@ -43,10 +46,10 @@ var LoginProxy = function (facade) {
         In iPhone, we share one session between network requests and webviews, so we'll reset both timers.
         */
         switch (context) {
-            case self.sessionTimeContexts.NETWORK:
+            case this.sessionTimeContexts.NETWORK:
                 sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
                 break;
-            case self.sessionTimeContexts.WEBVIEW:
+            case this.sessionTimeContexts.WEBVIEW:
                 sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
                 break;
             default:
@@ -59,7 +62,7 @@ var LoginProxy = function (facade) {
      * If no credentials have yet been created, the username and password values
      * will each be null;
      */
-    self.getCredentials = function () {
+    this.getCredentials = function () {
         var db, rows, credentials;
 
         // make sure the database has been initialized
@@ -99,7 +102,7 @@ var LoginProxy = function (facade) {
     /**
      * Persist portal credentials in the local preferences database.
      */
-    self.saveCredentials = function (credentials) {
+    this.saveCredentials = function (credentials) {
         var db, username, password;
 
         username = app.GibberishAES.enc(credentials.username, app.UPM.ENCRYPTION_KEY);
@@ -124,16 +127,16 @@ var LoginProxy = function (facade) {
         // close the database
         db.close();
     };
-    self.isValidWebViewSession = function () {
+    this.isValidWebViewSession = function () {
         // if(!networkSessionTimer.isActive && device.isAndroid()) {
         return sessionProxy.isActive(LoginProxy.sessionTimeContexts.WEBVIEW);
     };
     
-    self.isValidNetworkSession = function () {
+    this.isValidNetworkSession = function () {
         var checkSessionUrl, checkSessionClient, checkSessionResponse;
         //Checks to see if the networkSessionTimer says it's active, and also checks that the API indicates a valid session.
         if(sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
-            Ti.API.info('self.isValidNetworkSession() in LoginProxy.' + sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK));
+            Ti.API.info('this.isValidNetworkSession() in LoginProxy.' + sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK));
             return true;
         }
         else {
@@ -176,7 +179,7 @@ var LoginProxy = function (facade) {
     /**
      * Establish a session on the uPortal server.
      */
-    self.establishNetworkSession = function(options) {
+    this.establishNetworkSession = function(options) {
         var credentials, url, onAuthComplete, onAuthError, authenticator;
         /* 
         Possible options: 
@@ -184,14 +187,14 @@ var LoginProxy = function (facade) {
         */
         Ti.API.info("Establishing Network Session");
         onAuthError = function (e) {
-            var _user = getLayoutUser(authenticator);
+            var _user = _self.getLayoutUser(authenticator);
             Ti.API.info("onAuthError in LoginProxy.establishNetworkSession");
             sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
             Ti.App.fireEvent("EstablishNetworkSessionFailure", {user: _user});
         };
         
         onAuthComplete = function (e) {
-            var _user = getLayoutUser(authenticator);
+            var _user = _self.getLayoutUser(authenticator);
             Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
             sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             
@@ -202,7 +205,7 @@ var LoginProxy = function (facade) {
 
         // If the user has configured credentials, attempt to perform CAS 
         // authentication 
-        credentials = self.getCredentials();
+        credentials = this.getCredentials();
         if (credentials.username && credentials.password) {
             Ti.API.info("Using standard login method with existing credentials.");
             loginMethod(credentials, options);
@@ -226,140 +229,21 @@ var LoginProxy = function (facade) {
             authenticator.send();
         }
     };
-    self.getLocalLoginURL = function (url) {
-        /* 
-        This method returns a URL suitable to automatically log
-        in a user in a webview.
-        Expects a fully qualified URL to be passed in
-        */
-        credentials = self.getCredentials();
-        return app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + Ti.Network.encodeURIComponent(url);
-        
-    };
-    self.doLocalLogin = function (credentials, options) {
-        Ti.API.info("LoginProxy doLocalLogin");
-        var client, url, onLoginComplete, onLoginError;
-        
-        onLoginComplete = function (e) {
-            var _responseXML, _layout, _layoutUser;
-            Ti.API.info("doLocalLogin() -> onLoginComplete() in LoginProxy");
-            _layoutUser = getLayoutUser(client);
-            Ti.API.info("_layoutUser is: " + _layoutUser);
-            
-            if (_layoutUser === credentials.username) {
-                sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-                if (!options || !options.isUnobtrusive) {
-                    Ti.App.fireEvent('EstablishNetworkSessionSuccess', {user: _layoutUser});
-                }                
-            }
-            else {
-                Ti.App.fireEvent('EstablishNetworkSessionFailure', {user: _layoutUser});
-            }
-            
-        };
-        
-        onLoginError = function (e) {
-            sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent('EstablishNetworkSessionFailure');
-        };
-        
-        url = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true';
-        
-        client = Titanium.Network.createHTTPClient({
-            onload: onLoginComplete,
-            onerror: onLoginError
-        });
-        client.open('GET', url, true);
-        /*
-            TODO Remove this line when the guest session is returned properly (temporary hack)
-        */
-        client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
-        
-        client.send();
-        
+    
+    this.getLoginURL = function (url) {
+        switch (app.UPM.LOGIN_METHOD) {
+            case LoginProxy.loginMethods.LOCAL_LOGIN:
+                return localLogin.getLoginURL(url);
+            case LoginProxy.loginMethods.CAS:
+                return CASLogin.getLoginURL(url);
+            default:
+                Ti.API.error("No login method matches " + app.UPM.LOGIN_METHOD);
+                return false;                
+        }
     };
     
-    self.getCASLoginURL = function (url) {
-        var separator = url.indexOf('?') >= 0 ? '&' : '?';
-        return app.UPM.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
-    };
-    
-    self.doCASLogin = function (credentials, options) {
-        var url, client, initialResponse, flowRegex, flowId, data, failureRegex, onInitialResponse, onInitialError, onPostResponse, onPostError;
-
-        onPostError = function (e) {
-            sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent('EstablishNetworkSessionFailure');
-        };
-        
-        onPostResponse = function (e) {
-            // Examine the response to determine if authentication was successful.  If
-            // we get back a CAS page, assume that the credentials were invalid.
-            failureRegex = new RegExp(/body id="cas"/);
-            if (failureRegex.exec(client.responseText)) {
-                sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-                Ti.App.fireEvent('EstablishNetworkSessionFailure');
-            } else {
-                sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-                if (!options || !options.isUnobtrusive) {
-                    Ti.App.fireEvent('EstablishNetworkSessionSuccess');
-                }
-            }
-        };
-        onInitialError = function (e) {
-            sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent('EstablishNetworkSessionFailure');
-        };
-        
-        onInitialResponse = function (e) {
-            // Parse the returned page, looking for the Spring Webflow ID.  We'll need
-            // to post this token along with our credentials.
-            initialResponse = client.responseText;
-            flowRegex = new RegExp(/input type="hidden" name="lt" value="([a-z0-9]*)?"/);
-            flowId = flowRegex.exec(initialResponse)[1];
-
-            // Post the user credentials and other required webflow parameters to the 
-            // CAS login page.  This step should accomplish authentication and redirect
-            // to the portal if the user is successfully authenticated.
-            client = Titanium.Network.createHTTPClient({
-                onload: onPostResponse,
-                onerror: onPostError
-            });
-            client.open('POST', url, true);
-            /*
-                TODO Remove this line when the guest session is returned properly (temporary hack)
-            */
-            client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
-            
-            data = { 
-                username: credentials.username, 
-                password: credentials.password, 
-                lt: flowId, 
-                _eventId: 'submit', 
-                submit: 'LOGIN' 
-            };
-            client.send(data);
-        };
-
-
-        url = app.UPM.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?isNativeDevice=true');
-
-        // Send an initial response to the CAS login page
-        client = Titanium.Network.createHTTPClient({
-            onload: onInitialResponse,
-            onerror: onInitialError
-        });
-        client.open('GET', url, false);
-        /*
-            TODO Remove this line when the guest session is returned properly (temporary hack)
-        */
-        client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
-        
-        client.send();
-    };
-    
-    getLayoutUser = function (client) {
-        var _layout, _username;
+    this.getLayoutUser = function (client) {
+        var _layout, _username, _responseXML;
         if (!client.responseXML) {
             Ti.API.info("No responseXML");
             if (typeof DOMParser != "undefined") {
@@ -398,10 +282,10 @@ var LoginProxy = function (facade) {
         // but would need to set a flag for re-auth in the webview.
         Ti.API.debug("onSessionExpire() in LoginProxy");
         switch (e.context) {
-            case self.sessionTimeContexts.NETWORK:
-                self.establishNetworkSession({isUnobtrusive: true});
+            case _self.sessionTimeContexts.NETWORK:
+                _self.establishNetworkSession({isUnobtrusive: true});
                 break;
-            case self.sessionTimeContexts.WEBVIEW:  
+            case _self.sessionTimeContexts.WEBVIEW:  
                 Ti.API.info("Stopping webViewSessionTimer");
                 sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
                 break;
@@ -411,8 +295,6 @@ var LoginProxy = function (facade) {
     };
     
     init();
-    
-    return self;
 };
 LoginProxy.sessionTimeContexts = {
     NETWORK: "Network",
