@@ -22,14 +22,14 @@
  * user settings tab.
  */
 var SettingsWindowController = function(facade){
-    var win, app = facade, self = {}, device,
+    var win, app = facade, _self = this, device,
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
         onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
 
     init = function () {
-        self.key = 'settings';
+        _self.key = 'settings';
         Ti.API.debug("init() in SettingsWindowController");
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
@@ -42,8 +42,8 @@ var SettingsWindowController = function(facade){
         initialized = true;
     };
     
-    self.open = function () {
-        Ti.API.debug("self.open() in SettingsWindowController");
+    this.open = function () {
+        Ti.API.debug("this.open() in SettingsWindowController");
         
         credentials = app.models.loginProxy.getCredentials();
         
@@ -71,7 +71,7 @@ var SettingsWindowController = function(facade){
         activityIndicator.hide();
     };
     
-    self.close = function (options) {
+    this.close = function (options) {
         if (win) {
             win.close();
         }
@@ -223,7 +223,7 @@ var SettingsWindowController = function(facade){
             activityIndicator.hide();
         }
         Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
-        if(app.models.windowManager.getCurrentWindow() === self.key && (wasFormSubmitted || wasLogOutClicked)) {
+        if(app.models.windowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
             if (e.user === usernameInput.value) {
                 logOutButton.show();
                 Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
@@ -271,7 +271,7 @@ var SettingsWindowController = function(facade){
         }
         if (e.user && e.user != app.models.loginProxy.getCredentials().username && wasFormSubmitted) {
             /*if (!win || !win.visible) {
-                app.models.windowManager.openWindow(self.key);
+                app.models.windowManager.openWindow(_self.key);
             }*/
             Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                 message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]

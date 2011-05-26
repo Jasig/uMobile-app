@@ -24,7 +24,7 @@
 
 
 var PortalWindowController = function(facade) {
-    var win, app = facade, self = {}, portalProxy, device, initialized, isGuestLayout = true,
+    var win, app = facade, _self = this, portalProxy, device, initialized, isGuestLayout = true,
         contentLayer, portalView, portletView, portalGridView, activityIndicator, pressedItem, titleBar, guestNotificationView, guestNotificationLabel,
         init, createPortalView, drawHomeGrid, drawAndroidGrid, drawiOSGrid, 
         onGridItemClick, onGridItemPressUp, onGridItemPressDown,
@@ -33,7 +33,7 @@ var PortalWindowController = function(facade) {
         pathToRoot = '../../';
 
     init = function () {
-        self.key = 'home';
+        _self.key = 'home';
         
         portalProxy = app.models.portalProxy;
         device = app.models.deviceProxy;
@@ -49,7 +49,7 @@ var PortalWindowController = function(facade) {
     	initialized = true;
     };
     
-    self.open = function () {
+    this.open = function () {
         Ti.API.debug("open() in PortalWindowController");
         if (!win || device.isIOS()) {
             Ti.API.debug("Create and open the portal window");
@@ -64,7 +64,7 @@ var PortalWindowController = function(facade) {
         createPortalView();
     };
     
-    self.close = function () {
+    this.close = function () {
         if (win && (device.isIOS())) {
             win.close();
         }
@@ -346,6 +346,4 @@ var PortalWindowController = function(facade) {
     if(!initialized) {
         init();
     }
-    
-    return self;
 };

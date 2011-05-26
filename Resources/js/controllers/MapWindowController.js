@@ -22,14 +22,14 @@
  */
 
 var MapWindowController = function(facade) {
-    var win, app = facade, self = {}, initialized, mapProxy, device, //Standard utility vars
+    var win, app = facade, _self = this, initialized, mapProxy, device, //Standard utility vars
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], //Data objects
     locationDetailView, activityIndicator, mapView, searchBar, loadingIndicator, titleBar, //View objects
     createMainView, loadPointDetail, resetMapLocation, //Methods
     onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur; //Events
 
     init = function() {
-        self.key = 'map';
+        _self.key = 'map';
         
         Ti.App.addEventListener('MapProxySearching', onProxySearching);
         Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
@@ -44,7 +44,7 @@ var MapWindowController = function(facade) {
         initialized = true;
     };
     
-    self.open = function () {
+    this.open = function () {
         if (!win) {
             //Initialize the mapProxy, which manages the data for points on the map,
             //including retrieval of data and searching array of points
@@ -66,7 +66,7 @@ var MapWindowController = function(facade) {
         resetMapLocation();
     };
     
-    self.close = function (options) {
+    this.close = function (options) {
         Ti.API.debug("close() in MapWindowController");
         searchBlur();
         if (win) {
@@ -163,7 +163,7 @@ var MapWindowController = function(facade) {
         //Create and open the view for the map detail
         // locationDetailWinOptions = app.styles.view;
         // locationDetailViewOptions.url = app.app.models.resourceProxy.getResourcePath("/js/controllers/MapDetailViewController.js");
-        Ti.API.debug('self.loadDetail');
+        Ti.API.debug('this.loadDetail');
         activityIndicator.setLoadingMessage(app.localDictionary.loading);
         activityIndicator.show();
         searchBlur();
@@ -330,7 +330,4 @@ var MapWindowController = function(facade) {
     if (!initialized) {
         init();
     }
-    
-    
-    return self;
 };

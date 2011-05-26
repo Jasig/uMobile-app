@@ -23,7 +23,7 @@
  */
 
 var DirectoryWindowController = function (facade) {
-    var win, app = facade, self = {}, directoryProxy, device, init,
+    var win, app = facade, _self = this, directoryProxy, device, init,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
         contactDetailViewOptions,
@@ -36,7 +36,7 @@ var DirectoryWindowController = function (facade) {
     
     init = function () {
         Ti.API.debug("init() in DirectoryWindowController");
-        self.key = 'directory';
+        _self.key = 'directory';
         
         Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
         //Listene for events, mostly fired from models.DirectoryProxy
@@ -50,7 +50,7 @@ var DirectoryWindowController = function (facade) {
         initialized = true;
     };
     
-    self.open = function () {
+    this.open = function () {
         win = Titanium.UI.createWindow({
             backgroundColor: app.styles.backgroundColor,
             title: app.localDictionary.directory,
@@ -62,7 +62,7 @@ var DirectoryWindowController = function (facade) {
         drawDefaultView();
     };
     
-    self.close = function (options) {
+    this.close = function (options) {
         if (win) {
             win.close();
         }
@@ -211,7 +211,7 @@ var DirectoryWindowController = function (facade) {
     
     // Controller Events
     onNewWindowOpened = function (e) {
-        if (e.key !== self.key) {
+        if (e.key !== _self.key) {
             blurSearch();
         }
     };
@@ -286,6 +286,4 @@ var DirectoryWindowController = function (facade) {
     if(!initialized) {
         init();
     }
-
-    return self;
 };

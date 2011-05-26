@@ -18,9 +18,8 @@
  */
 
 var PortletWindowController = function (facade) {
-    var win,
-        self = {},
-        app = facade, device,
+    var win, _self = this, app = facade, 
+        device,
         activityIndicator, titleBar, navBar, webView,
         initialized, winListeners = [], activePortlet,
         pathToRoot = '../../',
@@ -29,21 +28,21 @@ var PortletWindowController = function (facade) {
 
     init = function () {
         Ti.API.debug("init() in PortletWindowController");
-        self.key = 'portlet';
+        _self.key = 'portlet';
         
         device = app.models.deviceProxy;
         
         initialized = true;
     };
     
-    self.close = function (options) {
+    this.close = function (options) {
         Ti.API.info("close() in PortletWindowController");
         if (win) {
             win.close();
         }
     };
     
-    self.open = function (portlet) {
+    this.open = function (portlet) {
         var navBarOptions;
         if (portlet) {
             activePortlet = portlet;
@@ -239,6 +238,4 @@ var PortletWindowController = function (facade) {
     if (!initialized) {
         init();
     }
-    
-    return self;
 };
