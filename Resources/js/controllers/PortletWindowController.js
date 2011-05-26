@@ -19,8 +19,8 @@
 
 var PortletWindowController = function (facade) {
     var win, _self = this, app = facade, 
-        device,
-        activityIndicator, titleBar, navBar, webView,
+        Device, WindowManager, PortalWindow, Styles, UI, LocalDictionary, Login, UPM, Session,
+        activityIndicator, titleBar, navBar, navBackButton, webView,
         initialized, winListeners = [], activePortlet,
         pathToRoot = '../../',
         init, drawWindow, getQualifiedURL, getLocalUrl,
@@ -29,10 +29,6 @@ var PortletWindowController = function (facade) {
     init = function () {
         Ti.API.debug("init() in PortletWindowController");
         _self.key = 'portlet';
-        
-        device = app.models.deviceProxy;
-        
-        initialized = true;
     };
     
     this.close = function (options) {
@@ -43,53 +39,71 @@ var PortletWindowController = function (facade) {
     };
     
     this.open = function (portlet) {
+        Ti.API.debug("open() in PortletWindowController");
         var navBarOptions;
+        
+        if (!initialized) {
+            //Declare pointers to facade members
+            Device = app.models.deviceProxy;
+            WindowManager = app.models.windowManager;
+            PortalWindow = app.controllers.portalWindowController;
+            Styles = app.styles;
+            UI = app.UI;
+            LocalDictionary = app.localDictionary;
+            Login = app.models.loginProxy;
+            UPM = app.UPM;
+            Session = app.models.sessionProxy;
+            
+            initialized = true;
+        }
+        
         if (portlet) {
             activePortlet = portlet;
         }
         else {
             Ti.API.error("No portlet was passed to includePortlet() in PortletWindowController");
-            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+            WindowManager.openWindow(PortalWindow.key);
             return;
         }
         
         win = Titanium.UI.createWindow({
             key: 'portlet',
-            backgroundColor: app.styles.backgroundColor,
+            backgroundColor: Styles.backgroundColor,
             exitOnClose: false,
             navBarHidden: true
             // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
 
-        if (device.isIOS() || !webView) {
-            webView = Titanium.UI.createWebView(app.styles.portletView);
+        if (Device.isIOS() || !webView) {
+            webView = Titanium.UI.createWebView(Styles.portletView);
             webView.addEventListener('load', onPortletLoad);
             webView.addEventListener('beforeload', onPortletBeforeLoad);
             webView.hide();
         }
         
-        titleBar = app.UI.createTitleBar({
+        titleBar = UI.createTitleBar({
             title: portlet.title,
             settingsButton: false,
             homeButton: true
         });
         
-        navBarOptions = app.styles.secondaryBarButton;
-        navBarOptions.title = app.localDictionary.back;
+        navBarOptions = Styles.secondaryBarButton;
+        navBarOptions.title = LocalDictionary.back;
 
         navBackButton = Titanium.UI.createButton(navBarOptions);
         navBackButton.addEventListener('touchstart', onBackBtnPress);
         navBackButton.addEventListener('touchend', onBackBtnUp);
-        navBackButton.addEventListener('click', function() { webView.goBack(); });
+        navBackButton.addEventListener('click', function () { webView.goBack(); });
+        
         // initialize navigation bar for URLs outside the portal
-        navBar = app.UI.createSecondaryNavBar({
+        navBar = UI.createSecondaryNavBar({
             backButton: navBackButton
         });
         navBar.top = 40;
         navBar.visible = false;
 
-        activityIndicator = app.UI.createActivityIndicator();
+        activityIndicator = UI.createActivityIndicator();
         activityIndicator.hide();
 
         win.add(titleBar);
@@ -116,7 +130,7 @@ var PortletWindowController = function (facade) {
     includePortlet = function (portlet) {
         Ti.API.debug("includePortlet() in PortletWindowController");
         
-        activityIndicator.setLoadingMessage(app.localDictionary.loading);
+        activityIndicator.setLoadingMessage(LocalDictionary.loading);
         activityIndicator.show();
         
         webView.url = getQualifiedURL(portlet.url);
@@ -133,20 +147,20 @@ var PortletWindowController = function (facade) {
         This method only returns a URL, doesn't actually set the url property of the webview.
         */
 
-        if (!app.models.deviceProxy.checkNetwork()) {
+        if (!Device.checkNetwork()) {
             return false;
         }
 
         //We only need to check the session if it's a link to the portal.
-        isValidSession = app.models.loginProxy.isValidWebViewSession();
+        isValidSession = Login.isValidWebViewSession();
         if (!isValidSession) {
-            app.models.loginProxy.getLoginURL(url);
-            localUrl = app.models.loginProxy.getLoginURL(url);
+            Login.getLoginURL(url);
+            localUrl = Login.getLoginURL(url);
         }
         else {
             if (url.indexOf('/') === 0) {
                 Ti.API.info("Index of / in URL is 0");
-                var newUrl = app.UPM.BASE_PORTAL_URL + url;
+                var newUrl = UPM.BASE_PORTAL_URL + url;
                 Ti.API.info(newUrl);
                 localUrl = newUrl;
             }
@@ -162,11 +176,11 @@ var PortletWindowController = function (facade) {
         var _url;
         if (url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
-            if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW].isActive) {
+            if (Session.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW].isActive) {
                 _url = getLocalUrl(url);
             }
             else {
-                _url = app.models.loginProxy.getLoginURL(url);
+                _url = Login.getLoginURL(url);
             }
             webView.externalModule = false;
             webView.top = titleBar.height;
@@ -187,13 +201,13 @@ var PortletWindowController = function (facade) {
             webView.stopLoading();
             webView.url = getQualifiedURL(webView.url);
         }
-        activityIndicator.setLoadingMessage(app.localDictionary.loading);
+        activityIndicator.setLoadingMessage(LocalDictionary.loading);
         activityIndicator.show();
     };
     
     onPortletLoad = function (e) {
         activityIndicator.hide();
-        var portalIndex = e.url.indexOf(app.UPM.BASE_PORTAL_URL);
+        var portalIndex = e.url.indexOf(UPM.BASE_PORTAL_URL);
         Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
@@ -202,8 +216,8 @@ var PortletWindowController = function (facade) {
             navBar.visible = false;
             webView.top = titleBar.height;
             webView.height = win.height - titleBar.height;
-            // webView.setTop(app.styles.titleBar.height);
-            // app.models.loginProxy.updateSessionTimeout(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
+            // webView.setTop(Styles.titleBar.height);
+            // Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
         } 
         else {
             Ti.API.debug("Visiting an external link");
@@ -219,7 +233,7 @@ var PortletWindowController = function (facade) {
                 webView.height = win.height - titleBar.height;
             }
             Ti.API.debug("WebView height is: " + webView.height);
-            // webView.setTop(app.styles.titleBar.height + navBar.height);
+            // webView.setTop(Styles.titleBar.height + navBar.height);
         }
         webView.show();
         activityIndicator.hide();
@@ -227,12 +241,12 @@ var PortletWindowController = function (facade) {
     
     onBackBtnPress = function (e) {
         Ti.API.debug("onBackBtnPress() in PortletWindowController");
-        navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+        navBackButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradientPress;
     };
     
     onBackBtnUp = function (e) {
         Ti.API.debug("onBackBtnUp() in PortletWindowController");
-        navBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
+        navBackButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradient;
     };
     
     if (!initialized) {

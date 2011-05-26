@@ -1,23 +1,12 @@
 var DirectoryDetailController = function (facade) {
     var app = facade,
-        device = app.models.deviceProxy,
-        self = Titanium.UI.createView(app.styles.contactDetailView),
-        init,
+        device = app.models.deviceProxy, self = Titanium.UI.createView(app.styles.contactDetailView), init,
         //UI Components
-        titleBar,
-        nameLabel,
-        phoneLabel,
-        attributeTable,
-        backButton,
+        titleBar, nameLabel, phoneLabel, attributeTable, backButton,
         //Methods
         updateValues,
         //Controller Event Handlers
-        onWinOpen,
-        onWinShow,
-        onWinHide,
-        onWinClose,
-        onBackButtonPress,
-        onBackButtonUp;
+        onWinOpen, onWinShow, onWinHide, onWinClose, onBackButtonPress, onBackButtonUp;
     
     init = function () {
         Ti.API.debug('DirectoryDetailController constructed');

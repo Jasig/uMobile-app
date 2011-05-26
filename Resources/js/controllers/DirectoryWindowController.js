@@ -22,8 +22,11 @@
  * user settings tab.
  */
 
+ /**
+  * @constructor
+  */
 var DirectoryWindowController = function (facade) {
-    var win, app = facade, _self = this, directoryProxy, device, init,
+    var win, app = facade, _self = this, Directory, DirectoryDetail, Styles, LocalDictionary, UI, UPM, init,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
         contactDetailViewOptions,
@@ -36,24 +39,39 @@ var DirectoryWindowController = function (facade) {
     
     init = function () {
         Ti.API.debug("init() in DirectoryWindowController");
-        _self.key = 'directory';
-        
-        Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
-        //Listene for events, mostly fired from models.DirectoryProxy
-        Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
-        Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
-        Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
-        
-        directoryProxy = app.models.directoryProxy;
-        device = app.models.deviceProxy;
-        
-        initialized = true;
+        _self.key = 'directory';        
     };
     
     this.open = function () {
+        if (!initialized) {
+            Titanium.include('/js/models/DirectoryProxy.js');
+            Titanium.include('js/views/PersonDetailTableView.js');
+            Titanium.include('js/controllers/DirectoryDetailController.js');
+            
+            app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
+            app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
+            app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 
+            
+            //Listene for events, mostly fired from models.DirectoryProxy
+            Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
+            Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
+            Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
+            Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
+
+            //Set pointers to necessary members of facade
+            Directory = app.models.directoryProxy;
+            DirectoryDetail = app.controllers.DirectoryDetailController;
+            Styles = app.styles;
+            LocalDictionary = app.localDictionary;
+            UI = app.UI;
+            UPM = app.UPM;
+
+            initialized = true;
+        }
+        
         win = Titanium.UI.createWindow({
-            backgroundColor: app.styles.backgroundColor,
-            title: app.localDictionary.directory,
+            backgroundColor: Styles.backgroundColor,
+            title: LocalDictionary.directory,
             exitOnClose: false,
             navBarHidden: true
             // orientationModes: [Ti.UI.PORTRAIT]
@@ -72,35 +90,35 @@ var DirectoryWindowController = function (facade) {
         var activityIndicatorTimeout;
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
         if (win) {
-            titleBar = app.UI.createTitleBar({
-                title: app.localDictionary.directory,
+            titleBar = UI.createTitleBar({
+                title: LocalDictionary.directory,
                 homeButton: true,
                 settingsButton: false
             });
             win.add(titleBar);
 
             Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
-            if (app.UPM.phoneDirectoryNumber) {
+            if (UPM.phoneDirectoryNumber) {
                 //Create the section and one row to display the phone number for the phone directory
                 phoneDirectorySection = Titanium.UI.createTableViewSection();
-                phoneDirectorySection.headerTitle = app.localDictionary.phoneDirectory;
+                phoneDirectorySection.headerTitle = LocalDictionary.phoneDirectory;
                 phoneDirectoryRow = Titanium.UI.createTableViewRow({
-                    title: app.UPM.phoneDirectoryNumber
+                    title: UPM.phoneDirectoryNumber
                 });
                 phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
                 phoneDirectorySection.add(phoneDirectoryRow);
                 defaultTableData.push(phoneDirectorySection);
             }
 
-            Ti.API.info("Emergency Contacts? " + directoryProxy.getEmergencyContacts());
+            Ti.API.info("Emergency Contacts? " + Directory.getEmergencyContacts());
             //Create a section to display emergency contact numbers
 
-            if (directoryProxy.getEmergencyContacts().length > 0) {
+            if (Directory.getEmergencyContacts().length > 0) {
                 defaultTableData = [];
                 emergencyContactSection = Titanium.UI.createTableViewSection();
-                emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
-                for (var i=0, iLength = directoryProxy.getEmergencyContacts().length; i<iLength; i++) {
-                    var _contact = directoryProxy.getEmergencyContacts()[i],
+                emergencyContactSection.headerTitle =  LocalDictionary.emergencyContacts;
+                for (var i=0, iLength = Directory.getEmergencyContacts().length; i<iLength; i++) {
+                    var _contact = Directory.getEmergencyContacts()[i],
                     _emergencyContactRow = Titanium.UI.createTableViewRow({
                         title: _contact.displayName[0],
                         hasChild: true,
@@ -119,7 +137,7 @@ var DirectoryWindowController = function (facade) {
             //Create the main table
             peopleListTable = Titanium.UI.createTableView({
                 data: defaultTableData,
-                top: app.styles.titleBar.height + app.styles.searchBar.height
+                top: Styles.titleBar.height + Styles.searchBar.height
             });
 
             peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
@@ -131,7 +149,7 @@ var DirectoryWindowController = function (facade) {
             Ti.API.debug("Adding searchBar in DirectoryWindowController");
 
             //Create and add a search bar at the top of the table to search for contacts
-            searchBar = app.UI.createSearchBar();
+            searchBar = UI.createSearchBar();
             Ti.API.info("searchBar: " + searchBar);
             win.add(searchBar.container);
             searchBar.input.addEventListener('cancel', onSearchCancel);
@@ -139,11 +157,11 @@ var DirectoryWindowController = function (facade) {
             searchBar.input.addEventListener('change', onSearchChange);
 
             //Create the contact detail view but don't show it yet.
-            contactDetailView = new app.controllers.DirectoryDetailController(app);
+            contactDetailView = new DirectoryDetail(app);
             win.add(contactDetailView);
 
 
-            activityIndicator = app.UI.createActivityIndicator();
+            activityIndicator = UI.createActivityIndicator();
             activityIndicator.resetDimensions();
             win.add(activityIndicator);
             activityIndicator.hide();
@@ -157,7 +175,7 @@ var DirectoryWindowController = function (facade) {
         Ti.API.debug("resetHome() in DirectoryWindowController");
         blurSearch();
         if (searchBar) { searchBar.input.value = ''; }
-        if (directoryProxy) { directoryProxy.clear(); }
+        if (Directory) { Directory.clear(); }
         if (peopleListTable) { peopleListTable.setData(defaultTableData); }
         if (contactDetailView) { contactDetailView.hide(); }
         if (activityIndicator) { activityIndicator.hide(); }
@@ -167,7 +185,7 @@ var DirectoryWindowController = function (facade) {
         var _peopleTableData = [], _people, alertDialog;
                 
         //Get array of people from search results from proxy
-        _people = directoryProxy.getPeople();
+        _people = Directory.getPeople();
 
         if(_people.length > 0) {
             Ti.API.info(_people);
@@ -185,9 +203,9 @@ var DirectoryWindowController = function (facade) {
         else {
             Ti.API.debug("Not more than 0 results");
             alertDialog = Titanium.UI.createAlertDialog({
-                title: app.localDictionary.noResults,
-                message: app.localDictionary.noSearchResults,
-                buttonNames: [app.localDictionary.OK]
+                title: LocalDictionary.noResults,
+                message: LocalDictionary.noSearchResults,
+                buttonNames: [LocalDictionary.OK]
             });
             alertDialog.show();
             peopleListTable.setData(defaultTableData);
@@ -218,18 +236,18 @@ var DirectoryWindowController = function (facade) {
     // Search Events
     onPhoneDirectoryClick = function (e) {
         Ti.API.debug("Clicked the phone directory button");
-        Ti.Platform.openURL('tel:' + app.UPM.phoneDirectoryNumber);
+        Ti.Platform.openURL('tel:' + UPM.phoneDirectoryNumber);
     };
     
     onSearchSubmit = function(e) {
         Ti.API.debug('onSearchSubmit');
         blurSearch();
-        directoryProxy.search(searchBar.input.value);
+        Directory.search(searchBar.input.value);
     };
     
     onSearchChange = function (e) {
         if(searchBar.input.value === '') {
-            directoryProxy.clear();
+            Directory.clear();
             peopleListTable.setData(defaultTableData);
         }
     };
@@ -248,7 +266,7 @@ var DirectoryWindowController = function (facade) {
     //Proxy events
 
     onProxySearching = function (e) {
-        activityIndicator.setLoadingMessage(app.localDictionary.searching + '...');
+        activityIndicator.setLoadingMessage(LocalDictionary.searching + '...');
         activityIndicator.show();
         Ti.API.info("Searching...");
     };
@@ -264,9 +282,9 @@ var DirectoryWindowController = function (facade) {
         }
         else {
             alertDialog = Titanium.UI.createAlertDialog({
-                title: app.localDictionary.error,
+                title: LocalDictionary.error,
                 message: e.error,
-                buttonNames: [app.localDictionary.OK]
+                buttonNames: [LocalDictionary.OK]
             });
             alertDialog.show();
         }
@@ -275,9 +293,9 @@ var DirectoryWindowController = function (facade) {
     onProxySearchError = function (e) {
         activityIndicator.hide();
         var alertDialog = Titanium.UI.createAlertDialog({
-            title: app.localDictionary.errorPerformingSearch,
-            message: app.localDictionary.noSearchResults,
-            buttonNames: [app.localDictionary.OK]
+            title: LocalDictionary.errorPerformingSearch,
+            message: LocalDictionary.noSearchResults,
+            buttonNames: [LocalDictionary.OK]
         });
         alertDialog.show();
         Ti.API.error("Directory Proxy Search Error");

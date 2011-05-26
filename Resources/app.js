@@ -77,23 +77,17 @@ startup = function (e) {
     Titanium.include('js/gibberishAES.js');
 
     Titanium.include('js/models/DeviceProxy.js');
-    Titanium.include('js/models/DirectoryProxy.js');
     Titanium.include('js/models/ResourceProxy.js');
     Titanium.include('js/models/LoginProxy.js');
     Titanium.include('js/models/login/LocalLogin.js');
     Titanium.include('js/models/login/CASLogin.js');
-    Titanium.include('js/models/MapProxy.js');
+    
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
     Titanium.include('js/models/UserProxy.js');
     Titanium.include('js/models/WindowManager.js');
 
-    Titanium.include('js/views/MapDetailTop.js');
-    Titanium.include('js/views/PersonDetailTableView.js');
-
     Titanium.include('js/controllers/DirectoryWindowController.js');
-    Titanium.include('js/controllers/DirectoryDetailController.js');
-    Titanium.include('js/controllers/MapDetailViewController.js');
     Titanium.include('js/controllers/MapWindowController.js');
     Titanium.include('js/controllers/PortalWindowController.js');
     Titanium.include('js/controllers/PortletWindowController.js');
@@ -115,26 +109,20 @@ startup = function (e) {
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
     app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
     
-
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
-    app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('localLogin', new LocalLogin(app));
     app.registerModel('CASLogin', new CASLogin(app));
     app.registerModel('userProxy', new UserProxy(app));
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
-    app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
     
-    app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
-    app.registerView('MapDetailTop', MapDetailTop);
-
     //Window controllers
-    app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 
+    
     app.registerController('portalWindowController', new PortalWindowController(app));
     app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
     app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
-    app.registerController('MapDetailViewController', MapDetailViewController); // Subcontext in MapWindowController to show details of a location on the map
+
     app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
     app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
 

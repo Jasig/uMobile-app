@@ -23,9 +23,10 @@
  * may differ between deploying institutions.
  */
 
+/**
+* @constructor
+*/
 var Config = function (app) {
-    var UPM = {};
-
     Titanium.App.Properties.setString('locale','en_US');
     
     //------- PORTAL LOCATION -------
@@ -33,32 +34,32 @@ var Config = function (app) {
     // Base url of the portal, which should be of the format
     // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
     // trailing slash.
-    // UPM.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    UPM.BASE_PORTAL_URL = 'https://umobile.unicon.net';
-    UPM.PORTAL_CONTEXT = '/uPortal';
+    // this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+    this.BASE_PORTAL_URL = 'https://umobile.unicon.net';
+    this.PORTAL_CONTEXT = '/uPortal';
 
     //------- AUTHENTICATION -------
 
-    UPM.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;//in seconds = two hours
-    UPM.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
-    UPM.CAS_URL = UPM.BASE_PORTAL_URL + '/cas';
-    UPM.ENCRYPTION_KEY = 'um0b1le';
-    UPM.FORGOT_PASSWORD_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/p/forgot-password';
+    this.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;//in seconds = two hours
+    this.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN; //References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
+    this.CAS_URL = this.BASE_PORTAL_URL + '/cas';
+    this.ENCRYPTION_KEY = 'um0b1le';
+    this.FORGOT_PASSWORD_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/p/forgot-password';
 
     //------- MAP SERVICE -------
 
-    UPM.MAP_SERVICE_URL = UPM.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
+    this.MAP_SERVICE_URL = this.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
 
 
     //------- DIRECTORY SERVICE -------
 
-    UPM.DIRECTORY_SERVICE_URL = UPM.BASE_PORTAL_URL + UPM.PORTAL_CONTEXT + '/api/people.json';
-    UPM.DIRECTORY_SERVICE_SEARCH_FIELDS = [
+    this.DIRECTORY_SERVICE_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/api/people.json';
+    this.DIRECTORY_SERVICE_SEARCH_FIELDS = [
         'given',
         'sn',
         'organization'
     ];
-    UPM.DIRECTORY_SERVICE_RESULT_FIELDS = {
+    this.DIRECTORY_SERVICE_RESULT_FIELDS = {
         fullName: 'displayName',
         nickname: 'nickname',
         URL: 'url',
@@ -72,33 +73,33 @@ var Config = function (app) {
         organization: 'organization'
     };
     
-    UPM.LOCAL_MODULES = [];
-    UPM.LOCAL_MODULES.map = {
+    this.LOCAL_MODULES = [];
+    this.LOCAL_MODULES.map = {
         title: 'map',
         iconUrl: 'icons/map.png',
         fname: 'map',
         window: 'map'
     };
     
-    UPM.LOCAL_MODULES.directory = {
+    this.LOCAL_MODULES.directory = {
         title: 'directory',
         fname: 'directory',
         iconUrl: 'icons/directory.png',
         doesRequireLayout: true,
         window: 'directory'
     };
-    UPM.LOCAL_MODULES.twitter = {
+    this.LOCAL_MODULES.twitter = {
         title: 'Twitter',
         fname: 'twitter',
         url: 'http://mobile.twitter.com/searches?q=jasig11',
         externalModule: true
     };
     
-    UPM.getLocalModules = function () {
-        return UPM.LOCAL_MODULES;
+    this.getLocalModules = function () {
+        return this.LOCAL_MODULES;
     };
 
-    UPM.GLOBAL_STYLES = {
+    this.GLOBAL_STYLES = {
         textFieldGradient: {
             type:'linear',
             colors:['#ccc','#fff']
@@ -109,14 +110,14 @@ var Config = function (app) {
         tableBackgroundColor: "#fff"
     };
     
-    UPM.DEFAULT_MAP_REGION = {
+    this.DEFAULT_MAP_REGION = {
         latitude: 39.890822,
         longitude: -105.064509,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
     };
     
-    UPM.nativeIcons = {
+    this.nativeIcons = {
         videos: 'icons/youtube.png',
         news: 'icons/feed.png',
         calendar: 'icons/calendar.png',
@@ -126,7 +127,7 @@ var Config = function (app) {
         weather: 'icons/weather.png'
     };
 
-    UPM.directoryEmergencyContacts = [
+    this.directoryEmergencyContacts = [
         { 
             displayName: ["Jasig Hotel"],
             telephoneNumber: ['(866) 716-8137'],
@@ -135,7 +136,5 @@ var Config = function (app) {
         }
     ];
     
-    UPM.phoneDirectoryNumber = false;
-    
-    return UPM;
+    this.phoneDirectoryNumber = false;
 };

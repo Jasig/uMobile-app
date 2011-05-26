@@ -22,7 +22,7 @@
  * user settings tab.
  */
 var SettingsWindowController = function(facade){
-    var win, app = facade, _self = this, device,
+    var win, app = facade, _self = this, Device, User, UI, LocalDictionary, Styles, UPM, Login, WindowManager,
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
         init, createTitleBar, createCredentialsForm,
@@ -30,33 +30,43 @@ var SettingsWindowController = function(facade){
 
     init = function () {
         _self.key = 'settings';
-        Ti.API.debug("init() in SettingsWindowController");
-        Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
-        Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
-        Ti.App.addEventListener('PortalProxyPortletsLoaded', onPortalProxyPortletsLoaded);
-        
-        device = app.models.deviceProxy;
-        
-        credentials = app.models.userProxy.getCredentials();
-        
-        initialized = true;
     };
     
     this.open = function () {
         Ti.API.debug("this.open() in SettingsWindowController");
         
-        credentials = app.models.userProxy.getCredentials();
+        if (!initialized) {
+            Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
+            Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
+            Ti.App.addEventListener('PortalProxyPortletsLoaded', onPortalProxyPortletsLoaded);
+
+            Device = app.models.deviceProxy;
+            User = app.models.userProxy;
+            UI = app.UI;
+            LocalDictionary = app.localDictionary;
+            Styles = app.styles;
+            UPM = app.UPM;
+            Login = app.models.loginProxy;
+            WindowManager = app.models.windowManager;
+            PortalWindow = app.controllers.portalWindowController;
+
+            credentials = User.getCredentials();
+
+            initialized = true;            
+        }
+        
+        credentials = User.getCredentials();
         
         win = Titanium.UI.createWindow({
             exitOnClose: false, 
             navBarHidden: true,
-            backgroundColor: app.styles.backgroundColor
+            backgroundColor: Styles.backgroundColor
             // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         
-        titleBar = app.UI.createTitleBar({
-            title: app.localDictionary.settings,
+        titleBar = UI.createTitleBar({
+            title: LocalDictionary.settings,
             settingsButton: false,
             homeButton: true
         });
@@ -64,7 +74,7 @@ var SettingsWindowController = function(facade){
         win.add(titleBar);
         createCredentialsForm();
         
-        activityIndicator = app.UI.createActivityIndicator();
+        activityIndicator = UI.createActivityIndicator();
         activityIndicator.resetDimensions();
         
         win.add(activityIndicator);
@@ -79,16 +89,16 @@ var SettingsWindowController = function(facade){
     };
 
     createCredentialsForm = function () {
-        var usernameLabelOpts = app.styles.settingsUsernameLabel,
-            usernameInputOpts = app.styles.settingsUsernameInput,
-            passwordLabelOpts = app.styles.settingsPasswordLabel,
-            passwordInputOpts = app.styles.settingsPasswordInput,
-            saveButtonOpts = app.styles.contentButton,
-            resetPasswordOpts = app.styles.settingsResetPasswordLabel,
-            logOutButtonOpts = app.styles.contentButton;
+        var usernameLabelOpts = Styles.settingsUsernameLabel,
+            usernameInputOpts = Styles.settingsUsernameInput,
+            passwordLabelOpts = Styles.settingsPasswordLabel,
+            passwordInputOpts = Styles.settingsPasswordInput,
+            saveButtonOpts = Styles.contentButton,
+            resetPasswordOpts = Styles.settingsResetPasswordLabel,
+            logOutButtonOpts = Styles.contentButton;
 
         // create the username label and input field
-        usernameLabelOpts.text = app.localDictionary.username;
+        usernameLabelOpts.text = LocalDictionary.username;
         usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
         win.add(usernameLabel);
 
@@ -98,7 +108,7 @@ var SettingsWindowController = function(facade){
 
         // create the password label and input field
         
-        passwordLabelOpts.text = app.localDictionary.password;
+        passwordLabelOpts.text = LocalDictionary.password;
         passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
         win.add(passwordLabel);
 
@@ -109,7 +119,7 @@ var SettingsWindowController = function(facade){
 
         // create the save button and configure it to persist
         // the new credentials when pressed
-        saveButtonOpts.title = app.localDictionary.update;
+        saveButtonOpts.title = LocalDictionary.update;
         saveButtonOpts.top = 150;
         saveButtonOpts.left = 10;
         saveButton = Titanium.UI.createButton(saveButtonOpts);
@@ -118,22 +128,22 @@ var SettingsWindowController = function(facade){
         
         logOutButtonOpts.left = 100 + 10 * 2;
         logOutButtonOpts.top = 150;
-        logOutButtonOpts.title = app.localDictionary.logOut;
+        logOutButtonOpts.title = LocalDictionary.logOut;
         logOutButton = Ti.UI.createButton(logOutButtonOpts);
         
         win.add(logOutButton);
         
         resetPassword = Ti.UI.createLabel(resetPasswordOpts);
-        resetPassword.text = app.localDictionary.resetPasswordLink + app.UPM.FORGOT_PASSWORD_URL;
+        resetPassword.text = LocalDictionary.resetPasswordLink + UPM.FORGOT_PASSWORD_URL;
         win.add(resetPassword);
         
         logOutButton.addEventListener('click', onLogOutButtonClick);
-        if(device.isIOS()) {
+        if(Device.isIOS()) {
             logOutButton.addEventListener('touchstart', onLogOutButtonPress);
             logOutButton.addEventListener('touchend', onLogOutButtonUp);
         }
         saveButton.addEventListener('click', onUpdateCredentials);
-        if(device.isIOS()) {
+        if(Device.isIOS()) {
             saveButton.addEventListener('touchstart', onSaveButtonPress);
             saveButton.addEventListener('touchend', onSaveButtonUp);
         }
@@ -141,12 +151,12 @@ var SettingsWindowController = function(facade){
         usernameInput.addEventListener('return', onUpdateCredentials);
         
         resetPassword.addEventListener('click', function (e){
-            Ti.Platform.openURL(app.UPM.FORGOT_PASSWORD_URL);
+            Ti.Platform.openURL(UPM.FORGOT_PASSWORD_URL);
         });
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
-            usernameInput.width = app.styles.settingsUsernameInput.width;
-            passwordInput.width = app.styles.settingsPasswordInput.width;
+            usernameInput.width = Styles.settingsUsernameInput.width;
+            passwordInput.width = Styles.settingsPasswordInput.width;
         });
     };
 
@@ -154,56 +164,56 @@ var SettingsWindowController = function(facade){
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
         if (passwordInput) { passwordInput.blur(); }
         if (usernameInput) { usernameInput.blur(); }
-        if (app.models.deviceProxy.checkNetwork()) {
+        if (Device.checkNetwork()) {
             if (usernameInput.value === '') {
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
-                    message: app.localDictionary.enterAUserName, buttonNames: [app.localDictionary.OK]
+                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                    message: LocalDictionary.enterAUserName, buttonNames: [LocalDictionary.OK]
                     }).show();
             }
             else {
                 wasFormSubmitted = true;
-                activityIndicator.setLoadingMessage(app.localDictionary.loggingIn);
+                activityIndicator.setLoadingMessage(LocalDictionary.loggingIn);
                 activityIndicator.show();
-                app.models.userProxy.saveCredentials({
+                User.saveCredentials({
                     username: usernameInput.value, 
                     password: passwordInput.value 
                 });
-                app.models.loginProxy.establishNetworkSession();
+                Login.establishNetworkSession();
             }
         }
     };
     
     onSaveButtonPress = function(e) {
         Ti.API.debug("onSaveButtonPress() in SettingsWindowController");
-        saveButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+        saveButton.backgroundGradient = Styles.contentButton.backgroundGradientPress;
     };
     
     onSaveButtonUp = function (e) {
         Ti.API.debug("onSaveButtonUp() in SettingsWindowController");
-        if (saveButton) { saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient; }
+        if (saveButton) { saveButton.backgroundGradient = Styles.contentButton.backgroundGradient; }
     };
     
     onLogOutButtonClick = function (e) {
         if (passwordInput) { passwordInput.blur(); }
         if (usernameInput) { usernameInput.blur(); }
-        app.models.userProxy.saveCredentials({
+        User.saveCredentials({
             username: '', 
             password: ''
         });
         usernameInput.value = '';
         passwordInput.value = '';
-        app.models.loginProxy.establishNetworkSession();
+        Login.establishNetworkSession();
         wasLogOutClicked = true;
     };
     
     onLogOutButtonPress = function (e) {
-        logOutButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+        logOutButton.backgroundGradient = Styles.contentButton.backgroundGradientPress;
     };
     
     onLogOutButtonUp = function (e) {
         if (passwordInput) { passwordInput.blur(); }
         if (usernameInput) { usernameInput.blur(); }
-        if (logOutButton) { logOutButton.backgroundGradient = app.styles.contentButton.backgroundGradient; }
+        if (logOutButton) { logOutButton.backgroundGradient = Styles.contentButton.backgroundGradient; }
     };
     
     onWindowBlur = function (e) {
@@ -222,25 +232,25 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
-        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
-        if(app.models.windowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
+        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + WindowManager.getCurrentWindow());
+        if(WindowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
             if (e.user === usernameInput.value) {
                 logOutButton.show();
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
-                    message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
+                Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
+                    message: LocalDictionary.authenticationSuccessful, buttonNames: [LocalDictionary.OK]
                     }).show();
             }
             else if (e.user === 'guest' && wasLogOutClicked) {
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
-                    message: app.localDictionary.logOutSuccessful, buttonNames: [app.localDictionary.OK]
+                Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
+                    message: LocalDictionary.logOutSuccessful, buttonNames: [LocalDictionary.OK]
                     }).show();
                     logOutButton.hide();
             }
             else if (e.user === 'guest') {
                 wasFormSubmitted = false;
                 logOutButton.hide();
-                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
-                    message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                    message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
                     }).show();
             }
             else {
@@ -255,7 +265,7 @@ var SettingsWindowController = function(facade){
     
     onPortalProxyPortletsLoaded = function (e) {
         if (wasFormSubmitted) {
-            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+            WindowManager.openWindow(PortalWindow.key);
             wasFormSubmitted = false;
             wasLogOutClicked = false;
         }
@@ -269,12 +279,12 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
-        if (e.user && e.user != app.models.userProxy.getCredentials().username && wasFormSubmitted) {
+        if (e.user && e.user != User.getCredentials().username && wasFormSubmitted) {
             /*if (!win || !win.visible) {
-                app.models.windowManager.openWindow(_self.key);
+                WindowManager.openWindow(_self.key);
             }*/
-            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
-                message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+            Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
                 }).show();
         }
         wasFormSubmitted = false;
