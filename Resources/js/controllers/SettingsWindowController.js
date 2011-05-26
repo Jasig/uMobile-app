@@ -37,7 +37,7 @@ var SettingsWindowController = function(facade){
         
         device = app.models.deviceProxy;
         
-        credentials = app.models.loginProxy.getCredentials();
+        credentials = app.models.userProxy.getCredentials();
         
         initialized = true;
     };
@@ -45,7 +45,7 @@ var SettingsWindowController = function(facade){
     this.open = function () {
         Ti.API.debug("this.open() in SettingsWindowController");
         
-        credentials = app.models.loginProxy.getCredentials();
+        credentials = app.models.userProxy.getCredentials();
         
         win = Titanium.UI.createWindow({
             exitOnClose: false, 
@@ -164,7 +164,7 @@ var SettingsWindowController = function(facade){
                 wasFormSubmitted = true;
                 activityIndicator.setLoadingMessage(app.localDictionary.loggingIn);
                 activityIndicator.show();
-                app.models.loginProxy.saveCredentials({
+                app.models.userProxy.saveCredentials({
                     username: usernameInput.value, 
                     password: passwordInput.value 
                 });
@@ -186,7 +186,7 @@ var SettingsWindowController = function(facade){
     onLogOutButtonClick = function (e) {
         if (passwordInput) { passwordInput.blur(); }
         if (usernameInput) { usernameInput.blur(); }
-        app.models.loginProxy.saveCredentials({
+        app.models.userProxy.saveCredentials({
             username: '', 
             password: ''
         });
@@ -269,7 +269,7 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
-        if (e.user && e.user != app.models.loginProxy.getCredentials().username && wasFormSubmitted) {
+        if (e.user && e.user != app.models.userProxy.getCredentials().username && wasFormSubmitted) {
             /*if (!win || !win.visible) {
                 app.models.windowManager.openWindow(_self.key);
             }*/

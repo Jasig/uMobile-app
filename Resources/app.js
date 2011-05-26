@@ -85,6 +85,7 @@ startup = function (e) {
     Titanium.include('js/models/MapProxy.js');
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
+    Titanium.include('js/models/UserProxy.js');
     Titanium.include('js/models/WindowManager.js');
 
     Titanium.include('js/views/MapDetailTop.js');
@@ -121,6 +122,7 @@ startup = function (e) {
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('localLogin', new LocalLogin(app));
     app.registerModel('CASLogin', new CASLogin(app));
+    app.registerModel('userProxy', new UserProxy(app));
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
     app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
     
