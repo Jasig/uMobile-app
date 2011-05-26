@@ -285,6 +285,4 @@ var SettingsWindowController = function(facade){
     if (!initialized) {
         init();
     }
-    
-    return self;
 };
