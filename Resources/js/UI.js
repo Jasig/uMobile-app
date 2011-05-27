@@ -1,29 +1,33 @@
 var UI = function (facade) {
-    var self = {}, app=facade, init, device;
+    var self = {}, app=facade, init, Device, Styles, WindowManager, SettingsWindow, PortalWindow, LocalDictionary;
     
     init = function () {
-        device = app.models.deviceProxy;
+        Device = app.models.deviceProxy;
+        Styles = app.styles;
+        WindowManager = app.models.windowManager;
+        LocalDictionary = app.localDictionary;
+        
     };
     
     self.createSearchBar = function () {
         var searchBar, searchBarObject = {}, searchBarInput;
         
-        if (device.isIOS()) {
-            searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+        if (Device.isIOS()) {
+            searchBar = Titanium.UI.createSearchBar(Styles.searchBar);
             searchBarObject.container = searchBar;
             searchBarObject.input = searchBar;
         }
         else {
-            searchBar = Titanium.UI.createView(app.styles.searchBar);
-            searchBarInput = Titanium.UI.createTextField(app.styles.searchBarInput);
+            searchBar = Titanium.UI.createView(Styles.searchBar);
+            searchBarInput = Titanium.UI.createTextField(Styles.searchBarInput);
             searchBar.add(searchBarInput);
             searchBarObject.container = searchBar;
             searchBarObject.input = searchBarInput;
         }
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
-            if (searchBar) { searchBar.width = app.styles.searchBar.width; }
-            if (searchBarInput) { searchBarInput.width = app.styles.searchBarInput.width; }
+            if (searchBar) { searchBar.width = Styles.searchBar.width; }
+            if (searchBarInput) { searchBarInput.width = Styles.searchBarInput.width; }
         });
         
         return searchBarObject;
@@ -33,9 +37,16 @@ var UI = function (facade) {
         // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
         //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
         var initTitleBar, title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
-            titleBar = Titanium.UI.createView(app.styles.titleBar),
-            labelStyle = app.styles.titleBarLabel,
+            titleBar = Titanium.UI.createView(Styles.titleBar),
+            labelStyle = Styles.titleBarLabel,
             onSettingsClick, onSettingsPressDown, onSettingsPressUp, onHomeClick, onHomePressUp, onHomePressDown;
+        
+        if (!SettingsWindow) {
+            SettingsWindow = app.controllers.settingsWindowController;
+        }
+        if (!PortalWindow) {
+            PortalWindow = app.controllers.portalWindowController;
+        }
 
         initTitleBar = function () {
             if (opts.title) {
@@ -57,78 +68,78 @@ var UI = function (facade) {
             if (opts.homeButton && !opts.backButton) {
                 //Expects homeButton to be a boolean indicating whether or not to show the home button
                 //There shouldn't be a home button and back button, as then the bar just gets too cluttered. Back button wins in a fight.
-                homeButtonContainer = Titanium.UI.createView(app.styles.titleBarHomeContainer);
+                homeButtonContainer = Titanium.UI.createView(Styles.titleBarHomeContainer);
                 titleBar.add(homeButtonContainer);
 
-                homeButton = Titanium.UI.createImageView(app.styles.titleBarHomeButton);
+                homeButton = Titanium.UI.createImageView(Styles.titleBarHomeButton);
                 homeButtonContainer.add(homeButton);
 
                 homeButtonContainer.addEventListener('singletap', onHomeClick);
                 homeButtonContainer.addEventListener('touchstart', onHomePressDown);
-                homeButtonContainer.addEventListener(device.isAndroid() ? 'touchcancel' : 'touchend', onHomePressUp);
+                homeButtonContainer.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onHomePressUp);
 
             }
             if (opts.settingsButton) {
-                settingsButtonContainer = Titanium.UI.createView(app.styles.titleBarSettingsContainer);
+                settingsButtonContainer = Titanium.UI.createView(Styles.titleBarSettingsContainer);
                 titleBar.add(settingsButtonContainer);
 
                 //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
-                settingsButton = Titanium.UI.createImageView(app.styles.titleBarSettingsButton);
+                settingsButton = Titanium.UI.createImageView(Styles.titleBarSettingsButton);
             	settingsButtonContainer.add(settingsButton);
 
                 settingsButtonContainer.addEventListener('singletap', onSettingsClick);
                 settingsButtonContainer.addEventListener('touchstart', onSettingsPressDown);
-                settingsButtonContainer.addEventListener(device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
+                settingsButtonContainer.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
             }
             
             Titanium.App.addEventListener('dimensionchanges', function (e) {
-            	if (titleBar) { titleBar.width = app.styles.titleBar.width; }
-                if (settingsButtonContainer) { settingsButtonContainer.left = app.styles.titleBarSettingsContainer.left; }
-                if (homeButtonContainer) { homeButtonContainer.left = app.styles.titleBarHomeContainer.left; }
+            	if (titleBar) { titleBar.width = Styles.titleBar.width; }
+                if (settingsButtonContainer) { settingsButtonContainer.left = Styles.titleBarSettingsContainer.left; }
+                if (homeButtonContainer) { homeButtonContainer.left = Styles.titleBarHomeContainer.left; }
             });
         };
         
         onHomeClick = function (e) {
             Ti.API.debug("Home button clicked in GenericTitleBar");
-            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+            WindowManager.openWindow(PortalWindow.key);
         };
 
         onHomePressDown = function (e) {
             var timeUp;
 
-            homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColorPressed;
-            if (device.isAndroid()) {
+            homeButtonContainer.backgroundColor = Styles.titleBarHomeContainer.backgroundColorPressed;
+            if (Device.isAndroid()) {
                 //Because Android doesn't consistently register touchcancel or touchend, especially
                 //when the window changes in the middle of a press
                 timeUp = setTimeout(function(){
-                    homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColor;
+                    homeButtonContainer.backgroundColor = Styles.titleBarHomeContainer.backgroundColor;
                     clearTimeout(timeUp);
                 }, 1000);
             }
         };
 
         onHomePressUp = function (e) {
-            homeButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColor;
+            homeButtonContainer.backgroundColor = Styles.titleBarHomeContainer.backgroundColor;
         };
         onSettingsClick = function (e) {
-            app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+            WindowManager.openWindow(SettingsWindow.key);
         };
 
         onSettingsPressDown = function (e) {
             var timeUp;
-            settingsButtonContainer.backgroundColor = app.styles.titleBarSettingsContainer.backgroundColorPressed;
-            if (device.isAndroid()) {
+            settingsButtonContainer.backgroundColor = Styles.titleBarSettingsContainer.backgroundColorPressed;
+            if (Device.isAndroid()) {
                 //Because Android doesn't consistently register touchcancel or touchend, especially
                 //when the window changes in the middle of a press
                 timeUp = setTimeout(function(){
-                    settingsButtonContainer.backgroundColor = app.styles.titleBarHomeContainer.backgroundColor;
+                    settingsButtonContainer.backgroundColor = Styles.titleBarHomeContainer.backgroundColor;
                     clearTimeout(timeUp);
                 }, 1000);            
             }
         };
 
         onSettingsPressUp = function (e) {
-            settingsButtonContainer.backgroundColor = app.styles.titleBarSettingsContainer.backgroundColor;
+            settingsButtonContainer.backgroundColor = Styles.titleBarSettingsContainer.backgroundColor;
         };
 
         initTitleBar();
@@ -144,8 +155,8 @@ var UI = function (facade) {
             secondaryNavBar = Titanium.UI.createView(style);
         }
         else {
-            Ti.API.debug("opts.style not defined in SecondaryNavBar, will create with style: " + app.styles.secondaryNavBar);
-            secondaryNavBar = Titanium.UI.createView(app.styles.secondaryNavBar);
+            Ti.API.debug("opts.style not defined in SecondaryNavBar, will create with style: " + Styles.secondaryNavBar);
+            secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
         }
 
         if(opts.backButton) {
@@ -153,7 +164,7 @@ var UI = function (facade) {
         }
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
-            secondaryNavBar.width = app.styles.secondaryNavBar.width;
+            secondaryNavBar.width = Styles.secondaryNavBar.width;
         });
         
         return secondaryNavBar;
@@ -161,13 +172,13 @@ var UI = function (facade) {
     
     self.createActivityIndicator = function () {
         var messageLabel,
-            indicator = Ti.UI.createView(app.styles.globalActivityIndicator),
-            dialog = Ti.UI.createView(app.styles.activityIndicatorDialog);
+            indicator = Ti.UI.createView(Styles.globalActivityIndicator),
+            dialog = Ti.UI.createView(Styles.activityIndicatorDialog);
 
         indicator.add(dialog);
         
-        messageLabel = Ti.UI.createLabel(app.styles.activityIndicatorMessage);
-        messageLabel.text = app.localDictionary.loading;
+        messageLabel = Ti.UI.createLabel(Styles.activityIndicatorMessage);
+        messageLabel.text = LocalDictionary.loading;
         dialog.add(messageLabel);
         
         indicator.setLoadingMessage = function (m) {
@@ -182,9 +193,9 @@ var UI = function (facade) {
         };
         
         indicator.resetDimensions = function () {
-            indicator.top = app.styles.globalActivityIndicator.top;
-            indicator.height = app.styles.globalActivityIndicator.height;
-            indicator.width = app.styles.globalActivityIndicator.width;
+            indicator.top = Styles.globalActivityIndicator.top;
+            indicator.height = Styles.globalActivityIndicator.height;
+            indicator.width = Styles.globalActivityIndicator.width;
         };
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {

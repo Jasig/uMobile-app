@@ -1,24 +1,24 @@
 var LocalLogin = function (facade) {
     var app = facade, init, _self = this,
-    loginProxy, sessionProxy, client, url, credentials, onLoginComplete, onLoginError;
+    Config, Login, Session, User, client, url, credentials, onLoginComplete, onLoginError;
     
     init = function () {
-        //Nothing to init.
+        Config = app.config;
     };
     
     this.login = function (creds, options) {
         Ti.API.debug("login() in LocalLogin");
-        if (!loginProxy) {
-            loginProxy = app.models.loginProxy;
+        if (!Login) {
+            Login = app.models.loginProxy;
         }
-        if (!sessionProxy) {
-            sessionProxy = app.models.sessionProxy;
+        if (!Session) {
+            Session = app.models.sessionProxy;
         }
-        if (!userProxy) {
-            userProxy = app.models.userProxy;
+        if (!User) {
+            User = app.models.userProxy;
         }
         credentials = creds;
-        url = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true';
+        url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true';
 
         client = Titanium.Network.createHTTPClient({
             onload: onLoginComplete,
@@ -36,20 +36,20 @@ var LocalLogin = function (facade) {
     
     this.getLoginURL = function (url) {
         // This method returns a URL suitable to automatically login a user in a webview.
-        credentials = userProxy.getCredentials();
-        return app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + Ti.Network.encodeURIComponent(url);
+        credentials = User.getCredentials();
+        return Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + Ti.Network.encodeURIComponent(url);
     };
     
     onLoginComplete = function (e) {
         Ti.API.debug("onLoginComplete() in LocalLogin");
         var _layoutUser;
 
-        _layoutUser = loginProxy.getLayoutUser(client);
+        _layoutUser = Login.getLayoutUser(client);
         
         if (_layoutUser === credentials.username) {
             Ti.API.info("_layoutUser matches credentials.username");
-            Ti.API.info("loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
-            sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Ti.API.info("Login.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
+            Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             // if (!options || !options.isUnobtrusive) {
                 Ti.App.fireEvent('EstablishNetworkSessionSuccess', {user: _layoutUser});
             // }
@@ -61,7 +61,9 @@ var LocalLogin = function (facade) {
     };
     
     onLoginError = function (e) {
-        sessionProxy.stopTimer(loginProxy.sessionTimeContexts.NETWORK);
+        Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
         Ti.App.fireEvent('EstablishNetworkSessionFailure');
     };
+    
+    init();
 };

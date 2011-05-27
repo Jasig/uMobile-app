@@ -1,15 +1,16 @@
 var UserProxy = function (facade) {
-    var app = facade, init, _self = this;
+    var app = facade, init, _self = this, Config, Encryption;
     
     init = function () {
-        
+        Config = app.config;
+        Encryption = app.GibberishAES;
     };
     
     this.saveCredentials = function (credentials) {
         var db, username, password;
 
-        username = app.GibberishAES.enc(credentials.username, app.UPM.ENCRYPTION_KEY);
-        password = app.GibberishAES.enc(credentials.password, app.UPM.ENCRYPTION_KEY);
+        username = Encryption.enc(credentials.username, Config.ENCRYPTION_KEY);
+        password = Encryption.enc(credentials.password, Config.ENCRYPTION_KEY);
 
         // open the database
         db = Ti.Database.open('umobile');
@@ -50,7 +51,7 @@ var UserProxy = function (facade) {
         rows = db.execute('SELECT value from prefs where name="username"');
         if (rows.isValidRow()) {
             try { 
-                credentials.username = app.GibberishAES.dec(rows.fieldByName('value'), app.UPM.ENCRYPTION_KEY);
+                credentials.username = Encryption.dec(rows.fieldByName('value'), Config.ENCRYPTION_KEY);
             } catch (e) {
                 Ti.API.debug("Couldn't decrypt username");
             }
@@ -61,7 +62,7 @@ var UserProxy = function (facade) {
         if (rows.isValidRow()) {
             (function(){
                 try {
-                    credentials.password = app.GibberishAES.dec(rows.fieldByName('value'), app.UPM.ENCRYPTION_KEY);
+                    credentials.password = Encryption.dec(rows.fieldByName('value'), Config.ENCRYPTION_KEY);
                 } catch (e) {
                     Ti.API.debug("Couldn't decrypt password");
                 }            
@@ -72,4 +73,6 @@ var UserProxy = function (facade) {
 
         return credentials;
     };
+    
+    init();
 };

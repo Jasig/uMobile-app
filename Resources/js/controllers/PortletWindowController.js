@@ -51,7 +51,7 @@ var PortletWindowController = function (facade) {
             UI = app.UI;
             LocalDictionary = app.localDictionary;
             Login = app.models.loginProxy;
-            UPM = app.UPM;
+            UPM = app.config;
             Session = app.models.sessionProxy;
             
             initialized = true;

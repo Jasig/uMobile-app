@@ -55,7 +55,7 @@ var MapWindowController = function(facade) {
             Styles = app.styles;
             UI = app.UI;
             LocalDictionary = app.localDictionary;
-            UPM = app.UPM;
+            UPM = app.config;
             MapDetailView = app.controllers.MapDetailViewController;
             
             Map.init();

@@ -1,7 +1,7 @@
 var MapDetailViewController = function (facade,opts) {   
     var app = facade,
         self = Titanium.UI.createView(app.styles.view),
-        device,
+        Device, Styles, LocalDictionary, MapDetailTop, UI,
         locationData = opts.data,
         locationDetailTitleBar,
         locationDetailMap,
@@ -16,11 +16,16 @@ var MapDetailViewController = function (facade,opts) {
     init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
         Ti.API.debug("Creating titleBackButton in MapDetailViewController");
+
+        //Declare pointers to facade modules
+        Device = app.models.deviceProxy;
+        Styles = app.styles;
+        LocalDictionary = app.localDictionary;
+        MapDetailTop = app.views.MapDetailTop;
+        UI = app.UI;
         
-        device = app.models.deviceProxy;
-        
-        titleBackButtonOptions = app.styles.secondaryBarButton;
-        titleBackButtonOptions.title = app.localDictionary.back;
+        titleBackButtonOptions = Styles.secondaryBarButton;
+        titleBackButtonOptions.title = LocalDictionary.back;
         titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
         
         titleBackButton.addEventListener('touchstart', onBackButtonPress);
@@ -42,7 +47,7 @@ var MapDetailViewController = function (facade,opts) {
         Ti.API.debug("Creating locationDetailTitleBar in MapDetailViewController");
         //Create the title bar for the top of the detail view
         if(!locationDetailTitleBar) {
-            locationDetailTitleBar = app.UI.createSecondaryNavBar({
+            locationDetailTitleBar = UI.createSecondaryNavBar({
                 backButton: titleBackButton
             });
             Ti.API.debug("Here's what the Secondary Nav Title Bar came back as: " + locationDetailTitleBar);
@@ -54,7 +59,7 @@ var MapDetailViewController = function (facade,opts) {
         Ti.API.debug("Creating topDetailView in MapDetailViewController");
         //Create the top area of the detail view, containing the map icon, address, and directions link.
         if(!topDetailView) {
-            topDetailView = new app.views.MapDetailTop({
+            topDetailView = new MapDetailTop({
                 details: locationData,
                 app: app
             });
@@ -70,7 +75,7 @@ var MapDetailViewController = function (facade,opts) {
         //Display a photo of the location, if one is available.
         if (locationData.img) {
             if(!locationPhoto) {
-                locationPhotoOptions = app.styles.mapDetailLocationPhoto;
+                locationPhotoOptions = Styles.mapDetailLocationPhoto;
                 locationPhotoOptions.image = locationData.img.replace(/\/thumbnail\//,'/photo/');
                 locationPhoto = Titanium.UI.createImageView(locationPhotoOptions);                
                 self.add(locationPhoto);
@@ -92,20 +97,20 @@ var MapDetailViewController = function (facade,opts) {
     };
     
     onBackButtonPress = function (e) {
-        if (device.isIOS()) {
-            titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+        if (Device.isIOS()) {
+            titleBackButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradientPress;
         }
         else {
-            titleBackButton.backgroundImage = app.styles.secondaryBarButton.backgroundImagePress;
+            titleBackButton.backgroundImage = Styles.secondaryBarButton.backgroundImagePress;
         }
     };
     
     onBackButtonUp = function (e) {
-        if (device.isIOS()) {
-            titleBackButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
+        if (Device.isIOS()) {
+            titleBackButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradient;
         }
         else {
-            titleBackButton.backgroundImage = app.styles.secondaryBarButton.backgroundImage;
+            titleBackButton.backgroundImage = Styles.secondaryBarButton.backgroundImage;
         }
     };
     

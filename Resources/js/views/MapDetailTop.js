@@ -1,5 +1,5 @@
 var MapDetailTop = function (opts) {
-    var app = opts.app,
+    var app = opts.app, Styles, LocalDictionary,
         details = opts.details,
         detailView, mapIcon, mapIconContainer, directionsButton, locationTitle, locationAddress,
         onGetDirections, onDirBtnPress, onDirBtnUp,
@@ -8,25 +8,28 @@ var MapDetailTop = function (opts) {
     function init() {
         var locationAddressOptions, locationTitleOptions;
         
+        Styles = app.styles;
+        LocalDictionary = app.localDictionary;
+        
         Ti.API.debug("Creating detailView in MapDetailTop");
-        detailViewOptions = app.styles.mapDetailViewTop;
-        detailView = Titanium.UI.createView(app.styles.mapDetailTopView);
+        detailViewOptions = Styles.mapDetailViewTop;
+        detailView = Titanium.UI.createView(Styles.mapDetailTopView);
 
-        locationTitleOptions = app.styles.mapDetailLocationTitle;
+        locationTitleOptions = Styles.mapDetailLocationTitle;
         locationTitleOptions.text = details.title;
         locationTitle = Titanium.UI.createLabel(locationTitleOptions);
         detailView.add(locationTitle);
 
         Ti.API.debug("Creating locationAddressLabel in MapDetailTop");
         //Add a label for the address next to the map thumbnail
-        locationAddressOptions = app.styles.mapDetailLocationAddress;
-        locationAddressOptions.text = details.address || app.localDictionary.noAddressAvailable;
+        locationAddressOptions = Styles.mapDetailLocationAddress;
+        locationAddressOptions.text = details.address || LocalDictionary.noAddressAvailable;
         locationAddress = Titanium.UI.createLabel(locationAddressOptions);
         detailView.add(locationAddress);
 
         Ti.API.debug("Creating directionsButton in MapDetailTop");
         
-        directionsButtonOptions = app.styles.contentButton;
+        directionsButtonOptions = Styles.contentButton;
         
         //Add "Get Directions" button
 
@@ -35,7 +38,7 @@ var MapDetailTop = function (opts) {
         directionsButtonOptions.width = 150;
         
         if(details.address) {
-            directionsButtonOptions.title = opts.app.localDictionary.getDirections;
+            directionsButtonOptions.title = LocalDictionary.getDirections;
         }
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);
         
@@ -68,7 +71,7 @@ var MapDetailTop = function (opts) {
 
         locationTitle.text = details.title;
 
-        locationAddress.text = details.address || app.localDictionary.noAddressAvailable;
+        locationAddress.text = details.address || LocalDictionary.noAddressAvailable;
         Ti.API.debug("update() finished in MapDetailTop");
     };
     
@@ -80,11 +83,11 @@ var MapDetailTop = function (opts) {
         Ti.Platform.openURL(getMapAddress());
     };
     onDirBtnPress = function (e) {
-        directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+        directionsButton.backgroundGradient = Styles.contentButton.backgroundGradientPress;
     };
     
     onDirBtnUp = function (e) {
-        directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+        directionsButton.backgroundGradient = Styles.contentButton.backgroundGradient;
     };
 
     init();

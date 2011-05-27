@@ -1,5 +1,15 @@
+/**
+* @constructor
+**/
+
 var ResourceProxy = function (facade) {
-    var _self = this, app = facade, init, resolutionMatrix = ResourceProxy.resolutionMatrix;
+    var _self = this, app = facade, init, Config,
+    resolutionMatrix;
+    
+    init = function () {
+        Config = app.config;
+        resolutionMatrix = ResourceProxy.resolutionMatrix;
+    };
     
     this.getResourcePath = function (file) {
         //File path should be passed in as a relative path loaded from the root of the Resources directory. 
@@ -21,8 +31,8 @@ var ResourceProxy = function (facade) {
         //Every icon should have these sizes: 114 (iOS retina), 72 (iPad and Android hi-res), 57 (iOS medium), 48 (Android medium), 36 (Android low)
         resolution = '_' + resolutionMatrix[Ti.Platform.osname][Ti.Platform.displayCaps.density];
         
-        if (app.UPM.nativeIcons[fname]) {
-            var path = (app.UPM.nativeIcons[fname]).replace('.png', resolution + '.png');
+        if (Config.nativeIcons[fname]) {
+            var path = (Config.nativeIcons[fname]).replace('.png', resolution + '.png');
             return path;
         }
         else {
@@ -30,6 +40,7 @@ var ResourceProxy = function (facade) {
             return false;
         }
     };
+    init();
 };
 ResourceProxy.resolutionMatrix = {
     android: {

@@ -1,12 +1,20 @@
 var PortalProxy = function (facade) {
-    var app = facade, _self = this, portlets = [], sortPortlets, loadPortletList, init,
+    var app = facade, _self = this, WindowManager, PortletWindow, Resources, Config, LocalDictionary,
+    portlets = [], sortPortlets, loadPortletList, init,
         pathToRoot = '../../';
     
     init = function () {
-        //Nothing to see here
+        WindowManager = app.models.windowManager;
+        PortletWindow = app.controllers.portletWindowController || false;
+        Resources = app.models.resourceProxy;
+        Config = app.config;
+        LocalDictionary = app.localDictionary;
     };
     
     this.getShowPortletFunc = function (portlet) {
+        if (!PortletWindow) {
+            PortletWindow = app.controllers.portletWindowController || false;
+        }
         //Returns a function to the PortalWindowController to open the appropriate window 
         //when an icon is clicked in the home screen grid.
         
@@ -14,11 +22,11 @@ var PortalProxy = function (facade) {
         return function () {
             if (portlet.url) {
                 Ti.API.debug("portlet.url exists in getShowPortletFunc() in PortalProxy");
-                app.models.windowManager.openWindow(app.controllers.portletWindowController.key, portlet);
+                WindowManager.openWindow(PortletWindow.key, portlet);
             } 
             else {
                 Ti.API.debug("portlet.url doesn't exist in getShowPortletFunc() in PortalProxy");
-                app.models.windowManager.openWindow(portlet.window);
+                WindowManager.openWindow(portlet.window);
             }
         };
     };
@@ -55,17 +63,17 @@ var PortalProxy = function (facade) {
     this.getIconUrl = function (p) {
         var _iconUrl;
         
-        if (app.models.resourceProxy.getPortletIcon(p.fname)) {
-            _iconUrl = app.models.resourceProxy.getPortletIcon(p.fname);
+        if (Resources.getPortletIcon(p.fname)) {
+            _iconUrl = Resources.getPortletIcon(p.fname);
         }
         else if (p.iconUrl && p.iconUrl.indexOf('/') == 0) {
-            _iconUrl = app.UPM.BASE_PORTAL_URL + p.iconUrl;
+            _iconUrl = Config.BASE_PORTAL_URL + p.iconUrl;
         } 
         else if (p.iconUrl) {
             _iconUrl = pathToRoot + p.iconUrl;
         } 
         else {
-            _iconUrl = app.UPM.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
+            _iconUrl = Config.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
         }
 
         return _iconUrl;
@@ -79,7 +87,7 @@ var PortalProxy = function (facade) {
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
                 
-                var responseXML, nativeModules = app.UPM.getLocalModules();
+                var responseXML, nativeModules = Config.getLocalModules();
                 
                 if (layoutClient.responseXML == null) {
                     if (typeof DOMParser != "undefined") {
@@ -141,12 +149,12 @@ var PortalProxy = function (facade) {
             };
 
             onGetPortletsError = function (e) {
-                Ti.App.fireEvent("PortalProxyNetworkError", {message: app.localDictionary.couldNotConnectToPortal});
+                Ti.App.fireEvent("PortalProxyNetworkError", {message: LocalDictionary.couldNotConnectToPortal});
             };
 
         // Send a request to uPortal's main URL to get a JSON representation of the
         // user layout
-        layoutUrl = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT;
+        layoutUrl = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT;
         layoutClient = Titanium.Network.createHTTPClient({
             onload: onGetPortletsComplete,
             onerror: onGetPortletsError

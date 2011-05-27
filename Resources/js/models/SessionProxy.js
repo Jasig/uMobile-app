@@ -1,5 +1,6 @@
 var SessionProxy = function (facade) {
-    var app = facade, _self = this, device, timers = [], sessionLifeTimeMilli, init, onSessionExpire, onTimeout;
+    var app = facade, _self = this, Device, Config, Login,
+    timers = [], sessionLifeTimeMilli, init, onSessionExpire, onTimeout;
     
     /* 
     The SessionProxy acts as a sub-proxy for LoginProxy to maintain a local
@@ -11,11 +12,13 @@ var SessionProxy = function (facade) {
     */
     
     init = function () {
-        device = app.models.deviceProxy;
+        Device = app.models.deviceProxy;
+        Config = app.config;
+        Login = app.models.loginProxy;
         
         //Gets the session expiration time from the config in seconds,
         //converts to milliseconds for use in the setTimeout
-        sessionLifeTimeMilli = parseInt(app.UPM.SERVER_SESSION_TIMEOUT * 1000, 10);
+        sessionLifeTimeMilli = parseInt(Config.SERVER_SESSION_TIMEOUT * 1000, 10);
         Ti.App.addEventListener('SessionActivity', onSessionActivity);
     };
     
@@ -30,7 +33,7 @@ var SessionProxy = function (facade) {
         // It also doesn't share cookies between separate webviews.
         
         Ti.API.info("Reset the timer for: " + context + " & timer= " + sessionLifeTimeMilli);
-        if (!device.isAndroid()) {
+        if (!Device.isAndroid()) {
             // In iPhone we only maintain one timer since cookies are shared
             // between network requests and webviews.
             if(timers[LoginProxy.sessionTimeContexts.NETWORK].counter) {
@@ -72,11 +75,11 @@ var SessionProxy = function (facade) {
     
     this.isActive = function (context) {
         Ti.API.debug("this.isActive() in SessionProxy, with context: " + context);
-        if (device.isIOS()) {
+        if (Device.isIOS()) {
             //If it's iphone, we only need to check that one context has an active session.
-            if(timers[app.models.loginProxy.sessionTimeContexts.NETWORK]) {
-                Ti.API.debug("in isActive() in SessionProxy, there IS a timer for the request, and is it active? " + timers[app.models.loginProxy.sessionTimeContexts.NETWORK].isActive);
-                return timers[app.models.loginProxy.sessionTimeContexts.NETWORK].isActive;
+            if(timers[Login.sessionTimeContexts.NETWORK]) {
+                Ti.API.debug("in isActive() in SessionProxy, there IS a timer for the request, and is it active? " + timers[Login.sessionTimeContexts.NETWORK].isActive);
+                return timers[Login.sessionTimeContexts.NETWORK].isActive;
             }
             else {
                 Ti.API.debug("in isActive() in SessionProxy, there's no timer for the request.");
@@ -105,7 +108,7 @@ var SessionProxy = function (facade) {
     
     this.createSessionTimer = function (context) {
         var session = {};
-        if (device.isAndroid() || (context === LoginProxy.sessionTimeContexts.NETWORK && !timers[context])) {
+        if (Device.isAndroid() || (context === LoginProxy.sessionTimeContexts.NETWORK && !timers[context])) {
             session.context = context;
             session.isActive = false;
             timers[context] = session;
@@ -129,7 +132,7 @@ var SessionProxy = function (facade) {
 
         for (var timer in timers) {
             if (timers.hasOwnProperty(timer)) {
-                if (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0)) < parseInt(app.UPM.SERVER_SESSION_TIMEOUT * 1000, 10)) {
+                if (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0)) < parseInt(Config.SERVER_SESSION_TIMEOUT * 1000, 10)) {
                     Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0))));
                     _sessions[timer] = true;
                 }
@@ -141,7 +144,7 @@ var SessionProxy = function (facade) {
             }
         }
         
-        if (device.isIOS()) {
+        if (Device.isIOS()) {
             //Because we only maintain one timer in iOS, we'll make Webview equal network
             _sessions[LoginProxy.sessionTimeContexts.WEBVIEW] = _sessions[LoginProxy.sessionTimeContexts.NETWORK];
         }

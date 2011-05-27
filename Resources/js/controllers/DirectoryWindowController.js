@@ -64,7 +64,7 @@ var DirectoryWindowController = function (facade) {
             Styles = app.styles;
             LocalDictionary = app.localDictionary;
             UI = app.UI;
-            UPM = app.UPM;
+            UPM = app.config;
 
             initialized = true;
         }

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-var app, loadingWindow, windowManager, startup;
+var app, loadingWindow, WindowManager, startup;
 
 if (Titanium.Platform.osname == 'android' ) {
     (function () {
@@ -101,15 +101,16 @@ startup = function (e) {
     //The facade is always called "app" in each controller, and depending on the type of member,
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
-    app.registerMember('UPM', new Config(app)); //Global config object
+    app.registerMember('config', new Config(app)); //Global config object
     app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerModel('deviceProxy', new DeviceProxy(app));
-    app.registerMember('UI', new UI(app));
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
+    app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
+    app.registerMember('UI', new UI(app));
     app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
     
-    app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
+    
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('localLogin', new LocalLogin(app));
@@ -122,21 +123,22 @@ startup = function (e) {
     app.registerController('portalWindowController', new PortalWindowController(app));
     app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
     app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
-
     app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
     app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
+
+    
 
     // Add window controllers to the window manager,
     // which manages the stack of window activities, and manages opening and closing
     // of windows so that controllers don't have to be concerned with details,
     // they just tell the window manager what to open, and it handles the rest.
-    windowManager = app.models.windowManager;
+    WindowManager = app.models.windowManager;
 
-    windowManager.addWindow(app.controllers.portalWindowController); //Home controller
-    windowManager.addWindow(app.controllers.portletWindowController);
-    windowManager.addWindow(app.controllers.directoryWindowController);
-    windowManager.addWindow(app.controllers.mapWindowController);
-    windowManager.addWindow(app.controllers.settingsWindowController);
+    WindowManager.addWindow(app.controllers.portalWindowController); //Home controller
+    WindowManager.addWindow(app.controllers.portletWindowController);
+    WindowManager.addWindow(app.controllers.directoryWindowController);
+    WindowManager.addWindow(app.controllers.mapWindowController);
+    WindowManager.addWindow(app.controllers.settingsWindowController);
 
     // This will determine if a network session exists, and what 
     // window was open last time the app closed, and will manage the process
@@ -146,7 +148,7 @@ startup = function (e) {
     Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
         Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
         if (loadingWindow) { loadingWindow.close(); }
-        app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+        WindowManager.openWindow(app.controllers.portalWindowController.key);
     });
     
     Titanium.Gesture.addEventListener('orientationchange', function callback(e){

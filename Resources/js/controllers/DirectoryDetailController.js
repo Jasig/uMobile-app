@@ -1,6 +1,7 @@
 var DirectoryDetailController = function (facade) {
     var app = facade,
-        device = app.models.deviceProxy, self = Titanium.UI.createView(app.styles.contactDetailView), init,
+        Device, Styles, LocalDictionary, PersonDetailTableView, Config,
+        self = Titanium.UI.createView(app.styles.contactDetailView), init,
         //UI Components
         titleBar, nameLabel, phoneLabel, attributeTable, backButton,
         //Methods
@@ -11,11 +12,18 @@ var DirectoryDetailController = function (facade) {
     init = function () {
         Ti.API.debug('DirectoryDetailController constructed');
         var backButtonOpts, backBarOpts, backBar;
+        
+        Device = app.models.deviceProxy;
+        Styles = app.styles;
+        LocalDictionary = app.localDictionary;
+        PersonDetailTable = app.views.PersonDetailTableView;
+        Config = app.config;
+        
         self.initialized = true;
         self.update = updateValues;
         
-        backButtonOpts = app.styles.secondaryBarButton;
-        backButtonOpts.title = app.localDictionary.back;
+        backButtonOpts = Styles.secondaryBarButton;
+        backButtonOpts.title = LocalDictionary.back;
         backButton = Titanium.UI.createButton(backButtonOpts);
 
         backButton.addEventListener("click",function(e){
@@ -26,23 +34,23 @@ var DirectoryDetailController = function (facade) {
         backButton.addEventListener('touchstart', onBackButtonPress);
         backButton.addEventListener('touchend', onBackButtonUp);
         
-        backBarOpts = app.styles.secondaryBar;
+        backBarOpts = Styles.secondaryBar;
         backBarOpts.top = 0;
         backBar = Titanium.UI.createView(backBarOpts);
         backBar.add(backButton);
         self.add(backBar);
         
 
-        nameLabel = Titanium.UI.createLabel(app.styles.directoryDetailNameLabel);
+        nameLabel = Titanium.UI.createLabel(Styles.directoryDetailNameLabel);
         backBar.add(nameLabel);
         
-        attributeTable = new app.views.PersonDetailTableView(app, app.styles.directoryDetailAttributeTable);
+        attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
         self.add(attributeTable);
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
-            if (backBar) { backBar.width = app.styles.secondaryBar.width; }
-            if (nameLabel) { nameLabel.width = app.styles.directoryDetailNameLabel; }
-            if (attributeTable) { attributeTable.width = app.styles.directoryDetailAttributeTable.width; }
+            if (backBar) { backBar.width = Styles.secondaryBar.width; }
+            if (nameLabel) { nameLabel.width = Styles.directoryDetailNameLabel; }
+            if (attributeTable) { attributeTable.width = Styles.directoryDetailAttributeTable.width; }
         });
     };
     
@@ -85,7 +93,7 @@ var DirectoryDetailController = function (facade) {
 
     var getAttribute = function (tiAttrName, attributes) {
         Ti.API.info("getting attribute " + tiAttrName);
-        var portalAttrName = app.UPM.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
+        var portalAttrName = Config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
         if (portalAttrName) {
             var values = attributes[portalAttrName];
             Ti.API.info(values);
@@ -97,11 +105,11 @@ var DirectoryDetailController = function (facade) {
     };
 
     onBackButtonPress = function (e) {
-        backButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradientPress;
+        backButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradientPress;
     };
     
     onBackButtonUp = function (e) {
-        backButton.backgroundGradient = app.styles.secondaryBarButton.backgroundGradient;
+        backButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradient;
     };
 
     if (!self.initialized) {

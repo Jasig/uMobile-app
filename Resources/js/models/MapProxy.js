@@ -1,10 +1,14 @@
 var MapProxy = function (facade) {
-    var app = facade, _self = this,
+    var app = facade, _self = this, Device, Config, Login,
         mapPoints = [], mapCenter, defaultMapCenter,
         onPointsLoaded, onSearchComplete, onEmptySearch, onSearch, onLoadError;
         
     this.init = function () {
         var _db;
+        
+        Device = app.models.deviceProxy;
+        Config = app.config;
+        Login = app.models.loginProxy;
         
         mapCenter = {
             latitude: false,
@@ -119,14 +123,14 @@ var MapProxy = function (facade) {
         //Default returns all points for an institution.
         Ti.API.info("loadMapPoints() in MapProxy");
         Ti.App.fireEvent('MapProxyLoading');
-        if (app.models.deviceProxy.checkNetwork()) {
+        if (Device.checkNetwork()) {
             request = Titanium.Network.createHTTPClient ({
                 connectionType : 'GET',
-                location : app.UPM.MAP_SERVICE_URL,
+                location : Config.MAP_SERVICE_URL,
                 onload : newPointsLoaded,
                 onerror : onLoadError
             });
-            request.open("GET", app.UPM.MAP_SERVICE_URL);
+            request.open("GET", Config.MAP_SERVICE_URL);
             request.send();
         }
 
@@ -135,7 +139,7 @@ var MapProxy = function (facade) {
         Ti.API.info("newPointsLoaded() in MapProxy");
         // Customize the response and add it to the cached mapPoints array in the MapProxy object.
         var response, responseLength, db;
-        Ti.App.fireEvent('SessionActivity', {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
+        Ti.App.fireEvent('SessionActivity', {context: Login.sessionTimeContexts.NETWORK});
         (function(){
             try {
                 response = JSON.parse(e.source.responseText);

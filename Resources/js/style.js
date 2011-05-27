@@ -5,8 +5,12 @@ Right now, it's unsophisticated with only one level of encapsulation. titleBarBu
 To apply styles to elements
 */
 
-var Styles = function (app) {
-    var defaults, stylesheet, OS = Ti.Platform.osname;
+var Styles = function (facade) {
+    var app = facade, Resources,
+    defaults, stylesheet, OS = Ti.Platform.osname;
+    
+    Resources = app.models.resourceProxy;
+    
     defaults = {
         TITLEBAR_HEIGHT: 40,
         SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 48 : 40,
@@ -196,7 +200,7 @@ var Styles = function (app) {
         },
         //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
         titleBarHomeButton: {
-            image: app.models.resourceProxy.getResourcePath("icons/tab-home.png"),
+            image: Resources.getResourcePath("icons/tab-home.png"),
             width: 18,
             height: 18
         },
@@ -212,7 +216,7 @@ var Styles = function (app) {
         titleBarSettingsButton: {
     	    height: 18,
     	    width: 18,
-    	    image: app.models.resourceProxy.getResourcePath("icons/tab-settings.png")
+    	    image: Resources.getResourcePath("icons/tab-settings.png")
     	},
     	secondaryNavBar: {
             top: 0,
@@ -291,7 +295,7 @@ var Styles = function (app) {
             right: 11,
             height: 20,
             width: 20,
-            image: app.models.resourceProxy.getResourcePath('icons/badgeBackground.png')
+            image: Resources.getResourcePath('icons/badgeBackground.png')
         },
         gridBadgeNumber: {
             textAlign: "center",
@@ -433,7 +437,7 @@ var Styles = function (app) {
     	    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
     	    color: '#fff',
     	    zIndex: 1000,
-    	    backgroundImage: app.models.resourceProxy.getResourcePath('img/bgActivityIndicator.png')
+    	    backgroundImage: Resources.getResourcePath('img/bgActivityIndicator.png')
     	},
     	activityIndicatorDialog: {
     	    width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
@@ -441,7 +445,7 @@ var Styles = function (app) {
     	    borderRadius: 10,
     	    borderWidth: 1,
     	    borderColor: "#fff",
-    	    backgroundImage: app.models.resourceProxy.getResourcePath('img/bgActivityIndicatorDialog.png')
+    	    backgroundImage: Resources.getResourcePath('img/bgActivityIndicatorDialog.png')
     	},
     	activityIndicatorMessage: {
     	    textAlign: 'center',
@@ -493,5 +497,6 @@ var Styles = function (app) {
         stylesheet.secondaryBarButton.backgroundImagePress = '/img/secondarybarbtnbg_press.png';
         stylesheet.mapAnnotation.image = '/img/mapPin.png';
     }
+    
     return stylesheet;
 };

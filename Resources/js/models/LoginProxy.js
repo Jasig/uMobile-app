@@ -1,6 +1,6 @@
 var LoginProxy = function (facade) {
     var app = facade, _self = this, 
-        sessionProxy, device, localLogin, CASLogin, loginMethod,
+        Config, Session, Device, User, LocalLogin, CASLogin, loginMethod,
         init, updateSessionTimeout, establishSilentNetworkSession,
         networkSessionTimer, webViewSessionTimer, onSessionExpire, onNetworkError;
 
@@ -14,26 +14,27 @@ var LoginProxy = function (facade) {
         //Implement constants for what contexts are available for session timeouts.
         _self.sessionTimeContexts = LoginProxy.sessionTimeContexts;
         
-        device = app.models.deviceProxy;
-        sessionProxy = app.models.sessionProxy;
-        userProxy = app.models.userProxy;
-        localLogin = app.models.localLogin;
+        Config = app.config;
+        Device = app.models.deviceProxy;
+        Session = app.models.sessionProxy;
+        User = app.models.userProxy;
+        LocalLogin = app.models.localLogin;
         CASLogin = app.models.CASLogin;
         
-        Ti.API.debug("Setting login method: " + app.UPM.LOGIN_METHOD);
-        switch (app.UPM.LOGIN_METHOD) {
+        Ti.API.debug("Setting login method: " + Config.LOGIN_METHOD);
+        switch (Config.LOGIN_METHOD) {
             case LoginProxy.loginMethods.CAS:
                 loginMethod = CASLogin.login;
                 break;
             case LoginProxy.loginMethods.LOCAL_LOGIN:
-                loginMethod = localLogin.login;
+                loginMethod = LocalLogin.login;
                 break;
             default:
                 Ti.API.info("Login method not recognized in LoginProxy.init()");
         }
         
-        sessionProxy.createSessionTimer(_self.sessionTimeContexts.NETWORK);
-        sessionProxy.createSessionTimer(_self.sessionTimeContexts.WEBVIEW);
+        Session.createSessionTimer(_self.sessionTimeContexts.NETWORK);
+        Session.createSessionTimer(_self.sessionTimeContexts.WEBVIEW);
         
         Ti.App.addEventListener('SessionTimerExpired', onSessionExpire);
     };
@@ -48,10 +49,10 @@ var LoginProxy = function (facade) {
         */
         switch (context) {
             case this.sessionTimeContexts.NETWORK:
-                sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+                Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
                 break;
             case this.sessionTimeContexts.WEBVIEW:
-                sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
+                Session.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
                 break;
             default:
                 Ti.API.debug("Context for sessionTimeout didn't match");
@@ -59,15 +60,15 @@ var LoginProxy = function (facade) {
     };
     
     this.isValidWebViewSession = function () {
-        // if(!networkSessionTimer.isActive && device.isAndroid()) {
-        return sessionProxy.isActive(LoginProxy.sessionTimeContexts.WEBVIEW);
+        // if(!networkSessionTimer.isActive && Device.isAndroid()) {
+        return Session.isActive(LoginProxy.sessionTimeContexts.WEBVIEW);
     };
     
     this.isValidNetworkSession = function () {
         var checkSessionUrl, checkSessionClient, checkSessionResponse;
         //Checks to see if the networkSessionTimer says it's active, and also checks that the API indicates a valid session.
-        if(sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
-            Ti.API.info('this.isValidNetworkSession() in LoginProxy.' + sessionProxy.isActive(LoginProxy.sessionTimeContexts.NETWORK));
+        if(Session.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
+            Ti.API.info('this.isValidNetworkSession() in LoginProxy.' + Session.isActive(LoginProxy.sessionTimeContexts.NETWORK));
             return true;
         }
         else {
@@ -80,7 +81,7 @@ var LoginProxy = function (facade) {
             // Contact the portal's session REST service to determine if the user has 
             // a current session.  We expect this page to return JSON, but it's possible
             // that some SSO system may cause the service to return a login page instead. 
-            checkSessionUrl = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/api/session.json';
+            checkSessionUrl = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/api/session.json';
             checkSessionClient = Titanium.Network.createHTTPClient();
             checkSessionClient.open('GET', checkSessionUrl, false);
             /*
@@ -120,14 +121,14 @@ var LoginProxy = function (facade) {
         onAuthError = function (e) {
             var _user = _self.getLayoutUser(authenticator);
             Ti.API.info("onAuthError in LoginProxy.establishNetworkSession");
-            sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
             Ti.App.fireEvent("EstablishNetworkSessionFailure", {user: _user});
         };
         
         onAuthComplete = function (e) {
             var _user = _self.getLayoutUser(authenticator);
             Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
-            sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             
             if (!options || !options.isUnobtrusive) {
                 Ti.App.fireEvent("EstablishNetworkSessionSuccess", {user: _user});
@@ -136,7 +137,7 @@ var LoginProxy = function (facade) {
 
         // If the user has configured credentials, attempt to perform CAS 
         // authentication 
-        credentials = userProxy.getCredentials();
+        credentials = User.getCredentials();
         if (credentials.username && credentials.password) {
             Ti.API.info("Using standard login method with existing credentials.");
             loginMethod(credentials, options);
@@ -145,7 +146,7 @@ var LoginProxy = function (facade) {
         // If no credentials are available just log into uPortal as a guest through
         // the portal login servlet
         else {
-            url = app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?isNativeDevice=true';
+            url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?isNativeDevice=true';
             Ti.API.info("No credentials available, opening login url: " + url);
             
             authenticator = Titanium.Network.createHTTPClient({
@@ -162,13 +163,13 @@ var LoginProxy = function (facade) {
     };
     
     this.getLoginURL = function (url) {
-        switch (app.UPM.LOGIN_METHOD) {
+        switch (Config.LOGIN_METHOD) {
             case LoginProxy.loginMethods.LOCAL_LOGIN:
-                return localLogin.getLoginURL(url);
+                return LocalLogin.getLoginURL(url);
             case LoginProxy.loginMethods.CAS:
                 return CASLogin.getLoginURL(url);
             default:
-                Ti.API.error("No login method matches " + app.UPM.LOGIN_METHOD);
+                Ti.API.error("No login method matches " + Config.LOGIN_METHOD);
                 return false;                
         }
     };
@@ -218,7 +219,7 @@ var LoginProxy = function (facade) {
                 break;
             case _self.sessionTimeContexts.WEBVIEW:  
                 Ti.API.info("Stopping webViewSessionTimer");
-                sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
+                Session.stopTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
                 break;
             default:
                 Ti.API.info("Didn't recognize the context");

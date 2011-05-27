@@ -1,23 +1,20 @@
 var CASLogin = function (facade) {
-    var app = facade, init, _self = this,
-    loginProxy, sessionProxy, client, credentials, options, url,
+    var app = facade, init, _self = this, Session, Config, 
+    client, credentials, options, url,
     onLoginError, onLoginComplete, onInitialResponse, onInitialError;
     
     init = function () {
-        //Nothing to init.
+        Config = app.config;
     };
     
     this.login = function (creds, opts) {
-        if (!loginProxy) {
-            loginProxy = app.models.loginProxy;
-        }
-        if (!sessionProxy) {
-            sessionProxy = app.models.sessionProxy;
+        if (!Session) {
+            Session = app.models.sessionProxy;
         }
         credentials = creds;
         options = opts;
 
-        url = app.UPM.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(app.UPM.BASE_PORTAL_URL + app.UPM.PORTAL_CONTEXT + '/Login?isNativeDevice=true');
+        url = Config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?isNativeDevice=true');
 
         // Send an initial response to the CAS login page
         client = Titanium.Network.createHTTPClient({
@@ -25,6 +22,7 @@ var CASLogin = function (facade) {
             onerror: onInitialError
         });
         client.open('GET', url, false);
+        
         /*
             TODO Remove this line when the guest session is returned properly (temporary hack)
         */
@@ -35,7 +33,7 @@ var CASLogin = function (facade) {
     
     this.getLoginURL = function (url) {
         var separator = url.indexOf('?') >= 0 ? '&' : '?';
-        return app.UPM.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
+        return Config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
     };
     
     onLoginComplete = function (e) {
@@ -44,10 +42,10 @@ var CASLogin = function (facade) {
         // we get back a CAS page, assume that the credentials were invalid.
         var failureRegex = new RegExp(/body id="cas"/);
         if (failureRegex.exec(client.responseText)) {
-            sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
             Ti.App.fireEvent('EstablishNetworkSessionFailure');
         } else {
-            sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             if (!options || !options.isUnobtrusive) {
                 Ti.App.fireEvent('EstablishNetworkSessionSuccess');
             }
@@ -56,13 +54,13 @@ var CASLogin = function (facade) {
     
     onLoginError = function (e) {
         Ti.API.error("onLoginError() in CASLogin");
-        sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
         Ti.App.fireEvent('EstablishNetworkSessionFailure');
     };
     
     onInitialError = function (e) {
         Ti.API.error("onInitialError() in CASLogin");
-        sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
         Ti.App.fireEvent('EstablishNetworkSessionFailure');
     };
     
@@ -101,4 +99,6 @@ var CASLogin = function (facade) {
         client.send(data);
         Ti.API.debug("client.send() with data: " + JSON.stringify(data));
     };
+    
+    init();
 };
