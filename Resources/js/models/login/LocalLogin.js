@@ -36,6 +36,9 @@ var LocalLogin = function (facade) {
     
     this.getLoginURL = function (url) {
         // This method returns a URL suitable to automatically login a user in a webview.
+        if (!User) {
+            User = app.models.userProxy;
+        }
         credentials = User.getCredentials();
         return Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + Ti.Network.encodeURIComponent(url);
     };

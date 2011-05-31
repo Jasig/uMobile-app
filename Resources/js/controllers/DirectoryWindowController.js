@@ -44,7 +44,7 @@ var DirectoryWindowController = function (facade) {
     
     this.open = function () {
         if (!initialized) {
-            Titanium.include('/js/models/DirectoryProxy.js');
+            Titanium.include('js/models/DirectoryProxy.js');
             Titanium.include('js/views/PersonDetailTableView.js');
             Titanium.include('js/controllers/DirectoryDetailController.js');
             

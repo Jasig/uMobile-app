@@ -21,7 +21,7 @@ var app, loadingWindow, WindowManager, startup;
 
 if (Titanium.Platform.osname == 'android' ) {
     (function () {
-        //Show a loading screen
+        //Show a loading screen bc Android takes a long time to load.
         var messageLabel, indicator, dialog;
         loadingWindow = Titanium.UI.createWindow({
             fullscreen: true,

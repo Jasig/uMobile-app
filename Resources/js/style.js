@@ -237,9 +237,9 @@ var Styles = function (facade) {
         portalWindow: {
             exitOnClose: true,
             navBarHidden: true,
-            fullScreen: false,
+            fullScreen: false
             // orientationModes: [Ti.UI.PORTRAIT],
-            backgroundImage: 'img/home-background.png'
+            
         },
         portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
@@ -247,10 +247,12 @@ var Styles = function (facade) {
         },
         homeGrid: {
             top: 0,
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
-            zIndex: 1
+            zIndex: 1,
+            backgroundImage: 'img/home-background.png'
         },
         homeGuestNote: {
             height: 40,

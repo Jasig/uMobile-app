@@ -42,5 +42,13 @@ var DeviceProxy = function (facade) {
         return false;
     };
     
+    this.getWidth = function () {
+        return Ti.Platform.displayCaps.platformWidth;
+    };
+    
+    this.getHeight = function () {
+        return Ti.Platform.displayCaps.platformHeight;
+    };
+    
     init();
 };
