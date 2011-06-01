@@ -49,8 +49,7 @@ var PortalWindowView = function (facade) {
         
         createWindow();
         createContentLayer();
-        createGridView();
-        drawChrome();
+        
         if (options.isGuestLayout) {
             Ti.API.debug("Is guest layout");
             isGuestLayout = true;
@@ -60,6 +59,10 @@ var PortalWindowView = function (facade) {
             Ti.API.debug("Not guest layout");
             isGuestLayout = false;
         }
+        
+        createGridView();
+        drawChrome();
+        
     };
     
     this.close = function () {
@@ -190,7 +193,7 @@ var PortalWindowView = function (facade) {
     
     drawChrome = function () {
         titleBar = UI.createTitleBar({
-    	    title: LocalDictionary.jasig11,
+    	    title: LocalDictionary.homeTitle,
     	    settingsButton: true,
     	    homeButton: false
     	});
@@ -204,7 +207,7 @@ var PortalWindowView = function (facade) {
         var guestNotificationView, guestNotificationLabel;
         
         guestNotificationView = Ti.UI.createView(Styles.homeGuestNote);
-        guestNotificationView.top = win.height - titleBar.height - Styles.homeGuestNote.height;
+        guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
         
         guestNotificationLabel = Ti.UI.createLabel(Styles.homeGuestNoteLabel);
         guestNotificationLabel.text = LocalDictionary.viewingGuestLayout;

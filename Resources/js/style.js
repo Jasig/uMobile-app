@@ -247,7 +247,7 @@ var Styles = function (facade) {
         },
         homeGrid: {
             top: 0,
-            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad' ? 20 : 0),
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
