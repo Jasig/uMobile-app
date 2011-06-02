@@ -52,7 +52,7 @@ var SettingsWindowController = function(facade){
 
             credentials = User.getCredentials();
 
-            initialized = true;            
+            initialized = true;
         }
         
         credentials = User.getCredentials();

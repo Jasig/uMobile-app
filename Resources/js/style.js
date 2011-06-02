@@ -243,7 +243,9 @@ var Styles = function (facade) {
         },
         portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
-            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
+            // backgroundImage: 'img/home-background.png'
+            backgroundColor: "#2A4F95"
         },
         homeGrid: {
             top: 0,
@@ -251,8 +253,8 @@ var Styles = function (facade) {
             numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
-            zIndex: 1,
-            backgroundImage: 'img/home-background.png'
+            zIndex: 1
+            
         },
         homeGuestNote: {
             height: 40,

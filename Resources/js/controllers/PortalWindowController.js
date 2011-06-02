@@ -26,7 +26,7 @@
 * @constructor
 */
 var PortalWindowController = function (facade) {
-    var win, app = facade, _self = this, init, Portal, PortalView,
+    var win, app = facade, _self = this, init, Portal, PortalView, WindowManager,
         initialized, isGuestLayout = true,
         onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError,
         onWindowFocus, onAppWindowOpening, onAppWindowOpened, 
@@ -39,7 +39,7 @@ var PortalWindowController = function (facade) {
         //Pointers to Facade members
         Portal = app.models.portalProxy;
         LocalDictionary = app.localDictionary;
-        
+        WindowManager = app.models.windowManager;
         SettingsWindow = app.controllers.settingsWindowController;
 
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
@@ -58,8 +58,11 @@ var PortalWindowController = function (facade) {
         if (!PortalView) {
             Titanium.include('js/views/PortalWindowView.js');
             PortalView = new PortalWindowView(app);
+            PortalView.open( [], { firstLoad: true });
         }
-        PortalView.open( Portal.getPortlets(), { isGuestLayout: isGuestLayout });
+        else {
+            PortalView.open( Portal.getPortlets(), { isGuestLayout: isGuestLayout });
+        }
     };
     
     this.close = function () {
@@ -84,6 +87,10 @@ var PortalWindowController = function (facade) {
             isGuestLayout = true;
             Portal.getPortletsForUser();
         }
+        else if (!e.user) {
+            isGuestLayout = false;
+            PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+        }
         else {
             isGuestLayout = false;
         }
@@ -97,25 +104,23 @@ var PortalWindowController = function (facade) {
     };
     
     onPortletsLoaded = function (e) {
-        if (win && win.visible) {
-            PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: isGuestLayout});
-        }
+        PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: isGuestLayout});
     };
     
     onPortalProxyNetworkError = function (e) {
         //This event responds to any type of error in retrieving portlets from the sever.
-        Ti.UI.createAlertDialog({ title: LocalDictionary.error,
-            message: e.message, buttonNames: [LocalDictionary.OK]
-            }).show();
+        PortalView.alert(LocalDictionary.error, e.message);
     };
     
     onAppWindowOpened = function (e) {
-        PortalView.hideActivityIndicator();
+        if (WindowManager.getCurrentWindow !== _self.key) {
+            // PortalView.hideActivityIndicator();
+        }
     };
     
     onAppWindowOpening = function (e) {
         if (win && win.visible) {
-            PortalView.showActivityIndicator(LocalDictionary.loading);
+            // PortalView.showActivityIndicator(LocalDictionary.loading);
         }
     };
     

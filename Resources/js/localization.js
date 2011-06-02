@@ -17,6 +17,8 @@ localDictionary.en_US = {
     success: "Success",
     doneEditing: "Done Editing",
     loading: 'Loading',
+    gettingPortlets: "Getting portlets from server",
+    failedToLoadPortlets: "Failed to connect to server to load portlets. Please try again later.",
     searching: "Searching",
     noResults: "No Results",
     errorPerformingSearch: "There was an error while performing your search request.",

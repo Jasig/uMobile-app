@@ -19,7 +19,7 @@
 
 var app, loadingWindow, WindowManager, startup;
 
-if (Titanium.Platform.osname == 'android' ) {
+/*if (Titanium.Platform.osname == 'android' ) {
     (function () {
         //Show a loading screen bc Android takes a long time to load.
         var messageLabel, indicator, dialog;
@@ -63,7 +63,7 @@ if (Titanium.Platform.osname == 'android' ) {
         loadingWindow.add(indicator);
         indicator.show();
     })();
-}
+}*/
 
 startup = function (e) {
     // library includes
@@ -139,17 +139,14 @@ startup = function (e) {
     WindowManager.addWindow(app.controllers.directoryWindowController);
     WindowManager.addWindow(app.controllers.mapWindowController);
     WindowManager.addWindow(app.controllers.settingsWindowController);
+    
+    WindowManager.openWindow(app.controllers.portalWindowController.key);
 
     // This will determine if a network session exists, and what 
     // window was open last time the app closed, and will manage the process
     // of establishing a session and opening the window.
     app.models.deviceProxy.checkNetwork();
     app.models.loginProxy.establishNetworkSession();
-    Ti.App.addEventListener('PortalProxyPortletsLoaded', function callback(e){
-        Ti.App.removeEventListener('PortalProxyPortletsLoaded', callback);
-        if (loadingWindow) { loadingWindow.close(); }
-        WindowManager.openWindow(app.controllers.portalWindowController.key);
-    });
     
     Titanium.Gesture.addEventListener('orientationchange', function callback(e){
         app.styles = new Styles(app);

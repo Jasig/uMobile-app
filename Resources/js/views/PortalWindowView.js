@@ -26,11 +26,11 @@
 * @constructor
 */
 var PortalWindowView = function (facade) {
-    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow,
+    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow,
     portlets, isGuestLayout,
     win, contentLayer, gridView,
     titleBar, activityIndicator, 
-    createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator,
+    createWindow, createContentLayer, createGridView, createGridItem, drawChrome, addGuestLayoutIndicator,
     onGridItemClick, onGridItemPressUp, onGridItemPressDown;
     
     init = function () {
@@ -41,6 +41,7 @@ var PortalWindowView = function (facade) {
         LocalDictionary = app.localDictionary;
         WindowManager = app.models.windowManager;
         SettingsWindow = app.controllers.settingsWindowController;
+        PortalWindow = app.controllers.portalWindowController;
         // _self = Ti.UI.createScrollView(Styles.homeGrid);
     };
     
@@ -63,6 +64,12 @@ var PortalWindowView = function (facade) {
         createGridView();
         drawChrome();
         
+        if (options.firstLoad) {
+            _self.showActivityIndicator(LocalDictionary.gettingPortlets);
+        }
+        else {
+            Ti.API.debug("This isn't the first time we're loading");
+        }
     };
     
     this.close = function () {
@@ -75,6 +82,7 @@ var PortalWindowView = function (facade) {
     };
     
     this.updateModules = function (modules, options) {
+        Ti.API.debug("updateModules() in PortalWindowView");
         if (options.isGuestLayout) {
             isGuestLayout = true;
         }
@@ -82,7 +90,12 @@ var PortalWindowView = function (facade) {
             isGuestLayout = false;
         }
         portlets = modules;
-        createGridView();
+        if (WindowManager.getCurrentWindow() === PortalWindow.key) {
+            createGridView();
+        }
+        if (isGuestLayout) {
+            addGuestLayoutIndicator();
+        }
     };
     
     this.showActivityIndicator = function (message) {
@@ -92,12 +105,25 @@ var PortalWindowView = function (facade) {
             }
             activityIndicator.show();
         }
+        else {
+            Ti.API.error("Activity Indicator isn't defined.");
+        }
     };
     
     this.hideActivityIndicator = function () {
+        Ti.API.debug("hideActivityIndicator() in PortalWindowView");
         if (activityIndicator) {
             activityIndicator.hide();
         }
+        else {
+            Ti.API.debug("activityIndicator not defined.");
+        }
+    };
+    
+    this.alert = function (title, message) {
+        Titanium.UI.createAlertDialog({ title: title,
+            message: message, buttonNames: [LocalDictionary.OK]
+            }).show();
     };
     
     createWindow = function () {
@@ -143,9 +169,10 @@ var PortalWindowView = function (facade) {
                 portlets[i]));
         }
         Ti.API.info("Done placing portlets");
+        _self.hideActivityIndicator();
     };
     
-    function createGridItem (top, left, portlet) {
+    createGridItem = function (top, left, portlet) {
         // Create the container for the grid item
         var gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
         gridItemDefaults = Styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
@@ -189,9 +216,10 @@ var PortalWindowView = function (facade) {
         gridItemIcon.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onGridItemPressUp);
         
         return gridItem;
-    }
+    };
     
-    drawChrome = function () {
+    drawChrome = function (options) {
+        Ti.API.debug("drawChrome() in PortalWindowView");
         titleBar = UI.createTitleBar({
     	    title: LocalDictionary.homeTitle,
     	    settingsButton: true,
@@ -201,6 +229,7 @@ var PortalWindowView = function (facade) {
     	
     	activityIndicator = UI.createActivityIndicator();
         win.add(activityIndicator);
+        activityIndicator.hide();
     };
     
     addGuestLayoutIndicator = function () {
