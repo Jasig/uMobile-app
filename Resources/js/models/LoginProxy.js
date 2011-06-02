@@ -176,29 +176,9 @@ var LoginProxy = function (facade) {
     
     this.getLayoutUser = function (client) {
         var _layout, _username, _responseXML;
-        if (!client.responseXML) {
-            Ti.API.info("No responseXML");
-            if (typeof DOMParser != "undefined") {
-                Ti.API.info("No DOMParser");
-                // Titanium Desktop 1.0 doesn't fill out responseXML.
-                // We'll use WebKit's XML parser...
-                _responseXML = (new DOMParser()).parseFromString(client.responseText, "text/xml");
-            } 
-            else {
-                Ti.API.info("There is a DOMParser");
-                // Titanium Mobile 1.3 doesn't fill out responseXML on Android.
-                // We'll use Titanium's XML parser...
-                _responseXML = Titanium.XML.parseString(client.responseText);
-            }
-        } 
-        else {
-            Ti.API.info("There IS responseXML");
-            _responseXML = client.responseXML;
-        }
-        
-        _layout = _responseXML.getElementsByTagName('json-layout').item(0).text;
 
-        _username = JSON.parse(_layout).user;
+        _layout = JSON.parse(client.responseText);
+        _username = _layout.user;
         
         return _username;
     };

@@ -18,7 +18,7 @@ var LocalLogin = function (facade) {
             User = app.models.userProxy;
         }
         credentials = creds;
-        url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true';
+        url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=/uPortal/layout.json';
 
         client = Titanium.Network.createHTTPClient({
             onload: onLoginComplete,
@@ -40,7 +40,7 @@ var LocalLogin = function (facade) {
             User = app.models.userProxy;
         }
         credentials = User.getCredentials();
-        return Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&isNativeDevice=true&refUrl=' + Ti.Network.encodeURIComponent(url);
+        return Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
     };
     
     onLoginComplete = function (e) {

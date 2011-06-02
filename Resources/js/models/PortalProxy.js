@@ -87,27 +87,9 @@ var PortalProxy = function (facade) {
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
                 
-                var responseXML, nativeModules = Config.getLocalModules();
-                
-                if (layoutClient.responseXML == null) {
-                    if (typeof DOMParser != "undefined") {
-                        // Titanium Desktop 1.0 doesn't fill out responseXML.
-                        // We'll use WebKit's XML parser...
-                        responseXML = (new DOMParser()).parseFromString(layoutClient.responseText, "text/xml");
-                    } 
-                    else {
-                        // Titanium Mobile 1.3 doesn't fill out responseXML on Android.
-                        // We'll use Titanium's XML parser...
-                        responseXML = Titanium.XML.parseString(layoutClient.responseText);
-                    }
-                } 
-                else {
-                    responseXML = layoutClient.responseXML;
-                }
-
-                layoutText = responseXML.getElementsByTagName('json-layout').item(0).text;
-
-                portlets = JSON.parse(layoutText).layout;
+                var responseJSON, nativeModules = Config.getLocalModules();
+                responseJSON = JSON.parse(layoutClient.responseText);
+                portlets = responseJSON.layout;
                 var module;
                 for (module in nativeModules) {
                     if (nativeModules.hasOwnProperty(module)) {
@@ -145,7 +127,7 @@ var PortalProxy = function (facade) {
                 // array as the initial module list.
                 // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
 
-                Ti.App.fireEvent('PortalProxyPortletsLoaded', {user: JSON.parse(layoutText).user});
+                Ti.App.fireEvent('PortalProxyPortletsLoaded', {user: responseJSON.user});
             };
 
             onGetPortletsError = function (e) {
@@ -154,7 +136,7 @@ var PortalProxy = function (facade) {
 
         // Send a request to uPortal's main URL to get a JSON representation of the
         // user layout
-        layoutUrl = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT;
+        layoutUrl = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + "/layout.json";
         layoutClient = Titanium.Network.createHTTPClient({
             onload: onGetPortletsComplete,
             onerror: onGetPortletsError
