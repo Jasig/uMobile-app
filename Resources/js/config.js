@@ -88,10 +88,16 @@ var Config = function (app) {
         doesRequireLayout: true,
         window: 'directory'
     };
+    this.LOCAL_MODULES.transit = {
+        title: 'Transit',
+        fname: 'transit',
+        url: 'http://m.metro.net/',
+        externalModule: true
+    };
     this.LOCAL_MODULES.twitter = {
         title: 'Twitter',
         fname: 'twitter',
-        url: 'http://mobile.twitter.com/searches?q=jasig11',
+        url: 'http://mobile.twitter.com/searches?q=sakai11',
         externalModule: true
     };
     
@@ -124,6 +130,7 @@ var Config = function (app) {
         map: 'icons/map.png',
         directory: 'icons/directory.png',
         twitter: 'icons/twitter.png',
+        transit: 'icons/transit.png',
         weather: 'icons/weather.png'
     };
 
