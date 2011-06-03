@@ -117,8 +117,8 @@ var Config = function (app) {
     };
     
     this.DEFAULT_MAP_REGION = {
-        latitude: 34.052234,
-        longitude: -118.243685,
+        latitude: 34.052819,
+        longitude: -118.256407,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
     };
@@ -132,13 +132,13 @@ var Config = function (app) {
         twitter: 'icons/twitter.png',
         transit: 'icons/transit.png',
         weather: 'icons/weather.png',
-        stats: 'icons/stats.png'
-        
+        stats: 'icons/stats.png',
+        presentations: 'icons/opencast.png'
     };
 
     this.directoryEmergencyContacts = [
         { 
-            displayName: ["Westin Bonaventure Hotel"],
+            displayName: ["Westin Bonaventure Hotel and Suites"],
             telephoneNumber: ['(866) 716-8137'],
             postalAddress: ['404 South Figueroa Street$Los Angeles, CA 90071'],
             url: ['http://www.starwoodhotels.com/westin/search/hotel_detail.html?propertyID=1004']

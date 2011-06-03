@@ -156,58 +156,27 @@ var MapProxy = function (facade) {
 
                     for (var i = 0; i <= responseLength; i++) {
                         var building = response.buildings[i];
-                        if (i == responseLength) {
+                        
+                        if (building.name && building.latitude && building.longitude) {
+                            building.title = building.name;
+                            building.latitude = parseFloat(building.latitude);
+                            building.longitude = parseFloat(building.longitude);
+
                             db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                                'Westin Bonaventure Hotel',
-                                'WBV',
-                                '',
-                                '404 South Figueroa Street$Los Angeles, CA ',
-                                '',
-                                34.052234,
-                                -118.243685,
-                                'hotel, westin, bonaventure',
-                                "90071",
-                                ''
+                                building.name ? building.name : '',
+                                building.abbreviation ? building.abbreviation : '',
+                                building.accuracy ? building.accuracy : '',
+                                building.address ? building.address : '',
+                                building.alternateName ? building.alternateName : '',
+                                building.latitude ? building.latitude : 0,
+                                building.longitude ? building.longitude : 0,
+                                building.searchText ? building.searchText : '',
+                                building.zip ? building.zip : '',
+                                building.img ? building.img : ''
                                 );
                         }
                         else {
-                            if (building.name && building.latitude && building.longitude) {
-                                building.title = building.name;
-                                building.latitude = parseFloat(building.latitude);
-                                building.longitude = parseFloat(building.longitude);
-
-                                db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                                    building.name ? building.name : '',
-                                    building.abbreviation ? building.abbreviation : '',
-                                    building.accuracy ? building.accuracy : '',
-                                    building.address ? building.address : '',
-                                    building.alternateName ? building.alternateName : '',
-                                    building.latitude ? building.latitude : 0,
-                                    building.longitude ? building.longitude : 0,
-                                    building.searchText ? building.searchText : '',
-                                    building.zip ? building.zip : '',
-                                    building.img ? building.img : ''
-                                    );
-
-
-                                /*mapPoints.push(response.buildings[i]);
-
-                                if (building.latitude < mapCenter.latLow) {
-                                    mapCenter.latLow = building.latitude;
-                                }
-                                else if (building.latitude > mapCenter.latHigh) {
-                                    mapCenter.latHigh = building.latitude;
-                                }
-                                if (building.longitude < mapCenter.longLow) {
-                                    mapCenter.longLow = building.longitude;
-                                }
-                                else if (building.longitude > mapCenter.longHigh) {
-                                    mapCenter.longHigh = building.longitude;
-                                }*/
-                            }
-                            else {
-                                Ti.API.debug("Skipping " + building.name);
-                            }
+                            Ti.API.debug("Skipping " + building.name);
                         }
                         
                     }

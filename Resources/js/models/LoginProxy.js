@@ -108,50 +108,15 @@ var LoginProxy = function (facade) {
      * Establish a session on the uPortal server.
      */
     this.establishNetworkSession = function(options) {
-        var credentials, url, onAuthComplete, onAuthError, authenticator;
+        var credentials, url;
         /* 
         Possible options: 
             isUnobtrusive (Bool), tells it not to reload anything, just establish-the session again behind the scenes
         */
         Ti.API.info("Establishing Network Session");
-        onAuthError = function (e) {
-            var _user = _self.getLayoutUser(authenticator);
-            Ti.API.info("onAuthError in LoginProxy.establishNetworkSession");
-            Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent("EstablishNetworkSessionFailure", {user: _user});
-        };
-        
-        onAuthComplete = function (e) {
-            var _user = _self.getLayoutUser(authenticator);
-            Ti.API.info("onAuthComplete in LoginProxy.establishNetworkSession" + authenticator.responseText);
-            Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            
-            if (!options || !options.isUnobtrusive) {
-                Ti.App.fireEvent("EstablishNetworkSessionSuccess", {user: _user});
-            }
-        };
 
-        // If the user has configured credentials, attempt to perform CAS 
-        // authentication 
         credentials = User.getCredentials();
-        if (credentials.username && credentials.password) {
-            Ti.API.info("Using standard login method with existing credentials.");
-            loginMethod(credentials, options);
-        }
-
-        // If no credentials are available just log into uPortal as a guest through
-        // the portal login servlet
-        else {
-            url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?isNativeDevice=true';
-            Ti.API.info("No credentials available, opening login url: " + url);
-            
-            authenticator = Titanium.Network.createHTTPClient({
-                onload: onAuthComplete,
-                onerror: onAuthError
-            });
-            authenticator.open('GET', url, true);
-            authenticator.send();
-        }
+        loginMethod(credentials, options);
     };
     
     this.getLoginURL = function (url) {

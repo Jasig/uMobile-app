@@ -45,7 +45,7 @@ var LocalLogin = function (facade) {
 
         _layoutUser = Login.getLayoutUser(client);
         
-        if (_layoutUser === credentials.username) {
+        if (_layoutUser === credentials.username || _layoutUser === 'guest') {
             Ti.API.info("_layoutUser matches credentials.username");
             Ti.API.info("Login.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
