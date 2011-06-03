@@ -248,7 +248,6 @@ var Styles = function (facade) {
         homeGrid: {
             top: 0,
             height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad' ? 20 : 0),
-            numColumns: 3,
             color: "#fff",
             contentHeight:'auto',
             zIndex: 1
@@ -268,13 +267,13 @@ var Styles = function (facade) {
         gridIcon: {
             top: 0,
             canScale: false,
-            width: 57,
-            height: 57,
+            width: TI.Platform.osname === 'ipad' ? 72 : 57,
+            height: TI.Platform.osname === 'ipad' ? 72 : 57,
             type: 'gridIcon'
         },
         gridItem: {
-            width: 80,
-            height: 57 + 20,
+            width: TI.Platform.osname === 'ipad' ? 95 : 80,
+            height: TI.Platform.osname === 'ipad' ? 72 + 20 : 57 + 20,
             padding: 10,
             pressOpacity: 0.5,
             type: 'gridItem'
@@ -287,7 +286,7 @@ var Styles = function (facade) {
                 size: 10,
                 family: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
             },
-            top: 57,
+            top: TI.Platform.osname === 'ipad' ? 72 : 57,
             color: "#fff",
             touchEnabled: false
 
