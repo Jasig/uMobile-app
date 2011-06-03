@@ -9,9 +9,7 @@ var MapDetailViewController = function (facade,opts) {
         locationPhotoOptions = {},
         locationPhoto,
         titleBackButton,
-        topDetailView,
-        onBackButtonPress,
-        onBackButtonUp;
+        topDetailView;
         
     init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
@@ -27,9 +25,6 @@ var MapDetailViewController = function (facade,opts) {
         titleBackButtonOptions = Styles.secondaryBarButton;
         titleBackButtonOptions.title = LocalDictionary.back;
         titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
-        
-        titleBackButton.addEventListener('touchstart', onBackButtonPress);
-        titleBackButton.addEventListener('touchend', onBackButtonUp);
         
         Ti.API.debug("adding event listener to titleBackButton in MapDetailViewController");
         titleBackButton.addEventListener("click",function(e){
@@ -94,24 +89,6 @@ var MapDetailViewController = function (facade,opts) {
         showImage();
         
         self.show();
-    };
-    
-    onBackButtonPress = function (e) {
-        if (Device.isIOS()) {
-            titleBackButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradientPress;
-        }
-        else {
-            titleBackButton.backgroundImage = Styles.secondaryBarButton.backgroundImagePress;
-        }
-    };
-    
-    onBackButtonUp = function (e) {
-        if (Device.isIOS()) {
-            titleBackButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradient;
-        }
-        else {
-            titleBackButton.backgroundImage = Styles.secondaryBarButton.backgroundImage;
-        }
     };
     
     init();

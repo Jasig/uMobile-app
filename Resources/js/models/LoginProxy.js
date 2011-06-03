@@ -84,10 +84,6 @@ var LoginProxy = function (facade) {
             checkSessionUrl = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/api/session.json';
             checkSessionClient = Titanium.Network.createHTTPClient();
             checkSessionClient.open('GET', checkSessionUrl, false);
-            /*
-                TODO Remove this line when the guest session is returned properly (temporary hack)
-            */
-            checkSessionClient.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
             
             checkSessionClient.send();
 
@@ -154,10 +150,6 @@ var LoginProxy = function (facade) {
                 onerror: onAuthError
             });
             authenticator.open('GET', url, true);
-            /*
-                TODO Remove this line when the guest session is returned properly (temporary hack)
-            */
-            authenticator.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
             authenticator.send();
         }
     };

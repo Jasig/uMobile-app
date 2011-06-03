@@ -26,10 +26,6 @@ var LocalLogin = function (facade) {
         });
         
         client.open('GET', url, true);
-        /*
-            TODO Remove this line when the guest session is returned properly (temporary hack)
-        */
-        client.setRequestHeader('User-Agent','Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17 –Nexus');
 
         client.send();
     };

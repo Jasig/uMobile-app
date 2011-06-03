@@ -141,16 +141,14 @@ var Styles = function (facade) {
             left: 10,
             width: 50,
             height: 30,
-        	backgroundImage: 'none',
+        	backgroundImage: 'img/secondarybarbtnbg.png',
+        	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
         	color: '#333',
-            borderWidth: 1,
-            borderRadius: 5,
-            borderColor: '#CCC',
+        	selectedColor: "#666",
+            borderRadius: 10,
         	font: {
         	    fontSize: 14
-        	},
-        	backgroundGradient: defaults.SECONDARY_BAR_BTN_BACKGROUND_GRADIENT,
-        	backgroundGradientPress: defaults.SECONDARY_BAR_BTN_DOWN_BG
+        	}
         },
         //Styles for TitleBar
         titleBar: {
@@ -497,8 +495,6 @@ var Styles = function (facade) {
         stylesheet.searchBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.secondaryNavBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.homeGuestNote.backgroundImage = '/img/secondarybarbg.png';
-        stylesheet.secondaryBarButton.backgroundImage = '/img/secondarybarbtnbg.png';
-        stylesheet.secondaryBarButton.backgroundImagePress = '/img/secondarybarbtnbg_press.png';
         stylesheet.mapAnnotation.image = '/img/mapPin.png';
     }
     

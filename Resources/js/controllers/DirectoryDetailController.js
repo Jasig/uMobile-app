@@ -7,7 +7,7 @@ var DirectoryDetailController = function (facade) {
         //Methods
         updateValues,
         //Controller Event Handlers
-        onWinOpen, onWinShow, onWinHide, onWinClose, onBackButtonPress, onBackButtonUp;
+        onWinOpen, onWinShow, onWinHide, onWinClose;
     
     init = function () {
         Ti.API.debug('DirectoryDetailController constructed');
@@ -30,9 +30,6 @@ var DirectoryDetailController = function (facade) {
             Ti.API.debug("self.hide() in DirectoryDetailController");
                 self.hide();
         });
-        
-        backButton.addEventListener('touchstart', onBackButtonPress);
-        backButton.addEventListener('touchend', onBackButtonUp);
         
         backBarOpts = Styles.secondaryBar;
         backBarOpts.top = 0;
@@ -102,14 +99,6 @@ var DirectoryDetailController = function (facade) {
             }
         }
         return null;
-    };
-
-    onBackButtonPress = function (e) {
-        backButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradientPress;
-    };
-    
-    onBackButtonUp = function (e) {
-        backButton.backgroundGradient = Styles.secondaryBarButton.backgroundGradient;
     };
 
     if (!self.initialized) {

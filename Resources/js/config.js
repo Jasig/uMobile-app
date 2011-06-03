@@ -111,8 +111,8 @@ var Config = function (app) {
     };
     
     this.DEFAULT_MAP_REGION = {
-        latitude: 39.890822,
-        longitude: -105.064509,
+        latitude: 34.052234,
+        longitude: -118.243685,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
     };
@@ -129,10 +129,10 @@ var Config = function (app) {
 
     this.directoryEmergencyContacts = [
         { 
-            displayName: ["Jasig Hotel"],
+            displayName: ["Westin Bonaventure Hotel"],
             telephoneNumber: ['(866) 716-8137'],
-            postalAddress: ['10600 Westminster Boulevard$Westminster, CO 80020'],
-            url: ['http://www.westindenverboulder.com/']
+            postalAddress: ['404 South Figueroa Street$Los Angeles, CA 90071'],
+            url: ['http://www.starwoodhotels.com/westin/search/hotel_detail.html?propertyID=1004']
         }
     ];
     
