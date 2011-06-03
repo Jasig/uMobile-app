@@ -323,7 +323,7 @@ var Styles = function (facade) {
             modal: true
     	},
     	directoryDetailNameLabel: {
-            left: 70,
+            // left: 70,
             width: Ti.Platform.displayCaps.platformWidth - (70 * 2),
             height: defaults.TITLEBAR_HEIGHT,
             color: defaults.SECONDARY_BAR_COLOR,

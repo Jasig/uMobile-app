@@ -131,7 +131,9 @@ var Config = function (app) {
         directory: 'icons/directory.png',
         twitter: 'icons/twitter.png',
         transit: 'icons/transit.png',
-        weather: 'icons/weather.png'
+        weather: 'icons/weather.png',
+        stats: 'icons/stats.png'
+        
     };
 
     this.directoryEmergencyContacts = [

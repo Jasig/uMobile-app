@@ -150,14 +150,8 @@ var UI = function (facade) {
     self.createSecondaryNavBar = function (opts) {
         var secondaryNavBar;
         // A partial view used in some controllers to place a nav bar just below the titleBar
-        if(opts.style) {
-            Ti.API.debug("opts.style defined in SecondaryNavBar");
-            secondaryNavBar = Titanium.UI.createView(style);
-        }
-        else {
-            Ti.API.debug("opts.style not defined in SecondaryNavBar, will create with style: " + Styles.secondaryNavBar);
-            secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
-        }
+        Ti.API.debug("opts.style not defined in SecondaryNavBar, will create with style: " + Styles.secondaryNavBar);
+        secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
 
         if(opts.backButton) {
             secondaryNavBar.add(opts.backButton);
