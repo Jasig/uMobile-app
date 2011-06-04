@@ -29,6 +29,10 @@ var PortletWindowController = function (facade) {
     init = function () {
         Ti.API.debug("init() in PortletWindowController");
         _self.key = 'portlet';
+        
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
     };
     
     this.close = function (options) {

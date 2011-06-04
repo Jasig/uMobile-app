@@ -43,6 +43,15 @@ var PortalWindowView = function (facade) {
         SettingsWindow = app.controllers.settingsWindowController;
         PortalWindow = app.controllers.portalWindowController;
         // _self = Ti.UI.createScrollView(Styles.homeGrid);
+        
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
+        Ti.App.addEventListener('dimensionchanges', function (e) {
+            if (WindowManager.getCurrentWindow() === PortalWindow.key) {
+                createGridView();
+            }
+        });
     };
     
     this.open = function (modules, options) {

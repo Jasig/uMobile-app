@@ -44,6 +44,10 @@ var DirectoryDetailController = function (facade) {
         attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
         self.add(attributeTable);
         
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
+        
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             if (backBar) { backBar.width = Styles.secondaryBar.width; }
             if (nameLabel) { nameLabel.width = Styles.directoryDetailNameLabel; }

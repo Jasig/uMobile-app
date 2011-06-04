@@ -57,6 +57,10 @@ var MapDetailTop = function (opts) {
         
         Ti.API.debug("Added event listeners to directionsButton, now calling update()");
         detailView.update = update;
+        
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
     }
     
     function update (data) {

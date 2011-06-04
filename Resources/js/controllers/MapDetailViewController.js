@@ -36,6 +36,10 @@ var MapDetailViewController = function (facade,opts) {
         showImage();
 
         self.updateAndShow = updateAndShow;
+        
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
     };
     
     function showTitleBar () {

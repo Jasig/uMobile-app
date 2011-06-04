@@ -48,6 +48,9 @@ var MapWindowController = function(facade) {
             Ti.App.addEventListener('MapProxyLoadError', onProxyLoadError);
             Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
             Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
+            Ti.App.addEventListener('updatestylereference', function (e) {
+                Styles = app.styles;
+            });
 
             //Declare pointers to facade members
             Map = app.models.mapProxy;

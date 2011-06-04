@@ -6,7 +6,9 @@ var UI = function (facade) {
         Styles = app.styles;
         WindowManager = app.models.windowManager;
         LocalDictionary = app.localDictionary;
-        
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
     };
     
     self.createSearchBar = function () {
@@ -93,6 +95,7 @@ var UI = function (facade) {
             }
             
             Titanium.App.addEventListener('dimensionchanges', function (e) {
+                Ti.API.info("dimensionchanges in UI");
             	if (titleBar) { titleBar.width = Styles.titleBar.width; }
                 if (settingsButtonContainer) { settingsButtonContainer.left = Styles.titleBarSettingsContainer.left; }
                 if (homeButtonContainer) { homeButtonContainer.left = Styles.titleBarHomeContainer.left; }

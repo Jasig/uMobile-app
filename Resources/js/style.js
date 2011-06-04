@@ -105,11 +105,8 @@ var Styles = function (facade) {
             },
             height: 40,
             width: 100,
-            backgroundGradient: {
-                
-            },
-            backgroundGradientPress: {
-            },
+            backgroundGradient: {},
+            backgroundGradientPress: {},
             color: '#333',
             selectedColor: '#333'
         },
@@ -267,13 +264,13 @@ var Styles = function (facade) {
         gridIcon: {
             top: 0,
             canScale: false,
-            width: TI.Platform.osname === 'ipad' ? 72 : 57,
-            height: TI.Platform.osname === 'ipad' ? 72 : 57,
+            width: Ti.Platform.osname === 'ipad' ? 72 : 57,
+            height: Ti.Platform.osname === 'ipad' ? 72 : 57,
             type: 'gridIcon'
         },
         gridItem: {
-            width: TI.Platform.osname === 'ipad' ? 95 : 80,
-            height: TI.Platform.osname === 'ipad' ? 72 + 20 : 57 + 20,
+            width: Ti.Platform.osname === 'ipad' ? 768 / 4 - 50 : 80,
+            height: Ti.Platform.osname === 'ipad' ? 72 + 20 : 57 + 20,
             padding: 10,
             pressOpacity: 0.5,
             type: 'gridItem'
@@ -286,7 +283,7 @@ var Styles = function (facade) {
                 size: 10,
                 family: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
             },
-            top: TI.Platform.osname === 'ipad' ? 72 : 57,
+            top: Ti.Platform.osname === 'ipad' ? 72 : 57,
             color: "#fff",
             touchEnabled: false
 
@@ -479,7 +476,7 @@ var Styles = function (facade) {
                 fontSize: 14,
                 fontWeight: 'bold'
             },
-            borderRadius: (OS === 'iphone') ? 10 : 0,
+            borderRadius: 10,
             borderColor: '#999',
             borderWidth: 1,
             color: '#333',

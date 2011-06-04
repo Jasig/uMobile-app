@@ -154,7 +154,7 @@ var MapProxy = function (facade) {
                     mapCenter.longLow = response.buildings[0].longitude;
                     mapCenter.longHigh = response.buildings[0].longitude; 
 
-                    for (var i = 0; i <= responseLength; i++) {
+                    for (var i = 0; i < responseLength; i++) {
                         var building = response.buildings[i];
                         
                         if (building.name && building.latitude && building.longitude) {
@@ -191,7 +191,7 @@ var MapProxy = function (facade) {
             catch (err) {
                 Ti.API.info("Data was invalid, calling onInvalidData()");
                 //Data didn't parse, so fire an event so the controller is aware
-                Ti.App.fireEvent('MapProxyLoadError', {errorCode: _self.requestErrors.INVALID_DATA_RETURNED});
+                Ti.App.fireEvent('MapProxyLoadError', {errorCode: _self.requestErrors.INVALID_DATA_RETURNED, data: e.source.responseText});
             }
         })();
     };

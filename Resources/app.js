@@ -149,8 +149,15 @@ startup = function (e) {
     app.models.loginProxy.establishNetworkSession();
     
     Titanium.Gesture.addEventListener('orientationchange', function callback(e){
-        app.styles = new Styles(app);
-        Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+        if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
+            app.models.deviceProxy.setCurrentOrientation(e.orientation);
+            app.styles = new Styles(app);
+            Ti.App.fireEvent('updatestylereference');
+            Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});            
+        }
+        else {
+            Ti.API.debug("Same orientation as before");
+        }
     });
 };
 startup();

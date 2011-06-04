@@ -30,6 +30,9 @@ var SettingsWindowController = function(facade){
 
     init = function () {
         _self.key = 'settings';
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
     };
     
     this.open = function () {

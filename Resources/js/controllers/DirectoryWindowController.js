@@ -57,6 +57,9 @@ var DirectoryWindowController = function (facade) {
             Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
             Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
             Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
+            Ti.App.addEventListener('updatestylereference', function (e) {
+                Styles = app.styles;
+            });
 
             //Set pointers to necessary members of facade
             Directory = app.models.directoryProxy;

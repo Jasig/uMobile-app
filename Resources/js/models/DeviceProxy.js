@@ -1,5 +1,5 @@
 var DeviceProxy = function (facade) {
-    var app = facade, _self = this, LocalDictionary;
+    var app = facade, _self = this, LocalDictionary, _orientation = false;
     
     init = function () {
         LocalDictionary = app.localDictionary;
@@ -48,6 +48,14 @@ var DeviceProxy = function (facade) {
     
     this.getHeight = function () {
         return Ti.Platform.displayCaps.platformHeight;
+    };
+    
+    this.setCurrentOrientation = function (orientation) {
+        _orientation = orientation;
+    };
+    
+    this.getCurrentOrientation = function () {
+        return _orientation;
     };
     
     init();

@@ -12,6 +12,9 @@ var PersonDetailTableView = function (facade) {
         //Declare pointers to facade members
         LocalDictionary = app.localDictionary;
         Styles = app.styles;
+        Ti.App.addEventListener('updatestylereference', function (e) {
+            Styles = app.styles;
+        });
     };
     
     self.update = function (p) {
@@ -113,7 +116,7 @@ var PersonDetailTableView = function (facade) {
     onEmailSelect = function (e) {
         var _address;
         Ti.API.info("onEmailSelect()" + e.source.data);
-        if(device.isIOS()) {
+        if(Device.isIOS()) {
             var emailDialog = Ti.UI.createEmailDialog({
                 toRecipients: [e.source.data]
             });
