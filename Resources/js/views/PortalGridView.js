@@ -11,8 +11,14 @@ var PortalGridView = function (facade) {
         Styles = app.styles;
         Device = app.models.deviceProxy;
         Portal = app.models.portalProxy;
+        
+        completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
+        completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
+        
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
+            completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
+            completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
         });
         
         Ti.App.addEventListener('dimensionchanges', rearrangeGrid);
@@ -22,9 +28,7 @@ var PortalGridView = function (facade) {
     
     this.getGridView = function (options) {
         _gridView.height = options.isGuestLayout ? Styles.homeGrid.height - Styles.homeGuestNote.height : Styles.homeGrid.height;
-
-        completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-        completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
+        
         numColumns = Math.floor(Device.getWidth() / completeWidth);
         leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
         
@@ -88,6 +92,7 @@ var PortalGridView = function (facade) {
     };
     
     rearrangeGrid = function (e) {
+        Ti.API.debug("rearrangeGrid() in PortalGridView");
         for (var i=0, iLength = _gridItems.length; i<iLength; i++) {
             _gridItems[i].top = Styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight;
             _gridItems[i].left = leftPadding + Styles.gridItem.padding + (i % numColumns) * completeWidth;
