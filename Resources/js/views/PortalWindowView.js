@@ -26,12 +26,11 @@
 * @constructor
 */
 var PortalWindowView = function (facade) {
-    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow,
+    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView,
     portlets, isGuestLayout,
     win, contentLayer, gridView,
     titleBar, activityIndicator, 
-    createWindow, createContentLayer, createGridView, createGridItem, drawChrome, addGuestLayoutIndicator,
-    onGridItemClick, onGridItemPressUp, onGridItemPressDown;
+    createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator;
     
     init = function () {
         Styles = app.styles;
@@ -42,19 +41,17 @@ var PortalWindowView = function (facade) {
         WindowManager = app.models.windowManager;
         SettingsWindow = app.controllers.settingsWindowController;
         PortalWindow = app.controllers.portalWindowController;
-        // _self = Ti.UI.createScrollView(Styles.homeGrid);
         
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
         });
-        Ti.App.addEventListener('dimensionchanges', function (e) {
-            if (WindowManager.getCurrentWindow() === PortalWindow.key) {
-                createGridView();
-            }
-        });
     };
     
     this.open = function (modules, options) {
+        if (!GridView) {
+            Ti.include('js/views/PortalGridView.js');
+            GridView = new PortalGridView(app);
+        }
         portlets = modules;
         
         createWindow();
@@ -154,77 +151,11 @@ var PortalWindowView = function (facade) {
     };
     
     createGridView = function () {
-        var completeWidth, completeHeight, numColumns, leftPadding, gridViewDefaults;
-        Ti.API.debug("Preparing to iterate through portlets in drawHomeGrid: " + portlets.length);
-        
-        //Remove existing gridView...if exists
-        if (gridView && gridView.getParent()) {
-            gridView.getParent().remove(gridView);
-        }
-        
-        gridView = Titanium.UI.createScrollView(Styles.homeGrid);
-        gridView.height = isGuestLayout ? Styles.homeGrid.height - Styles.homeGuestNote.height : Styles.homeGrid.height;
-        contentLayer.add(gridView);
-        
-        completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-        completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-        numColumns = Math.floor(Device.getWidth() / completeWidth);
-        leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
-        
-        for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
-            //Place the item in the scrollview and listen for singletaps
-            gridView.add(createGridItem(Styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight, //Top
-                leftPadding + Styles.gridItem.padding + (i % numColumns) * completeWidth, //Left
-                portlets[i]));
-        }
-        Ti.API.info("Done placing portlets");
+        Ti.API.debug("Preparing to iterate through portlets in drawHomeGrid: " + portlets.length);  
+
+        contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout }));
+        GridView.updateGrid(portlets);
         _self.hideActivityIndicator();
-    };
-    
-    createGridItem = function (top, left, portlet) {
-        // Create the container for the grid item
-        var gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
-        gridItemDefaults = Styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
-        
-        gridItemDefaults.top = top;
-        gridItemDefaults.left = left;
-        gridItem = Ti.UI.createView(gridItemDefaults);
-
-        gridItem.portlet = portlet;
-
-        //Add a label to the grid item
-        if (portlet.title) {
-            var gridItemLabelDefaults = Styles.gridItemLabel;
-            gridItemLabelDefaults.text =  portlet.title.toLowerCase();
-            gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
-            gridItem.add(gridItemLabel);
-        }
-
-        //Add an icon to the grid item
-        gridItemIconDefaults = Styles.gridIcon;
-        gridItemIconDefaults.image = Portal.getIconUrl(portlet);
-        gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
-        gridItemIcon.portlet = portlet;
-        gridItem.add(gridItemIcon);
-        
-        // if the module has a new item count of more than zero (no new items)
-        // add a badge number to the home screen icon
-        if (portlet.newItemCount > 0) {
-            gridBadgeBackgroundDefaults = Styles.gridBadgeBackground;
-            gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
-            gridItem.add(gridBadgeBackground);
-
-            gridBadgeNumberDefaults = Styles.gridBadgeNumber;
-            gridBadgeNumberDefaults.text = portlet.newItemCount;
-            gridBadgeNumber = Ti.UI.createLabel(gridBadgeNumberDefaults);
-            gridItem.add(gridBadgeNumber);
-        }
-        
-        gridItemIcon.addEventListener("singletap", onGridItemClick);
-        gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
-        gridItemIcon.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onGridItemPressUp);
-        
-        return gridItem;
     };
     
     drawChrome = function (options) {
@@ -261,46 +192,7 @@ var PortalWindowView = function (facade) {
         
     };
     
-    onGridItemClick = function (e) {
-        var func;
-        Ti.API.debug("onGridItemClick() in PortalWindowController " + JSON.stringify(e.source.portlet));
-        if (e.source.portlet) {
-            func = Portal.getShowPortletFunc(e.source.portlet);
-            func();
-        }
-        else {
-            Ti.API.error("No portlet was attached to the icon.");
-        }
-    };
-    onGridItemPressDown = function (e) {
-        Ti.API.debug("Home button pressed down, source: " + e.source.type);
-        if(Device.isIOS()) {
-            if (e.source.type === 'gridIcon') {
-                e.source.getParent().opacity = Styles.gridItem.pressOpacity;
-            }
-            else {
-                e.source.opacity = Styles.gridItem.pressOpacity;
-            }
-        }
-        else {
-            Ti.API.debug("Not setting opacity of icon because Android doesn't support it.");
-        }
-    };
-
-    onGridItemPressUp = function (e) {
-        Ti.API.debug("Home button pressed up");
-        if(Device.isIOS()) {
-            if (e.source.type === 'gridIcon') {
-                e.source.getParent().setOpacity(1.0);
-            }
-            else {
-                e.source.setOpacity(1.0);
-            }
-        }
-        else {
-            Ti.API.debug("onGridItemPressUp condition wasn't met");
-        }
-    };
+    
     
     init();
 };
