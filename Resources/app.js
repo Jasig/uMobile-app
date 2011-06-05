@@ -149,11 +149,12 @@ startup = function (e) {
     app.models.loginProxy.establishNetworkSession();
     
     Titanium.Gesture.addEventListener('orientationchange', function callback(e){
+        Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
         if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
             app.models.deviceProxy.setCurrentOrientation(e.orientation);
             app.styles = new Styles(app);
             Ti.App.fireEvent('updatestylereference');
-            Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});            
+            Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
         }
         else {
             Ti.API.debug("Same orientation as before");
