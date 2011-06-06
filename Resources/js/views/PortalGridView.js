@@ -61,7 +61,6 @@ var PortalGridView = function (facade) {
         
         for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
             //Place the item in the scrollview and listen for singletaps
-            Ti.API.info("iterating in updateGrid:" + _portlets[i].fname + ", is in _gridItems? " + _gridItems['fName' + _portlets[i].fname]);
             if (!_gridItems['fName' + _portlets[i].fname]) {
                 //Create the item, implicity add to local array, and explicitly assign sort order
                 _gridView.add(createGridItem(_portlets[i], i));
@@ -141,7 +140,6 @@ var PortalGridView = function (facade) {
         
         for (_gridItem in _gridItems) {
             if (_gridItems.hasOwnProperty(_gridItem)) {
-                Ti.API.info("_gridItems.hasOwnProperty(_gridItem)");
                 _gridItems[_gridItem].top = Styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / numColumns) * completeHeight;
                 _gridItems[_gridItem].left = leftPadding + Styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % numColumns) * completeWidth;
             }
@@ -149,7 +147,6 @@ var PortalGridView = function (facade) {
                 Ti.API.error("NOT _gridItems.hasOwnProperty(_gridItem)");
             }
         }
-        Ti.API.info("Done with rearrangeGrid()" + JSON.stringify(_gridItems));
     };
     
     onOrientationChange = function (e) {
