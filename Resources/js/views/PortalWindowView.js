@@ -45,6 +45,13 @@ var PortalWindowView = function (facade) {
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
         });
+        
+        Ti.App.addEventListener('dimensionchanges', function (e) {
+            if (contentLayer) {
+                contentLayer.width = Styles.portalContentLayer.width;
+                contentLayer.height = Styles.portalContentLayer.height;
+            }
+        });
     };
     
     this.open = function (modules, options) {

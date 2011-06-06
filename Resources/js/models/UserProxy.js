@@ -1,5 +1,6 @@
 var UserProxy = function (facade) {
-    var app = facade, init, _self = this, Config, Encryption;
+    var app = facade, init, _self = this, Config, Encryption, 
+    _layoutUserName;
     
     init = function () {
         Config = app.config;
@@ -72,6 +73,23 @@ var UserProxy = function (facade) {
         db.close();
 
         return credentials;
+    };
+    
+    this.setLayoutUserName = function (name) {
+        _layoutUserName = name;
+    };
+    
+    this.getLayoutUserName = function () {
+        return _layoutUserName;
+    };
+    
+    this.isGuestUser = function () {
+        if (_layoutUserName === 'guest') {
+            return true;
+        }
+        else {
+            return false;
+        }
     };
     
     init();

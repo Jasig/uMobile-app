@@ -1,7 +1,10 @@
+/*
+** @constructor
+*/
 var PortalProxy = function (facade) {
     var app = facade, _self = this, WindowManager, PortletWindow, Resources, Config, LocalDictionary,
-    portlets = [], sortPortlets, loadPortletList, init,
-        pathToRoot = '../../';
+    portlets = [], sortPortlets, loadPortletList, init, _isGuestLayout,
+    pathToRoot = '../../';
     
     init = function () {
         WindowManager = app.models.windowManager;
@@ -86,11 +89,10 @@ var PortalProxy = function (facade) {
 
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
-                
-                var responseJSON, nativeModules = Config.getLocalModules();
+                var responseJSON, nativeModules = Config.getLocalModules(), module;
                 responseJSON = JSON.parse(layoutClient.responseText);
                 portlets = responseJSON.layout;
-                var module;
+                
                 for (module in nativeModules) {
                     if (nativeModules.hasOwnProperty(module)) {
                         nativeModules[module].added = false;

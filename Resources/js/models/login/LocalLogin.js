@@ -41,17 +41,15 @@ var LocalLogin = function (facade) {
     
     onLoginComplete = function (e) {
         Ti.API.debug("onLoginComplete() in LocalLogin");
-        var _layoutUser;
-
-        _layoutUser = Login.getLayoutUser(client);
         
-        if (_layoutUser === credentials.username || _layoutUser === 'guest') {
+        User.setLayoutUserName(Login.getLayoutUser(client));
+        
+        if (User.getLayoutUserName() === credentials.username || User.getLayoutUserName() === 'guest') {
             Ti.API.info("_layoutUser matches credentials.username");
             Ti.API.info("Login.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            // if (!options || !options.isUnobtrusive) {
-                Ti.App.fireEvent('EstablishNetworkSessionSuccess', {user: _layoutUser});
-            // }
+            Ti.App.fireEvent('EstablishNetworkSessionSuccess', {user: User.getLayoutUserName()});
+            Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
             Ti.API.error("Network session failed");
