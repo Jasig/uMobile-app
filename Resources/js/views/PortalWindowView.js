@@ -29,7 +29,7 @@ var PortalWindowView = function (facade) {
     var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView,
     portlets, isGuestLayout,
     win, contentLayer, gridView,
-    titleBar, activityIndicator, 
+    titleBar, activityIndicator, guestNotificationView,
     createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator;
     
     init = function () {
@@ -50,7 +50,9 @@ var PortalWindowView = function (facade) {
             if (contentLayer) {
                 contentLayer.width = Styles.portalContentLayer.width;
                 contentLayer.height = Styles.portalContentLayer.height;
+                
             }
+            guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
         });
     };
     
@@ -180,7 +182,7 @@ var PortalWindowView = function (facade) {
     };
     
     addGuestLayoutIndicator = function () {
-        var guestNotificationView, guestNotificationLabel;
+        var guestNotificationLabel;
         
         guestNotificationView = Ti.UI.createView(Styles.homeGuestNote);
         guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
@@ -191,7 +193,7 @@ var PortalWindowView = function (facade) {
         
         contentLayer.add(guestNotificationView);
         
-        guestNotificationView.addEventListener('touchstart', function (e){
+        guestNotificationView.addEventListener('click', function (e){
             Ti.API.info("Clicked guest notification, opening settings");
             WindowManager.openWindow(SettingsWindow.key);
         });

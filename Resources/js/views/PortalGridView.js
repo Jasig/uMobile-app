@@ -5,7 +5,7 @@ var PortalGridView = function (facade) {
     var app = facade, _self = this, init, Styles, Device, Portal, User,
     completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout,
     createGridItem, rearrangeGrid,
-    onGridItemClick, onGridItemPressUp, onGridItemPressDown;
+    onOrientationChange, onGridItemClick, onGridItemPressUp, onGridItemPressDown;
     
     init = function () {
         Styles = app.styles;
@@ -26,7 +26,7 @@ var PortalGridView = function (facade) {
             leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
         });
         
-        Ti.App.addEventListener('dimensionchanges', rearrangeGrid);
+        Ti.App.addEventListener('dimensionchanges', onOrientationChange);
         
         _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
     };
@@ -150,6 +150,10 @@ var PortalGridView = function (facade) {
             }
         }
         Ti.API.info("Done with rearrangeGrid()" + JSON.stringify(_gridItems));
+    };
+    
+    onOrientationChange = function (e) {
+        rearrangeGrid();
     };
     
     onGridItemClick = function (e) {
