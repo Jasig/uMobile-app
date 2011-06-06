@@ -52,7 +52,9 @@ var PortalWindowView = function (facade) {
                 contentLayer.height = Styles.portalContentLayer.height;
                 
             }
-            guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
+            if (guestNotificationView) {
+                guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
+            }
         });
     };
     
