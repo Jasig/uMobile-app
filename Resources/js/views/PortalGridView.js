@@ -3,7 +3,7 @@
 */
 var PortalGridView = function (facade) {
     var app = facade, _self = this, init, Styles, Device, Portal, User,
-    completeWidth, completeHeight, _gridView, _gridItems =[], numColumns, leftPadding, gridViewDefaults, isGuestLayout,
+    completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout,
     createGridItem, rearrangeGrid,
     onGridItemClick, onGridItemPressUp, onGridItemPressDown;
     
@@ -35,17 +35,47 @@ var PortalGridView = function (facade) {
         return _gridView;
     };
     
-    this.updateGrid = function (modules) {
-        for (var i=0, iLength = modules.length; i<iLength; i++ ) {
-            //Place the item in the scrollview and listen for singletaps
-            _gridView.add(createGridItem(Styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight, //Top
-                leftPadding + Styles.gridItem.padding + (i % numColumns) * completeWidth, //Left
-                modules[i]));
+    this.updateGrid = function () {
+        var _portlets = Portal.getPortlets(), _item;
+
+        /*
+        * In this method, we're comparing portlets from the portalProxy (Portal) with our local 
+        * collection of portlets.
+        * First we iterate through our local items, and see if they exist in the new array.
+        * If not, we destroy them (which removes them from the view, and the _gridItems collection)
+        * then we iterate through the latest correction from the portalProxy and add them if they don't exist.
+        */
+        for (_item in _gridItems) {
+            if (_gridItems.hasOwnProperty(_item)) {
+                for (var j=0, jLength = _portlets.length; j<jLength; j++) {
+                    if ('fName' + _portlets[j].fname === _item) {
+                        break;
+                    }
+                    else if (j == jLength - 1) {
+                        _gridItems[_item].destroy();
+                    }
+                }
+                
+            }
         }
+        
+        for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
+            //Place the item in the scrollview and listen for singletaps
+            Ti.API.info("iterating in updateGrid:" + _portlets[i].fname + ", is in _gridItems? " + _gridItems['fName' + _portlets[i].fname]);
+            if (!_gridItems['fName' + _portlets[i].fname]) {
+                //Create the item, implicity add to local array, and explicitly assign sort order
+                _gridView.add(createGridItem(_portlets[i], i));
+            }
+            else {
+                //We just need to tell the item its new sort order
+                _gridItems['fName' + _portlets[i].fname].sortOrder = i;
+            }
+        }
+        
         rearrangeGrid();
     };
     
-    createGridItem = function (top, left, portlet) {
+    createGridItem = function (portlet, sortOrder) {
         // Create the container for the grid item
         var gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
         gridItemDefaults = Styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
@@ -53,6 +83,7 @@ var PortalGridView = function (facade) {
         gridItem = Ti.UI.createView(gridItemDefaults);
 
         gridItem.portlet = portlet;
+        gridItem.sortOrder = sortOrder;
 
         //Add a label to the grid item
         if (portlet.title) {
@@ -86,20 +117,39 @@ var PortalGridView = function (facade) {
         gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
         gridItemIcon.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onGridItemPressUp);
         
-        _gridItems.push(gridItem);
+        gridItem.destroy = function () {
+            Ti.API.info("Destroying GridItem!");
+            if (gridItem.getParent()) {
+                Ti.API.info("GridItem has a parent");
+                gridItem.getParent().remove(gridItem);
+                delete _gridItems['fName'+portlet.fname];
+            }
+            else {
+                Ti.API.error("gridItem doesn't have a parent");
+            }
+        };
+        
+        _gridItems['fName'+portlet.fname] = gridItem;
         
         return gridItem;
     };
     
     rearrangeGrid = function (e) {
+        var _gridItem;
         Ti.API.debug("rearrangeGrid() in PortalGridView");
         _gridView.height = User.isGuestUser() ? Styles.homeGrid.height - Styles.homeGuestNote.height : Styles.homeGrid.height;
         
-        for (var i=0, iLength = _gridItems.length; i<iLength; i++) {
-            Ti.API.debug("setting position of gridItem");
-            _gridItems[i].top = Styles.gridItem.padding + Math.floor(i / numColumns) * completeHeight;
-            _gridItems[i].left = leftPadding + Styles.gridItem.padding + (i % numColumns) * completeWidth;
-        };
+        for (_gridItem in _gridItems) {
+            if (_gridItems.hasOwnProperty(_gridItem)) {
+                Ti.API.info("_gridItems.hasOwnProperty(_gridItem)");
+                _gridItems[_gridItem].top = Styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / numColumns) * completeHeight;
+                _gridItems[_gridItem].left = leftPadding + Styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % numColumns) * completeWidth;
+            }
+            else {
+                Ti.API.error("NOT _gridItems.hasOwnProperty(_gridItem)");
+            }
+        }
+        Ti.API.info("Done with rearrangeGrid()" + JSON.stringify(_gridItems));
     };
     
     onGridItemClick = function (e) {
