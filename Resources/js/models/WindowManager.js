@@ -52,6 +52,7 @@ var WindowManager = function (facade) {
                 Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
             }
             Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
+            Ti.App.fireEvent('layoutcleanup', {win: _self.getPreviousWindow()});
         }
         else {
             Ti.API.error("Error opening window.");

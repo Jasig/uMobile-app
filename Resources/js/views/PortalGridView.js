@@ -2,16 +2,18 @@
 ** @constructor
 */
 var PortalGridView = function (facade) {
-    var app = facade, _self = this, init, Styles, Device, Portal, User,
-    completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout,
+    var app = facade, _self = this, init, Styles, Device, Portal, PortalWindow, User, Windows,
+    completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout, didLayoutCleanup = false,
     createGridItem, rearrangeGrid,
-    onOrientationChange, onGridItemClick, onGridItemPressUp, onGridItemPressDown;
+    onOrientationChange, onGridItemClick, onGridItemPressUp, onGridItemPressDown, onLayoutCleanup;
     
     init = function () {
         Styles = app.styles;
         Device = app.models.deviceProxy;
         Portal = app.models.portalProxy;
+        PortalWindow = app.controllers.portalWindowController;
         User = app.models.userProxy;
+        Windows = app.models.windowManager;
         
         completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
         completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
@@ -27,11 +29,15 @@ var PortalGridView = function (facade) {
         });
         
         Ti.App.addEventListener('dimensionchanges', onOrientationChange);
+        Ti.App.addEventListener('layoutcleanup', onLayoutCleanup);
         
         _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
     };
     
     this.getGridView = function (options) {
+        if (didLayoutCleanup) {
+            _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
+        }
         return _gridView;
     };
     
@@ -55,7 +61,6 @@ var PortalGridView = function (facade) {
                         _gridItems[_item].destroy();
                     }
                 }
-                
             }
         }
         
@@ -65,6 +70,9 @@ var PortalGridView = function (facade) {
                 //Create the item, implicity add to local array, and explicitly assign sort order
                 _gridView.add(createGridItem(_portlets[i], i));
             }
+            else if (didLayoutCleanup) {
+                _gridView.add(createGridItem(_portlets[i], i));
+            }
             else {
                 //We just need to tell the item its new sort order
                 _gridItems['fName' + _portlets[i].fname].sortOrder = i;
@@ -72,6 +80,7 @@ var PortalGridView = function (facade) {
         }
         
         rearrangeGrid();
+        didLayoutCleanup = false;
     };
     
     createGridItem = function (portlet, sortOrder) {
@@ -127,7 +136,7 @@ var PortalGridView = function (facade) {
                 Ti.API.error("gridItem doesn't have a parent");
             }
         };
-        
+        gridItem.visible = false;
         _gridItems['fName'+portlet.fname] = gridItem;
         
         return gridItem;
@@ -142,10 +151,18 @@ var PortalGridView = function (facade) {
             if (_gridItems.hasOwnProperty(_gridItem)) {
                 _gridItems[_gridItem].top = Styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / numColumns) * completeHeight;
                 _gridItems[_gridItem].left = leftPadding + Styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % numColumns) * completeWidth;
+                _gridItems[_gridItem].show();
             }
             else {
                 Ti.API.error("NOT _gridItems.hasOwnProperty(_gridItem)");
             }
+        }
+    };
+    
+    onLayoutCleanup = function (e) {
+        Ti.API.debug("onLayoutCleanup() in PortalGridView");
+        if (e.win === PortalWindow.key) {
+            didLayoutCleanup = true;
         }
     };
     

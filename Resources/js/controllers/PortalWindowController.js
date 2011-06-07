@@ -26,8 +26,8 @@
 * @constructor
 */
 var PortalWindowController = function (facade) {
-    var win, app = facade, _self = this, init, Portal, PortalView, WindowManager,
-        initialized, isGuestLayout = true,
+    var win, app = facade, _self = this, init, Portal, PortalView, WindowManager, User,
+        initialized, 
         onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError,
         onWindowFocus, onAppWindowOpening, onAppWindowOpened, 
         pathToRoot = '../../';
@@ -41,6 +41,7 @@ var PortalWindowController = function (facade) {
         LocalDictionary = app.localDictionary;
         WindowManager = app.models.windowManager;
         SettingsWindow = app.controllers.settingsWindowController;
+        User = app.models.userProxy;
 
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
     	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
@@ -61,7 +62,7 @@ var PortalWindowController = function (facade) {
             PortalView.open( [], { firstLoad: true });
         }
         else {
-            PortalView.open( Portal.getPortlets(), { isGuestLayout: isGuestLayout });
+            PortalView.open( Portal.getPortlets(), { isGuestLayout: User.isGuestUser() });
         }
     };
     
@@ -72,27 +73,16 @@ var PortalWindowController = function (facade) {
     };
     
     onNetworkSessionSuccess = function (e) {
-        if (e.user && e.user === 'guest') {
-            isGuestLayout = true;
-        }
-        else {
-            isGuestLayout = false;
-        }
         Portal.getPortletsForUser();
     };
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
         if (e.user && e.user === 'guest') {
-            isGuestLayout = true;
             Portal.getPortletsForUser();
         }
         else if (!e.user) {
-            isGuestLayout = false;
             PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
-        }
-        else {
-            isGuestLayout = false;
         }
     };
     
@@ -104,7 +94,7 @@ var PortalWindowController = function (facade) {
     };
     
     onPortletsLoaded = function (e) {
-        PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: isGuestLayout});
+        PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: User.isGuestUser()});
     };
     
     onPortalProxyNetworkError = function (e) {

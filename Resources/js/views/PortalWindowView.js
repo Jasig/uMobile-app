@@ -50,7 +50,6 @@ var PortalWindowView = function (facade) {
             if (contentLayer) {
                 contentLayer.width = Styles.portalContentLayer.width;
                 contentLayer.height = Styles.portalContentLayer.height;
-                
             }
             if (guestNotificationView) {
                 guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
@@ -162,7 +161,7 @@ var PortalWindowView = function (facade) {
     };
     
     createGridView = function () {
-        Ti.API.debug("Preparing to iterate through portlets in drawHomeGrid: " + portlets.length);  
+        Ti.API.debug("createGridView() in PortalWindowView");
 
         contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout }));
         GridView.updateGrid(portlets);

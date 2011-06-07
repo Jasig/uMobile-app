@@ -248,7 +248,6 @@ var Styles = function (facade) {
             color: "#fff",
             contentHeight:'auto',
             zIndex: 1
-            
         },
         homeGuestNote: {
             height: 40,
