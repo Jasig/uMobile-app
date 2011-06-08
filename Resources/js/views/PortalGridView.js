@@ -76,6 +76,7 @@ var PortalGridView = function (facade) {
                         break;
                     }
                     else if (j == jLength - 1) {
+                        Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _gridItems[_item].destroy);
                         _gridItems[_item].destroy();
                     }
                 }
@@ -86,10 +87,10 @@ var PortalGridView = function (facade) {
             //Place the item in the scrollview and listen for singletaps
             if (!_gridItems['fName' + _portlets[i].fname]) {
                 //Create the item, implicity add to local array, and explicitly assign sort order
-                _gridView.add(createGridItem(_portlets[i], i));
+                _gridView.add(createGridItem(_portlets[i], i).view);
             }
             else if (didLayoutCleanup) {
-                _gridView.add(createGridItem(_portlets[i], i));
+                _gridView.add(createGridItem(_portlets[i], i).view);
             }
             else {
                 //We just need to tell the item its new sort order
@@ -103,12 +104,12 @@ var PortalGridView = function (facade) {
     
     createGridItem = function (portlet, sortOrder) {
         // Create the container for the grid item
-        var gridItem, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
+        var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
         gridItemDefaults = Styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
         
-        gridItem = Ti.UI.createView(gridItemDefaults);
+        gridItem.view = Ti.UI.createView(gridItemDefaults);
 
-        gridItem.portlet = portlet;
+        gridItem.view.portlet = portlet;
         gridItem.sortOrder = sortOrder;
 
         //Add a label to the grid item
@@ -116,7 +117,7 @@ var PortalGridView = function (facade) {
             var gridItemLabelDefaults = Styles.gridItemLabel;
             gridItemLabelDefaults.text =  portlet.title.toLowerCase();
             gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
-            gridItem.add(gridItemLabel);
+            gridItem.view.add(gridItemLabel);
         }
 
         //Add an icon to the grid item
@@ -124,37 +125,40 @@ var PortalGridView = function (facade) {
         gridItemIconDefaults.image = Portal.getIconUrl(portlet);
         gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
         gridItemIcon.portlet = portlet;
-        gridItem.add(gridItemIcon);
+        gridItem.view.add(gridItemIcon);
         
         // if the module has a new item count of more than zero (no new items)
         // add a badge number to the home screen icon
         if (portlet.newItemCount > 0) {
             gridBadgeBackgroundDefaults = Styles.gridBadgeBackground;
             gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
-            gridItem.add(gridBadgeBackground);
+            gridItem.view.add(gridBadgeBackground);
 
             gridBadgeNumberDefaults = Styles.gridBadgeNumber;
             gridBadgeNumberDefaults.text = portlet.newItemCount;
             gridBadgeNumber = Ti.UI.createLabel(gridBadgeNumberDefaults);
-            gridItem.add(gridBadgeNumber);
+            gridItem.view.add(gridBadgeNumber);
         }
         
         gridItemIcon.addEventListener("singletap", onGridItemClick);
         gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
         gridItemIcon.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onGridItemPressUp);
         
+        
+        gridItem.view.visible = false;
+        
         gridItem.destroy = function () {
             Ti.API.info("Destroying GridItem!");
-            if (gridItem.getParent()) {
+            if (gridItem.view.getParent()) {
                 Ti.API.info("GridItem has a parent");
-                gridItem.getParent().remove(gridItem);
+                gridItem.view.getParent().remove(gridItem.view);
                 delete _gridItems['fName'+portlet.fname];
             }
             else {
                 Ti.API.error("gridItem doesn't have a parent");
             }
         };
-        gridItem.visible = false;
+        
         _gridItems['fName'+portlet.fname] = gridItem;
         
         return gridItem;
@@ -167,9 +171,9 @@ var PortalGridView = function (facade) {
         
         for (_gridItem in _gridItems) {
             if (_gridItems.hasOwnProperty(_gridItem)) {
-                _gridItems[_gridItem].top = Styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / numColumns) * completeHeight;
-                _gridItems[_gridItem].left = leftPadding + Styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % numColumns) * completeWidth;
-                _gridItems[_gridItem].show();
+                _gridItems[_gridItem].view.top = Styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / numColumns) * completeHeight;
+                _gridItems[_gridItem].view.left = leftPadding + Styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % numColumns) * completeWidth;
+                _gridItems[_gridItem].view.show();
             }
             else {
                 Ti.API.error("NOT _gridItems.hasOwnProperty(_gridItem)");
