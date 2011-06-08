@@ -64,46 +64,6 @@ var LoginProxy = function (facade) {
         return Session.isActive(LoginProxy.sessionTimeContexts.WEBVIEW);
     };
     
-    this.isValidNetworkSession = function () {
-        var checkSessionUrl, checkSessionClient, checkSessionResponse;
-        //Checks to see if the networkSessionTimer says it's active, and also checks that the API indicates a valid session.
-        if(Session.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
-            Ti.API.info('this.isValidNetworkSession() in LoginProxy.' + Session.isActive(LoginProxy.sessionTimeContexts.NETWORK));
-            return true;
-        }
-        else {
-            Ti.API.info("No session timer created yet, will check session by other means.");
-        }
-
-        Ti.API.info('Detected potential session timeout');
-
-        try {
-            // Contact the portal's session REST service to determine if the user has 
-            // a current session.  We expect this page to return JSON, but it's possible
-            // that some SSO system may cause the service to return a login page instead. 
-            checkSessionUrl = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/api/session.json';
-            checkSessionClient = Titanium.Network.createHTTPClient();
-            checkSessionClient.open('GET', checkSessionUrl, false);
-            
-            checkSessionClient.send();
-
-            Ti.API.info(checkSessionClient.responseText);
-            checkSessionResponse = JSON.parse(checkSessionClient.responseText);
-            if (checkSessionResponse.person) {
-                Ti.API.info("There was a person in the session response: " + checkSessionResponse.person);
-                // The session service responded with valid JSON containing an object
-                // representing the current user (either an authenticated or guest user)
-                return true;
-            }
-        } catch (error) {
-            Ti.API.debug("Error encountered while checking session validity " + error.message);
-        }
-
-        // Either the session service responded with invalid JSON or indicated
-        // no session present on the server
-        return false;
-    };
-    
     /**
      * Establish a session on the uPortal server.
      */
@@ -133,7 +93,6 @@ var LoginProxy = function (facade) {
     
     this.getLayoutUser = function (client) {
         var _layout, _username, _responseXML;
-
         _layout = JSON.parse(client.responseText);
         _username = _layout.user;
         

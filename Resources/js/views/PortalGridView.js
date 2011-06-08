@@ -3,7 +3,7 @@
 */
 var PortalGridView = function (facade) {
     var app = facade, _self = this, init, Styles, Device, Portal, PortalWindow, User, Windows,
-    completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout, didLayoutCleanup = false,
+    completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout, didLayoutCleanup = false, _state,
     createGridItem, rearrangeGrid,
     onOrientationChange, onGridItemClick, onGridItemPressUp, onGridItemPressDown, onLayoutCleanup;
     
@@ -14,6 +14,13 @@ var PortalGridView = function (facade) {
         PortalWindow = app.controllers.portalWindowController;
         User = app.models.userProxy;
         Windows = app.models.windowManager;
+        
+        _self.states = {
+            INITIALIZED: "Initialized",
+            LOADING: "Loading",
+            COMPLETE: "Complete",
+            HIDDEN: "Hidden"
+        };
         
         completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
         completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
@@ -32,6 +39,17 @@ var PortalGridView = function (facade) {
         Ti.App.addEventListener('layoutcleanup', onLayoutCleanup);
         
         _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
+        
+        _self.setState(_self.states.INITIALIZED);
+    };
+    
+    this.getState = function () {
+        return _state;
+    };
+    
+    this.setState = function (newState) {
+        _state = newState;
+        Ti.App.fireEvent('PortalGridViewStateChange', {state: _state});
     };
     
     this.getGridView = function (options) {
@@ -157,17 +175,22 @@ var PortalGridView = function (facade) {
                 Ti.API.error("NOT _gridItems.hasOwnProperty(_gridItem)");
             }
         }
+        
+        _self.setState(_self.states.COMPLETE); 
     };
     
     onLayoutCleanup = function (e) {
         Ti.API.debug("onLayoutCleanup() in PortalGridView");
         if (e.win === PortalWindow.key) {
             didLayoutCleanup = true;
+            _self.setState(_self.states.HIDDEN);
         }
     };
     
     onOrientationChange = function (e) {
-        rearrangeGrid();
+        if (Windows.getCurrentWindow() === PortalWindow.key) {
+            rearrangeGrid();
+        }
     };
     
     onGridItemClick = function (e) {

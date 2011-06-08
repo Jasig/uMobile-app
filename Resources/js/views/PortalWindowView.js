@@ -27,10 +27,11 @@
 */
 var PortalWindowView = function (facade) {
     var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView,
-    portlets, isGuestLayout,
+    portlets, isGuestLayout, _state,
     win, contentLayer, gridView,
     titleBar, activityIndicator, guestNotificationView,
-    createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator;
+    createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator,
+    onPortalGridViewStateChange;
     
     init = function () {
         Styles = app.styles;
@@ -42,10 +43,16 @@ var PortalWindowView = function (facade) {
         SettingsWindow = app.controllers.settingsWindowController;
         PortalWindow = app.controllers.portalWindowController;
         
+        _self.states = {
+            INITIALIZED: "Initialized",
+            OPENED: "Opened",
+            CLOSED: "Closed"
+        };
+        
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
         });
-        
+        Ti.App.addEventListener('PortalGridViewStateChange', onPortalGridViewStateChange);
         Ti.App.addEventListener('dimensionchanges', function (e) {
             if (contentLayer) {
                 contentLayer.width = Styles.portalContentLayer.width;
@@ -55,6 +62,8 @@ var PortalWindowView = function (facade) {
                 guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
             }
         });
+        
+        _self.setState(_self.states.INITIALIZED);
     };
     
     this.open = function (modules, options) {
@@ -86,6 +95,7 @@ var PortalWindowView = function (facade) {
         else {
             Ti.API.debug("This isn't the first time we're loading");
         }
+        _self.setState(_self.states.OPENED);
     };
     
     this.close = function () {
@@ -95,6 +105,15 @@ var PortalWindowView = function (facade) {
         else if (win) {
             win.hide();
         }
+        _self.setState(_self.states.CLOSED);
+    };
+    
+    this.setState = function (newState) {
+        _state = newState;
+    };
+    
+    this.getState = function () {
+        return _state;
     };
     
     this.updateModules = function (modules, options) {
@@ -197,9 +216,14 @@ var PortalWindowView = function (facade) {
         guestNotificationView.addEventListener('click', function (e){
             Ti.API.info("Clicked guest notification, opening settings");
             WindowManager.openWindow(SettingsWindow.key);
-        });
-        
-        
+        });  
+    };
+    
+    onPortalGridViewStateChange = function (e) {
+        Ti.API.debug("onPortalGridViewStateChange() in PortalWindowView. State is: " + e.state);
+        if (GridView && activityIndicator && e.state === GridView.states.COMPLETE && _self.getState() === _self.states.OPENED) {
+            activityIndicator.hide();
+        }
     };
     
     
