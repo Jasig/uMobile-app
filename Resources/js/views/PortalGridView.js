@@ -186,8 +186,12 @@ var PortalGridView = function (facade) {
     onLayoutCleanup = function (e) {
         Ti.API.debug("onLayoutCleanup() in PortalGridView");
         if (e.win === PortalWindow.key) {
+            Ti.API.debug("current window is " + PortalWindow.key);
             didLayoutCleanup = true;
             _self.setState(_self.states.HIDDEN);
+        }
+        else {
+            Ti.API.debug("current window is NOT " + PortalWindow.key + ', it\'s ' + e.win);
         }
     };
     

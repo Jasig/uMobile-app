@@ -1,5 +1,5 @@
 var UI = function (facade) {
-    var self = {}, app=facade, init, Device, Styles, WindowManager, SettingsWindow, PortalWindow, LocalDictionary;
+    var _self = this, app=facade, init, Device, Styles, WindowManager, SettingsWindow, PortalWindow, LocalDictionary;
     
     init = function () {
         Device = app.models.deviceProxy;
@@ -11,7 +11,7 @@ var UI = function (facade) {
         });
     };
     
-    self.createSearchBar = function () {
+    this.createSearchBar = function () {
         var searchBar, searchBarObject = {}, searchBarInput;
         
         if (Device.isIOS()) {
@@ -35,7 +35,7 @@ var UI = function (facade) {
         return searchBarObject;
     };
     
-    self.createTitleBar = function (opts) {
+    this.createTitleBar = function (opts) {
         // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
         //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
         var initTitleBar, title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
@@ -150,7 +150,7 @@ var UI = function (facade) {
         return titleBar;
     };
     
-    self.createSecondaryNavBar = function (opts) {
+    this.createSecondaryNavBar = function (opts) {
         var secondaryNavBar;
         // A partial view used in some controllers to place a nav bar just below the titleBar
         Ti.API.debug("opts.style not defined in SecondaryNavBar, will create with style: " + Styles.secondaryNavBar);
@@ -167,7 +167,7 @@ var UI = function (facade) {
         return secondaryNavBar;
     };
     
-    self.createActivityIndicator = function () {
+    this.createActivityIndicator = function () {
         var messageLabel,
             indicator = Ti.UI.createView(Styles.globalActivityIndicator),
             dialog = Ti.UI.createView(Styles.activityIndicatorDialog);
@@ -202,7 +202,13 @@ var UI = function (facade) {
         return indicator;
     };
     
-    init();
+    this.onOrientationChange = function (e) {
+        Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
+        Device.setCurrentOrientation(e.orientation);
+        app.styles = new Styles(app);
+        Ti.App.fireEvent('updatestylereference');
+        Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+    };
     
-    return self;
+    init();
 };
