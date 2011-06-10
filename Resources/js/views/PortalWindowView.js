@@ -95,14 +95,6 @@ var PortalWindowView = function (facade) {
         else {
             Ti.API.debug("This isn't the first time we're loading");
         }
-        
-        if (_self.getState() === _self.states.INITIALIZED) {
-            Ti.API.debug("Adding orientationchange listener in PortalWindowView");
-            Titanium.Gesture.addEventListener('orientationchange', UI.onOrientationChange);
-        }
-        else { 
-            Ti.API.debug("No need to add orientationchange listener in PortalWindowView. Current state: " + _self.getState());
-        }
         _self.setState(_self.states.OPENED);
     };
     

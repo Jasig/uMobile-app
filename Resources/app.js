@@ -80,6 +80,8 @@ startup = function (e) {
     app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
     app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
 
+    
+
     // Add window controllers to the window manager,
     // which manages the stack of window activities, and manages opening and closing
     // of windows so that controllers don't have to be concerned with details,
@@ -100,6 +102,17 @@ startup = function (e) {
     app.models.deviceProxy.checkNetwork();
     app.models.loginProxy.establishNetworkSession();
     
-    Titanium.Gesture.addEventListener('orientationchange', app.UI.onOrientationChange);
+    Titanium.Gesture.addEventListener('orientationchange', function callback(e){
+        Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
+        if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
+            app.models.deviceProxy.setCurrentOrientation(e.orientation);
+            app.styles = new Styles(app);
+            Ti.App.fireEvent('updatestylereference');
+            Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+        }
+        else {
+            Ti.API.debug("Same orientation as before");
+        }
+    });
 };
 startup();
