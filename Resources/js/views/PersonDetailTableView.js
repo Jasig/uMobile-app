@@ -1,5 +1,5 @@
 var PersonDetailTableView = function (facade) {
-    var app = facade, init, LocalDictionary, Styles,
+    var app = facade, init, LocalDictionary, Styles, 
         self = Titanium.UI.createTableView(app.styles.directoryDetailAttributeTable),
         person,
         //Event Handlers
@@ -12,6 +12,7 @@ var PersonDetailTableView = function (facade) {
         //Declare pointers to facade members
         LocalDictionary = app.localDictionary;
         Styles = app.styles;
+        Device = app.models.deviceProxy;
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
         });
