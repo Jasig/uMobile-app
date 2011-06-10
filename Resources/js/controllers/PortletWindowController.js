@@ -21,7 +21,7 @@ var PortletWindowController = function (facade) {
     var win, _self = this, app = facade, 
         Device, WindowManager, PortalWindow, Styles, UI, LocalDictionary, Login, UPM, Session,
         activityIndicator, titleBar, navBar, navBackButton, webView,
-        initialized, winListeners = [], activePortlet,
+        initialized, winListeners = [], activePortlet, _homeURL,
         pathToRoot = '../../',
         init, drawWindow, getQualifiedURL, getLocalUrl,
         includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume;
@@ -131,11 +131,12 @@ var PortletWindowController = function (facade) {
     
     includePortlet = function (portlet) {
         Ti.API.debug("includePortlet() in PortletWindowController");
-        
+        webView.visible = false;
         activityIndicator.setLoadingMessage(LocalDictionary.loading);
         activityIndicator.show();
         
-        webView.url = getQualifiedURL(portlet.url);
+        _homeURL = getQualifiedURL(portlet.url);
+        webView.url = _homeURL;
         
         titleBar.updateTitle(portlet.title);
     };
@@ -198,6 +199,9 @@ var PortletWindowController = function (facade) {
     
     onPortletBeforeLoad = function (e) {
         Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + webView.url);
+        if (Device.isAndroid()) {
+            webView.hide();
+        }
         //We want to make sure we don't need to re-establish a session.
         if (webView.url !== getQualifiedURL(webView.url)) {
             webView.stopLoading();
@@ -208,6 +212,8 @@ var PortletWindowController = function (facade) {
     };
     
     onPortletLoad = function (e) {
+        webView.show();
+        
         activityIndicator.hide();
         var portalIndex = e.url.indexOf(UPM.BASE_PORTAL_URL);
         Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
@@ -224,7 +230,7 @@ var PortletWindowController = function (facade) {
         else {
             Ti.API.debug("Visiting an external link");
             webView.externalModule = true;
-            if (webView.canGoBack()) {
+            if (webView.canGoBack() && e.url !== _homeURL) {
                 navBar.visible = true;
                 webView.top = titleBar.height + navBar.height;
                 webView.height = win.height - titleBar.height - navBar.height;
