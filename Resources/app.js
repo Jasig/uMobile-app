@@ -21,7 +21,12 @@ var app, loadingWindow, WindowManager, startup;
 
 startup = function (e) {
     // library includes
-
+    
+    if (Ti.Platform.osname === 'android') {
+        //We're overriding all Android orientations for now until it can be fully implemented
+        Titanium.UI.orientation = Ti.UI.PORTRAIT;
+    }
+    
     Titanium.include('js/ApplicationFacade.js');
 
     Titanium.include('js/config.js');

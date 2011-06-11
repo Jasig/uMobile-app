@@ -232,6 +232,7 @@ var SettingsWindowController = function(facade){
     
     //LoginProxy events
     onSessionSuccess = function (e) {
+        var _toast;
         if (activityIndicator) {
             activityIndicator.hide();
         }
@@ -239,15 +240,33 @@ var SettingsWindowController = function(facade){
         if(WindowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
             if (e.user === usernameInput.value) {
                 logOutButton.show();
-                Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
-                    message: LocalDictionary.authenticationSuccessful, buttonNames: [LocalDictionary.OK]
-                    }).show();
+                if (Device.isAndroid()) {
+                    _toast = Titanium.UI.createNotification({
+                        duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+                        message: LocalDictionary.authenticationSuccessful
+                    });
+                    _toast.show();
+                }
+                else {
+                    Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
+                        message: LocalDictionary.authenticationSuccessful, buttonNames: [LocalDictionary.OK]
+                        }).show();                    
+                }
             }
             else if (e.user === 'guest' && wasLogOutClicked) {
-                Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
-                    message: LocalDictionary.logOutSuccessful, buttonNames: [LocalDictionary.OK]
-                    }).show();
-                    logOutButton.hide();
+                if (Device.isAndroid()) {
+                    _toast = Titanium.UI.createNotification({
+                        duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+                        message: LocalDictionary.logOutSuccessful
+                    });
+                    _toast.show();
+                }
+                else {
+                    Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
+                        message: LocalDictionary.logOutSuccessful, buttonNames: [LocalDictionary.OK]
+                        }).show();
+                        logOutButton.hide();
+                }
             }
             else if (e.user === 'guest') {
                 wasFormSubmitted = false;
