@@ -67,14 +67,26 @@ var PortalWindowView = function (facade) {
     };
     
     this.open = function (modules, options) {
+        portlets = modules;
+        
+        if (!win || Device.isIOS()) {
+            Ti.API.debug("Create and open the portal window");
+            //We want to create a new window and redraw the whole UI each time on iOS
+            win = Ti.UI.createWindow(Styles.portalWindow);
+            win.open();
+        }
+        else if (win && !win.visible) {
+            Ti.API.debug("Just show the portal window");
+            win.show();
+        }
+        
         if (!GridView) {
             Ti.include('js/views/PortalGridView.js');
             GridView = new PortalGridView(app);
         }
-        portlets = modules;
         
-        createWindow();
-        createContentLayer();
+        contentLayer = Ti.UI.createView(Styles.portalContentLayer);
+        win.add(contentLayer);
         
         if (options.isGuestLayout) {
             Ti.API.debug("Is guest layout");
@@ -85,10 +97,31 @@ var PortalWindowView = function (facade) {
             Ti.API.debug("Not guest layout");
             isGuestLayout = false;
         }
+        if (!activityIndicator || Device.isIOS()) {
+            activityIndicator = UI.createActivityIndicator();
+        }
+        else {
+            try {
+                win.remove(activityIndicator);
+            }
+            catch (e) {
+                Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
+            }            
+        }
         
-        createGridView();
-        drawChrome();
+        win.add(activityIndicator);
         
+        contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout }));
+        _self.showActivityIndicator();
+        GridView.updateGrid(portlets);
+        
+        titleBar = UI.createTitleBar({
+    	    title: LocalDictionary.homeTitle,
+    	    settingsButton: true,
+    	    homeButton: false
+    	});
+        win.add(titleBar);
+    	
         if (options.firstLoad) {
             _self.showActivityIndicator(LocalDictionary.gettingPortlets);
         }
@@ -126,7 +159,10 @@ var PortalWindowView = function (facade) {
         }
         portlets = modules;
         if (WindowManager.getCurrentWindow() === PortalWindow.key) {
-            createGridView();
+            if (GridView) {
+                GridView.updateGrid(portlets);
+                _self.showActivityIndicator();
+            }
         }
         if (isGuestLayout) {
             addGuestLayoutIndicator();
@@ -137,6 +173,9 @@ var PortalWindowView = function (facade) {
         if (activityIndicator) {
             if (message) {
                 activityIndicator.setLoadingMessage(message);
+            }
+            else {
+                activityIndicator.setLoadingMessage(LocalDictionary.loading);
             }
             activityIndicator.show();
         }
@@ -156,49 +195,10 @@ var PortalWindowView = function (facade) {
     };
     
     this.alert = function (title, message) {
+        _self.hideActivityIndicator();
         Titanium.UI.createAlertDialog({ title: title,
             message: message, buttonNames: [LocalDictionary.OK]
             }).show();
-    };
-    
-    createWindow = function () {
-        if (!win || Device.isIOS()) {
-            Ti.API.debug("Create and open the portal window");
-            //We want to create a new window and redraw the whole UI each time on iOS
-            win = Ti.UI.createWindow(Styles.portalWindow);
-            win.open();
-        }
-        else if (win && !win.visible) {
-            Ti.API.debug("Just show the portal window");
-            win.show();
-        }
-    };
-    
-    createContentLayer = function () {
-        contentLayer = Ti.UI.createView(Styles.portalContentLayer);
-        win.add(contentLayer);
-    };
-    
-    createGridView = function () {
-        Ti.API.debug("createGridView() in PortalWindowView");
-
-        contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout }));
-        GridView.updateGrid(portlets);
-        _self.hideActivityIndicator();
-    };
-    
-    drawChrome = function (options) {
-        Ti.API.debug("drawChrome() in PortalWindowView");
-        titleBar = UI.createTitleBar({
-    	    title: LocalDictionary.homeTitle,
-    	    settingsButton: true,
-    	    homeButton: false
-    	});
-        win.add(titleBar);
-    	
-    	activityIndicator = UI.createActivityIndicator();
-        win.add(activityIndicator);
-        activityIndicator.hide();
     };
     
     addGuestLayoutIndicator = function () {
@@ -221,8 +221,8 @@ var PortalWindowView = function (facade) {
     
     onPortalGridViewStateChange = function (e) {
         Ti.API.debug("onPortalGridViewStateChange() in PortalWindowView. State is: " + e.state);
-        if (GridView && activityIndicator && e.state === GridView.states.COMPLETE && _self.getState() === _self.states.OPENED) {
-            activityIndicator.hide();
+        if (GridView && activityIndicator && e.state === GridView.states.COMPLETE && portlets.length > 0) {
+            _self.hideActivityIndicator();
         }
     };
     

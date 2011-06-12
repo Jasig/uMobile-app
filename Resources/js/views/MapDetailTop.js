@@ -41,13 +41,14 @@ var MapDetailTop = function (opts) {
             directionsButtonOptions.title = LocalDictionary.getDirections;
         }
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);
-        
         detailView.add(directionsButton);
+        
         if (details.address) {
             directionsButton.show();
         } 
         else {
             directionsButton.hide();
+            directionsButton.visible = false;
         }
 
         Ti.API.debug("Adding event listener to directionsButton in MapDetailTop");
@@ -71,6 +72,7 @@ var MapDetailTop = function (opts) {
         }
         else {
             directionsButton.hide();
+            directionsButton.visible = false;
         }
 
         locationTitle.text = details.title;

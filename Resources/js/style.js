@@ -404,12 +404,12 @@ var Styles = function (facade) {
     	    top: defaults.TITLEBAR_HEIGHT,
             left: 0,
             backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
-            height: 120
+            height: 206
     	},
     	mapDetailLocationTitle: {
     	    left: 10,
     	    top: 10,
-            height: 30,
+            height: 72,
     	    font: {
                 fontSize: 24,
                 fontWeight: 'bold'
@@ -419,8 +419,8 @@ var Styles = function (facade) {
     	},
     	mapDetailLocationAddress: {
     	    left: 10,
-    	    top: 40,
-            height: 30,
+    	    top: 82,
+            height: 74,
     	    font: {
                 fontSize: 18,
                 fontWeight: 'bold'
@@ -430,7 +430,7 @@ var Styles = function (facade) {
     	},
     	mapDetailLocationPhoto: {
     	    width: Titanium.Platform.displayCaps.platformWidth,
-            top: defaults.TITLEBAR_HEIGHT + 120,
+            top: defaults.TITLEBAR_HEIGHT + 206,
             height: 241
     	},
     	// ACTIVITY INDICATOR STYLING

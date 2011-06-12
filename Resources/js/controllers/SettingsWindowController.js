@@ -79,7 +79,7 @@ var SettingsWindowController = function(facade){
         
         activityIndicator = UI.createActivityIndicator();
         activityIndicator.resetDimensions();
-        
+        activityIndicator.hide();
         win.add(activityIndicator);
         activityIndicator.hide();
     };
