@@ -153,7 +153,7 @@ var Styles = function (facade) {
         	left: 0,
         	height: defaults.TITLEBAR_HEIGHT,
             backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
-        	width: Titanium.Platform.displayCaps.platformWidth,
+        	width: Ti.Platform.osname === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth,
         	zIndex: 1
         },
         //Titanium.UI.Button implemented in the GenericTitleBar
@@ -219,7 +219,7 @@ var Styles = function (facade) {
         	height: defaults.TITLEBAR_HEIGHT,
         	backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
         	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
-        	width: Titanium.Platform.displayCaps.platformWidth
+        	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
         },
         secondaryNavBarLabel: {
             textAlign: "center",
@@ -245,8 +245,8 @@ var Styles = function (facade) {
         },
         portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
-            width: Ti.Platform.osname === 'android' ? 'auto' : Ti.Platform.displayCaps.platformWidth,
-            height: Ti.Platform.osname === 'android' ? 'auto' : Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
+            width: OS === 'android' ? 'auto' : Ti.Platform.displayCaps.platformWidth,
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
             backgroundColor: "#2A4F95"
         },
         homeGrid: {

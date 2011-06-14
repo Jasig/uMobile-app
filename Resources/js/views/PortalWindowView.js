@@ -213,12 +213,11 @@ var PortalWindowView = function (facade) {
     
     onDimensionChanges = function (e) {
         Ti.API.debug('onDimensionChanges() in PortalWindowView');
-        if (contentLayer && Device.isIOS()) {
+        // We want to make sure the content layer (the view holding the icons) 
+        // is the appropriate size when the device rotates
+        if (contentLayer) {
             contentLayer.width = Styles.portalContentLayer.width;
             contentLayer.height = Styles.portalContentLayer.height;
-        }
-        else {
-            Ti.API.error("There's no contentLayer");
         }
         if (guestNotificationView) {
             guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
