@@ -31,7 +31,7 @@ var PortalWindowView = function (facade) {
     win, contentLayer, gridView,
     titleBar, activityIndicator, guestNotificationView,
     createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator,
-    onPortalGridViewStateChange;
+    onPortalGridViewStateChange, onDimensionChanges;
     
     init = function () {
         Styles = app.styles;
@@ -53,15 +53,7 @@ var PortalWindowView = function (facade) {
             Styles = app.styles;
         });
         Ti.App.addEventListener('PortalGridViewStateChange', onPortalGridViewStateChange);
-        Ti.App.addEventListener('dimensionchanges', function (e) {
-            if (contentLayer) {
-                contentLayer.width = Styles.portalContentLayer.width;
-                contentLayer.height = Styles.portalContentLayer.height;
-            }
-            if (guestNotificationView) {
-                guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
-            }
-        });
+        Ti.App.addEventListener('dimensionchanges', onDimensionChanges);
         
         _self.setState(_self.states.INITIALIZED);
     };
@@ -217,6 +209,20 @@ var PortalWindowView = function (facade) {
             Ti.API.info("Clicked guest notification, opening settings");
             WindowManager.openWindow(SettingsWindow.key);
         });  
+    };
+    
+    onDimensionChanges = function (e) {
+        Ti.API.debug('onDimensionChanges() in PortalWindowView');
+        if (contentLayer && Device.isIOS()) {
+            contentLayer.width = Styles.portalContentLayer.width;
+            contentLayer.height = Styles.portalContentLayer.height;
+        }
+        else {
+            Ti.API.error("There's no contentLayer");
+        }
+        if (guestNotificationView) {
+            guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
+        }
     };
     
     onPortalGridViewStateChange = function (e) {

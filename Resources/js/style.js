@@ -245,8 +245,8 @@ var Styles = function (facade) {
         },
         portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
-            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
-            // backgroundImage: 'img/home-background.png'
+            width: Ti.Platform.osname === 'android' ? 'auto' : Ti.Platform.displayCaps.platformWidth,
+            height: Ti.Platform.osname === 'android' ? 'auto' : Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
             backgroundColor: "#2A4F95"
         },
         homeGrid: {

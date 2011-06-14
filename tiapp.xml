@@ -40,13 +40,8 @@
 	<android xmlns:android="http://schemas.android.com/apk/res/android">
 	    <tool-api-level>8</tool-api-level>
 <manifest android:installLocation="auto" android:versionCode="1" android:versionName="1.0">
-	<uses-sdk android:minSdkVersion="7" />
-	<supports-screens 
-		android:smallScreens="false"
-		android:normalScreens="true"
-		android:largeScreens="true"
-		android:anyDensity="false"
-	/>
+	<uses-sdk android:minSdkVersion="7"/>
+	<supports-screens android:anyDensity="false" android:largeScreens="true" android:normalScreens="true" android:smallScreens="false"/>
 
 	<!-- TI_MANIFEST -->
     
