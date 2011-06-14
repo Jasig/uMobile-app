@@ -193,6 +193,7 @@ var UI = function (facade) {
             indicator.top = Styles.globalActivityIndicator.top;
             indicator.height = Styles.globalActivityIndicator.height;
             indicator.width = Styles.globalActivityIndicator.width;
+            dialog.width = Styles.activityIndicatorDialog.width;
         };
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
