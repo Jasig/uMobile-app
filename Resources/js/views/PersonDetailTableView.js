@@ -144,10 +144,6 @@ var PersonDetailTableView = function (facade) {
         Ti.Platform.openURL(e.source.data);
     };
     
-    Titanium.App.addEventListener('dimensionchanges', function (e) {
-        self.width = Styles.directoryDetailAttributeTable.width;
-    });
-    
     init();
     
     return self;

@@ -1,17 +1,17 @@
 var DirectoryDetailController = function (facade) {
     var app = facade,
-        Device, Styles, LocalDictionary, PersonDetailTableView, Config,
+        Device, Styles, LocalDictionary, PersonDetailTable, Config,
         self = Titanium.UI.createView(app.styles.contactDetailView), init,
         //UI Components
-        titleBar, nameLabel, phoneLabel, attributeTable, backButton,
+        titleBar, backBar, nameLabel, phoneLabel, attributeTable, backButton,
         //Methods
         updateValues,
         //Controller Event Handlers
-        onWinOpen, onWinShow, onWinHide, onWinClose;
+        onDimensionChanges;
     
     init = function () {
         Ti.API.debug('DirectoryDetailController constructed');
-        var backButtonOpts, backBarOpts, backBar;
+        var backButtonOpts, backBarOpts;
         
         Device = app.models.deviceProxy;
         Styles = app.styles;
@@ -48,15 +48,11 @@ var DirectoryDetailController = function (facade) {
             Styles = app.styles;
         });
         
-        Titanium.App.addEventListener('dimensionchanges', function (e) {
-            if (backBar) { backBar.width = Styles.secondaryBar.width; }
-            if (nameLabel) { nameLabel.width = Styles.directoryDetailNameLabel; }
-            if (attributeTable) { attributeTable.width = Styles.directoryDetailAttributeTable.width; }
-        });
+        Titanium.App.addEventListener('dimensionchanges', onDimensionChanges);
     };
     
     updateValues = function (attributes) {
-        person = constructPerson(attributes);
+        var person = constructPerson(attributes);
         Ti.API.info("updateValues: " + JSON.stringify(person));
         nameLabel.text = person.fullName;
         attributeTable.update(person);
@@ -103,6 +99,31 @@ var DirectoryDetailController = function (facade) {
             }
         }
         return null;
+    };
+    
+    onDimensionChanges = function (e) {
+        Ti.API.debug("onDimensionChanges() in DirectoryDetailController");
+        self.width = app.styles.contactDetailView.width;
+        self.height = app.styles.contactDetailView.height;
+        
+        if (backBar) {
+            backBar.width = Styles.secondaryBar.width; 
+        }
+        else {
+            Ti.API.error("backBar is undefined in DirectoryDetailController");
+        }
+        if (nameLabel) {
+            nameLabel.width = Styles.directoryDetailNameLabel.width; 
+        }
+        else {
+            Ti.API.error("nameLabel is undefined in DirectoryDetailController");
+        }
+        if (attributeTable) {
+            attributeTable.width = Styles.directoryDetailAttributeTable.width;
+        }
+        else {
+            Ti.API.error("attributeTable is undefined in DirectoryDetailController");
+        }
     };
 
     if (!self.initialized) {
