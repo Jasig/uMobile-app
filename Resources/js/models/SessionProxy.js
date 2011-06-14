@@ -1,6 +1,7 @@
 var SessionProxy = function (facade) {
     var app = facade, _self = this, Device, Config, Login,
-    timers = [], sessionLifeTimeMilli, init, onSessionExpire, onTimeout;
+    timers = [], sessionLifeTimeMilli, init,
+    onSessionExpire, onTimeout;
     
     /* 
     The SessionProxy acts as a sub-proxy for LoginProxy to maintain a local
@@ -22,11 +23,6 @@ var SessionProxy = function (facade) {
         Ti.App.addEventListener('SessionActivity', onSessionActivity);
     };
     
-    onTimeout = function (session) {
-        Ti.API.info("SessionTimerExpired" + session.context);
-        Ti.App.fireEvent("SessionTimerExpired", {context: session.context});
-    };
-    
     this.resetTimer = function(context) {
         // There should only be multiple context timers if the OS is Android.
         // Because Android Appcelerator doesn't share cookies between Async requests and webview requests.
@@ -44,7 +40,7 @@ var SessionProxy = function (facade) {
                 onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
             timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
-            Ti.App.Properties.setInt('timer_' + context, getLastDigits(new Date().getTime()));
+            Ti.App.Properties.setString('timer_' + context, String(new Date().getTime()));
             
             Ti.API.debug("Network timer updated");
         }
@@ -59,18 +55,11 @@ var SessionProxy = function (facade) {
             }, parseInt(sessionLifeTimeMilli, 10));
             
             timers[context].isActive = true;
-            Ti.App.Properties.setInt('timer_' + context, getLastDigits(new Date().getTime()));
+            Ti.App.Properties.setString('timer_' + context, String(new Date().getTime()));
         }
         else {
             Ti.API.debug("No timers matched the context: " + context);
         }
-    };
-    
-    var getLastDigits = function (number) {
-        //Returns just the last 6 digits of an integer so it's not too big for Java
-        var _number = String(number).slice(1, -3);
-        Ti.API.info("getLastDigits() in SessionProxy. Number in: " + number + " Number out: " + _number);
-        return parseInt(_number, 10);
     };
     
     this.isActive = function (context) {
@@ -128,16 +117,16 @@ var SessionProxy = function (facade) {
         // This compares the timestamps of all timers against the current time
         // and the UPM.SERVER_SESSION_TIMEOUT property in config.js
         
-        _currentTime = getLastDigits(new Date().getTime());
+        _currentTime = new Date().getTime();
 
         for (var timer in timers) {
             if (timers.hasOwnProperty(timer)) {
-                if (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0)) < parseInt(Config.SERVER_SESSION_TIMEOUT * 1000, 10)) {
-                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0))));
+                if (_currentTime - parseInt(Ti.App.Properties.getString('timer_' + timer, 0), 10) < sessionLifeTimeMilli) {
+                    Ti.API.info("The timer " + timer + " is still active, milliseconds different: " + (_currentTime - parseInt(Ti.App.Properties.getString('timer_' + timer, 0), 10)));
                     _sessions[timer] = true;
                 }
                 else {
-                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (_currentTime - getLastDigits(Ti.App.Properties.getInt('timer_' + timer, 0))));
+                    Ti.API.info("The timer " + timer + " is not active, stopping it. milliseconds different: " + (_currentTime - parseInt(Ti.App.Properties.getString('timer_' + timer, 0), 10)));
                     _sessions[timer] = false;
                     _self.stopTimer(timer);
                 }
@@ -152,7 +141,13 @@ var SessionProxy = function (facade) {
         return _sessions;
     };
     
-     onSessionActivity = function (e) {
+    
+    onTimeout = function (session) {
+        Ti.API.info("SessionTimerExpired" + session.context);
+        Ti.App.fireEvent("SessionTimerExpired", { context: session.context });
+    };
+    
+    onSessionActivity = function (e) {
         Ti.API.debug("onSessionActivity() in SessionProxy");
         if (e.context) {
             Ti.API.debug("Resetting " + e.context + " session");
