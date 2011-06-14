@@ -73,6 +73,7 @@ var DirectoryWindowController = function (facade) {
         }
         
         win = Titanium.UI.createWindow({
+            url: 'js/views/WindowContext.js',
             backgroundColor: Styles.backgroundColor,
             title: LocalDictionary.directory,
             exitOnClose: false,

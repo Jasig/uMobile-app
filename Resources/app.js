@@ -22,10 +22,10 @@ var app, loadingWindow, WindowManager, startup;
 startup = function (e) {
     // library includes
     
-    if (Ti.Platform.osname === 'android') {
+    /*if (Ti.Platform.osname === 'android') {
         //We're overriding all Android orientations for now until it can be fully implemented
         Titanium.UI.orientation = Ti.UI.PORTRAIT;
-    }
+    }*/
     
     Titanium.include('js/ApplicationFacade.js');
 
@@ -107,17 +107,28 @@ startup = function (e) {
     app.models.deviceProxy.checkNetwork();
     app.models.loginProxy.establishNetworkSession();
     
-    Titanium.Gesture.addEventListener('orientationchange', function callback(e){
-        Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
-        if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
-            app.models.deviceProxy.setCurrentOrientation(e.orientation);
-            app.styles = new Styles(app);
-            Ti.App.fireEvent('updatestylereference');
-            Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
-        }
-        else {
-            Ti.API.debug("Same orientation as before");
-        }
-    });
+    if (app.models.deviceProxy.isIOS()) {
+        Titanium.Gesture.addEventListener('orientationchange', onOrientationChange);
+    }
+    else {
+        //Android doesn't register global orientation events, only in the context of a specific activity.
+        //So we'll listen for it in each activity and broadcast a global event instead.
+        Ti.App.addEventListener('androidorientationchange', onOrientationChange);
+    }
+    
 };
+
+onOrientationChange = function (e) {
+    Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
+    if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
+        app.models.deviceProxy.setCurrentOrientation(e.orientation);
+        app.styles = new Styles(app);
+        Ti.App.fireEvent('updatestylereference');
+        Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+    }
+    else {
+        Ti.API.debug("Same orientation as before");
+    }
+};
+
 startup();

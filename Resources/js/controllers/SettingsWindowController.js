@@ -61,6 +61,7 @@ var SettingsWindowController = function(facade){
         credentials = User.getCredentials();
         
         win = Titanium.UI.createWindow({
+            url: 'js/views/WindowContext.js',
             exitOnClose: false, 
             navBarHidden: true,
             backgroundColor: Styles.backgroundColor

@@ -71,6 +71,7 @@ var PortletWindowController = function (facade) {
         }
         
         win = Titanium.UI.createWindow({
+            url: 'js/views/WindowContext.js',
             key: 'portlet',
             backgroundColor: Styles.backgroundColor,
             exitOnClose: false,

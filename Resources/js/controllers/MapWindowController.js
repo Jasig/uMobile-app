@@ -71,6 +71,7 @@ var MapWindowController = function(facade) {
         }
         
         win = Titanium.UI.createWindow({
+            url: 'js/views/WindowContext.js',
             backgroundColor: Styles.backgroundColor,
             exitOnClose: false,
             navBarHidden: true
