@@ -469,7 +469,7 @@ var Styles = function (facade) {
     
     //iPhone-specific overrides
     if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
-        stylesheet.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.PLAIN;
+        stylesheet.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
         stylesheet.contentButton = {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
             height: 30,
