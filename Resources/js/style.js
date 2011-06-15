@@ -57,14 +57,17 @@ var Styles = function (facade) {
             width:'auto',
             color: '#000'
         },
+        settingsTable: {
+            top: defaults.TITLEBAR_HEIGHT,
+            style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+        },
         //Settings Properties
         settingsPasswordInput: {
             height: OS === 'iphone' ? 35 : 45,
-        	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+        	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
             passwordMask: true,
-            top: 100,
             left: 100,
-            width: Ti.Platform.displayCaps.platformWidth - 100 - 10,
+            width: Ti.Platform.displayCaps.platformWidth - 100 - 30,
             autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
             autocorrect: false
         },
@@ -72,15 +75,13 @@ var Styles = function (facade) {
             height:35,
             width:'auto',
             color: '#000',
-            top: 100,
             left: 10
         },
         settingsUsernameInput: {
             height: OS === 'iphone' ? 35 : 45,
-        	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-            top: 50,
+        	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
             left: 100,
-            width: Ti.Platform.displayCaps.platformWidth - 100 - 10,
+            width: Ti.Platform.displayCaps.platformWidth - 100 - 30,
             autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
             autocorrect: false
         },
@@ -88,11 +89,12 @@ var Styles = function (facade) {
             height:35,
             width:'auto',
             color: '#000',
-            top: 50,
             left: 10
         },
         settingsResetPasswordLabel: {
-            top: 200,
+            font: {
+                fontSize: 12
+            },
             left: 10,
             height: 40,
             color: "#036",

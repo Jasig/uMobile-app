@@ -148,6 +148,7 @@ var SessionProxy = function (facade) {
     };
     
     onSessionActivity = function (e) {
+        //This event fires anytime a request to the portal occurs, which automatically extends the session.
         Ti.API.debug("onSessionActivity() in SessionProxy");
         if (e.context) {
             Ti.API.debug("Resetting " + e.context + " session");

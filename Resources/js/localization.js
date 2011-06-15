@@ -48,6 +48,7 @@ localDictionary.en_US = {
     settings: "Settings",
     username: "Username",
     password: "Password",
+    accountSettings: "Account Settings",
     logOut: "Sign Out",
     authenticationFailed: "Authentication failed. Please check your username and password and try again.",
     authenticationSuccessful: "You've successfully logged in.",

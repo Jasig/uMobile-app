@@ -24,7 +24,7 @@
 var SettingsWindowController = function(facade){
     var win, app = facade, _self = this, Device, User, UI, LocalDictionary, Styles, UPM, Login, WindowManager,
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
-        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar,
+        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar, settingsTable, credentialsGroup,
         init, createTitleBar, createCredentialsForm,
         onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
 
@@ -65,7 +65,6 @@ var SettingsWindowController = function(facade){
             exitOnClose: false, 
             navBarHidden: true,
             backgroundColor: Styles.backgroundColor
-            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         
@@ -101,45 +100,70 @@ var SettingsWindowController = function(facade){
             resetPasswordOpts = Styles.settingsResetPasswordLabel,
             logOutButtonOpts = Styles.contentButton;
 
+        
+        
+        
+        var credentialsGroup = Ti.UI.createTableViewSection({
+            headerTitle: LocalDictionary.accountSettings
+        });
+        
+        var usernameRow = Ti.UI.createTableViewRow({
+            className: "inputRow"
+        });
+        
         // create the username label and input field
         usernameLabelOpts.text = LocalDictionary.username;
         usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
-        win.add(usernameLabel);
+        usernameRow.add(usernameLabel);
 
         usernameInputOpts.value = credentials.username;
         usernameInput = Titanium.UI.createTextField(usernameInputOpts);
-        win.add(usernameInput);
+        usernameRow.add(usernameInput);
+        
+        credentialsGroup.add(usernameRow);
 
         // create the password label and input field
         
+        var passwordRow = Ti.UI.createTableViewRow({
+            className: "inputRow"
+        });
+        
         passwordLabelOpts.text = LocalDictionary.password;
         passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
-        win.add(passwordLabel);
+        passwordRow.add(passwordLabel);
 
         passwordInputOpts.value = credentials.password;
         
         passwordInput = Titanium.UI.createTextField(passwordInputOpts);
-        win.add(passwordInput);
-
+        passwordRow.add(passwordInput);
+        
+        credentialsGroup.add(passwordRow);
+        
+        
+        var buttonRow = Ti.UI.createTableViewRow();
         // create the save button and configure it to persist
         // the new credentials when pressed
         saveButtonOpts.title = LocalDictionary.update;
-        saveButtonOpts.top = 150;
         saveButtonOpts.left = 10;
         saveButton = Titanium.UI.createButton(saveButtonOpts);
 
-        win.add(saveButton);
+        buttonRow.add(saveButton);
         
-        logOutButtonOpts.left = 100 + 10 * 2;
-        logOutButtonOpts.top = 150;
+        logOutButtonOpts.left = 100 + 10*2;
         logOutButtonOpts.title = LocalDictionary.logOut;
         logOutButton = Ti.UI.createButton(logOutButtonOpts);
         
-        win.add(logOutButton);
+        buttonRow.add(logOutButton);
+        
+        credentialsGroup.add(buttonRow);
+        
+        var resetPasswordRow = Ti.UI.createTableViewRow();
         
         resetPassword = Ti.UI.createLabel(resetPasswordOpts);
         resetPassword.text = LocalDictionary.resetPasswordLink + UPM.FORGOT_PASSWORD_URL;
-        win.add(resetPassword);
+        resetPasswordRow.add(resetPassword);
+        
+        credentialsGroup.add(resetPasswordRow);
         
         logOutButton.addEventListener('click', onLogOutButtonClick);
         if(Device.isIOS()) {
@@ -158,6 +182,13 @@ var SettingsWindowController = function(facade){
             Ti.Platform.openURL(UPM.FORGOT_PASSWORD_URL);
         });
         
+        settingsTable = Ti.UI.createTableView(Styles.settingsTable);
+        settingsTable.setData([credentialsGroup]);
+        win.add(settingsTable);
+        settingsTable.addEventListener('click', function (e) {
+            usernameInput.blur();
+            passwordInput.blur();
+        });
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             usernameInput.width = Styles.settingsUsernameInput.width;
             passwordInput.width = Styles.settingsPasswordInput.width;
