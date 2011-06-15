@@ -29,7 +29,6 @@ var DirectoryWindowController = function (facade) {
     var win, app = facade, _self = this, Directory, DirectoryDetail, Styles, LocalDictionary, UI, UPM, init,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
-        contactDetailViewOptions,
         //UI Elements
         peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
         //Methods

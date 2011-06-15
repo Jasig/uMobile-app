@@ -93,7 +93,7 @@ var PortletWindowController = function (facade) {
             homeButton: true
         });
         
-        navBarOptions = Styles.secondaryBarButton;
+        navBarOptions = Styles.secondaryBarButton.clone();
         navBarOptions.title = LocalDictionary.back;
 
         navBackButton = Titanium.UI.createButton(navBarOptions);

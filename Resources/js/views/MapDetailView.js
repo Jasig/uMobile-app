@@ -1,7 +1,6 @@
 var MapDetailView = function (facade) {   
     var app = facade, _self = this, Device, Styles, LocalDictionary, UI,
-        _detailView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, titleBackButton, topDetailView,
-        locationPhotoOptions = {};
+        _detailView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, titleBackButton, topDetailView;
         
     init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
@@ -26,9 +25,12 @@ var MapDetailView = function (facade) {
     };
     
     this.render = function (viewModel) {
+        var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage, mapDetailTableView,
+        _tableViewData = [], directionsButtonOptions;
+        
         Ti.API.debug("render() in MapDetailViewController");
         if (!titleBackButton) {
-            titleBackButtonOptions = Styles.secondaryBarButton;
+            titleBackButtonOptions = Styles.secondaryBarButton.clone();
             titleBackButtonOptions.title = LocalDictionary.back;
             titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
             
@@ -42,10 +44,9 @@ var MapDetailView = function (facade) {
             _detailView.add(locationDetailTitleBar);            
         }
         
-        var mapGroupAddress = Ti.UI.createTableViewSection({
+        mapGroupAddress = Ti.UI.createTableViewSection({
             headerTitle: LocalDictionary.locationDetails
         });
-        var _tableViewData = [];
         
         mapGroupAddress.add(Ti.UI.createTableViewRow({
             title: viewModel.title || LocalDictionary.titleNotAvailable
@@ -56,12 +57,12 @@ var MapDetailView = function (facade) {
         }));
         
         if(viewModel.address) {
-            var directionsButtonOptions = Styles.contentButton;
+            directionsButtonOptions = Styles.contentButton.clone();
             directionsButtonOptions.width = 150;
             directionsButtonOptions.title = LocalDictionary.getDirections;
-            var directionsButton = Titanium.UI.createButton(directionsButtonOptions);
+            directionsButton = Titanium.UI.createButton(directionsButtonOptions);
             // directionsButton.width = 'auto';
-            var directionsButtonRow = Ti.UI.createTableViewRow();
+            directionsButtonRow = Ti.UI.createTableViewRow();
             directionsButtonRow.add(directionsButton);
             mapGroupAddress.add(directionsButtonRow);
             
@@ -79,11 +80,11 @@ var MapDetailView = function (facade) {
         _tableViewData.push(mapGroupAddress);
         
         if (viewModel.img) {
-            var mapImageGroup = Ti.UI.createTableViewSection({
+            mapImageGroup = Ti.UI.createTableViewSection({
                 headerTitle: LocalDictionary.locationImage
             });
-            var detailImageRow = Ti.UI.createTableViewRow();
-            var detailImage = Titanium.UI.createImageView({
+            detailImageRow = Ti.UI.createTableViewRow();
+            detailImage = Titanium.UI.createImageView({
                 image: viewModel.img.replace(/\/thumbnail\//,'/photo/')
             });
             detailImageRow.add(detailImage);
@@ -91,7 +92,7 @@ var MapDetailView = function (facade) {
             _tableViewData.push(mapImageGroup);
         }
 
-        var mapDetailTableView = Ti.UI.createTableView(Styles.mapDetailTableView);
+        mapDetailTableView = Ti.UI.createTableView(Styles.mapDetailTableView);
         mapDetailTableView.setData(_tableViewData);
         _detailView.add(mapDetailTableView);
     };

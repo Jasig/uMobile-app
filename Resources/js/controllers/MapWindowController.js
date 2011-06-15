@@ -73,7 +73,6 @@ var MapWindowController = function(facade) {
             backgroundColor: Styles.backgroundColor,
             exitOnClose: false,
             navBarHidden: true
-            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
 
@@ -110,7 +109,7 @@ var MapWindowController = function(facade) {
 
             if ((Device.isAndroid() && !mapView) || Device.isIOS()) {
                 // create the map view
-                mapViewOpts = Styles.mapView;
+                mapViewOpts = Styles.mapView.clone();
                 if (UPM.DEFAULT_MAP_REGION) {
                     Ti.API.info("Temporarily disabled default region in map.");
                     mapViewOpts.region = UPM.DEFAULT_MAP_REGION;
@@ -181,7 +180,7 @@ var MapWindowController = function(facade) {
         activityIndicator.show();
         searchBlur();
 
-        locationDetailViewOptions = Styles.view;
+        locationDetailViewOptions = Styles.view.clone();
         locationDetailViewOptions.data = e;
         if (!locationDetailView) {
             locationDetailView = MapDetail.getDetailView();

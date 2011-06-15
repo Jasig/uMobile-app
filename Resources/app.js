@@ -16,17 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+Object.prototype.clone = function() {
+    var newObj = (this instanceof Array) ? [] : {};
+    for (i in this) {
+        if (i == 'clone') continue;
+        if (this[i] && typeof this[i] == "object") {
+            newObj[i] = this[i].clone();
+        } 
+        else {
+            newObj[i] = this[i];
+        }
+    }
+    return newObj;
+};
 var app, loadingWindow, WindowManager, startup;
 
 startup = function (e) {
-    // library includes
-    
-    /*if (Ti.Platform.osname === 'android') {
-        //We're overriding all Android orientations for now until it can be fully implemented
-        Titanium.UI.orientation = Ti.UI.PORTRAIT;
-    }*/
-    
     Titanium.include('js/ApplicationFacade.js');
 
     Titanium.include('js/config.js');

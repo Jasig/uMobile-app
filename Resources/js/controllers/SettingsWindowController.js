@@ -92,13 +92,13 @@ var SettingsWindowController = function(facade){
     };
 
     createCredentialsForm = function () {
-        var usernameLabelOpts = Styles.settingsUsernameLabel,
-            usernameInputOpts = Styles.settingsUsernameInput,
-            passwordLabelOpts = Styles.settingsPasswordLabel,
-            passwordInputOpts = Styles.settingsPasswordInput,
-            saveButtonOpts = Styles.contentButton,
-            resetPasswordOpts = Styles.settingsResetPasswordLabel,
-            logOutButtonOpts = Styles.contentButton;
+        var usernameLabelOpts = Styles.settingsUsernameLabel.clone(),
+            usernameInputOpts = Styles.settingsUsernameInput.clone(),
+            passwordLabelOpts = Styles.settingsPasswordLabel.clone(),
+            passwordInputOpts = Styles.settingsPasswordInput.clone(),
+            saveButtonOpts = Styles.contentButton.clone(),
+            resetPasswordOpts = Styles.settingsResetPasswordLabel.clone(),
+            logOutButtonOpts = Styles.contentButton.clone();
 
         
         

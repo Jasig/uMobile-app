@@ -22,7 +22,7 @@ var DirectoryDetailController = function (facade) {
         self.initialized = true;
         self.update = updateValues;
         
-        backButtonOpts = Styles.secondaryBarButton;
+        backButtonOpts = Styles.secondaryBarButton.clone();
         backButtonOpts.title = LocalDictionary.back;
         backButton = Titanium.UI.createButton(backButtonOpts);
 
@@ -31,7 +31,7 @@ var DirectoryDetailController = function (facade) {
                 self.hide();
         });
         
-        backBarOpts = Styles.secondaryBar;
+        backBarOpts = Styles.secondaryBar.clone();
         backBarOpts.top = 0;
         backBar = Titanium.UI.createView(backBarOpts);
         backBar.add(backButton);
