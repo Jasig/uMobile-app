@@ -409,6 +409,10 @@ var Styles = function (facade) {
             backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
             height: 206
     	},
+    	mapDetailTableView: {
+    	    top: defaults.TITLEBAR_HEIGHT,
+    	    style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    	},
     	mapDetailLocationTitle: {
     	    left: 10,
     	    top: 10,

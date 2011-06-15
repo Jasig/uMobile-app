@@ -34,6 +34,8 @@ localDictionary.en_US = {
     mapLoadingLocations: "Loading locations from server",
     mapProcessingLocations: "Processing locations",
     getDirections: "Get Directions",
+    locationDetails: "Location Details",
+    locationImage: "Location Image",
     noAddressAvailable: "No Address Available",
     titleNotAvailable: "Title Not Available",
     mapNoSearchResults: "No locations match your search",

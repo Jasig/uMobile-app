@@ -22,7 +22,7 @@
  */
 
 var MapWindowController = function(facade) {
-    var win, app = facade, _self = this, initialized, Map, Device, Styles, UI, LocalDictionary, UPM, MapDetailView,
+    var win, app = facade, _self = this, initialized, Map, Device, Styles, UI, LocalDictionary, UPM, MapDetail,
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], 
     locationDetailView, activityIndicator, mapView, searchBar, loadingIndicator, titleBar, 
     createMainView, loadPointDetail, resetMapLocation, 
@@ -35,12 +35,10 @@ var MapWindowController = function(facade) {
     this.open = function () {
         if (!initialized) {
             Titanium.include('/js/models/MapProxy.js');
-            Titanium.include('js/views/MapDetailTop.js');
-            Titanium.include('js/controllers/MapDetailViewController.js');
+            Titanium.include('/js/views/MapDetailView.js');
             
             app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
-            app.registerView('MapDetailTop', MapDetailTop);
-            app.registerController('MapDetailViewController', MapDetailViewController); // Subcontext in MapWindowController to show details of a location on the map
+            app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
             
             Ti.App.addEventListener('MapProxySearching', onProxySearching);
             Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
@@ -59,7 +57,7 @@ var MapWindowController = function(facade) {
             UI = app.UI;
             LocalDictionary = app.localDictionary;
             UPM = app.config;
-            MapDetailView = app.controllers.MapDetailViewController;
+            MapDetail = app.views.mapDetailView;
             
             Map.init();
             
@@ -185,7 +183,10 @@ var MapWindowController = function(facade) {
 
         locationDetailViewOptions = Styles.view;
         locationDetailViewOptions.data = e;
-        locationDetailView = new MapDetailView(app, locationDetailViewOptions);
+        if (!locationDetailView) {
+            locationDetailView = MapDetail.getDetailView();
+        }
+        MapDetail.render(e);
         win.add(locationDetailView);
         locationDetailView.show();
 
@@ -206,6 +207,7 @@ var MapWindowController = function(facade) {
             _annotationParams.longitude = points[i].longitude;
             _annotationParams.myid = 'annotation' + i;
             _annotationParams.subtitle = '';
+            _annotationParams.rightButton = Titanium.UI.iPhone.SystemButtonStyle.BORDERED;
             
             _annotation = Titanium.Map.createAnnotation(_annotationParams);
             mapView.addAnnotation(_annotation);
