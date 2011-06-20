@@ -18,7 +18,7 @@ var LocalLogin = function (facade) {
             User = app.models.userProxy;
         }
         credentials = creds;
-        url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=/uPortal/layout.json';
+        url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Config.PORTAL_CONTEXT + '/layout.json';
 
         client = Titanium.Network.createHTTPClient({
             onload: onLoginComplete,
