@@ -17,19 +17,23 @@
  * under the License.
  */
 Object.prototype.clone = function() {
-    var newObj = (this instanceof Array) ? [] : {};
+    var newObj = (this instanceof Array) ? [] : {}, i;
     for (i in this) {
-        if (i == 'clone') continue;
-        if (this[i] && typeof this[i] == "object") {
-            newObj[i] = this[i].clone();
-        } 
-        else {
-            newObj[i] = this[i];
+        if (this.hasOwnProperty(i)) {
+            if (this[i] && typeof this[i] == "object") {
+                newObj[i] = this[i].clone();
+            } 
+            else {
+                newObj[i] = this[i];
+            }            
         }
     }
     return newObj;
 };
+
 var app, loadingWindow, WindowManager, startup;
+
+
 
 startup = function (e) {
     Titanium.include('js/ApplicationFacade.js');

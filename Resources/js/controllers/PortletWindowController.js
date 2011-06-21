@@ -200,6 +200,7 @@ var PortletWindowController = function (facade) {
     
     onPortletBeforeLoad = function (e) {
         Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + webView.url);
+
         if (Device.isAndroid()) {
             webView.hide();
         }
@@ -227,7 +228,10 @@ var PortletWindowController = function (facade) {
             webView.height = win.height - titleBar.height;
             // webView.setTop(Styles.titleBar.height);
             // Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
-        } 
+        }
+        else if (webView.url.indexOf('http://m.youtube.com') === 0) {
+            Ti.Platform.openURL(webView.url);
+        }
         else {
             Ti.API.debug("Visiting an external link");
             webView.externalModule = true;
