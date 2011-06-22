@@ -229,11 +229,13 @@ var PortletWindowController = function (facade) {
             // webView.setTop(Styles.titleBar.height);
             // Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
         }
-        else if (webView.url.indexOf('http://m.youtube.com') === 0) {
-            Ti.Platform.openURL(webView.url);
+        else if (e.url.indexOf('http://m.youtube.com') === 0 && Device.isAndroid()) {
+        	// var _youtubeURL = e.url, _params = e.url.split('?')[1].split('&');
+        	
+            Ti.Platform.openURL(e.url);
         }
         else {
-            Ti.API.debug("Visiting an external link");
+            Ti.API.debug("Visiting an external link. Webview.url = " + webView.url + " & e.url = " + e.url);
             webView.externalModule = true;
             if (webView.canGoBack() && e.url !== _homeURL) {
                 navBar.visible = true;
