@@ -14,15 +14,17 @@ var DirectoryDetailView = function (facade) {
     
     init = function () {
         Ti.API.debug('DirectoryDetailController constructed');
-        
+        if (!app.models.directoryPersonVO) {
+            Ti.include('js/models/VOs/DirectoryPersonVO.js');
+            app.registerModel('directoryPersonVO', new DirectoryPersonVO(app));
+        }
+        DirectoryPerson = app.models.directoryPersonVO;
         Device = app.models.deviceProxy;
         Styles = app.styles;
         LocalDictionary = app.localDictionary;
         PersonDetailTable = app.views.PersonDetailTableView;
         Config = app.config;
         UI = app.UI;
-        
-        _self.initialized = true;
     };
     
     this.getDetailView = function () {
@@ -46,9 +48,8 @@ var DirectoryDetailView = function (facade) {
         return _view;
     };
     
-    this.render = function (attributes) {
-        var person = constructPerson(attributes);
-        Ti.API.info("updateValues: " + JSON.stringify(person));
+    this.render = function (viewModel) {
+        var person = DirectoryPerson.constructVO(viewModel);
         secondaryNavBar.updateTitle(person.fullName);
         attributeTable.update(person);
         _view.show();
@@ -133,8 +134,5 @@ var DirectoryDetailView = function (facade) {
         _view.hide();
     };
 
-    if (!_self.initialized) {
-        Ti.API.debug("initializing DirectoryDetailController");
-        init();
-    }
+    init();
 };

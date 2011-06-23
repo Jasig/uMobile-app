@@ -26,7 +26,7 @@
 /**
 * @constructor
 */
-var Config = function (app) {
+var ConfigModule = function (app) {
     Titanium.App.Properties.setString('locale','en_US');
     
     //------- PORTAL LOCATION -------

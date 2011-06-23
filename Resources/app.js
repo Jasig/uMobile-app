@@ -70,7 +70,7 @@ startup = function (e) {
     //The facade is always called "app" in each controller, and depending on the type of member,
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
-    app.registerMember('config', new Config(app)); //Global config object
+    app.registerMember('config', new ConfigModule(app)); //Global config object
     app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerModel('deviceProxy', new DeviceProxy(app));
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's

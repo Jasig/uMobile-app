@@ -176,9 +176,9 @@ var DirectoryWindowController = function (facade) {
         Ti.API.debug("resetHome() in DirectoryWindowController");
         blurSearch();
         if (searchBar) { searchBar.input.value = ''; }
-        if (Directory) { Directory.clear(); }
-        if (peopleListTable) { peopleListTable.setData(defaultTableData); }
+        Directory.clear();
         DirectoryDetail.hide();
+        if (peopleListTable) { peopleListTable.setData(defaultTableData); }
         if (activityIndicator) { activityIndicator.hide(); }
     };
     

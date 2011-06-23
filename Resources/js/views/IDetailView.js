@@ -3,6 +3,6 @@
  * @interface
  */
 function IDetailView() {};
-IDetailView.getDetailView = function () {};
-IDetailView.render = function (viewModel) {};
-IDetailView.hide = function () {};
+IDetailView.prototype.getDetailView = function () {};
+IDetailView.prototype.render = function (viewModel) {};
+IDetailView.prototype.hide = function () {};
