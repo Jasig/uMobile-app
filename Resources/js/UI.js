@@ -11,7 +11,7 @@ var UI = function (facade) {
         });
     };
     
-    this.createSearchBar = function () {
+    this.createSearchBar = function (opts) {
         var searchBar, searchBarObject = {}, searchBarInput;
         
         if (Device.isIOS()) {
@@ -25,6 +25,16 @@ var UI = function (facade) {
             searchBar.add(searchBarInput);
             searchBarObject.container = searchBar;
             searchBarObject.input = searchBarInput;
+        }
+        
+        if (opts.cancel) {
+            searchBarObject.input.addEventListener('cancel', opts.cancel);
+        }
+        if (opts.submit) {
+            searchBarObject.input.addEventListener('return', opts.submit);
+        }
+        if (opts.change) {
+            searchBarObject.input.addEventListener('change', opts.change);
         }
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
@@ -151,20 +161,33 @@ var UI = function (facade) {
     };
     
     this.createSecondaryNavBar = function (opts) {
-        var secondaryNavBar;
-        // A partial view used in some controllers to place a nav bar just below the titleBar
-        Ti.API.debug("opts.style not defined in SecondaryNavBar, will create with style: " + Styles.secondaryNavBar);
-        secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
+        var _secondaryNavBar, _backBtnOptions, _navBackButton, _titleLabel;
+        // A partial view used in some views to place a nav bar just below the titleBar
+        _secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
 
-        if(opts.backButton) {
-            secondaryNavBar.add(opts.backButton);
+        if(opts.backButtonHandler) {
+            _backBtnOptions = Styles.secondaryBarButton.clone();
+            _backBtnOptions.title = LocalDictionary.back;
+
+            _navBackButton = Titanium.UI.createButton(_backBtnOptions);
+            _navBackButton.addEventListener('click', opts.backButtonHandler);
+            _secondaryNavBar.add(_navBackButton);
+        }
+        
+        if (opts.title) {
+            _titleLabel = Titanium.UI.createLabel(Styles.secondaryNavBarLabel);
+            _secondaryNavBar.add(_titleLabel);
+            _secondaryNavBar.updateTitle = function (newTitle) {
+                _titleLabel.text = newTitle;
+            };
         }
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
-            secondaryNavBar.width = Styles.secondaryNavBar.width;
+            _titleLabel.width = Styles.secondaryNavBarLabel.width;
+            _secondaryNavBar.width = Styles.secondaryNavBar.width;
         });
         
-        return secondaryNavBar;
+        return _secondaryNavBar;
     };
     
     this.createActivityIndicator = function () {

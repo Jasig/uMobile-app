@@ -30,7 +30,7 @@ var DirectoryWindowController = function (facade) {
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
         //UI Elements
-        peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, contactDetailView, activityIndicator,
+        peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator,
         //Methods
         drawDefaultView, resetHome, searchSubmit, openContactDetail, blurSearch, displaySearchResults,
         //Event Handlers
@@ -42,14 +42,15 @@ var DirectoryWindowController = function (facade) {
     };
     
     this.open = function () {
+        Ti.API.debug("open() in DirectoryWindowController");
         if (!initialized) {
             Titanium.include('js/models/DirectoryProxy.js');
             Titanium.include('js/views/PersonDetailTableView.js');
-            Titanium.include('js/controllers/DirectoryDetailController.js');
+            Titanium.include('js/views/DirectoryDetailView.js');
             
             app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
             app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
-            app.registerController('DirectoryDetailController', DirectoryDetailController); // Subcontext in DirectoryWindowController to show 
+            app.registerView('DirectoryDetailView', new DirectoryDetailView(app)); // Subcontext in DirectoryWindowController to show 
             
             //Listene for events, mostly fired from models.DirectoryProxy
             Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
@@ -62,7 +63,7 @@ var DirectoryWindowController = function (facade) {
 
             //Set pointers to necessary members of facade
             Directory = app.models.directoryProxy;
-            DirectoryDetail = app.controllers.DirectoryDetailController;
+            DirectoryDetail = app.views.DirectoryDetailView;
             Styles = app.styles;
             LocalDictionary = app.localDictionary;
             UI = app.UI;
@@ -77,7 +78,6 @@ var DirectoryWindowController = function (facade) {
             title: LocalDictionary.directory,
             exitOnClose: false,
             navBarHidden: true
-            // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
         drawDefaultView();
@@ -152,16 +152,14 @@ var DirectoryWindowController = function (facade) {
             Ti.API.debug("Adding searchBar in DirectoryWindowController");
 
             //Create and add a search bar at the top of the table to search for contacts
-            searchBar = UI.createSearchBar();
-            Ti.API.info("searchBar: " + searchBar);
+            searchBar = UI.createSearchBar({
+                cancel: onSearchCancel,
+                submit: onSearchSubmit,
+                change: onSearchChange
+            });
             win.add(searchBar.container);
-            searchBar.input.addEventListener('cancel', onSearchCancel);
-            searchBar.input.addEventListener('return', onSearchSubmit);
-            searchBar.input.addEventListener('change', onSearchChange);
 
-            //Create the contact detail view but don't show it yet.
-            contactDetailView = new DirectoryDetail(app);
-            win.add(contactDetailView);
+            win.add(DirectoryDetail.getDetailView());
 
 
             activityIndicator = UI.createActivityIndicator();
@@ -180,7 +178,7 @@ var DirectoryWindowController = function (facade) {
         if (searchBar) { searchBar.input.value = ''; }
         if (Directory) { Directory.clear(); }
         if (peopleListTable) { peopleListTable.setData(defaultTableData); }
-        if (contactDetailView) { contactDetailView.hide(); }
+        DirectoryDetail.hide();
         if (activityIndicator) { activityIndicator.hide(); }
     };
     
@@ -217,11 +215,9 @@ var DirectoryWindowController = function (facade) {
     
     openContactDetail = function (person) {
         Ti.API.debug('openContactDetail called in DirectoryWindowController');
-        Ti.API.debug(contactDetailView);
         Ti.API.debug(person);
-        activityIndicator.hide();
-        contactDetailView.update(person);
-        contactDetailView.show();
+        // activityIndicator.hide();
+        DirectoryDetail.render(person);
     };
     
     blurSearch = function () {

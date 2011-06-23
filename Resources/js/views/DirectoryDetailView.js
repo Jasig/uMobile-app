@@ -1,64 +1,64 @@
-var DirectoryDetailController = function (facade) {
-    var app = facade,
-        Device, Styles, LocalDictionary, PersonDetailTable, Config,
-        self = Titanium.UI.createView(app.styles.contactDetailView), init,
+/* 
+* @constructor
+* @implements {IDetailView}
+*/
+var DirectoryDetailView = function (facade) {
+    var app = facade, init, _self = this, _view,
+        Device, Styles, LocalDictionary, PersonDetailTable, Config, UI,
         //UI Components
-        titleBar, backBar, nameLabel, phoneLabel, attributeTable, backButton,
+        titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
         //Methods
-        updateValues,
+        updateValues, constructPerson, getAttribute,
         //Controller Event Handlers
-        onDimensionChanges;
+        onDimensionChanges, onBackBtnClick;
     
     init = function () {
         Ti.API.debug('DirectoryDetailController constructed');
-        var backButtonOpts, backBarOpts;
         
         Device = app.models.deviceProxy;
         Styles = app.styles;
         LocalDictionary = app.localDictionary;
         PersonDetailTable = app.views.PersonDetailTableView;
         Config = app.config;
+        UI = app.UI;
         
-        self.initialized = true;
-        self.update = updateValues;
-        
-        backButtonOpts = Styles.secondaryBarButton.clone();
-        backButtonOpts.title = LocalDictionary.back;
-        backButton = Titanium.UI.createButton(backButtonOpts);
-
-        backButton.addEventListener("click",function(e){
-            Ti.API.debug("self.hide() in DirectoryDetailController");
-                self.hide();
-        });
-        
-        backBarOpts = Styles.secondaryBar.clone();
-        backBarOpts.top = 0;
-        backBar = Titanium.UI.createView(backBarOpts);
-        backBar.add(backButton);
-        self.add(backBar);
-        
-
-        nameLabel = Titanium.UI.createLabel(Styles.directoryDetailNameLabel);
-        backBar.add(nameLabel);
-        
-        attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
-        self.add(attributeTable);
-        
-        Ti.App.addEventListener('updatestylereference', function (e) {
-            Styles = app.styles;
-        });
-        
-        Titanium.App.addEventListener('dimensionchanges', onDimensionChanges);
+        _self.initialized = true;
     };
     
-    updateValues = function (attributes) {
+    this.getDetailView = function () {
+        if (!_view) {
+            _view = Titanium.UI.createView(app.styles.contactDetailView);
+            secondaryNavBar = UI.createSecondaryNavBar({
+                backButtonHandler: onBackBtnClick,
+                title: ' '
+            });
+            _view.add(secondaryNavBar);
+
+            attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
+            _view.add(attributeTable);
+
+            Ti.App.addEventListener('updatestylereference', function (e) {
+                Styles = app.styles;
+            });
+
+            Titanium.App.addEventListener('dimensionchanges', onDimensionChanges);
+        }
+        return _view;
+    };
+    
+    this.render = function (attributes) {
         var person = constructPerson(attributes);
         Ti.API.info("updateValues: " + JSON.stringify(person));
-        nameLabel.text = person.fullName;
+        secondaryNavBar.updateTitle(person.fullName);
         attributeTable.update(person);
+        _view.show();
     };
     
-    var constructPerson = function (attributes) {
+    this.hide = function () {
+        _view.hide();
+    };
+    
+    constructPerson = function (attributes) {
         Ti.API.info('creating person');
         var person = {};
         person.address = {};
@@ -88,7 +88,7 @@ var DirectoryDetailController = function (facade) {
         return person;
     };
 
-    var getAttribute = function (tiAttrName, attributes) {
+    getAttribute = function (tiAttrName, attributes) {
         Ti.API.info("getting attribute " + tiAttrName);
         var portalAttrName = Config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
         if (portalAttrName) {
@@ -103,14 +103,16 @@ var DirectoryDetailController = function (facade) {
     
     onDimensionChanges = function (e) {
         Ti.API.debug("onDimensionChanges() in DirectoryDetailController");
-        self.width = app.styles.contactDetailView.width;
-        self.height = app.styles.contactDetailView.height;
+        if (_view) {
+            _view.width = app.styles.contactDetailView.width;
+            _view.height = app.styles.contactDetailView.height;
+        }
         
-        if (backBar) {
-            backBar.width = Styles.secondaryBar.width; 
+        if (secondaryNavBar) {
+            secondaryNavBar.width = Styles.secondaryBar.width; 
         }
         else {
-            Ti.API.error("backBar is undefined in DirectoryDetailController");
+            Ti.API.error("secondaryNavBar is undefined in DirectoryDetailController");
         }
         if (nameLabel) {
             nameLabel.width = Styles.directoryDetailNameLabel.width; 
@@ -125,11 +127,14 @@ var DirectoryDetailController = function (facade) {
             Ti.API.error("attributeTable is undefined in DirectoryDetailController");
         }
     };
+    
+    onBackBtnClick = function () {
+        Ti.API.debug("onBackBtnClick() in DirectoryDetailController");
+        _view.hide();
+    };
 
-    if (!self.initialized) {
+    if (!_self.initialized) {
         Ti.API.debug("initializing DirectoryDetailController");
         init();
     }
-    
-    return self;
 };

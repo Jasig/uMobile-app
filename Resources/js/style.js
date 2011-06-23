@@ -108,9 +108,7 @@ var Styles = function (facade) {
             height: 40,
             width: 100,
             backgroundGradient: {},
-            backgroundGradientPress: {},
-            color: '#333',
-            selectedColor: '#333'
+            backgroundGradientPress: {}
         },
         //Global search bar properties
         searchBar: {
@@ -224,12 +222,16 @@ var Styles = function (facade) {
         	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
         },
         secondaryNavBarLabel: {
+            // left: 70,
+            width: Ti.Platform.displayCaps.platformWidth - (70 * 2),
+            height: defaults.TITLEBAR_HEIGHT,
+            color: defaults.SECONDARY_BAR_COLOR,
             textAlign: "center",
-            color: '#fff',
             font: {
-                fontWeight: "bold"
+                fontSize: 14,
+                fontWeight: 'bold'
             }
-        },
+    	},
         //PORTAL VIEW STYLES
         portalWindow: {
             url: 'js/views/WindowContext.js',
@@ -326,17 +328,7 @@ var Styles = function (facade) {
             width: OS === 'android' ? Ti.Platform.displayCaps.platformWidth : 'auto',
             modal: true
     	},
-    	directoryDetailNameLabel: {
-            // left: 70,
-            width: Ti.Platform.displayCaps.platformWidth - (70 * 2),
-            height: defaults.TITLEBAR_HEIGHT,
-            color: defaults.SECONDARY_BAR_COLOR,
-            textAlign: "center",
-            font: {
-                fontSize: 14,
-                fontWeight: 'bold'
-            }
-    	},
+    	
     	directoryDetailAttributeTable: {
     	    top: defaults.TITLEBAR_HEIGHT,
     	    width: Ti.Platform.displayCaps.platformWidth

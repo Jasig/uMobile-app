@@ -1,6 +1,11 @@
+/* 
+* @constructor
+* @implements {IDetailView} 
+*/
 var MapDetailView = function (facade) {   
     var app = facade, _self = this, Device, Styles, LocalDictionary, UI,
-        _detailView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, titleBackButton, topDetailView;
+        _detailView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,
+        onBackBtnClick;
         
     init = function () {        
         //Create a back button to be added to the title bar to take the user back to the map
@@ -29,20 +34,11 @@ var MapDetailView = function (facade) {
         _tableViewData = [], directionsButtonOptions;
         
         Ti.API.debug("render() in MapDetailViewController");
-        if (!titleBackButton) {
-            titleBackButtonOptions = Styles.secondaryBarButton.clone();
-            titleBackButtonOptions.title = LocalDictionary.back;
-            titleBackButton = Titanium.UI.createButton(titleBackButtonOptions);
-            
-            titleBackButton.addEventListener("click", function(e){
-                _detailView.hide();
-            });
-        }
-        
-        if(!locationDetailTitleBar) {
-            locationDetailTitleBar = UI.createSecondaryNavBar({ backButton: titleBackButton });
-            _detailView.add(locationDetailTitleBar);            
-        }
+                
+        locationDetailTitleBar = UI.createSecondaryNavBar({ 
+            backButtonHandler: onBackBtnClick
+        });
+        _detailView.add(locationDetailTitleBar);
         
         mapGroupAddress = Ti.UI.createTableViewSection({
             headerTitle: LocalDictionary.locationDetails
@@ -95,6 +91,16 @@ var MapDetailView = function (facade) {
         mapDetailTableView = Ti.UI.createTableView(Styles.mapDetailTableView);
         mapDetailTableView.setData(_tableViewData);
         _detailView.add(mapDetailTableView);
+    };
+    
+    this.hide = function () {
+        if (_detailView) {
+            _detailView.hide();
+        }
+    };
+    
+    onBackBtnClick = function (e) {
+        _detailView.hide();
     };
     
     init();

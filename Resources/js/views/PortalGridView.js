@@ -176,7 +176,7 @@ var PortalGridView = function (facade) {
                 _gridItems[_gridItem].view.show();
             }
             else {
-                Ti.API.error("NOT _gridItems.hasOwnProperty(_gridItem)");
+                Ti.API.debug("NOT _gridItems.hasOwnProperty(_gridItem)");
             }
         }
         

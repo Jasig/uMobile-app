@@ -24,7 +24,7 @@ var PortletWindowController = function (facade) {
         initialized, winListeners = [], activePortlet, _homeURL,
         pathToRoot = '../../',
         init, drawWindow, getQualifiedURL, getLocalUrl,
-        includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume;
+        includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume, onBackBtnPress;
 
     init = function () {
         Ti.API.debug("init() in PortletWindowController");
@@ -44,7 +44,6 @@ var PortletWindowController = function (facade) {
     
     this.open = function (portlet) {
         Ti.API.debug("open() in PortletWindowController");
-        var navBarOptions;
         
         if (!initialized) {
             //Declare pointers to facade members
@@ -93,15 +92,10 @@ var PortletWindowController = function (facade) {
             homeButton: true
         });
         
-        navBarOptions = Styles.secondaryBarButton.clone();
-        navBarOptions.title = LocalDictionary.back;
-
-        navBackButton = Titanium.UI.createButton(navBarOptions);
-        navBackButton.addEventListener('click', function () { webView.goBack(); });
-        
         // initialize navigation bar for URLs outside the portal
         navBar = UI.createSecondaryNavBar({
-            backButton: navBackButton
+            backButton: true,
+            backButtonHandler: onBackBtnPress
         });
         navBar.top = 40;
         navBar.visible = false;
@@ -211,6 +205,10 @@ var PortletWindowController = function (facade) {
         }
         activityIndicator.setLoadingMessage(LocalDictionary.loading);
         activityIndicator.show();
+    };
+    
+    onBackBtnPress = function (e) {
+        webView.goBack();
     };
     
     onPortletLoad = function (e) {

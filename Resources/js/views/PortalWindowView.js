@@ -24,6 +24,7 @@
 
 /**
 * @constructor
+* @implements {IWindowView}
 */
 var PortalWindowView = function (facade) {
     var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView,
