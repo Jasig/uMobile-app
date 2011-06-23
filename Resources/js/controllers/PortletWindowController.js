@@ -230,9 +230,21 @@ var PortletWindowController = function (facade) {
             // Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
         }
         else if (e.url.indexOf('http://m.youtube.com') === 0 && Device.isAndroid()) {
-        	// var _youtubeURL = e.url, _params = e.url.split('?')[1].split('&');
-        	
-            Ti.Platform.openURL(e.url);
+        	var _URLToOpen = e.url, _params = e.url.split('?')[1].split('&');
+        	Ti.API.info(JSON.stringify(_params));
+        	for (var i=0, iLength = _params.length; i<iLength; i++) {
+        		Ti.API.info("iterating through url params");
+        		if (_params[i].indexOf('desktop_uri') > -1) {
+        			Ti.API.info("Found the desktop URI:" + _params[i]);
+        			_URLToOpen = _params[i].split('=', 2)[1];
+        			_URLToOpen = decodeURIComponent(_URLToOpen);
+        			break;
+        		}
+        	}
+        	Ti.API.info("Opening: " + _URLToOpen);
+        	Ti.API.info("Does decodeURI() work?" + decodeURIComponent('http%3A%2F%2F'));
+        	Ti.API.info("Does encodeURIComponent() work? " + encodeURIComponent('http://www.google.com'));
+            Ti.Platform.openURL(_URLToOpen);
         }
         else {
             Ti.API.debug("Visiting an external link. Webview.url = " + webView.url + " & e.url = " + e.url);

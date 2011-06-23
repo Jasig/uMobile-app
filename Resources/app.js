@@ -31,7 +31,7 @@ Object.prototype.clone = function() {
     return newObj;
 };
 
-var app, loadingWindow, WindowManager, startup;
+var app, loadingWindow, WindowManager, startup, onOrientationChange;
 
 
 
@@ -57,6 +57,7 @@ startup = function (e) {
 
     Titanium.include('js/controllers/DirectoryWindowController.js');
     Titanium.include('js/controllers/MapWindowController.js');
+
     Titanium.include('js/controllers/PortalWindowController.js');
     Titanium.include('js/controllers/PortletWindowController.js');
     Titanium.include('js/controllers/SettingsWindowController.js');
@@ -87,7 +88,6 @@ startup = function (e) {
     app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
     
     //Window controllers
-    
     app.registerController('portalWindowController', new PortalWindowController(app));
     app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
     app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
