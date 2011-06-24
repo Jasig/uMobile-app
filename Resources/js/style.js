@@ -494,7 +494,6 @@ var Styles = function (facade) {
     
     if(Ti.Platform.osname === 'android') {
         stylesheet.titleBar.backgroundImage = '/img/titlebarbg.png';
-        stylesheet.secondaryBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.searchBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.secondaryNavBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.homeGuestNote.backgroundImage = '/img/secondarybarbg.png';

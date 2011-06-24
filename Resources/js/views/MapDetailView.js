@@ -36,7 +36,8 @@ var MapDetailView = function (facade) {
         Ti.API.debug("render() in MapDetailViewController");
                 
         locationDetailTitleBar = UI.createSecondaryNavBar({ 
-            backButtonHandler: onBackBtnClick
+            backButtonHandler: onBackBtnClick,
+            title: viewModel.title
         });
         _detailView.add(locationDetailTitleBar);
         

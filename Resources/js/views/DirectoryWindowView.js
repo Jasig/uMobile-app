@@ -47,6 +47,7 @@ var DirectoryWindowView = function (facade) {
     };
     
     this.reset = function () {
+        Ti.API.debug("reset() in DirectoryWindowView");
         blurSearch();
         if (searchBar) { searchBar.input.value = ''; }
         DirectoryDetail.hide();
@@ -205,12 +206,12 @@ var DirectoryWindowView = function (facade) {
     };
     
     onSearchCancel = function (e) {
-        Ti.API.debug('onSearchCancel');
+        Ti.API.debug('onSearchCancel() in DirectoryWindowView');
         _self.reset();
     };
     
     onSearchSubmit = function(e) {
-        Ti.API.debug('onSearchSubmit');
+        Ti.API.debug('onSearchSubmit() in DirectoryWindowView');
         blurSearch();
         Ti.App.fireEvent('DirectoryWindowSearchSubmit', {value: searchBar.input.value});
     };

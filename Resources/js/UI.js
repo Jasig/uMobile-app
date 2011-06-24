@@ -176,13 +176,12 @@ var UI = function (facade) {
             _secondaryNavBar.add(_navBackButton);
         }
         
-        if (opts.title) {
-            _titleLabel = Titanium.UI.createLabel(Styles.secondaryNavBarLabel);
-            _secondaryNavBar.add(_titleLabel);
-            _secondaryNavBar.updateTitle = function (newTitle) {
-                _titleLabel.text = newTitle;
-            };
-        }
+        _titleLabel = Titanium.UI.createLabel(Styles.secondaryNavBarLabel);
+        _titleLabel.text = opts.title ? opts.title : ' ';
+        _secondaryNavBar.add(_titleLabel);
+        _secondaryNavBar.updateTitle = function (newTitle) {
+            _titleLabel.text = newTitle;
+        };
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             _titleLabel.width = Styles.secondaryNavBarLabel.width;
