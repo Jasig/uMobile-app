@@ -126,27 +126,6 @@ var Styles = function (facade) {
             top: 5,
             borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
         },
-        secondaryBar: {
-            top: defaults.TITLEBAR_HEIGHT,
-            width: Ti.Platform.displayCaps.platformWidth,
-            height: defaults.TITLEBAR_HEIGHT,
-            barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
-            backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
-        },
-        secondaryBarButton: {
-            style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-            left: 10,
-            width: 50,
-            height: 30,
-        	backgroundImage: 'img/secondarybarbtnbg.png',
-        	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
-        	color: '#333',
-        	selectedColor: "#666",
-            borderRadius: 10,
-        	font: {
-        	    fontSize: 14
-        	}
-        },
         //Styles for TitleBar
         titleBar: {
             top: 0,
@@ -222,16 +201,40 @@ var Styles = function (facade) {
         	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
         },
         secondaryNavBarLabel: {
-            // left: 70,
-            width: Ti.Platform.displayCaps.platformWidth - (70 * 2),
+            width: Ti.Platform.displayCaps.platformWidth - 80,
+            left: 10,
             height: defaults.TITLEBAR_HEIGHT,
             color: defaults.SECONDARY_BAR_COLOR,
-            textAlign: "center",
+            textAlign: "left",
+            ellipsize: true,
+            wordWrap: false,
+            minimumFontSize: 18,
             font: {
-                fontSize: 14,
+                fontSize: 18,
                 fontWeight: 'bold'
             }
     	},
+        /*secondaryBar: {
+            top: defaults.TITLEBAR_HEIGHT,
+            width: Ti.Platform.displayCaps.platformWidth,
+            height: defaults.TITLEBAR_HEIGHT,
+            barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+            backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+        },*/
+        secondaryNavBarButton: {
+            style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
+            left: Ti.Platform.displayCaps.platformWidth - 50 - 10,
+            width: 50,
+            height: 30,
+        	backgroundImage: 'img/secondarybarbtnbg.png',
+        	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
+        	color: '#333',
+        	selectedColor: "#666",
+            borderRadius: 10,
+        	font: {
+        	    fontSize: 14
+        	}
+        },
         //PORTAL VIEW STYLES
         portalWindow: {
             url: 'js/views/WindowContext.js',

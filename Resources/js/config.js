@@ -104,17 +104,6 @@ var ConfigModule = function (app) {
     this.getLocalModules = function () {
         return this.LOCAL_MODULES;
     };
-
-    this.GLOBAL_STYLES = {
-        textFieldGradient: {
-            type:'linear',
-            colors:['#ccc','#fff']
-        },
-        primaryBarColor: "#000",
-        secondaryBarColor: "#333",
-        windowBackgroundColor: "#fff",
-        tableBackgroundColor: "#fff"
-    };
     
     this.DEFAULT_MAP_REGION = {
         latitude: 34.052819,
@@ -145,5 +134,5 @@ var ConfigModule = function (app) {
         }
     ];
     
-    this.phoneDirectoryNumber = false;
+    this.phoneDirectoryNumber = "602 555 5555";
 };

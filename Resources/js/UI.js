@@ -13,7 +13,9 @@ var UI = function (facade) {
     
     this.createSearchBar = function (opts) {
         var searchBar, searchBarObject = {}, searchBarInput;
-        
+        if (!opts) {
+            opts = {};
+        }
         if (Device.isIOS()) {
             searchBar = Titanium.UI.createSearchBar(Styles.searchBar);
             searchBarObject.container = searchBar;
@@ -166,7 +168,7 @@ var UI = function (facade) {
         _secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
 
         if(opts.backButtonHandler) {
-            _backBtnOptions = Styles.secondaryBarButton.clone();
+            _backBtnOptions = Styles.secondaryNavBarButton.clone();
             _backBtnOptions.title = LocalDictionary.back;
 
             _navBackButton = Titanium.UI.createButton(_backBtnOptions);

@@ -108,19 +108,6 @@ var DirectoryDetailView = function (facade) {
             _view.width = app.styles.contactDetailView.width;
             _view.height = app.styles.contactDetailView.height;
         }
-        
-        if (secondaryNavBar) {
-            secondaryNavBar.width = Styles.secondaryBar.width; 
-        }
-        else {
-            Ti.API.error("secondaryNavBar is undefined in DirectoryDetailController");
-        }
-        if (nameLabel) {
-            nameLabel.width = Styles.directoryDetailNameLabel.width; 
-        }
-        else {
-            Ti.API.error("nameLabel is undefined in DirectoryDetailController");
-        }
         if (attributeTable) {
             attributeTable.width = Styles.directoryDetailAttributeTable.width;
         }

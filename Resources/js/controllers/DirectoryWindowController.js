@@ -26,15 +26,13 @@
   * @constructor
   */
 var DirectoryWindowController = function (facade) {
-    var win, app = facade, _self = this, Directory, DirectoryDetail, Styles, LocalDictionary, UI, UPM, init,
+    var app = facade, _self = this, Directory, LocalDictionary, Config, init, DirectoryWindow,
         // Data and variables
         initialized, peopleResult = [], defaultTableData = [], 
-        //UI Elements
-        peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator,
         //Methods
-        drawDefaultView, resetHome, searchSubmit, openContactDetail, blurSearch, displaySearchResults,
+        resetHome, searchSubmit,
         //Event Handlers
-        onSearchCancel, onPhoneDirectoryClick, onSearchSubmit, onSearchChange, onContactRowClick, onNewWindowOpened, onProxySearching, onProxySearchComplete, onProxySearchError;
+        onNewWindowOpened, onProxySearching, onProxySearchComplete, onProxySearchError, onDirectoryWindowSearchChange, onSearchSubmit;
     
     init = function () {
         Ti.API.debug("init() in DirectoryWindowController");
@@ -45,259 +43,78 @@ var DirectoryWindowController = function (facade) {
         Ti.API.debug("open() in DirectoryWindowController");
         if (!initialized) {
             Titanium.include('js/models/DirectoryProxy.js');
-            Titanium.include('js/views/PersonDetailTableView.js');
-            Titanium.include('js/views/DirectoryDetailView.js');
+            Titanium.include('js/views/DirectoryWindowView.js');
             
+            app.registerView('directoryWindowView', new DirectoryWindowView(app));
             app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
-            app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
-            app.registerView('DirectoryDetailView', new DirectoryDetailView(app)); // Subcontext in DirectoryWindowController to show 
             
-            //Listene for events, mostly fired from models.DirectoryProxy
-            Ti.App.addEventListener('NewWindowOpened', onNewWindowOpened);
+            //Listen for events, mostly fired from models.DirectoryProxy
             Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
             Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
             Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
-            Ti.App.addEventListener('updatestylereference', function (e) {
-                Styles = app.styles;
-            });
+            Titanium.App.addEventListener('DirectoryWindowSearchChange', onDirectoryWindowSearchChange);
+            Titanium.App.addEventListener('DirectoryWindowSearchSubmit', onSearchSubmit);
 
             //Set pointers to necessary members of facade
             Directory = app.models.directoryProxy;
-            DirectoryDetail = app.views.DirectoryDetailView;
-            Styles = app.styles;
+            DirectoryWindow = app.views.directoryWindowView;
             LocalDictionary = app.localDictionary;
-            UI = app.UI;
-            UPM = app.config;
-
+            Config = app.config;
+            
             initialized = true;
         }
         
-        win = Titanium.UI.createWindow({
-            url: 'js/views/WindowContext.js',
-            backgroundColor: Styles.backgroundColor,
-            title: LocalDictionary.directory,
-            exitOnClose: false,
-            navBarHidden: true
+        DirectoryWindow.open({
+            defaultNumber: Config.phoneDirectoryNumber,
+            emergencyContacts: Directory.getEmergencyContacts()
         });
-        win.open();
-        drawDefaultView();
     };
     
     this.close = function (options) {
-        if (win) {
-            win.close();
-        }
-    };
-    
-    drawDefaultView = function () {
-        var activityIndicatorTimeout;
-        Ti.API.debug("Adding titleBar in DirectoryWindowController");
-        if (win) {
-            titleBar = UI.createTitleBar({
-                title: LocalDictionary.directory,
-                homeButton: true,
-                settingsButton: false
-            });
-            win.add(titleBar);
-
-            Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
-            if (UPM.phoneDirectoryNumber) {
-                //Create the section and one row to display the phone number for the phone directory
-                phoneDirectorySection = Titanium.UI.createTableViewSection();
-                phoneDirectorySection.headerTitle = LocalDictionary.phoneDirectory;
-                phoneDirectoryRow = Titanium.UI.createTableViewRow({
-                    title: UPM.phoneDirectoryNumber
-                });
-                phoneDirectoryRow.addEventListener('click',onPhoneDirectoryClick);
-                phoneDirectorySection.add(phoneDirectoryRow);
-                defaultTableData.push(phoneDirectorySection);
-            }
-
-            Ti.API.info("Emergency Contacts? " + Directory.getEmergencyContacts());
-            //Create a section to display emergency contact numbers
-
-            if (Directory.getEmergencyContacts().length > 0) {
-                defaultTableData = [];
-                emergencyContactSection = Titanium.UI.createTableViewSection();
-                emergencyContactSection.headerTitle =  LocalDictionary.emergencyContacts;
-                for (var i=0, iLength = Directory.getEmergencyContacts().length; i<iLength; i++) {
-                    var _contact = Directory.getEmergencyContacts()[i],
-                    _emergencyContactRow = Titanium.UI.createTableViewRow({
-                        title: _contact.displayName[0],
-                        hasChild: true,
-                        data: _contact
-                    });
-                    emergencyContactSection.add(_emergencyContactRow);
-                    _emergencyContactRow.addEventListener('click',onContactRowClick);
-                }
-                defaultTableData.push(emergencyContactSection);            
-            }
-            else {
-                Ti.API.info("There aren't any emergency contacts");
-            }
-
-            Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
-            //Create the main table
-            peopleListTable = Titanium.UI.createTableView({
-                data: defaultTableData,
-                top: Styles.titleBar.height + Styles.searchBar.height
-            });
-
-            peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
-
-            win.add(peopleListTable);
-            peopleListTable.addEventListener('touchstart', blurSearch);
-            peopleListTable.addEventListener('move', blurSearch);
-
-            Ti.API.debug("Adding searchBar in DirectoryWindowController");
-
-            //Create and add a search bar at the top of the table to search for contacts
-            searchBar = UI.createSearchBar({
-                cancel: onSearchCancel,
-                submit: onSearchSubmit,
-                change: onSearchChange
-            });
-            win.add(searchBar.container);
-
-            win.add(DirectoryDetail.getDetailView());
-
-
-            activityIndicator = UI.createActivityIndicator();
-            activityIndicator.resetDimensions();
-            win.add(activityIndicator);
-            activityIndicator.hide();
-        }
-        else {
-            Ti.API.error("No win in drawDefaultView() in DirectoryWindowController");
-        }
+        DirectoryWindow.close();
     };
     
     resetHome = function () {
         Ti.API.debug("resetHome() in DirectoryWindowController");
-        blurSearch();
-        if (searchBar) { searchBar.input.value = ''; }
         Directory.clear();
-        DirectoryDetail.hide();
-        if (peopleListTable) { peopleListTable.setData(defaultTableData); }
-        if (activityIndicator) { activityIndicator.hide(); }
+        DirectoryWindow.reset();
     };
     
-    displaySearchResults = function () {
-        var _peopleTableData = [], _people, alertDialog;
-                
-        //Get array of people from search results from proxy
-        _people = Directory.getPeople();
-
-        if(_people.length > 0) {
-            Ti.API.info(_people);
-            for (var i=0, iLength=_people.length; i<iLength; i++) {
-                var _contactRow = Titanium.UI.createTableViewRow({
-                    title: _people[i].displayName[0],
-                    hasChild: true,
-                    data: _people[i]
-                });
-                _peopleTableData.push(_contactRow);
-                _contactRow.addEventListener('click',onContactRowClick);
-            }
-            peopleListTable.setData(_peopleTableData);
-        }
-        else {
-            Ti.API.debug("Not more than 0 results");
-            alertDialog = Titanium.UI.createAlertDialog({
-                title: LocalDictionary.noResults,
-                message: LocalDictionary.noSearchResults,
-                buttonNames: [LocalDictionary.OK]
-            });
-            alertDialog.show();
-            peopleListTable.setData(defaultTableData);
-        }
+    // Window Events
+    onDirectoryWindowSearchChange = function (e) {
+        Directory.clear();
     };
-    
-    openContactDetail = function (person) {
-        Ti.API.debug('openContactDetail called in DirectoryWindowController');
-        Ti.API.debug(person);
-        // activityIndicator.hide();
-        DirectoryDetail.render(person);
-    };
-    
-    blurSearch = function () {
-        if (searchBar) {
-            searchBar.input.blur();
-        }
-    };
-    
-    // Controller Events
-    onNewWindowOpened = function (e) {
-        if (e.key !== _self.key) {
-            blurSearch();
-        }
-    };
-    // Search Events
-    onPhoneDirectoryClick = function (e) {
-        Ti.API.debug("Clicked the phone directory button");
-        Ti.Platform.openURL('tel:' + UPM.phoneDirectoryNumber);
-    };
-    
     onSearchSubmit = function(e) {
-        Ti.API.debug('onSearchSubmit');
-        blurSearch();
-        Directory.search(searchBar.input.value);
-    };
-    
-    onSearchChange = function (e) {
-        if(searchBar.input.value === '') {
-            Directory.clear();
-            peopleListTable.setData(defaultTableData);
-        }
-    };
-
-    onSearchCancel = function (e) {
-        Ti.API.debug('onSearchCancel');
-        resetHome();
-    };
-    
-    //Contact Events
-    onContactRowClick = function (e) {
-        Ti.API.debug("Contact clicked:" + JSON.stringify(e.source.data));
-        openContactDetail(e.source.data);
+        Ti.API.debug('onSearchSubmit() in DirectoryWindowController');
+        Directory.search(e.value);
     };
     
     //Proxy events
 
     onProxySearching = function (e) {
-        activityIndicator.setLoadingMessage(LocalDictionary.searching + '...');
-        activityIndicator.show();
         Ti.API.info("Searching...");
+        DirectoryWindow.showActivityIndicator(LocalDictionary.searching);
     };
     
     onProxySearchComplete = function (e) {
-        var alertDialog;
-        
-        activityIndicator.hide();
         Ti.API.info("Directory Search Complete");
-        
         if (!e.error) {
-            displaySearchResults();
+            DirectoryWindow.displaySearchResults(Directory.getPeople());
         }
         else {
-            alertDialog = Titanium.UI.createAlertDialog({
+            DirectoryWindow.alert({
                 title: LocalDictionary.error,
-                message: e.error,
-                buttonNames: [LocalDictionary.OK]
+                message: e.error
             });
-            alertDialog.show();
         }
     };
     
     onProxySearchError = function (e) {
-        activityIndicator.hide();
-        var alertDialog = Titanium.UI.createAlertDialog({
-            title: LocalDictionary.errorPerformingSearch,
-            message: LocalDictionary.noSearchResults,
-            buttonNames: [LocalDictionary.OK]
-        });
-        alertDialog.show();
         Ti.API.error("Directory Proxy Search Error");
+        DirectoryWindow.alert({
+            title: LocalDictionary.errorPerformingSearch,
+            message: LocalDictionary.noSearchResults
+        });
     };
     
     if(!initialized) {
