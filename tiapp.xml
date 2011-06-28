@@ -7,7 +7,7 @@
         <target device="ipad">true</target>
         <target device="android">true</target>
     </deployment-targets>
-    <property name="ti.android.compilejs" type="bool">true</property>
+    <property name="ti.android.compilejs" type="bool">false</property>
 <id>org.jasig.portal.mobile.app</id>
 <name>uMobile</name>
 <version>1.0</version>
