@@ -180,16 +180,17 @@ var MapWindowController = function(facade) {
         activityIndicator.show();
         searchBlur();
 
-        locationDetailViewOptions = Styles.view.clone();
-        locationDetailViewOptions.data = e;
+        
         if (!locationDetailView) {
+            locationDetailViewOptions = Styles.view.clone();
+            locationDetailViewOptions.data = e;
             locationDetailView = MapDetail.getDetailView();
+            win.add(locationDetailView);
         }
         MapDetail.render(e);
-        win.add(locationDetailView);
+        
         locationDetailView.show();
 
-        Ti.API.debug("Hiding Activity Indicator in loadDetail()");
         activityIndicator.hide();
     };
     

@@ -5,7 +5,7 @@
 var DirectoryWindowView = function (facade) {
     var app=facade, _self=this, init, UI, DirectoryDetail, Styles, LocalDictionary, defaultTableData=[], tableData = [], _viewModel,
     win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator,
-    drawDefaultView, displaySearchResults, blurSearch,
+    drawDefaultView, displaySearchResults, blurSearch, createDefaultGroups,
     onContactRowClick, onPhoneDirectoryClick, onSearchCancel, onSearchSubmit, onSearchChange;
     
     init = function () {
@@ -26,9 +26,6 @@ var DirectoryWindowView = function (facade) {
     
     this.open = function (viewModel) {
         _viewModel = viewModel;
-        if (_viewModel.emergencyContacts) {
-            defaultTableData = _viewModel.emergencyContacts;
-        }
         win = Titanium.UI.createWindow({
             url: 'js/views/WindowContext.js',
             backgroundColor: Styles.backgroundColor,
@@ -51,7 +48,7 @@ var DirectoryWindowView = function (facade) {
         blurSearch();
         if (searchBar) { searchBar.input.value = ''; }
         DirectoryDetail.hide();
-        if (peopleListTable) { peopleListTable.setData(defaultTableData); }
+        if (peopleListTable) { peopleListTable.setData(_viewModel.emergencyContacts || defaultTableData); }
         if (activityIndicator) { activityIndicator.hide(); }
     };
     
@@ -114,7 +111,6 @@ var DirectoryWindowView = function (facade) {
     };
     
     drawDefaultView = function () {
-        var _tableData = [];
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
         if (win) {
             titleBar = UI.createTitleBar({
@@ -124,45 +120,12 @@ var DirectoryWindowView = function (facade) {
             });
             win.add(titleBar);
 
-            Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
-            if (_viewModel.defaultNumber) {
-                //Create the section and one row to display the phone number for the phone directory
-                phoneDirectorySection = Titanium.UI.createTableViewSection({
-                    headerTitle: LocalDictionary.phoneDirectory
-                });
-                phoneDirectoryRow = Titanium.UI.createTableViewRow({
-                    title: _viewModel.defaultNumber
-                });
-                phoneDirectoryRow.addEventListener('click', onPhoneDirectoryClick);
-                phoneDirectorySection.add(phoneDirectoryRow);
-                _tableData.push(phoneDirectorySection);
-            }
-
-            //Create a section to display emergency contact numbers
-
-            if (_viewModel.emergencyContacts.length > 0) {
-                emergencyContactSection = Titanium.UI.createTableViewSection();
-                emergencyContactSection.headerTitle =  LocalDictionary.emergencyContacts;
-                for (var i=0, iLength = defaultTableData.length; i<iLength; i++) {
-                    var _contact = defaultTableData[i],
-                    _emergencyContactRow = Titanium.UI.createTableViewRow({
-                        title: _contact.displayName[0],
-                        hasChild: true,
-                        data: _contact
-                    });
-                    emergencyContactSection.add(_emergencyContactRow);
-                    _emergencyContactRow.addEventListener('click', onContactRowClick);
-                }
-                _tableData.push(emergencyContactSection);
-            }
-            else {
-                Ti.API.info("There aren't any emergency contacts");
-            }
+            createDefaultGroups();
 
             Ti.API.debug("Adding peopleListTable in DirectoryWindowController");
             //Create the main table
             peopleListTable = Titanium.UI.createTableView({
-                data: _tableData,
+                data: defaultTableData,
                 top: Styles.titleBar.height + Styles.searchBar.height
             });
 
@@ -194,6 +157,44 @@ var DirectoryWindowView = function (facade) {
         }
     };
     
+    createDefaultGroups = function () {
+        defaultTableData = [];
+        Ti.API.debug("Adding phoneDirectorySection in DirectoryWindowController");
+        if (_viewModel.defaultNumber) {
+            //Create the section and one row to display the phone number for the phone directory
+            phoneDirectorySection = Titanium.UI.createTableViewSection({
+                headerTitle: LocalDictionary.phoneDirectory
+            });
+            phoneDirectoryRow = Titanium.UI.createTableViewRow({
+                title: _viewModel.defaultNumber
+            });
+            phoneDirectoryRow.addEventListener('click', onPhoneDirectoryClick);
+            phoneDirectorySection.add(phoneDirectoryRow);
+            defaultTableData.push(phoneDirectorySection);
+        }
+
+        //Create a section to display emergency contact numbers
+
+        if (_viewModel.emergencyContacts.length > 0) {
+            emergencyContactSection = Titanium.UI.createTableViewSection();
+            emergencyContactSection.headerTitle =  LocalDictionary.emergencyContacts;
+            for (var i=0, iLength = _viewModel.emergencyContacts.length; i<iLength; i++) {
+                var _contact = _viewModel.emergencyContacts[i],
+                _emergencyContactRow = Titanium.UI.createTableViewRow({
+                    title: _contact.displayName[0],
+                    hasChild: true,
+                    data: _contact
+                });
+                emergencyContactSection.add(_emergencyContactRow);
+                _emergencyContactRow.addEventListener('click', onContactRowClick);
+            }
+            defaultTableData.push(emergencyContactSection);
+        }
+        else {
+            Ti.API.info("There aren't any emergency contacts");
+        }
+    };
+    
     //Contact Events
     onContactRowClick = function (e) {
         Ti.API.debug("Contact clicked");
@@ -219,7 +220,10 @@ var DirectoryWindowView = function (facade) {
     onSearchChange = function (e) {
         Ti.App.fireEvent('DirectoryWindowSearchChange', {value: searchBar.input.value});
         if(searchBar.input.value === '') {
-            _self.updateTable(defaultTableData);
+            _self.updateTable(_viewModel.emergencyContacts);
+            if (peopleListTable) {
+                peopleListTable.setData(defaultTableData);
+            }
         }
     };
     

@@ -9,11 +9,11 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>uPortalMobile.png</string>
+	<string>launcherIcon.png</string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>uPortalMobile.png</string>
-		<string>uPortalMobile@2x.png</string>
+		<string>launcherIcon.png</string>
+		<string>launcherIcon@2x.png</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
@@ -23,7 +23,6 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>umobile</string>
-				
 			</array>
 		</dict>
 	</array>
@@ -41,23 +40,23 @@
 	<string>1.0.1304715626</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-        <key>UISupportedInterfaceOrientations~ipad</key>
-        <array>
-	<string>UIInterfaceOrientationPortrait</string>
-	<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	<string>UIInterfaceOrientationLandscapeLeft</string>
-	<string>UIInterfaceOrientationLandscapeRight</string>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-        <key>UISupportedInterfaceOrientations</key>
-        <array>
-	<string>UIInterfaceOrientationPortrait</string>
-	<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	<string>UIInterfaceOrientationLandscapeLeft</string>
-	<string>UIInterfaceOrientationLandscapeRight</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-        <key>UIStatusBarStyle</key>
-        <string>UIStatusBarStyleDefault</string>
-    <key>UIApplicationExitsOnSuspend</key>
-            <true/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
+	<key>UIApplicationExitsOnSuspend</key>
+	<true/>
 </dict>
 </plist>

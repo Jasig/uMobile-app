@@ -29,6 +29,14 @@ var DeviceProxy = function (facade) {
         }
     };
     
+    this.isIPad = function () {
+        return Ti.Platform.osname === 'ipad' ? true : false;
+    };
+    
+    this.isIPhone = function () {
+        return Ti.Platform.osname === 'iphone' ? true : false;
+    };
+    
     this.isAndroid = function () {
         if (Ti.Platform.osname === 'android') {
             return true;

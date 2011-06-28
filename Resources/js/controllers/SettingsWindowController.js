@@ -64,7 +64,8 @@ var SettingsWindowController = function(facade){
             url: 'js/views/WindowContext.js',
             exitOnClose: false, 
             navBarHidden: true,
-            backgroundColor: Styles.backgroundColor
+            backgroundColor: Styles.backgroundColor,
+            modal: true
         });
         win.open();
         
@@ -100,9 +101,6 @@ var SettingsWindowController = function(facade){
             resetPasswordOpts = Styles.settingsResetPasswordLabel.clone(),
             logOutButtonOpts = Styles.contentButton.clone();
 
-        
-        
-        
         var credentialsGroup = Ti.UI.createTableViewSection({
             headerTitle: LocalDictionary.accountSettings
         });
@@ -186,7 +184,8 @@ var SettingsWindowController = function(facade){
         settingsTable.setData([credentialsGroup]);
         win.add(settingsTable);
         settingsTable.addEventListener('click', function (e) {
-            usernameInput.blur();
+            Ti.API.info("Settings table click, source is " + e.source);
+            // usernameInput.blur();
             passwordInput.blur();
         });
         Titanium.App.addEventListener('dimensionchanges', function (e) {
@@ -198,7 +197,7 @@ var SettingsWindowController = function(facade){
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
         if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { usernameInput.blur(); }
+        if (usernameInput) { /*usernameInput.blur();*/ }
         if (Device.checkNetwork()) {
             if (usernameInput.value === '') {
                 Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
@@ -230,7 +229,7 @@ var SettingsWindowController = function(facade){
     
     onLogOutButtonClick = function (e) {
         if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { usernameInput.blur(); }
+        if (usernameInput) { /*usernameInput.blur();*/ }
         User.saveCredentials({
             username: '', 
             password: ''
@@ -246,8 +245,9 @@ var SettingsWindowController = function(facade){
     };
     
     onLogOutButtonUp = function (e) {
+        Ti.API.debug("onLogOutButtonUp in SettingsWindowController");
         if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { usernameInput.blur(); }
+        if (usernameInput) { /*usernameInput.blur();*/ }
         if (logOutButton) { logOutButton.backgroundGradient = Styles.contentButton.backgroundGradient; }
     };
     
@@ -255,7 +255,7 @@ var SettingsWindowController = function(facade){
         Ti.API.debug("onWindowBlur in SettingsWindowController");
         if (win) {
             passwordInput.blur();
-            usernameInput.blur();
+            // usernameInput.blur();
             if(activityIndicator.visible) {
                 activityIndicator.hide();
             }            

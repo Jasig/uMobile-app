@@ -3,7 +3,7 @@
 * @implements {IDetailView} 
 */
 var MapDetailView = function (facade) {   
-    var app = facade, _self = this, Device, Styles, LocalDictionary, UI,
+    var app = facade, _self = this, Device, Styles, LocalDictionary, UI, mapDetailTableView,
         _detailView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,
         onBackBtnClick;
         
@@ -30,11 +30,23 @@ var MapDetailView = function (facade) {
     };
     
     this.render = function (viewModel) {
-        var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage, mapDetailTableView,
+        var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage,
         _tableViewData = [], directionsButtonOptions;
-        
         Ti.API.debug("render() in MapDetailViewController");
-                
+        if (mapDetailTableView) {
+            Ti.API.debug("mapDetailTableView defined, clearing it.");
+            mapDetailTableView.setData([]);
+            try {
+                _detailView.remove(mapDetailTableView);
+            }
+            catch (e) {
+                Ti.API.error("Couldn't remove mapDetailTableView from _detailView");
+            }
+        }
+        else {
+            Ti.API.debug("mapDetailTableView not defined.");
+        }
+        
         locationDetailTitleBar = UI.createSecondaryNavBar({ 
             backButtonHandler: onBackBtnClick,
             title: viewModel.title
@@ -90,8 +102,9 @@ var MapDetailView = function (facade) {
         }
 
         mapDetailTableView = Ti.UI.createTableView(Styles.mapDetailTableView);
-        mapDetailTableView.setData(_tableViewData);
         _detailView.add(mapDetailTableView);
+        mapDetailTableView.setData(_tableViewData);
+        
     };
     
     this.hide = function () {

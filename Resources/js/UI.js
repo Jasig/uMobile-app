@@ -166,7 +166,7 @@ var UI = function (facade) {
         var _secondaryNavBar, _backBtnOptions, _navBackButton, _titleLabel;
         // A partial view used in some views to place a nav bar just below the titleBar
         _secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
-
+        if (!opts) { opts = {}; }
         if(opts.backButtonHandler) {
             _backBtnOptions = Styles.secondaryNavBarButton.clone();
             _backBtnOptions.title = LocalDictionary.back;
@@ -174,10 +174,16 @@ var UI = function (facade) {
             _navBackButton = Titanium.UI.createButton(_backBtnOptions);
             _navBackButton.addEventListener('click', opts.backButtonHandler);
             _secondaryNavBar.add(_navBackButton);
+            if (opts.btnFloatLeft) {
+                _navBackButton.left = Styles.secondaryNavBarButton.leftFloat;
+            }
         }
         
         _titleLabel = Titanium.UI.createLabel(Styles.secondaryNavBarLabel);
         _titleLabel.text = opts.title ? opts.title : ' ';
+        if (opts.btnFloatLeft) {
+            _titleLabel.left = Styles.secondaryNavBarLabel.buttonLeftFloat;
+        }
         _secondaryNavBar.add(_titleLabel);
         _secondaryNavBar.updateTitle = function (newTitle) {
             _titleLabel.text = newTitle;
@@ -185,6 +191,9 @@ var UI = function (facade) {
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             _titleLabel.width = Styles.secondaryNavBarLabel.width;
+            if (_navBackButton && !opts.btnFloatLeft) {
+                _navBackButton.left = Styles.secondaryNavBarButton.left;
+            }
             _secondaryNavBar.width = Styles.secondaryNavBar.width;
         });
         

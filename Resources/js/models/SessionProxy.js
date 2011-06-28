@@ -66,9 +66,9 @@ var SessionProxy = function (facade) {
         Ti.API.debug("this.isActive() in SessionProxy, with context: " + context);
         if (Device.isIOS()) {
             //If it's iphone, we only need to check that one context has an active session.
-            if(timers[Login.sessionTimeContexts.NETWORK]) {
-                Ti.API.debug("in isActive() in SessionProxy, there IS a timer for the request, and is it active? " + timers[Login.sessionTimeContexts.NETWORK].isActive);
-                return timers[Login.sessionTimeContexts.NETWORK].isActive;
+            if(timers[LoginProxy.sessionTimeContexts.NETWORK]) {
+                Ti.API.debug("in isActive() in SessionProxy, there IS a timer for the request, and is it active? " + timers[LoginProxy.sessionTimeContexts.NETWORK].isActive);
+                return timers[LoginProxy.sessionTimeContexts.NETWORK].isActive;
             }
             else {
                 Ti.API.debug("in isActive() in SessionProxy, there's no timer for the request.");
@@ -134,6 +134,7 @@ var SessionProxy = function (facade) {
         }
         
         if (Device.isIOS()) {
+            Ti.API.info("Device.isIOS() in validateSessions()");
             //Because we only maintain one timer in iOS, we'll make Webview equal network
             _sessions[LoginProxy.sessionTimeContexts.WEBVIEW] = _sessions[LoginProxy.sessionTimeContexts.NETWORK];
         }

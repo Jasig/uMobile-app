@@ -7,14 +7,15 @@
         <target device="ipad">true</target>
         <target device="android">true</target>
     </deployment-targets>
+    <property name="ti.android.compilejs" type="bool">true</property>
 <id>org.jasig.portal.mobile.app</id>
 <name>uMobile</name>
 <version>1.0</version>
-<publisher>athena</publisher>
+<publisher>Jasig</publisher>
 <url>http://www.jasig.org/uportal</url>
 <description>No description provided</description>
-<copyright>2011 by athena</copyright>
-<icon>uPortalMobile.png</icon>
+<copyright>2011 by Jasig</copyright>
+<icon>launcherIcon.png</icon>
     <persistent-wifi>false</persistent-wifi>
     <prerendered-icon>false</prerendered-icon>
     <statusbar-style>default</statusbar-style>
@@ -45,6 +46,12 @@
 
 	<!-- TI_MANIFEST -->
     
+    	<activity android:alwaysRetainTaskState="true" android:configChanges="keyboardHidden|orientation" android:label="uMobile" android:name=".UmobileActivity" android:theme="@style/Theme.Titanium">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
 </manifest>
 	</android>
