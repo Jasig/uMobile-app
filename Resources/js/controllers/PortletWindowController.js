@@ -19,16 +19,18 @@
 
 var PortletWindowController = function (facade) {
     var win, _self = this, app = facade, 
-        Device, WindowManager, PortalWindow, Styles, UI, LocalDictionary, Login, UPM, Session,
+        Device, Windows, PortalWindow, Styles, UI, LocalDictionary, Login, UPM, Session, Config,
         activityIndicator, titleBar, navBar, navBackButton, webView,
-        initialized, winListeners = [], activePortlet, _homeURL, _lastVideoOpened = '',
+        initialized, winListeners = [], activePortlet, _homeURL, _homeFName, _lastVideoOpened = '',
         pathToRoot = '../../',
-        init, drawWindow, getQualifiedURL, getLocalUrl,
-        includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume, onBackBtnPress;
+        init, drawWindow, getQualifiedURL, getLocalUrl, getFNameFromURL,
+        includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume, onBackBtnPress, onAndroidBack;
 
     init = function () {
         Ti.API.debug("init() in PortletWindowController");
         _self.key = 'portlet';
+        
+        Config = app.config;
         
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
@@ -41,6 +43,14 @@ var PortletWindowController = function (facade) {
             webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
         }
         if (win) {
+        	if (Device.isAndroid()) {
+	        	try {
+	        		win.removeEventListener('android:back', onAndroidBack);
+	        	}
+	        	catch (e) {
+	        		Ti.API.error("Couldn't remove android:back listener in PortletWindowController");
+	        	}
+	        }
             win.close();
         }
     };
@@ -51,7 +61,7 @@ var PortletWindowController = function (facade) {
         if (!initialized) {
             //Declare pointers to facade members
             Device = app.models.deviceProxy;
-            WindowManager = app.models.windowManager;
+            Windows = app.models.windowManager;
             PortalWindow = app.controllers.portalWindowController;
             Styles = app.styles;
             UI = app.UI;
@@ -68,7 +78,7 @@ var PortletWindowController = function (facade) {
         }
         else {
             Ti.API.error("No portlet was passed to includePortlet() in PortletWindowController");
-            WindowManager.openWindow(PortalWindow.key);
+            Windows.openWindow(PortalWindow.key);
             return;
         }
         
@@ -81,6 +91,10 @@ var PortletWindowController = function (facade) {
             // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
+        if (Device.isAndroid()) {
+        	win.addEventListener('android:back', onAndroidBack);
+        }
+        
 
         titleBar = UI.createTitleBar({
             title: portlet.title,
@@ -145,9 +159,23 @@ var PortletWindowController = function (facade) {
         activityIndicator.show();
         
         _homeURL = getQualifiedURL(portlet.url);
+        _homeFName = getFNameFromURL(portlet.url);
+        Ti.API.debug("_homeFName in PortletWindowController is " + _homeFName);
         webView.url = _homeURL;
         
         titleBar.updateTitle(portlet.title);
+    };
+    
+    getFNameFromURL = function (url) {
+    	if (url.indexOf('/' === 0 || url.indexOf(Config.BASE_PORTAL_URL))) {
+    		var _urlParts = url.split('/');
+    		for (var i = 0, iLength = _urlParts.length; i<iLength; i++) {
+    			if (_urlParts[i] === 'p') {
+    				return _urlParts[i+1].split('.')[0];
+    			}
+    		}
+    	}
+    	return false;
     };
     
     getLocalUrl = function (url) {
@@ -250,13 +278,30 @@ var PortletWindowController = function (facade) {
         webView.goBack();
     };
     
+    onAndroidBack = function (e) {
+    	Ti.API.debug("onAndroidBack() in PortletWindowController");
+    	if (webView.canGoBack() && _homeFName == false && (webView.url === 'about:blank' || webView.url !== _homeURL)) {
+    		// If the web view CAN go back, the home URL isn't a portal link, and the current page isn't the home page for the portlet.
+    		Ti.API.debug("webView.canGoBack() & webView.url=" + webView.url + " & _homeURL=" + _homeURL);
+    		webView.goBack();
+    	}
+    	else if (webView.canGoBack() && _homeFName != false && getFNameFromURL(webView.url) !== _homeFName) {
+    		// If web view CAN go back, and this IS a portal page, and the current page isn't the home page for the portal. 
+    		Ti.API.debug("FNames match in onAndroidBack(), "+ webView.url + " _homeFName=" + _homeFName);
+    		webView.goBack();
+    	}
+    	else {
+    		Ti.API.debug("!!webView.canGoBack() & webView.url=" + webView.url + " & _homeURL=" + _homeURL);
+    		Windows.openWindow(PortalWindow.key);
+    	}
+    };
+    
     onPortletLoad = function (e) {
         var portalIndex = e.url.indexOf(UPM.BASE_PORTAL_URL);
         Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
         webView.show();
         
         activityIndicator.hide();
-        
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");

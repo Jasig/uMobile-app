@@ -4,9 +4,6 @@ var WindowManager = function (facade) {
         onAndroidBack, onShowWindow, onShowPortlet, ensureOpenTimer;
 
     init = function () {
-        
-        
-        
         Ti.App.addEventListener('showWindow', onShowWindow);
         Ti.App.addEventListener('showPortlet', onShowPortlet);
     };
@@ -65,6 +62,7 @@ var WindowManager = function (facade) {
     
     this.goBack = function () {
         //Show the previous window, and add it to the top of the activity stack.
+        //Use this method at your own risk, doesn't open portlets yet, and is quirky with opening home window.
         if (activityStack.length >= 2) {
             _self.openWindow(activityStack[activityStack.length - 2]);
         }

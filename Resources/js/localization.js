@@ -6,7 +6,7 @@ var localDictionary = [];
 localDictionary.en_US = {
     //Global Text
     uMobile: "uMobile",
-    homeTitle: "Sakai '11",
+    homeTitle: "uMobile",
     search: "Search",
     go: "Go",
     back: "Back",
@@ -17,7 +17,7 @@ localDictionary.en_US = {
     success: "Success",
     doneEditing: "Done Editing",
     loading: 'Loading',
-    gettingPortlets: "Getting portlets from server",
+    gettingPortlets: "Getting modules from server",
     failedToLoadPortlets: "Failed to connect to server to load portlets. Please try again later.",
     searching: "Searching",
     noResults: "No Results",

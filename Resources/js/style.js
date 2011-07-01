@@ -447,7 +447,7 @@ var Styles = function (facade) {
     	    backgroundImage: 'img/bgActivityIndicator.png'
     	},
     	activityIndicatorDialog: {
-    	    width: Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
+    	    width: Ti.Platform.displayCaps.platformWidth > 480 ? 360 : Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
     	    height: 75,
     	    borderRadius: 10,
     	    borderWidth: 1,
