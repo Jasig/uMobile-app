@@ -21,7 +21,7 @@ var PortletWindowController = function (facade) {
     var win, _self = this, app = facade, 
         Device, Windows, PortalWindow, Styles, UI, LocalDictionary, Login, UPM, Session, Config,
         activityIndicator, titleBar, navBar, navBackButton, webView,
-        initialized, winListeners = [], activePortlet, _homeURL, _homeFName, _lastVideoOpened = '',
+        initialized, winListeners = [], activePortlet, _homeURL, _homeFName, _lastVideoOpened = '', isListeningForAndroidBack = false,
         pathToRoot = '../../',
         init, drawWindow, getQualifiedURL, getLocalUrl, getFNameFromURL,
         includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume, onBackBtnPress, onAndroidBack;
@@ -43,14 +43,7 @@ var PortletWindowController = function (facade) {
             webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
         }
         if (win) {
-        	if (Device.isAndroid()) {
-	        	try {
-	        		win.removeEventListener('android:back', onAndroidBack);
-	        	}
-	        	catch (e) {
-	        		Ti.API.error("Couldn't remove android:back listener in PortletWindowController");
-	        	}
-	        }
+        	removeAndroidBackListener();
             win.close();
         }
     };
@@ -91,11 +84,7 @@ var PortletWindowController = function (facade) {
             // orientationModes: [Ti.UI.PORTRAIT]
         });
         win.open();
-        if (Device.isAndroid()) {
-        	win.addEventListener('android:back', onAndroidBack);
-        }
         
-
         titleBar = UI.createTitleBar({
             title: portlet.title,
             settingsButton: false,
@@ -280,20 +269,7 @@ var PortletWindowController = function (facade) {
     
     onAndroidBack = function (e) {
     	Ti.API.debug("onAndroidBack() in PortletWindowController");
-    	if (webView.canGoBack() && _homeFName == false && (webView.url === 'about:blank' || webView.url !== _homeURL)) {
-    		// If the web view CAN go back, the home URL isn't a portal link, and the current page isn't the home page for the portlet.
-    		Ti.API.debug("webView.canGoBack() & webView.url=" + webView.url + " & _homeURL=" + _homeURL);
-    		webView.goBack();
-    	}
-    	else if (webView.canGoBack() && _homeFName != false && getFNameFromURL(webView.url) !== _homeFName) {
-    		// If web view CAN go back, and this IS a portal page, and the current page isn't the home page for the portal. 
-    		Ti.API.debug("FNames match in onAndroidBack(), "+ webView.url + " _homeFName=" + _homeFName);
-    		webView.goBack();
-    	}
-    	else {
-    		Ti.API.debug("!!webView.canGoBack() & webView.url=" + webView.url + " & _homeURL=" + _homeURL);
-    		Windows.openWindow(PortalWindow.key);
-    	}
+    	webView.goBack();
     };
     
     onPortletLoad = function (e) {
@@ -312,28 +288,56 @@ var PortletWindowController = function (facade) {
             navBar.visible = false;
             webView.top = titleBar.height;
             webView.height = win.height - titleBar.height;
-            // webView.setTop(Styles.titleBar.height);
-            // Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
+            Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
+            if (isHome()) removeAndroidBackListener();
         }
         else {
             Ti.API.debug("Visiting an external link. Webview.url = " + webView.url + " & e.url = " + e.url);
             webView.externalModule = true;
-            if (webView.canGoBack() && e.url !== _homeURL) {
+            if (!isHome()) {
                 navBar.visible = true;
                 webView.top = titleBar.height + navBar.height;
                 webView.height = win.height - titleBar.height - navBar.height;
+                addAndroidBackListener();
             }
             else {
                 Ti.API.info("Webview can't go back");
                 webView.top = titleBar.height;
                 webView.height = win.height - titleBar.height;
+                removeAndroidBackListener();
             }
             Ti.API.debug("WebView height is: " + webView.height);
-            // webView.setTop(Styles.titleBar.height + navBar.height);
         }
+        
         webView.show();
         activityIndicator.hide();
     };
+    
+    var isHome = function (e) {
+    	if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL)) {
+			return true;
+		}
+    	return false;
+    };
+    
+    var addAndroidBackListener = function () {
+    	if (!isListeningForAndroidBack && Device.isAndroid()) {
+    		win.addEventListener('android:back', onAndroidBack);
+    		isListeningForAndroidBack = true;
+    	}
+    };
+    
+    var removeAndroidBackListener = function () {
+    	if (isListeningForAndroidBack && Device.isAndroid()) {
+    		try {
+	            win.removeEventListener('android:back', onAndroidBack);
+				isListeningForAndroidBack = false;
+			}
+			catch (e) {
+				Ti.API.error("Couldn't remove android:back event listener in onPortletLoad()");
+			}
+    	}
+    }
     
     if (!initialized) {
         init();
