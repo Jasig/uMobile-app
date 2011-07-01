@@ -86,11 +86,17 @@ var ConfigModule = function (app) {
         doesRequireLayout: true,
         window: 'directory'
     };
-    this.LOCAL_MODULES.twitter = {
-        title: 'Twitter',
-        fname: 'twitter',
-        url: 'http://mobile.twitter.com/searches?q=sakai11',
-        externalModule: true
+    this.LOCAL_MODULES.transit = {
+    	title: 'Transit',
+    	fname: 'transit',
+    	url: 'http://uchicago.transloc.com/m/',
+    	externalModule: true
+    };
+    this.LOCAL_MODULES.library = {
+    	title: "Library",
+    	fname: "library",
+    	url: 'http://mobile.lib.uchicago.edu/',
+    	externalModule: true
     };
     
     this.getLocalModules = function () {
@@ -105,16 +111,17 @@ var ConfigModule = function (app) {
     };
     
     this.nativeIcons = {
-        videos: 'youtube.png',
-        news: 'feed.png',
         calendar: 'calendar.png',
-        map: 'map.png',
         directory: 'directory.png',
-        twitter: 'twitter.png',
-        transit: 'transit.png',
-        weather: 'weather.png',
+        library: 'library.png',
+        map: 'map.png',
+        news: 'feed.png',
+        presentations: 'opencast.png',
         stats: 'stats.png',
-        presentations: 'opencast.png'
+        transit: 'transit.png',
+        twitter: 'twitter.png',
+        videos: 'youtube.png',
+        weather: 'weather.png'
     };
 
     this.directoryEmergencyContacts = [
