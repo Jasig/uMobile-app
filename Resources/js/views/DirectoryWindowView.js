@@ -203,7 +203,7 @@ var DirectoryWindowView = function (facade) {
     
     onPhoneDirectoryClick = function (e) {
         Ti.API.debug("Clicked the phone directory button");
-        Ti.Platform.openURL('tel:' + _viewModel.phoneDirectoryNumber);
+        Ti.Platform.openURL('tel:' + _viewModel.defaultNumber);
     };
     
     onSearchCancel = function (e) {
