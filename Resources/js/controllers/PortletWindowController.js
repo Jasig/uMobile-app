@@ -289,7 +289,9 @@ var PortletWindowController = function (facade) {
             webView.top = titleBar.height;
             webView.height = win.height - titleBar.height;
             Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
-            if (isHome()) removeAndroidBackListener();
+            if (isHome()) {
+                removeAndroidBackListener();
+            }
         }
         else {
             Ti.API.debug("Visiting an external link. Webview.url = " + webView.url + " & e.url = " + e.url);
@@ -337,7 +339,7 @@ var PortletWindowController = function (facade) {
 				Ti.API.error("Couldn't remove android:back event listener in onPortletLoad()");
 			}
     	}
-    }
+    };
     
     if (!initialized) {
         init();

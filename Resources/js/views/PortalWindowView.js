@@ -67,6 +67,11 @@ var PortalWindowView = function (facade) {
             //We want to create a new window and redraw the whole UI each time on iOS
             win = Ti.UI.createWindow(Styles.portalWindow);
             win.open();
+            if (Device.isAndroid()) {
+                // If the user gets to this window via the back button, we want to make sure we adaps
+                // to any recent device orientation changes
+                win.addEventListener('focus', onDimensionChanges);
+            }
         }
         else if (win && !win.visible) {
             Ti.API.debug("Just show the portal window");
@@ -121,14 +126,22 @@ var PortalWindowView = function (facade) {
         else {
             Ti.API.debug("This isn't the first time we're loading");
         }
+        
+        onDimensionChanges();
         _self.setState(_self.states.OPENED);
     };
     
     this.close = function () {
-        if (win && (Device.isIOS())) {
+        if (win && Device.isIOS()) {
             win.close();
         }
         else if (win) {
+            try {
+                win.removeEventListener('focus', onDimensionChanges);
+            }
+            catch (e) {
+                Ti.API.error("Could not remove event listener 'focus' from home window");
+            }
             win.hide();
         }
         _self.setState(_self.states.CLOSED);
@@ -209,19 +222,24 @@ var PortalWindowView = function (facade) {
         guestNotificationView.addEventListener('click', function (e){
             Ti.API.info("Clicked guest notification, opening settings");
             WindowManager.openWindow(SettingsWindow.key);
-        });  
+        });
     };
     
     onDimensionChanges = function (e) {
         Ti.API.debug('onDimensionChanges() in PortalWindowView');
         // We want to make sure the content layer (the view holding the icons) 
         // is the appropriate size when the device rotates
+        // Let's update the Styles reference again for good measure
+        Styles = app.styles;
         if (contentLayer) {
             contentLayer.width = Styles.portalContentLayer.width;
             contentLayer.height = Styles.portalContentLayer.height;
         }
         if (guestNotificationView) {
             guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
+        }
+        else {
+            Ti.API.debug("No guest notification view");
         }
     };
     

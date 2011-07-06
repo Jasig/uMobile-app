@@ -196,7 +196,9 @@ var PortalGridView = function (facade) {
     };
     
     onOrientationChange = function (e) {
-        if (Windows.getCurrentWindow() === PortalWindow.key) {
+        if (Windows.getCurrentWindow() === PortalWindow.key || Device.isAndroid()) {
+            //If the device is Android, we always want to rearrange the grid to 
+            //account for the back button circumventing the windowManager
             rearrangeGrid();
         }
     };
