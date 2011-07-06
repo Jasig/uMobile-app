@@ -258,6 +258,16 @@ var PortletWindowController = function (facade) {
                 //Set the last video to this, so that it doesn't try to broadcast the intent twice.
                 _lastVideoOpened = _URLToOpen;
         	}
+        	if (e.url.indexOf('http://m.youtube.com') === 0) {
+        	    Ti.API.debug("The WebView is YouTube: " + e.url);
+        	    if (_homeFName === 'videos') {
+        	        Ti.API.debug("_homeFName is 'videos', so loading the videos home URL");
+        	        webView.url = _homeURL;
+        	    }
+        	}
+        	else {
+        	    Ti.API.debug("The WebView isn't youtube: " + e.url);
+        	}
         }
         activityIndicator.setLoadingMessage(LocalDictionary.loading);
         activityIndicator.show();
@@ -316,6 +326,9 @@ var PortletWindowController = function (facade) {
     };
     
     var isHome = function (e) {
+        //It's either a portlet (with an fname) or not
+        //If _homeFName is defined, we'll see if the user is viewing the portlet
+        //otherwise we'll check the URL for a match
     	if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL)) {
 			return true;
 		}
