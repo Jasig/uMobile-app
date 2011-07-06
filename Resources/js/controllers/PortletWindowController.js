@@ -128,7 +128,7 @@ var PortletWindowController = function (facade) {
         includePortlet(activePortlet);
 
         Titanium.App.addEventListener('dimensionchanges', function (e) {
-            if (webView.canGoBack()) {
+            if (!isHome()) {
                 navBar.visible = true;
                 webView.top = titleBar.height + navBar.height;
                 webView.height = win.height - titleBar.height - navBar.height;

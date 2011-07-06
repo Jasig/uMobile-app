@@ -190,11 +190,14 @@ var UI = function (facade) {
         };
         
         Titanium.App.addEventListener('dimensionchanges', function (e) {
+            var _visibility = _secondaryNavBar.visible;
+            Ti.API.debug("visibility of secondaryNavBar: " + _visibility);
             _titleLabel.width = Styles.secondaryNavBarLabel.width;
             if (_navBackButton && !opts.btnFloatLeft) {
                 _navBackButton.left = Styles.secondaryNavBarButton.left;
             }
             _secondaryNavBar.width = Styles.secondaryNavBar.width;
+            _secondaryNavBar.visible = _visibility;
         });
         
         return _secondaryNavBar;
