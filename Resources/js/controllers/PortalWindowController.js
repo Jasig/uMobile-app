@@ -28,7 +28,7 @@
 var PortalWindowController = function (facade) {
     var win, app = facade, _self = this, init, Portal, PortalView, WindowManager, User,
         initialized, 
-        onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError,
+        onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError, onAndroidSearchClick,
         onWindowFocus, onAppWindowOpening, onAppWindowOpened, 
         pathToRoot = '../../';
 
@@ -50,6 +50,7 @@ var PortalWindowController = function (facade) {
         Ti.App.addEventListener('NewWindowOpened', onAppWindowOpened);
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onNetworkSessionSuccess);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onNetworkSessionFailure);
+        Ti.App.addEventListener('HomeAndroidSearchButtonClicked', onAndroidSearchClick);
         
         initialized = true;
     };
@@ -70,6 +71,14 @@ var PortalWindowController = function (facade) {
         if (PortalView) {
             PortalView.close();
         }
+    };
+    
+    onAndroidSearchClick = function (e) {
+    	Ti.API.debug("onAndroidSearchClick() in PortalWindowController");
+    	var _searchPortlet = Portal.getPortletByFName('search'); 
+    	if (_searchPortlet) {
+    		Portal.getShowPortletFunc(_searchPortlet)();
+    	}
     };
     
     onNetworkSessionSuccess = function (e) {

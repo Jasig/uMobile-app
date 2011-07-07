@@ -39,6 +39,15 @@ var PortalProxy = function (facade) {
         return portlets;
     };
     
+    this.getPortletByFName = function (fname) {
+    	for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
+    		if (portlets[i].fname === fname) {
+    			return portlets[i];
+    		}
+    	}
+    	return false;
+    };
+    
     sortPortlets = function(a, b) {
         if (!a.title || !b.title) {
             Ti.API.error("Missing a title for one of these:" + JSON.stringify(a) + " & " + JSON.stringify(b));

@@ -32,7 +32,7 @@ var PortalWindowView = function (facade) {
     win, contentLayer, gridView,
     titleBar, activityIndicator, guestNotificationView,
     createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator,
-    onPortalGridViewStateChange, onDimensionChanges;
+    onPortalGridViewStateChange, onDimensionChanges, onAndroidSearch;
     
     init = function () {
         Styles = app.styles;
@@ -71,6 +71,7 @@ var PortalWindowView = function (facade) {
                 // If the user gets to this window via the back button, we want to make sure we adaps
                 // to any recent device orientation changes
                 win.addEventListener('focus', onDimensionChanges);
+                win.addEventListener('android:search', onAndroidSearch);
             }
         }
         else if (win && !win.visible) {
@@ -136,8 +137,10 @@ var PortalWindowView = function (facade) {
             win.close();
         }
         else if (win) {
+        	//Infer that the OS is Android
             try {
                 win.removeEventListener('focus', onDimensionChanges);
+                win.removeEventListener('android:search', onAndroidSearch);
             }
             catch (e) {
                 Ti.API.error("Could not remove event listener 'focus' from home window");
@@ -223,6 +226,10 @@ var PortalWindowView = function (facade) {
             Ti.API.info("Clicked guest notification, opening settings");
             WindowManager.openWindow(SettingsWindow.key);
         });
+    };
+    
+    onAndroidSearch = function (e) {
+    	Ti.App.fireEvent('HomeAndroidSearchButtonClicked', {eventBody: e});
     };
     
     onDimensionChanges = function (e) {
