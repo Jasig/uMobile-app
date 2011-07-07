@@ -69,6 +69,7 @@ var WindowManager = function (facade) {
     };
     
     this.getCurrentWindow = function (offset) {
+    	// Returns key (string) of currently opened window, if possible
         return activityStack.length > 0 ? activityStack[activityStack.length - 1] : false;
     };
     

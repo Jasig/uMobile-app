@@ -26,7 +26,7 @@ var MapWindowController = function(facade) {
     locationDetailViewOptions, mapPoints = [], rawAnnotations = [], 
     locationDetailView, activityIndicator, mapView, searchBar, loadingIndicator, titleBar, 
     createMainView, loadPointDetail, resetMapLocation, 
-    onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur; 
+    onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur, onAndroidSearch; 
 
     init = function() {
         _self.key = 'map';
@@ -75,6 +75,10 @@ var MapWindowController = function(facade) {
             navBarHidden: true
         });
         win.open();
+        
+        if (Device.isAndroid()) {
+        	win.addEventListener('android:search', onAndroidSearch);
+        }
 
         createMainView();
         resetMapLocation();
@@ -83,6 +87,14 @@ var MapWindowController = function(facade) {
     this.close = function (options) {
         Ti.API.debug("close() in MapWindowController");
         searchBlur();
+        if (Device.isAndroid()) {
+        	try {
+        		win.removeEventListener('android:search', onAndroidSearch);
+        	}
+        	catch (e) {
+        		Ti.API.error("Couldn't remove search event from Map Window");
+        	}
+        }
         if (win) {
             win.close();
         }
@@ -284,6 +296,16 @@ var MapWindowController = function(facade) {
         Ti.API.debug("Hiding activity indicator in onProxyEmptySearch()");
         activityIndicator.hide();
         Ti.API.debug('onProxyEmptySearch' + e);
+    };
+    
+    onAndroidSearch = function (e) {
+    	Ti.API.debug("onAndroidSearch() in MapWindowController");
+    	if (searchBar && searchBar.input) {
+    		searchBar.input.focus();
+    	}
+    	if (locationDetailView) {
+    		locationDetailView.hide();
+    	}
     };
     
     onProxyLoadError = function (e) {

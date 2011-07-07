@@ -32,7 +32,7 @@ var PortalWindowView = function (facade) {
     win, contentLayer, gridView,
     titleBar, activityIndicator, guestNotificationView,
     createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator,
-    onPortalGridViewStateChange, onDimensionChanges, onAndroidSearch;
+    onPortalGridViewStateChange, onDimensionChanges, onAndroidSearch, onWindowFocus;
     
     init = function () {
         Styles = app.styles;
@@ -68,9 +68,15 @@ var PortalWindowView = function (facade) {
             win = Ti.UI.createWindow(Styles.portalWindow);
             win.open();
             if (Device.isAndroid()) {
+            	try {
+            		win.removeEventListener('focus', onWindowFocus);
+            	}
+            	catch (e) {
+            		Ti.API.debug("Couldn't remove focus from PortalWindowView");
+            	}
                 // If the user gets to this window via the back button, we want to make sure we adaps
                 // to any recent device orientation changes
-                win.addEventListener('focus', onDimensionChanges);
+                win.addEventListener('focus', onWindowFocus);
                 win.addEventListener('android:search', onAndroidSearch);
             }
         }
@@ -139,7 +145,6 @@ var PortalWindowView = function (facade) {
         else if (win) {
         	//Infer that the OS is Android
             try {
-                win.removeEventListener('focus', onDimensionChanges);
                 win.removeEventListener('android:search', onAndroidSearch);
             }
             catch (e) {
@@ -248,6 +253,12 @@ var PortalWindowView = function (facade) {
         else {
             Ti.API.debug("No guest notification view");
         }
+    };
+    
+    onWindowFocus = function (e) {
+    	if (WindowManager.getCurrentWindow() !== PortalWindow.key) {
+    		WindowManager.openWindow(PortalWindow.key);
+    	}
     };
     
     onPortalGridViewStateChange = function (e) {

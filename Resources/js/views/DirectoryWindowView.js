@@ -3,10 +3,10 @@
 * @constructor
 */
 var DirectoryWindowView = function (facade) {
-    var app=facade, _self=this, init, UI, DirectoryDetail, Styles, LocalDictionary, defaultTableData=[], tableData = [], _viewModel,
+    var app=facade, _self=this, init, UI, Device, DirectoryDetail, Styles, LocalDictionary, defaultTableData=[], tableData = [], _viewModel,
     win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator,
     drawDefaultView, displaySearchResults, blurSearch, createDefaultGroups,
-    onContactRowClick, onPhoneDirectoryClick, onSearchCancel, onSearchSubmit, onSearchChange;
+    onContactRowClick, onPhoneDirectoryClick, onSearchCancel, onSearchSubmit, onSearchChange, onAndroidSearch;
     
     init = function () {
         Titanium.include('js/views/PersonDetailTableView.js');
@@ -18,6 +18,7 @@ var DirectoryWindowView = function (facade) {
             Styles = app.styles;
         });
         
+        Device = app.models.deviceProxy;
         DirectoryDetail = app.views.DirectoryDetailView;
         Styles = app.styles;
         UI = app.UI;
@@ -33,11 +34,22 @@ var DirectoryWindowView = function (facade) {
             navBarHidden: true
         });
         win.open();
+        if (Device.isAndroid()) {
+        	win.addEventListener('android:search', onAndroidSearch);
+        }
         drawDefaultView();
     };
     
     this.close = function () {
         blurSearch();
+        if (win && Device.isAndroid()) {
+        	try {
+        		win.addEventListener('android:search', onAndroidSearch);
+        	}
+        	catch (e) {
+        		Ti.API.error("Couldn't remove android:search event in DirectoryWindowView");
+        	}
+        }
         if (win) {
             win.close();
         }
@@ -225,6 +237,15 @@ var DirectoryWindowView = function (facade) {
                 peopleListTable.setData(defaultTableData);
             }
         }
+    };
+    
+    onAndroidSearch = function (e) {
+    	if (searchBar && searchBar.input) {
+    		searchBar.input.focus();
+    	}
+    	if (DirectoryDetail) {
+    		DirectoryDetail.hide();
+    	}
     };
     
     blurSearch = function () {

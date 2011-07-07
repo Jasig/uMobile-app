@@ -42,8 +42,8 @@ var DirectoryWindowController = function (facade) {
     this.open = function () {
         Ti.API.debug("open() in DirectoryWindowController");
         if (!initialized) {
-            Titanium.include('js/models/DirectoryProxy.js');
-            Titanium.include('js/views/DirectoryWindowView.js');
+            Titanium.include('/js/models/DirectoryProxy.js');
+            Titanium.include('/js/views/DirectoryWindowView.js');
             
             app.registerView('directoryWindowView', new DirectoryWindowView(app));
             app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
