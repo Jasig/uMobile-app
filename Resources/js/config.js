@@ -34,9 +34,9 @@ var ConfigModule = function (app) {
     // Base url of the portal, which should be of the format
     // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
     // trailing slash.
-    // this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    this.BASE_PORTAL_URL = 'https://umobile.unicon.net';
-    this.PORTAL_CONTEXT = '/uPortal';
+    this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+    // this.BASE_PORTAL_URL = 'https://umobile.unicon.net';
+    this.PORTAL_CONTEXT = '';
 
     //------- AUTHENTICATION -------
 
@@ -56,8 +56,7 @@ var ConfigModule = function (app) {
     this.DIRECTORY_SERVICE_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/api/people.json';
     this.DIRECTORY_SERVICE_SEARCH_FIELDS = [
         'given',
-        'sn',
-        'organization'
+        'sn'
     ];
     this.DIRECTORY_SERVICE_RESULT_FIELDS = {
         fullName: 'displayName',

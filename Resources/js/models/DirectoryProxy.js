@@ -51,6 +51,7 @@ var DirectoryProxy = function (facade,opts) {
     doXhrSearch = function (query) {
         var url, separator;
         Ti.API.info("query: " + query);
+        query = '%' + query.replace(' ', '%') + '%';
         url = Config.DIRECTORY_SERVICE_URL;
         separator = '?';
         
