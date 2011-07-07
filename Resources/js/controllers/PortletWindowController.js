@@ -306,7 +306,7 @@ var PortletWindowController = function (facade) {
         else {
             Ti.API.debug("Visiting an external link. Webview.url = " + webView.url + " & e.url = " + e.url);
             webView.externalModule = true;
-            if (!isHome()) {
+            if (!isHome(e)) {
                 navBar.visible = true;
                 webView.top = titleBar.height + navBar.height;
                 webView.height = win.height - titleBar.height - navBar.height;
@@ -326,9 +326,12 @@ var PortletWindowController = function (facade) {
     };
     
     var isHome = function (e) {
+        Ti.API.debug('isHome() in PortletWindowController');
         //It's either a portlet (with an fname) or not
         //If _homeFName is defined, we'll see if the user is viewing the portlet
         //otherwise we'll check the URL for a match
+        Ti.API.debug(" Checking this condition: if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL))");
+        Ti.API.debug('_homeFName: ' + _homeFName + ' & getFNameFromURL(): ' + getFNameFromURL(e ? e.url : webView.url) + ' & webView.url: ' + webView.url + ' & _homeURL: ' + _homeURL);
     	if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL)) {
 			return true;
 		}

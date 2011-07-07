@@ -109,7 +109,7 @@ var PortalWindowView = function (facade) {
             try {
                 win.remove(activityIndicator);
             }
-            catch (e) {
+            catch (err) {
                 Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
             }            
         }

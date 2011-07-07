@@ -125,7 +125,7 @@ var Styles = function (facade) {
             height: defaults.SEARCHBAR_HEIGHT - 7,
             top: 5,
             borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-            softKeyboardOnFocus: Titanium.UI.Android.SOFT_KEYBOARD_DEFAULT_ON_FOCUS
+            softKeyboardOnFocus: Titanium.Platform.osname === 'android' ? Titanium.UI.Android.SOFT_KEYBOARD_DEFAULT_ON_FOCUS : false
         },
         //Styles for TitleBar
         titleBar: {
