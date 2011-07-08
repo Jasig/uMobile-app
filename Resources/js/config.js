@@ -125,7 +125,8 @@ var ConfigModule = function (app) {
         transit: 'transit.png',
         twitter: 'twitter.png',
         videos: 'youtube.png',
-        weather: 'weather.png'
+        weather: 'weather.png',
+        info: 'default-icon.png'
     };
 
     this.directoryEmergencyContacts = [

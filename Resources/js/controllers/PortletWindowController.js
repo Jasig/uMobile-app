@@ -108,6 +108,7 @@ var PortletWindowController = function (facade) {
         if (Device.isIOS() || !webView) {
             Ti.API.debug("The device is iOS or there isn't a webView yet");
             webView = Titanium.UI.createWebView(Styles.portletView);
+            webView.scalePageToFit = true;
             webView.addEventListener('load', onPortletLoad);
             webView.addEventListener('beforeload', onPortletBeforeLoad);
             webView.hide();

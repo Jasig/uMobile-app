@@ -4,42 +4,93 @@
 		<style type="text/css">
 			body {
 				font-family: Arial, Helvetica, sans-serif;
-				font-size: 14px;
+				font-size: 16px;
+				line-height: 24px;
+				margin:0;
+				padding: 0;
 			}
-			body > * {
-				padding:5px 15px;
+			
+			div.wrapper {
+				background-image: -webkit-gradient(
+			        linear,
+			        left bottom,
+			        left top,
+			        color-stop(0.05, rgb(67, 101, 175)),
+			        color-stop(0.10, rgb(255,255,255)),
+			        color-stop(0.90, rgb(255,255,255)),
+			        color-stop(0.95, rgb(67, 101, 175))
+			        
+			    );
+			    background-image: -moz-linear-gradient(
+			        center bottom,
+			        rgb(67, 101, 175) 0%,
+			        rgb(255, 255, 255) 10%,
+			        rgb(255, 255, 255) 90%, 
+			        rgb(67, 101, 175) 100%
+			    );
 			}
-			body > ul {
-				margin-left:15px;
+			
+			header {
+				height: 70px;
+				text-align:center;
 			}
-			body > ul li {
-				margin-left:15px;
+			header .logo {
+				margin: 15px auto 0;
+			}
+			.text {
+				background-color: rgb(255, 255, 255);
+				margin: 0 10px;
+				padding:10px 15px;
+				-moz-box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+				-webkit-box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+				box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+				border-radius: 10px;
+			}
+			footer {
+				text-align: center;
+				color: #fff;
+				padding: 20px 10px;
+				margin: 0;
+			}
+			
+			a.jasig-link {
+				text-align: center;
+				color: #fff;
 			}
 		</style>
-		<script tyle="text/javascript">
-			var inject = function (alertMsg) {
-				alert(alertMsg);
-			};
-		</script>
 		
 	</head>
 	<body>
-		<h1>About uMobile</h1>
-		<p>
+		<div class="wrapper">
+			<header>
+				<img class="logo" width="130" height="38" alt="uMobile Logo" src="app://Documents/html/uMobileLogo.png" />
+			</header>
+			<div class="text">
+				<p>
+					<strong>uMobile</strong> is the latest addition to the tried and true line of Jasig community open source projects.  
+					As with all Jasig projects, this is 100% free and open source.
+				</p>
+				<p>  
+					This project will offer a whole new user experience, while leaving institutions in the driver's seat by providing a delivery platform that is built upon the proven enterprise-quality Jasig frameworks.
+				</p>
+				<h2>Project Highlights:</h2>
+				<ul>
+					<li>With uMobile, colleges and universities are able to deliver customized content and functionality into branded apps that render on mobile devices (smartphones).</li>
+					<li>Initial native support is for Android and iOS (iPhone) devices.</li> 
+					<li>uMobile utilizes a single code base to provide both browser-based and native-app functionality.</li> 
+					<li>Early features in uMobile comprise of campus maps, directory, announcements, search, courses, course schedule, campus news/RSS, and calendar.</li> 
+					<li>Native device integration includes contacts, maps, and email composition.</li> 
+					<li>uMobile boasts technologies and development tools for authentication and authorization, user and group management, and layout management capabilities.</li> 
+					<li>These technologies and tools are built on the production-proven uPortal framework.</li>
+				</ul>
+				<p>
+					For more information, visit: <a href="javascript:Ti.App.fireEvent('OpenExternalURL', {url:'http://www.jasig.org/umobile-project-announcement-call-partic'});" target="_blank">uMobile Project Announcement: Call for Participation</a> 
+				</p>
+			</div>
 			
-			uMobile is the latest addition to the tried and true line of Jasig community open source projects.  
-			As with all Jasig projects, this is 100% free and open source.  
-			This project will offer a whole new user experience, while leaving institutions in the driver's seat by providing a delivery platform that is built upon the proven enterprise-quality Jasig frameworks.
-		</p>
-		<ul>
-			<li>With uMobile, colleges and universities are able to deliver customized content and functionality into branded apps that render on mobile devices (smartphones).</li>
-			<li>Initial native support is for Android and iOS (iPhone) devices.</li> 
-			<li>uMobile utilizes a single code base to provide both browser-based and native-app functionality.</li> 
-			<li>Early features in uMobile comprise of campus maps, directory, announcements, search, courses, course schedule, campus news/RSS, and calendar.</li> 
-			<li>Native device integration includes contacts, maps, and email composition.</li> 
-			<li>uMobile boasts technologies and development tools for authentication and authorization, user and group management, and layout management capabilities.</li> 
-			<li>These technologies and tools are built on the production-proven uPortal framework.</li>
-		</ul>
-		<a href="javascript:Titanium.App.fireEvent('InjectMe',{'callback': 'inject'});">BrowserEvent</a>
+			<footer>
+				&copy; 2011 <a href="javascript:Ti.App.fireEvent('OpenExternalURL', {url:'http://www.jasig.org'});" class="jasig-link">Jasig</a>. All rights reserved.
+			</footer>
+		</div>
 	</body>
 </html>

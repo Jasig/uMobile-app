@@ -123,6 +123,16 @@ startup = function (e) {
         Ti.App.addEventListener('androidorientationchange', onOrientationChange);
     }
     
+    Ti.App.addEventListener('OpenExternalURL', function (e) {
+    	if (e.url) {
+			Ti.Platform.openURL(e.url);    		
+    	}
+    	else {
+    		Ti.API.error("No url was attached to the event: " + JSON.stringify(e));
+    	}
+    	
+    });
+    
 };
 
 onOrientationChange = function (e) {
