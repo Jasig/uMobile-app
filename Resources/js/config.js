@@ -96,6 +96,12 @@ var ConfigModule = function (app) {
     	url: 'http://mobile.lib.uchicago.edu/',
     	externalModule: true
     };
+    this.LOCAL_MODULES.info = {
+    	title: 'info',
+    	fname: 'info',
+    	url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html?portal-url='+ this.BASE_PORTAL_URL).nativePath,
+    	externalModule: true
+    };
     
     this.getLocalModules = function () {
         return this.LOCAL_MODULES;

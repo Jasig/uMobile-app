@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>Info</title>
+		<style type="text/css">
+			body {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 14px;
+			}
+			body > * {
+				padding:5px 15px;
+			}
+			body > ul {
+				margin-left:15px;
+			}
+			body > ul li {
+				margin-left:15px;
+			}
+		</style>
+		<script tyle="text/javascript">
+			var inject = function (alertMsg) {
+				alert(alertMsg);
+			};
+		</script>
+		
+	</head>
+	<body>
+		<h1>About uMobile</h1>
+		<p>
+			
+			uMobile is the latest addition to the tried and true line of Jasig community open source projects.  
+			As with all Jasig projects, this is 100% free and open source.  
+			This project will offer a whole new user experience, while leaving institutions in the driver's seat by providing a delivery platform that is built upon the proven enterprise-quality Jasig frameworks.
+		</p>
+		<ul>
+			<li>With uMobile, colleges and universities are able to deliver customized content and functionality into branded apps that render on mobile devices (smartphones).</li>
+			<li>Initial native support is for Android and iOS (iPhone) devices.</li> 
+			<li>uMobile utilizes a single code base to provide both browser-based and native-app functionality.</li> 
+			<li>Early features in uMobile comprise of campus maps, directory, announcements, search, courses, course schedule, campus news/RSS, and calendar.</li> 
+			<li>Native device integration includes contacts, maps, and email composition.</li> 
+			<li>uMobile boasts technologies and development tools for authentication and authorization, user and group management, and layout management capabilities.</li> 
+			<li>These technologies and tools are built on the production-proven uPortal framework.</li>
+		</ul>
+		<a href="javascript:Titanium.App.fireEvent('InjectMe',{'callback': 'inject'});">BrowserEvent</a>
+	</body>
+</html>

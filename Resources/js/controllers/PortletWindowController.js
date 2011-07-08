@@ -327,12 +327,26 @@ var PortletWindowController = function (facade) {
     
     var isHome = function (e) {
         Ti.API.debug('isHome() in PortletWindowController');
+        var _newURL, treatAsLocalhost;
+        
+        //For the iOS simulator, the e.url and webView.url don't consistently contain localhost, so we need to work around it.
+        treatAsLocalhost = function (_url) {
+        	return _url.replace('file://', 'file://localhost');
+        };
+        
+        // New URL will ideally be the event object url (more consistent)
+        // If localhost is in the base URL (simulator), we will use webview.url because the
+        // e object doesn't contain localhost in the path.
+        _newURL = e ? (_homeURL.indexOf('file://' > -1 && Device.isIOS()) ? treatAsLocalhost(e.url) : e.url) : webView.url;
+        
         //It's either a portlet (with an fname) or not
         //If _homeFName is defined, we'll see if the user is viewing the portlet
         //otherwise we'll check the URL for a match
+        
         Ti.API.debug(" Checking this condition: if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL))");
-        Ti.API.debug('_homeFName: ' + _homeFName + ' & getFNameFromURL(): ' + getFNameFromURL(e ? e.url : webView.url) + ' & webView.url: ' + webView.url + ' & _homeURL: ' + _homeURL);
-    	if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL)) {
+        Ti.API.debug('_homeFName: ' + _homeFName + ' & getFNameFromURL(): ' + getFNameFromURL(_newURL) + ' & _newURL: ' + _newURL + ' & _homeURL: ' + _homeURL);
+        
+    	if ((_homeFName && getFNameFromURL(_newURL) === _homeFName) || (!_homeFName && _newURL === _homeURL)) {
 			return true;
 		}
     	return false;
