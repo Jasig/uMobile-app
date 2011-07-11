@@ -32,7 +32,8 @@ var DirectoryDetailView = function (facade) {
             _view = Titanium.UI.createView(app.styles.contactDetailView);
             secondaryNavBar = UI.createSecondaryNavBar({
                 backButtonHandler: onBackBtnClick,
-                title: ' '
+                title: ' ',
+                btnFloatLeft: true
             });
             _view.add(secondaryNavBar);
 

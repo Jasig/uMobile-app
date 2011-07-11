@@ -28,7 +28,7 @@ var Styles = function (facade) {
         },
         SECONDARY_BAR_BTN_BACKGROUND_GRADIENT: {
             type:'linear',
-            colors:['#eee','#ccc']
+            colors:['#4682b4','#294d6b']
         },
         SECONDARY_BAR_BTN_DOWN_BG: {
             type: 'linear',
@@ -202,17 +202,17 @@ var Styles = function (facade) {
         	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
         },
         secondaryNavBarLabel: {
-            width: Ti.Platform.displayCaps.platformWidth - 50 - 10 * 3,
+            width: Ti.Platform.displayCaps.platformWidth - 70 * 2 - 10 * 3,
             left: 10,
-            buttonLeftFloat: 50 + 10 * 2,
+            buttonLeftFloat: 70 + 10 * 2,
             height: defaults.TITLEBAR_HEIGHT,
             color: defaults.SECONDARY_BAR_COLOR,
-            textAlign: "left",
+            textAlign: "center",
             ellipsize: true,
             wordWrap: false,
-            minimumFontSize: 18,
+            minimumFontSize: 14,
             font: {
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: 'bold'
             }
     	},
@@ -227,15 +227,19 @@ var Styles = function (facade) {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
             left: Ti.Platform.displayCaps.platformWidth - 50 - 10,
             leftFloat: 10,
-            width: 50,
+            width: 70,
             height: 30,
+            image: 'img/back-icon.png',
         	backgroundImage: 'img/secondarybarbtnbg.png',
         	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
-        	color: '#333',
-        	selectedColor: "#666",
+        	color: '#fff',
+        	selectedColor: "#fff",
             borderRadius: 10,
+            borderColor: '#294D6B',
+            borderWidth: 2,
         	font: {
-        	    fontSize: 14
+        	    fontSize: 12,
+        	    fontWeight: "bold"
         	}
         },
         //PORTAL VIEW STYLES

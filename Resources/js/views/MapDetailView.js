@@ -49,7 +49,8 @@ var MapDetailView = function (facade) {
         
         locationDetailTitleBar = UI.createSecondaryNavBar({ 
             backButtonHandler: onBackBtnClick,
-            title: viewModel.title
+            title: viewModel.title,
+            btnFloatLeft: true
         });
         _detailView.add(locationDetailTitleBar);
         
