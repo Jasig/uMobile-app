@@ -227,16 +227,16 @@ var Styles = function (facade) {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
             left: Ti.Platform.displayCaps.platformWidth - 50 - 10,
             leftFloat: 10,
-            width: 70,
+            width: 50,
             height: 30,
-            image: 'img/back-icon.png',
+            optionalImage: 'img/back-icon.png',
         	backgroundImage: 'img/secondarybarbtnbg.png',
         	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
         	color: '#fff',
         	selectedColor: "#fff",
             borderRadius: 10,
             borderColor: '#294D6B',
-            borderWidth: 2,
+            borderWidth: 1,
         	font: {
         	    fontSize: 12,
         	    fontWeight: "bold"
@@ -497,6 +497,8 @@ var Styles = function (facade) {
             selectedColor: '#333'
         };
         stylesheet.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
+        stylesheet.secondaryNavBarButton.image = stylesheet.secondaryNavBarButton.optionalImage;
+        stylesheet.secondaryNavBarButton.width = 70;
     }
     
     if(Ti.Platform.osname === 'android') {
