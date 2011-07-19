@@ -1,8 +1,8 @@
 #appname: uMobile
-#publisher: athena
-#url: http://
-#image: appicon.png
-#appid: org.jasig.portal.mobile
-#desc: undefined
+#publisher: Jasig
+#url: http://www.jasig.org/umobile
+#image: launcherIcon.png
+#appid: org.jasig.umobile.app
+#desc: uMobile native campus application
 #type: ipad
 #guid: 7ec91aa8-a9a7-4cc6-95a8-9e078be9fdfc

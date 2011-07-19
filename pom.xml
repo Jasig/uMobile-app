@@ -40,6 +40,12 @@
                         <exclude>LICENSE</exclude>
                         <exclude>NOTICE</exclude>
                         <exclude>NOTICE.template</exclude>
+                        <exclude>api.jsca</exclude>
+                        <exclude>manifest</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>**/*.pdf</exclude>
+                        <exclude>**/*.psd</exclude>
+                        <exclude>**/*.sqlite</exclude>
                     </excludes>
                     <mapping>
                         <channel>XML_STYLE</channel>
