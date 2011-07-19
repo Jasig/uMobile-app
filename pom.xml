@@ -42,6 +42,7 @@
                         <exclude>NOTICE.template</exclude>
                         <exclude>api.jsca</exclude>
                         <exclude>manifest</exclude>
+                        <exclude>Resources/js/gibberishAES.js</exclude>
                         <exclude>**/*.json</exclude>
                         <exclude>**/*.pdf</exclude>
                         <exclude>**/*.psd</exclude>
@@ -53,6 +54,14 @@
                         <tag>DYNASCRIPT_STYLE</tag>
                         <xjb>XML_STYLE</xjb>
                     </mapping>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jasig.maven</groupId>
+                <artifactId>maven-notice-plugin</artifactId>
+                <configuration>
+                    <noticeTemplate>NOTICE.template</noticeTemplate>
+                    <generateChildNotices>false</generateChildNotices>
                 </configuration>
             </plugin>
         </plugins>
