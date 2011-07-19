@@ -1,8 +1,8 @@
-#appname:uMobile
-#publisher:athena
-#url:http://www.jasig.org/uportal
-#image:appicon.png
-#appid:org.jasig.portal.mobile.app
-#desc:No description provided
-#type:mobile
-#guid:816feaf8-ed07-4946-ae88-88daada5e299
+#appname: uMobile
+#publisher: athena
+#url: http://
+#image: appicon.png
+#appid: org.jasig.portal.mobile
+#desc: undefined
+#type: ipad
+#guid: 7ec91aa8-a9a7-4cc6-95a8-9e078be9fdfc

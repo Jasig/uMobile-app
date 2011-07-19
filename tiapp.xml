@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
     <deployment-targets>
-        <target device="mobileweb">true</target>
-        <target device="blackberry">false</target>
+        <target device="mobileweb">false</target>
         <target device="iphone">true</target>
         <target device="ipad">true</target>
         <target device="android">true</target>
+        <target device="blackberry">false</target>
     </deployment-targets>
-    <property name="ti.android.compilejs" type="bool">false</property>
-<id>org.jasig.portal.mobile.app</id>
-<name>uMobile</name>
-<version>1.0</version>
-<publisher>Jasig</publisher>
-<url>http://www.jasig.org/uportal</url>
-<description>No description provided</description>
-<copyright>2011 by Jasig</copyright>
-<icon>launcherIcon.png</icon>
+    <id>org.jasig.umobile.app</id>
+    <name>uMobile</name>
+    <version>1.0-SNAPSHOT</version>
+    <publisher>Jasig</publisher>
+    <url>http://</url>
+    <description>uMobile native campus application</description>
+    <copyright>2011 by Jasig</copyright>
+    <icon>launcherIcon.png</icon>
     <persistent-wifi>false</persistent-wifi>
     <prerendered-icon>false</prerendered-icon>
     <statusbar-style>default</statusbar-style>
     <statusbar-hidden>false</statusbar-hidden>
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
-    <analytics>false</analytics>
-<guid>816feaf8-ed07-4946-ae88-88daada5e299</guid>
+    <analytics>true</analytics>
+    <guid>7ec91aa8-a9a7-4cc6-95a8-9e078be9fdfc</guid>
 	<iphone>
 		<orientations device="iphone">
 			<orientation>Ti.UI.PORTRAIT</orientation>
-			<orientation>Ti.UI.UPSIDE_PORTRAIT</orientation>
-			<orientation>Ti.UI.LANDSCAPE_LEFT</orientation>
-			<orientation>Ti.UI.LANDSCAPE_RIGHT</orientation>
 		</orientations>
 		<orientations device="ipad">
 			<orientation>Ti.UI.PORTRAIT</orientation>
@@ -39,25 +35,7 @@
 		</orientations>
 	</iphone>
 	<android xmlns:android="http://schemas.android.com/apk/res/android">
-	    <tool-api-level>8</tool-api-level>
-<manifest android:installLocation="auto" android:versionCode="1" android:versionName="1.0">
-	<uses-sdk android:minSdkVersion="7"/>
-	<supports-screens android:anyDensity="false" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
-	<!-- TI_MANIFEST -->
-    
-    	<activity android:alwaysRetainTaskState="true" android:configChanges="keyboardHidden|orientation" android:label="uMobile" android:name=".UmobileActivity" android:theme="@style/Theme.Titanium">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
-</manifest>
 	</android>
 	<modules>
 	</modules>
-	<!--<property name="ti.android.google.map.api.key.development">0escd7sb9r7ANiGsleMWaKbpiwLO1Hm8Bl38jjg</property>-->
-	<property name="ti.android.google.map.api.key.development">0ZnKXkWA2dIAu2EM-OV4ZD2lJY3sEWE5TSgjJNg</property>
-	<!--<property name="ti.android.google.map.api.key.production">GET_ME_FROM_GOOGLE</property>-->
-	
 </ti:app>
