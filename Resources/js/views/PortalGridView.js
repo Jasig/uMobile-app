@@ -71,9 +71,10 @@ var PortalGridView = function (facade) {
     };
     
     this.getGridView = function (options) {
-        if (didLayoutCleanup) {
+        if (didLayoutCleanup || !_gridView) {
             _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
         }
+        rearrangeGrid();
         return _gridView;
     };
     
@@ -185,7 +186,25 @@ var PortalGridView = function (facade) {
     rearrangeGrid = function (e) {
         var _gridItem;
         Ti.API.debug("rearrangeGrid() in PortalGridView");
-        _gridView.height = User.isGuestUser() ? Styles.homeGrid.height - Styles.homeGuestNote.height : Styles.homeGrid.height;
+        if (User.isGuestUser()) {
+            Ti.API.debug("User.isGuestUser() in rearrangeGrid()");
+            if (Device.isAndroid()) {
+                _gridView.height = Ti.Platform.displayCaps.platformHeight - Styles.titleBar.height - Styles.homeGuestNote.height - 25; //20 is the height of the status bar
+            }
+            else {
+                _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - Styles.titleBar.height - Styles.homeGuestNote.height;
+            }
+        }
+        else {
+            Ti.API.debug("!User.isGuestUser() in rearrangeGrid()");
+            if (Device.isAndroid()) {
+                _gridView.height = Ti.Platform.displayCaps.platformHeight - Styles.titleBar.height - 25;//20 is the size of the status bar.
+            }
+            else {
+                _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - Styles.titleBar.height;
+            }
+            
+        }
         
         for (_gridItem in _gridItems) {
             if (_gridItems.hasOwnProperty(_gridItem)) {

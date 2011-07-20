@@ -54,9 +54,15 @@ var WindowManager = function (facade) {
             
             if (activityStack.length > 0) {
                 Ti.API.debug("Passes condition: activityStack.length > 0");
-                applicationWindows[_self.getCurrentWindow()].close();
+                if (!applicationWindows[windowKey].isModal) {
+                    //If the new window is a modal, it would look bad for the previous window to be black
+                    //when the modal is in opening/closing transitions
+                    applicationWindows[_self.getCurrentWindow()].close();
+                }
             }
-            applicationWindows[windowKey].open(portlet ? portlet : null );
+            if (!_self.getCurrentWindow().isModal) {
+                applicationWindows[windowKey].open(portlet ? portlet : null );
+            }
             
             activityStack.push(windowKey);
             Ti.App.Properties.setString('lastWindow', windowKey);

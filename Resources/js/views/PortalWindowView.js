@@ -116,7 +116,7 @@ var PortalWindowView = function (facade) {
         
         win.add(activityIndicator);
         
-        contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout }));
+        contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout, winHeight: win.height }));
         _self.showActivityIndicator();
         GridView.updateGrid(portlets);
         

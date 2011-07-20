@@ -30,6 +30,7 @@ var SettingsWindowController = function(facade){
 
     init = function () {
         _self.key = 'settings';
+        _self.isModal = true;
         Ti.App.addEventListener('updatestylereference', function (e) {
             Styles = app.styles;
         });
@@ -63,10 +64,12 @@ var SettingsWindowController = function(facade){
         win = Titanium.UI.createWindow({
             url: 'js/views/WindowContext.js',
             exitOnClose: false, 
-            navBarHidden: true,
-            backgroundColor: Styles.backgroundColor,
-            modal: true
+            backgroundColor: Styles.backgroundColor
         });
+        if (Device.isIOS()) {
+            win.modal = true;
+            win.navBarHidden = true;
+        }
         win.open();
         
         titleBar = UI.createTitleBar({
