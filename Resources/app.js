@@ -30,6 +30,13 @@ Object.prototype.clone = function() {
     }
     return newObj;
 };
+if (typeof Object.create !== 'function') {
+    Object.create = function (o) {
+        function F() {}
+        F.prototype = o;
+        return new F();
+    };
+}
 
 var app, loadingWindow, WindowManager, startup, onOrientationChange;
 

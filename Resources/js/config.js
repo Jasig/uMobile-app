@@ -35,7 +35,7 @@ var ConfigModule = function (app) {
     // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
     // trailing slash.
     this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    // this.BASE_PORTAL_URL = 'http://umobile.unicon.net';
+    // this.BASE_PORTAL_URL = 'http://172.16.66.198:8080';
     this.PORTAL_CONTEXT = '';
 
     //------- AUTHENTICATION -------
@@ -97,12 +97,12 @@ var ConfigModule = function (app) {
     	url: 'http://mobile.lib.uchicago.edu/',
     	externalModule: true
     };
-    this.LOCAL_MODULES.info = {
-    	title: 'info',
-    	fname: 'info',
-    	url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html?portal-url='+ this.BASE_PORTAL_URL).nativePath,
-    	externalModule: true
-    };
+    // this.LOCAL_MODULES.info = {
+    //  title: 'info',
+    //  fname: 'info',
+    //  url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html?portal-url='+ this.BASE_PORTAL_URL).nativePath,
+    //  externalModule: true
+    // };
     
     this.getLocalModules = function () {
         return this.LOCAL_MODULES;

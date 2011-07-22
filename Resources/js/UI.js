@@ -17,10 +17,11 @@
  * under the License.
  */
 var UI = function (facade) {
-    var _self = this, app=facade, init, Device, Styles, WindowManager, SettingsWindow, PortalWindow, LocalDictionary;
+    var _self = this, app=facade, init, Device, Styles, WindowManager, SettingsWindow, PortalWindow, PortletWindow, LocalDictionary;
     
     init = function () {
         Device = app.models.deviceProxy;
+        Config = app.config;
         Styles = app.styles;
         WindowManager = app.models.windowManager;
         LocalDictionary = app.localDictionary;
@@ -68,16 +69,19 @@ var UI = function (facade) {
     this.createTitleBar = function (opts) {
         // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
         //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
-        var initTitleBar, title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, 
+        var initTitleBar, title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer,
             titleBar = Titanium.UI.createView(Styles.titleBar),
             labelStyle = Styles.titleBarLabel,
-            onSettingsClick, onSettingsPressDown, onSettingsPressUp, onHomeClick, onHomePressUp, onHomePressDown;
+            onSettingsClick, onSettingsPressDown, onSettingsPressUp, onHomeClick, onHomePressUp, onHomePressDown, onInfoClick, onInfoPressUp, onInfoPressDown;
         
         if (!SettingsWindow) {
             SettingsWindow = app.controllers.settingsWindowController;
         }
         if (!PortalWindow) {
             PortalWindow = app.controllers.portalWindowController;
+        }
+        if (!PortletWindow) {
+            PortletWindow = app.controllers.portletWindowController;
         }
 
         initTitleBar = function () {
@@ -111,6 +115,18 @@ var UI = function (facade) {
                 homeButtonContainer.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onHomePressUp);
 
             }
+            if (opts.infoButton && !opts.homeButton) {
+                infoButtonContainer = Titanium.UI.createView(Styles.titleBarInfoContainer);
+                titleBar.add(infoButtonContainer);
+                
+                infoButton = Titanium.UI.createImageView(Styles.titleBarInfoButton);
+                infoButtonContainer.add(infoButton);
+                
+                infoButtonContainer.addEventListener('singletap', onInfoClick);
+                infoButtonContainer.addEventListener('touchstart', onInfoPressDown);
+                infoButtonContainer.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onInfoPressUp);
+            }
+            
             if (opts.settingsButton) {
                 settingsButtonContainer = Titanium.UI.createView(Styles.titleBarSettingsContainer);
                 titleBar.add(settingsButtonContainer);
@@ -151,9 +167,38 @@ var UI = function (facade) {
             }
         };
 
+        onInfoPressUp = function (e) {
+            infoButtonContainer.backgroundColor = Styles.titleBarInfoContainer.backgroundColor;
+        };
+        
+        onInfoClick = function (e) {
+            Ti.API.debug("Info button clicked in GenericTitleBar");
+            WindowManager.openWindow(PortletWindow.key, {
+                fname: 'info',
+                externalModule: true,
+                title: LocalDictionary.info,
+                url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html').nativePath
+            });
+        };
+
+        onInfoPressDown = function (e) {
+            var timeUp;
+
+            infoButtonContainer.backgroundColor = Styles.titleBarInfoContainer.backgroundColorPressed;
+            if (Device.isAndroid()) {
+                //Because Android doesn't consistently register touchcancel or touchend, especially
+                //when the window changes in the middle of a press
+                timeUp = setTimeout(function(){
+                    infoButtonContainer.backgroundColor = Styles.titleBarInfoContainer.backgroundColor;
+                    clearTimeout(timeUp);
+                }, 1000);
+            }
+        };
+
         onHomePressUp = function (e) {
             homeButtonContainer.backgroundColor = Styles.titleBarHomeContainer.backgroundColor;
         };
+        
         onSettingsClick = function (e) {
             WindowManager.openWindow(SettingsWindow.key);
         };

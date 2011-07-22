@@ -79,53 +79,56 @@ var PortalWindowView = function (facade) {
                 win.addEventListener('focus', onWindowFocus);
                 win.addEventListener('android:search', onAndroidSearch);
             }
+            
+            if (!GridView) {
+                Ti.include('js/views/PortalGridView.js');
+                GridView = new PortalGridView(app);
+            }
+
+            contentLayer = Ti.UI.createView(Styles.portalContentLayer);
+            win.add(contentLayer);
+
+            if (options.isGuestLayout) {
+                Ti.API.debug("Is guest layout");
+                isGuestLayout = true;
+                addGuestLayoutIndicator();
+            }
+            else {
+                Ti.API.debug("Not guest layout");
+                isGuestLayout = false;
+            }
+            if (!activityIndicator || Device.isIOS()) {
+                activityIndicator = UI.createActivityIndicator();
+            }
+            else {
+                try {
+                    win.remove(activityIndicator);
+                }
+                catch (err) {
+                    Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
+                }            
+            }
+
+            win.add(activityIndicator);
+
+            contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout, winHeight: win.height }));
+            _self.showActivityIndicator();
+            GridView.updateGrid(portlets);
+
+            titleBar = UI.createTitleBar({
+        	    title: LocalDictionary.homeTitle,
+        	    settingsButton: true,
+        	    homeButton: false,
+        	    infoButton: true
+        	});
+            win.add(titleBar);
         }
         else if (win && !win.visible) {
             Ti.API.debug("Just show the portal window");
             win.show();
         }
         
-        if (!GridView) {
-            Ti.include('js/views/PortalGridView.js');
-            GridView = new PortalGridView(app);
-        }
         
-        contentLayer = Ti.UI.createView(Styles.portalContentLayer);
-        win.add(contentLayer);
-        
-        if (options.isGuestLayout) {
-            Ti.API.debug("Is guest layout");
-            isGuestLayout = true;
-            addGuestLayoutIndicator();
-        }
-        else {
-            Ti.API.debug("Not guest layout");
-            isGuestLayout = false;
-        }
-        if (!activityIndicator || Device.isIOS()) {
-            activityIndicator = UI.createActivityIndicator();
-        }
-        else {
-            try {
-                win.remove(activityIndicator);
-            }
-            catch (err) {
-                Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
-            }            
-        }
-        
-        win.add(activityIndicator);
-        
-        contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout, winHeight: win.height }));
-        _self.showActivityIndicator();
-        GridView.updateGrid(portlets);
-        
-        titleBar = UI.createTitleBar({
-    	    title: LocalDictionary.homeTitle,
-    	    settingsButton: true,
-    	    homeButton: false
-    	});
-        win.add(titleBar);
     	
         if (options.firstLoad) {
             _self.showActivityIndicator(LocalDictionary.gettingPortlets);

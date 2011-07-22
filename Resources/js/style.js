@@ -191,6 +191,19 @@ var Styles = function (facade) {
             backgroundColorPressed: "#999",
             left: 5
         },
+        titleBarInfoContainer: {
+            width: 40,
+            height: 30,
+            borderRadius: 5,
+            backgroundColor: 'transparent',
+            backgroundColorPressed: '#999',
+            left: 5
+        },
+        titleBarInfoButton: {
+            image: "images/tab-info.png",
+            width: 20,
+            height: 20
+        },
         //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
         titleBarHomeButton: {
             image: "images/tab-home.png",

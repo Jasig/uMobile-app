@@ -28,6 +28,7 @@ localDictionary.en_US = {
     search: "Search",
     go: "Go",
     back: "Back",
+    info: "Info",
     error: "Error",
     OK: "OK",
     update: "Update",
