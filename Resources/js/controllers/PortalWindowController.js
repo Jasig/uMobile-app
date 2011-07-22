@@ -26,7 +26,7 @@
 * @constructor
 */
 var PortalWindowController = function (facade) {
-    var win, app = facade, _self = this, init, Portal, PortalView, WindowManager, User,
+    var win, app = facade, _self = this, init, Portal, PortalView, WindowManager, User, Device, Sessions, LoginProxy,
         initialized, 
         onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError, onAndroidSearchClick,
         onWindowFocus, onAppWindowOpening, onAppWindowOpened, 
@@ -37,10 +37,13 @@ var PortalWindowController = function (facade) {
         _self.key = 'home';
         
         //Pointers to Facade members
+        Device = app.models.deviceProxy;
         Portal = app.models.portalProxy;
         LocalDictionary = app.localDictionary;
         WindowManager = app.models.windowManager;
         SettingsWindow = app.controllers.settingsWindowController;
+        Sessions = app.models.sessionProxy;
+        LoginProxy = app.models.loginProxy;
         User = app.models.userProxy;
 
     	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
@@ -57,6 +60,18 @@ var PortalWindowController = function (facade) {
     
     this.open = function () {
         Ti.API.debug("open() in PortalWindowController");
+        
+        // This will determine if a network session exists, and what 
+        // window was open last time the app closed, and will manage the process
+        // of establishing a session and opening the window.
+        if (!app.models.deviceProxy.checkNetwork()) {
+            Ti.App.fireEvent('networkConnectionError');
+            return;
+        }
+        else if (!Sessions.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
+            app.models.loginProxy.establishNetworkSession();
+        }
+
         if (!PortalView) {
             Titanium.include('js/views/PortalWindowView.js');
             PortalView = new PortalWindowView(app);
@@ -65,6 +80,7 @@ var PortalWindowController = function (facade) {
         else {
             PortalView.open( Portal.getPortlets(), { isGuestLayout: User.isGuestUser() });
         }
+        
     };
     
     this.close = function () {
@@ -91,7 +107,13 @@ var PortalWindowController = function (facade) {
             Portal.getPortletsForUser();
         }
         else if (!e.user) {
-            PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+            if (Device.checkNetwork()) {
+                PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+            }
+            else {
+                Ti.App.fireEvent('networkConnectionError');
+            }
+            
         }
     };
     

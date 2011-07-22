@@ -40,6 +40,7 @@ localDictionary.en_US = {
     failedToLoadPortlets: "Failed to connect to server to load portlets. Please try again later.",
     searching: "Searching",
     noResults: "No Results",
+    noNetworkTitle: "No Network Connection",
     errorPerformingSearch: "There was an error while performing your search request.",
     searchResults: "Search Results",
     noSearchResults: "No results matched your search",

@@ -115,11 +115,7 @@ startup = function (e) {
     
     WindowManager.openWindow(app.controllers.portalWindowController.key);
 
-    // This will determine if a network session exists, and what 
-    // window was open last time the app closed, and will manage the process
-    // of establishing a session and opening the window.
-    app.models.deviceProxy.checkNetwork();
-    app.models.loginProxy.establishNetworkSession();
+    
     
     if (app.models.deviceProxy.isIOS()) {
         Titanium.Gesture.addEventListener('orientationchange', onOrientationChange);

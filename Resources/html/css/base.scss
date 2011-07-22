@@ -1,0 +1,73 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	line-height: 24px;
+	margin:0;
+	padding: 0;
+	background-color: rgb(67,101,175);
+}
+
+div.wrapper {
+	/*background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.05, rgb(67, 101, 175)),
+        color-stop(0.10, rgb(255,255,255)),
+        color-stop(0.90, rgb(255,255,255)),
+        color-stop(0.95, rgb(67, 101, 175))
+        
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(67, 101, 175) 0%,
+        rgb(255, 255, 255) 10%,
+        rgb(255, 255, 255) 90%, 
+        rgb(67, 101, 175) 100%
+    );*/
+}
+
+header {
+	height: 70px;
+	text-align:center;
+	.logo {
+	    margin: 15px auto 0;
+	}
+}
+
+.text {
+	background-color: rgb(255, 255, 255);
+	margin: 0 10px;
+	padding:10px 15px;
+	-moz-box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+	box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.5);
+	border-radius: 10px;
+	
+	.button {
+	    display         : block;
+	    padding         : 5px;
+	    margin          : 10px;
+	    color           : rgb(67, 101, 175);
+	    font-weight     : bold;
+	    text-decoration : none;
+	    text-align      : center;
+	    border-radius   : 10px;
+	    border          : 2px solid rgb(67, 101, 175);
+	    &:active {
+	        color           : #fff;
+	        background-color: rgb(67, 101, 175);
+	    }
+	}
+}
+footer {
+	text-align: center;
+	color: #fff;
+	padding: 20px 10px;
+	margin: 0;
+}
+
+a.jasig-link {
+	text-align: center;
+	color: #fff;
+}

@@ -17,13 +17,15 @@
  * under the License.
  */
 var WindowManager = function (facade) {
-    var app=facade, init, hidePreviousWindow, _self = this, PortalWindow, PortletWindow,
+    var app=facade, init, hidePreviousWindow, _self = this, PortalWindow, PortletWindow, LocalDictionary,
     applicationWindows = [], activityStack = [], saveLastWindow,
-        onAndroidBack, onShowWindow, onShowPortlet, ensureOpenTimer;
+        onAndroidBack, onShowWindow, onShowPortlet, onNetworkConnectionError, ensureOpenTimer;
 
     init = function () {
+        LocalDictionary = app.localDictionary;
         Ti.App.addEventListener('showWindow', onShowWindow);
         Ti.App.addEventListener('showPortlet', onShowPortlet);
+        Ti.App.addEventListener('networkConnectionError', onNetworkConnectionError);
     };
     
     this.addWindow = function (windowParams) {
@@ -155,6 +157,14 @@ var WindowManager = function (facade) {
     //Event Handlers
     onAndroidBack = function (e) {
         _self.goBack();
+    };
+    
+    onNetworkConnectionError = function (e) {
+        _self.openWindow(PortletWindow.key, {
+            title: LocalDictionary.noNetworkTitle,
+            fname: 'nonetwork',
+            url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/no-network-en_US.html').nativePath
+        });
     };
     
     onShowWindow = function (e) {

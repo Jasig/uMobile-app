@@ -25,12 +25,12 @@ var DeviceProxy = function (facade) {
     
     this.checkNetwork = function() {
         if (!Ti.Network.online) {
-            alertDialog = Titanium.UI.createAlertDialog({
+            /*alertDialog = Titanium.UI.createAlertDialog({
                 title: LocalDictionary.error,
                 message: LocalDictionary.networkConnectionRequired,
                 buttonNames: [LocalDictionary.OK]
             });
-            alertDialog.show();
+            alertDialog.show();*/
             Ti.API.debug("Network is offline");
             return false;
         } else {
