@@ -68,8 +68,8 @@ var DirectoryProxy = function (facade,opts) {
     
     doXhrSearch = function (query) {
         var url, separator;
-        Ti.API.info("query: " + query);
-        query = '%' + query.replace(' ', '%') + '%';
+     
+
         url = Config.DIRECTORY_SERVICE_URL;
         separator = '?';
         
@@ -85,12 +85,14 @@ var DirectoryProxy = function (facade,opts) {
 
         xhrSearchClient.open('GET', url);
         xhrSearchClient.send();
+        
         Ti.App.fireEvent('DirectoryProxySearching');
     };
     
     onXhrSearchLoad = function (e) {
         //When the search is complete, reset the main people array
         Ti.App.fireEvent('SessionActivity', {context: Login.sessionTimeContexts.NETWORK});
+
         people = [];
         (function() {
             try {
