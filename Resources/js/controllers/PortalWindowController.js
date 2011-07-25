@@ -27,9 +27,9 @@
 */
 var PortalWindowController = function (facade) {
     var win, app = facade, _self = this, init, Portal, PortalView, WindowManager, User, Device, Sessions, LoginProxy,
-        initialized, 
+        initialized, _newNetworkDowntime = true,
         onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError, onAndroidSearchClick,
-        onWindowFocus, onAppWindowOpening, onAppWindowOpened, 
+        onWindowFocus, onAppWindowOpening, onAppWindowOpened, onPortalDownNotificationClicked,
         pathToRoot = '../../';
 
     init = function () {
@@ -52,6 +52,7 @@ var PortalWindowController = function (facade) {
         Ti.App.addEventListener('OpeningNewWindow', onAppWindowOpening);
         Ti.App.addEventListener('NewWindowOpened', onAppWindowOpened);
         Ti.App.addEventListener('EstablishNetworkSessionSuccess', onNetworkSessionSuccess);
+        Ti.App.addEventListener('PortalDownNotificationClicked', onPortalDownNotificationClicked);
         Ti.App.addEventListener('EstablishNetworkSessionFailure', onNetworkSessionFailure);
         Ti.App.addEventListener('HomeAndroidSearchButtonClicked', onAndroidSearchClick);
         
@@ -98,6 +99,7 @@ var PortalWindowController = function (facade) {
     };
     
     onNetworkSessionSuccess = function (e) {
+        _newNetworkDowntime = true;
         Portal.getPortletsForUser();
     };
     
@@ -110,7 +112,10 @@ var PortalWindowController = function (facade) {
         if (!e.user) {
             Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + Portal.getIsPortalReachable());
             if (Device.checkNetwork()) {
-                PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+                if (_newNetworkDowntime) {
+                    PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+                    _newNetworkDowntime = false;
+                }
                 PortalView.updateModules( Portal.getPortlets(), {
                     isPortalReachable: Portal.getIsPortalReachable()
                 });
@@ -135,7 +140,12 @@ var PortalWindowController = function (facade) {
     
     onPortalProxyNetworkError = function (e) {
         //This event responds to any type of error in retrieving portlets from the sever.
-        PortalView.alert(LocalDictionary.error, e.message);
+        // PortalView.alert(LocalDictionary.error, e.message);
+    };
+    
+    onPortalDownNotificationClicked = function (e) {
+        _newNetworkDowntime = true;
+        LoginProxy.establishNetworkSession();
     };
     
     onAppWindowOpened = function (e) {

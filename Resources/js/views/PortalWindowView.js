@@ -231,7 +231,7 @@ var PortalWindowView = function (facade) {
         if (!_isPortalReachable) {
             guestNotificationView.addEventListener('click', function (e) {
                 Ti.API.info("Clicked portal notification, establishing network session");
-                Login.establishNetworkSession();
+                Ti.App.fireEvent('PortalDownNotificationClicked');
             });            
         }
         else {

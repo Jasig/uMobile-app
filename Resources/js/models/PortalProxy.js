@@ -220,7 +220,7 @@ var PortalProxy = function (facade) {
     };
     
     this.setIsPortalReachable = function (val) {
-        Ti.APIAPI.debug('setIsPortalReachable() in PortalProxy. val: ' + val);
+        Ti.API.debug('setIsPortalReachable() in PortalProxy. val: ' + val);
         if (typeof val == "boolean") {
             _isPortalReachable = val;
         }
