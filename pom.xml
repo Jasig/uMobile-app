@@ -49,10 +49,7 @@
                         <exclude>**/*.sqlite</exclude>
                     </excludes>
                     <mapping>
-                        <channel>XML_STYLE</channel>
-                        <portlet>XML_STYLE</portlet>
-                        <tag>DYNASCRIPT_STYLE</tag>
-                        <xjb>XML_STYLE</xjb>
+                        <scss>JAVADOC_STYLE</scss>
                     </mapping>
                 </configuration>
             </plugin>
