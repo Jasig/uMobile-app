@@ -34,8 +34,7 @@ var ConfigModule = function (app) {
     // Base url of the portal, which should be of the format
     // http[s]://server[:port][/context]. This URL is *not* expected to contain a 
     // trailing slash.
-    // this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    this.BASE_PORTAL_URL = 'http://172.16.66.198:8080';
+    this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
     this.PORTAL_CONTEXT = '';
 
     //------- AUTHENTICATION -------
@@ -132,12 +131,16 @@ var ConfigModule = function (app) {
 
     this.directoryEmergencyContacts = [
         { 
-            displayName: ["Westin Bonaventure Hotel and Suites"],
-            telephoneNumber: ['(866) 716-8137'],
-            postalAddress: ['404 South Figueroa Street$Los Angeles, CA 90071'],
-            url: ['http://www.starwoodhotels.com/westin/search/hotel_detail.html?propertyID=1004']
+            displayName: ['OU Police'],
+            telephoneNumber: ['(740) 593-1911'],
+            postalAddress: ['135 Scott Quadrangle$Athens, OH 45701'],
+            url: ['http://www.ohio.edu/police/alerts/']
+        },
+        { 
+            displayName: ['Fire'],
+            telephoneNumber: ['911']
         }
     ];
     
-    this.phoneDirectoryNumber = "602 555 5555";
+    this.phoneDirectoryNumber = "(740) 593-1000";
 };
