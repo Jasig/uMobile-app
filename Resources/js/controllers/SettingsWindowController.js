@@ -188,8 +188,10 @@ var SettingsWindowController = function(facade){
         win.add(settingsTable);
         settingsTable.addEventListener('click', function (e) {
             Ti.API.info("Settings table click, source is " + e.source);
-            // usernameInput.blur();
-            passwordInput.blur();
+            if (Device.isIOS() && e.source !== usernameInput && e.source !==passwordInput) {
+                usernameInput.blur();
+                passwordInput.blur();
+            }
         });
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             usernameInput.width = Styles.settingsUsernameInput.width;
