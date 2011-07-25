@@ -27,6 +27,7 @@
 * @constructor
 */
 var ConfigModule = function (app) {
+    var ILocalModule;
     Titanium.App.Properties.setString('locale','en_US');
     
     //------- PORTAL LOCATION -------
@@ -71,7 +72,17 @@ var ConfigModule = function (app) {
         organization: 'organization'
     };
     
+    ILocalModule = {
+        title               : "",       // Req string, Shows at the top of the module window
+        fname               : "",       // Req String, unique ID
+        window              : "",       // Opt String, Key of native window associated with this module
+        doesRequireLayout   : false,    // Opt Bool, Indicates if portlet with matching fname must be returned from portal for this to be displayed.
+        externalModule      : false,    // Opt Bool, Indicates if it's an external site. Requires url attribute as well.
+        url                 : ""        // Opt String, URL of module. Uses PortletWindowController if set.
+    };
+    
     this.LOCAL_MODULES = [];
+    
     this.LOCAL_MODULES.map = {
         title: 'map',
         fname: 'map',
@@ -84,18 +95,21 @@ var ConfigModule = function (app) {
         doesRequireLayout: true,
         window: 'directory'
     };
+    
     this.LOCAL_MODULES.transit = {
     	title: 'Transit',
     	fname: 'transit',
     	url: 'http://uchicago.transloc.com/m/',
     	externalModule: true
     };
+    
     this.LOCAL_MODULES.library = {
     	title: "Library",
     	fname: "library",
     	url: 'http://mobile.lib.uchicago.edu/',
     	externalModule: true
     };
+    
     // this.LOCAL_MODULES.info = {
     //  title: 'info',
     //  fname: 'info',
@@ -131,16 +145,12 @@ var ConfigModule = function (app) {
 
     this.directoryEmergencyContacts = [
         { 
-            displayName: ['OU Police'],
-            telephoneNumber: ['(740) 593-1911'],
-            postalAddress: ['135 Scott Quadrangle$Athens, OH 45701'],
-            url: ['http://www.ohio.edu/police/alerts/']
-        },
-        { 
-            displayName: ['Fire'],
-            telephoneNumber: ['911']
+            displayName: ["Westin Bonaventure Hotel and Suites"],
+            telephoneNumber: ['(866) 716-8137'],
+            postalAddress: ['404 South Figueroa Street$Los Angeles, CA 90071'],
+            url: ['http://www.starwoodhotels.com/westin/search/hotel_detail.html?propertyID=1004']
         }
     ];
     
-    this.phoneDirectoryNumber = "(740) 593-1000";
+    this.phoneDirectoryNumber = "602 555 5555";
 };

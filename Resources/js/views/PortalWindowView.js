@@ -27,16 +27,17 @@
 * @implements {IWindowView}
 */
 var PortalWindowView = function (facade) {
-    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView,
-    portlets, isGuestLayout, _state,
+    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView, Login,
+    portlets, _isGuestLayout = false, _isPortalReachable = true,  _state,
     win, contentLayer, gridView,
     titleBar, activityIndicator, guestNotificationView,
-    createWindow, createContentLayer, createGridView, drawChrome, addGuestLayoutIndicator,
+    createWindow, createContentLayer, createGridView, drawChrome, addSpecialLayoutIndicator,
     onPortalGridViewStateChange, onDimensionChanges, onAndroidSearch, onWindowFocus;
     
     init = function () {
         Styles = app.styles;
         UI = app.UI;
+        Login = app.models.loginProxy;
         Portal = app.models.portalProxy;
         Device = app.models.deviceProxy;
         LocalDictionary = app.localDictionary;
@@ -87,16 +88,12 @@ var PortalWindowView = function (facade) {
 
             contentLayer = Ti.UI.createView(Styles.portalContentLayer);
             win.add(contentLayer);
-
-            if (options.isGuestLayout) {
-                Ti.API.debug("Is guest layout");
-                isGuestLayout = true;
-                addGuestLayoutIndicator();
+            
+            _isGuestLayout = options.isGuestLayout || false;
+            if (_isGuestLayout) {
+                addSpecialLayoutIndicator();
             }
-            else {
-                Ti.API.debug("Not guest layout");
-                isGuestLayout = false;
-            }
+            
             if (!activityIndicator || Device.isIOS()) {
                 activityIndicator = UI.createActivityIndicator();
             }
@@ -111,7 +108,7 @@ var PortalWindowView = function (facade) {
 
             win.add(activityIndicator);
 
-            contentLayer.add(GridView.getGridView({isGuestLayout: isGuestLayout, winHeight: win.height }));
+            contentLayer.add(GridView.getGridView({isGuestLayout: _isGuestLayout, winHeight: win.height }));
             _self.showActivityIndicator();
             GridView.updateGrid(portlets);
 
@@ -167,23 +164,25 @@ var PortalWindowView = function (facade) {
     };
     
     this.updateModules = function (modules, options) {
-        Ti.API.debug("updateModules() in PortalWindowView");
-        if (options.isGuestLayout) {
-            isGuestLayout = true;
-        }
-        else {
-            isGuestLayout = false;
-        }
+        Ti.API.debug("updateModules() in PortalWindowView. options.isPortalReachable: " + options.isPortalReachable);
+        _isGuestLayout = options.isGuestLayout || false; //Defaults to false unless told otherwise
+        _isPortalReachable = options.isPortalReachable !== undefined ? options.isPortalReachable : _isPortalReachable;
+
         portlets = modules;
         if (WindowManager.getCurrentWindow() === PortalWindow.key) {
             if (GridView) {
                 GridView.updateGrid(portlets);
-                _self.showActivityIndicator();
+                // _self.showActivityIndicator(); //This should be quick enough that an indicator is not necessary
             }
         }
-        if (isGuestLayout) {
-            addGuestLayoutIndicator();
+        Ti.API.debug("Is portal reachable in updateModules? " + _isPortalReachable);
+        if (_isGuestLayout || !_isPortalReachable) {
+            addSpecialLayoutIndicator();
         }
+        else {
+            Ti.API.debug("No need to add specialLayoutIndicator in PortalWindowView > updateModules(). _isGuestLayout: " + _isGuestLayout + " & _isPortalReachable: " + _isPortalReachable );
+        }
+        _self.hideActivityIndicator();
     };
     
     this.showActivityIndicator = function (message) {
@@ -218,22 +217,29 @@ var PortalWindowView = function (facade) {
             }).show();
     };
     
-    addGuestLayoutIndicator = function () {
+    addSpecialLayoutIndicator = function () {
         var guestNotificationLabel;
         
         guestNotificationView = Ti.UI.createView(Styles.homeGuestNote);
         guestNotificationView.top = win.height - Styles.titleBar.height - Styles.homeGuestNote.height;
         
         guestNotificationLabel = Ti.UI.createLabel(Styles.homeGuestNoteLabel);
-        guestNotificationLabel.text = LocalDictionary.viewingGuestLayout;
+        guestNotificationLabel.text = _isPortalReachable ? LocalDictionary.viewingGuestLayout : LocalDictionary.portalNotReachable;
         guestNotificationView.add(guestNotificationLabel);
         
         contentLayer.add(guestNotificationView);
-        
-        guestNotificationView.addEventListener('click', function (e){
-            Ti.API.info("Clicked guest notification, opening settings");
-            WindowManager.openWindow(SettingsWindow.key);
-        });
+        if (!_isPortalReachable) {
+            guestNotificationView.addEventListener('click', function (e) {
+                Ti.API.info("Clicked portal notification, establishing network session");
+                Login.establishNetworkSession();
+            });            
+        }
+        else {
+            guestNotificationView.addEventListener('click', function (e) {
+                Ti.API.info("Clicked guest notification, opening settings");
+                WindowManager.openWindow(SettingsWindow.key);
+            });
+        }
     };
     
     onAndroidSearch = function (e) {

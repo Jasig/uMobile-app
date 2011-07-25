@@ -218,6 +218,9 @@ var SettingsWindowController = function(facade){
                 Login.establishNetworkSession();
             }
         }
+        else {
+            Ti.App.fireEvent('networkConnectionError');
+        }
     };
     
     onSaveButtonPress = function(e) {

@@ -48,6 +48,7 @@ localDictionary.en_US = {
     networkConnectionRequired: "A network connection is required to use this application. Please connect to the internet and come back to this application.",
     couldNotConnectToPortal: "Sorry, your portlets could not be loaded from the portal.",
     viewingGuestLayout: "You are viewing the guest layout. Click here to log in.",
+    portalNotReachable: "Your modules couldn't be loaded. Click here to try again.",
     
     //Map Window & Map Detail Window
     map: "Map",

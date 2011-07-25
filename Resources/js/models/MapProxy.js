@@ -151,6 +151,9 @@ var MapProxy = function (facade) {
             request.open("GET", Config.MAP_SERVICE_URL);
             request.send();
         }
+        else {
+            Ti.App.fireEvent('networkConnectionError');
+        }
 
     };
     newPointsLoaded = function (e) {

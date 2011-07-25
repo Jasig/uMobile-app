@@ -78,7 +78,7 @@ var PortalWindowController = function (facade) {
             PortalView.open( [], { firstLoad: true });
         }
         else {
-            PortalView.open( Portal.getPortlets(), { isGuestLayout: User.isGuestUser() });
+            PortalView.open( Portal.getPortlets(), { isGuestLayout: User.isGuestUser(), isPortalReachable: Portal.getIsPortalReachable() });
         }
         
     };
@@ -103,12 +103,17 @@ var PortalWindowController = function (facade) {
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
-        if (e.user && e.user === 'guest') {
+        // if (e.user && e.user === 'guest') {
             Portal.getPortletsForUser();
-        }
-        else if (!e.user) {
+        // }
+        // else if (!e.user) {
+        if (!e.user) {
+            Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + Portal.getIsPortalReachable());
             if (Device.checkNetwork()) {
                 PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+                PortalView.updateModules( Portal.getPortlets(), {
+                    isPortalReachable: Portal.getIsPortalReachable()
+                });
             }
             else {
                 Ti.App.fireEvent('networkConnectionError');
@@ -125,7 +130,7 @@ var PortalWindowController = function (facade) {
     };
     
     onPortletsLoaded = function (e) {
-        PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: User.isGuestUser()});
+        PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: User.isGuestUser(), isPortalReachable: Portal.getIsPortalReachable() });
     };
     
     onPortalProxyNetworkError = function (e) {

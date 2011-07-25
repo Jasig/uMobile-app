@@ -21,7 +21,7 @@
 */
 var PortalProxy = function (facade) {
     var app = facade, _self = this, WindowManager, PortletWindow, Resources, Config, LocalDictionary,
-    portlets = [], sortPortlets, loadPortletList, init, _isGuestLayout,
+    portlets = [], sortPortlets, loadPortletList, init, _isGuestLayout, _isPortalReachable = false,
     pathToRoot = '../../';
     
     init = function () {
@@ -117,6 +117,7 @@ var PortalProxy = function (facade) {
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
                 var responseJSON, nativeModules = Config.getLocalModules(), module;
+                _self.setIsPortalReachable(true);
                 responseJSON = JSON.parse(layoutClient.responseText);
                 portlets = responseJSON.layout;
                 
@@ -160,7 +161,37 @@ var PortalProxy = function (facade) {
             };
 
             onGetPortletsError = function (e) {
+                Ti.API.debug("onGetPortletsError() in PortalProxy");
+                var nativeModules = Config.getLocalModules(), module;
+                
+                portlets = [];
+                
+                for (module in nativeModules) {
+                    if (nativeModules.hasOwnProperty(module)) {
+                        nativeModules[module].added = false;
+                    }
+                }
+                
+                for (module in nativeModules) {
+                    if (nativeModules.hasOwnProperty(module)) {
+                        Ti.API.info("Remaining module: " + JSON.stringify(nativeModules[module]));
+                        if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
+                            // As long as the module has a title, hasn't already been added, and doesn't 
+                            // require the fname for the module to be returned in the personalized layout.
+                            portlets.push(nativeModules[module]);
+                        }
+                        else {
+                            Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
+                        }                        
+                    }
+                }
+                
+                portlets.sort(sortPortlets);
+                Ti.App.fireEvent('PortalProxyPortletsLoaded', {user: ''});
+                _self.setIsPortalReachable(false);
                 Ti.App.fireEvent("PortalProxyNetworkError", {message: LocalDictionary.couldNotConnectToPortal});
+                Ti.API.debug("Should've fired event 'PortalProxyPortletsLoaded");
+                
             };
 
         // Send a request to uPortal's main URL to get a JSON representation of the
@@ -182,6 +213,20 @@ var PortalProxy = function (facade) {
         // Get the module list for this user from the portal server and create a 
         // layout based on this list.
         _portlets = loadPortletList();
+    };
+    
+    this.getIsPortalReachable = function () {
+        return _isPortalReachable;
+    };
+    
+    this.setIsPortalReachable = function (val) {
+        Ti.APIAPI.debug('setIsPortalReachable() in PortalProxy. val: ' + val);
+        if (typeof val == "boolean") {
+            _isPortalReachable = val;
+        }
+        else {
+            Ti.API.error("Couldn't set value of _isPortalReachable, wasn't type 'boolean' but was type: " + typeof val);
+        }
     };
     
     init();

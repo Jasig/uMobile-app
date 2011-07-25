@@ -78,8 +78,8 @@ var PortalGridView = function (facade) {
         return _gridView;
     };
     
-    this.updateGrid = function () {
-        var _portlets = Portal.getPortlets(), _item;
+    this.updateGrid = function (portlets) {
+        var _portlets = portlets || [], _item;
 
         /*
         * In this method, we're comparing portlets from the portalProxy (Portal) with our local 
@@ -88,6 +88,7 @@ var PortalGridView = function (facade) {
         * If not, we destroy them (which removes them from the view, and the _gridItems collection)
         * then we iterate through the latest correction from the portalProxy and add them if they don't exist.
         */
+        
         for (_item in _gridItems) {
             if (_gridItems.hasOwnProperty(_item)) {
                 for (var j=0, jLength = _portlets.length; j<jLength; j++) {
@@ -186,7 +187,7 @@ var PortalGridView = function (facade) {
     rearrangeGrid = function (e) {
         var _gridItem;
         Ti.API.debug("rearrangeGrid() in PortalGridView");
-        if (User.isGuestUser()) {
+        if (User.isGuestUser() || !Portal.getIsPortalReachable()) {
             Ti.API.debug("User.isGuestUser() in rearrangeGrid()");
             if (Device.isAndroid()) {
                 _gridView.height = Ti.Platform.displayCaps.platformHeight - Styles.titleBar.height - Styles.homeGuestNote.height - 25; //20 is the height of the status bar
