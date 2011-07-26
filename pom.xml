@@ -9,14 +9,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jasig.mobile.app</groupId>
     <artifactId>umobile-app</artifactId>
-    <version>1.0.0-RC1</version>
+    <version>1.0.0-RC2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>umobile-app</name>
 
     <scm>
-        <connection>scm:svn:https://source.jasig.org/sandbox/uMobile/tags/umobile-app-1.0.0-RC1</connection>
-        <developerConnection>scm:svn:https://source.jasig.org/sandbox/uMobile/tags/umobile-app-1.0.0-RC1</developerConnection>
-    </scm>
+        <connection>scm:svn:https://source.jasig.org/sandbox/uMobile/trunk</connection>
+        <developerConnection>scm:svn:https://source.jasig.org/sandbox/uMobile/trunk</developerConnection>
+      <url>https://developer.jasig.org/source/browse/jasigsvn/jasig-parent/tags/jasig-parent-31/umobile-app</url>
+  </scm>
 
     <build>
         <plugins>
