@@ -64,12 +64,14 @@ var SettingsWindowController = function(facade){
         win = Titanium.UI.createWindow({
             url: 'js/views/WindowContext.js',
             exitOnClose: false, 
-            backgroundColor: Styles.backgroundColor
+            backgroundColor: Styles.backgroundColor,
+            modal: true,
+            navBarHidden: true
         });
-        if (Device.isIOS()) {
+        /*if (Device.isIOS()) {
             win.modal = true;
             win.navBarHidden = true;
-        }
+        }*/
         win.open();
         
         titleBar = UI.createTitleBar({
@@ -79,6 +81,9 @@ var SettingsWindowController = function(facade){
         });
         
         win.add(titleBar);
+        if (Device.isAndroid()) {
+        	// titleBar.top += 24;
+        }
         createCredentialsForm();
         
         activityIndicator = UI.createActivityIndicator();
@@ -185,14 +190,17 @@ var SettingsWindowController = function(facade){
         
         settingsTable = Ti.UI.createTableView(Styles.settingsTable);
         settingsTable.setData([credentialsGroup]);
+        if (Device.isAndroid()) {
+        	settingsTable.top = titleBar.top + titleBar.height;
+        }
         win.add(settingsTable);
-        settingsTable.addEventListener('click', function (e) {
+        /*settingsTable.addEventListener('click', function (e) {
             Ti.API.info("Settings table click, source is " + e.source);
             if (Device.isIOS() && e.source !== usernameInput && e.source !==passwordInput) {
                 usernameInput.blur();
                 passwordInput.blur();
             }
-        });
+        })*/
         Titanium.App.addEventListener('dimensionchanges', function (e) {
             usernameInput.width = Styles.settingsUsernameInput.width;
             passwordInput.width = Styles.settingsPasswordInput.width;

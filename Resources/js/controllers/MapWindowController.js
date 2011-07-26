@@ -29,6 +29,7 @@ var MapWindowController = function(facade) {
     onProxySearching, onProxyLoading, onProxyLoaded, onProxySearchComplete, onProxyEmptySearch, onProxyLoadError, onWindowFocus, onWindowBlur, onAndroidSearch; 
 
     init = function() {
+        Ti.API.debug("init() in MapWindowController");
         _self.key = 'map';
     };
     

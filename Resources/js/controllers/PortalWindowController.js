@@ -33,6 +33,7 @@ var PortalWindowController = function (facade) {
         pathToRoot = '../../';
 
     init = function () {
+        Ti.API.debug("init() in PortalWindowController");
         //Assign the unique key
         _self.key = 'home';
         

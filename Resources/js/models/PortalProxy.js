@@ -20,7 +20,7 @@
 ** @constructor
 */
 var PortalProxy = function (facade) {
-    var app = facade, _self = this, WindowManager, PortletWindow, Resources, Config, LocalDictionary,
+    var app = facade, _self = this, WindowManager, PortletWindow, Resources, Config, LocalDictionary, Device,
     portlets = [], sortPortlets, loadPortletList, init, _isGuestLayout, _isPortalReachable = false,
     pathToRoot = '../../';
     
@@ -30,6 +30,7 @@ var PortalProxy = function (facade) {
         Resources = app.models.resourceProxy;
         Config = app.config;
         LocalDictionary = app.localDictionary;
+        Device = app.models.deviceProxy;
     };
     
     this.getShowPortletFunc = function (portlet) {
@@ -201,6 +202,9 @@ var PortalProxy = function (facade) {
             onload: onGetPortletsComplete,
             onerror: onGetPortletsError
         });
+        if (Device.isAndroid()) {
+            layoutClient.timeout = 15000;
+        }
         layoutClient.open('GET', layoutUrl, true);
         layoutClient.send();
     };

@@ -76,7 +76,7 @@ var ConfigModule = function (app) {
         title               : "",       // Req string, Shows at the top of the module window
         fname               : "",       // Req String, unique ID
         window              : "",       // Opt String, Key of native window associated with this module
-        doesRequireLayout   : false,    // Opt Bool, Indicates if portlet with matching fname must be returned from portal for this to be displayed.
+        doesRequireLayout   : false,    // Opt Bool, Indicates if portlet with matching fname must be returned from portal for this to be displayed. Implies also that the module works when portal is down/unavailable.
         externalModule      : false,    // Opt Bool, Indicates if it's an external site. Requires url attribute as well.
         url                 : ""        // Opt String, URL of module. Uses PortletWindowController if set.
     };
@@ -110,6 +110,7 @@ var ConfigModule = function (app) {
     	externalModule: true
     };
     
+    // This module is called manually from the title bar on the home screen.
     // this.LOCAL_MODULES.info = {
     //  title: 'info',
     //  fname: 'info',

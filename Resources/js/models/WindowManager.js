@@ -18,7 +18,7 @@
  */
 var WindowManager = function (facade) {
     var app=facade, init, hidePreviousWindow, _self = this, PortalWindow, PortletWindow, LocalDictionary,
-    applicationWindows = [], activityStack = [], saveLastWindow,
+    applicationWindows = new Array(), activityStack = [], saveLastWindow,
         onAndroidBack, onShowWindow, onShowPortlet, onNetworkConnectionError, ensureOpenTimer;
 
     init = function () {
@@ -50,10 +50,19 @@ var WindowManager = function (facade) {
             homeKey = PortalWindow.key,
             portletKey = PortletWindow.key;
         
+        
         if (applicationWindows[windowKey]) {
+            Ti.API.debug("if(applicationWindows[windowKey])");
             //Make sure the requested window exists, and that it isn't the current window.
-            Ti.App.fireEvent('OpeningNewWindow', {key: windowKey, portlet: portlet ? portlet : false});
-            
+            var _newWindowEvent = {
+                key: windowKey
+            };
+            if (portlet) {
+                _newWindowEvent.portlet = portlet;
+            }
+            Ti.App.fireEvent('OpeningNewWindow', _newWindowEvent);
+
+
             if (activityStack.length > 0) {
                 Ti.API.debug("Passes condition: activityStack.length > 0");
                 if (!applicationWindows[windowKey].isModal) {
@@ -62,16 +71,14 @@ var WindowManager = function (facade) {
                     applicationWindows[_self.getCurrentWindow()].close();
                 }
             }
+            
             if (!_self.getCurrentWindow().isModal) {
                 applicationWindows[windowKey].open(portlet ? portlet : null );
             }
-            
             activityStack.push(windowKey);
             Ti.App.Properties.setString('lastWindow', windowKey);
             
             if (portlet) {
-                Ti.API.debug("Passes condition: portlet");
-                Ti.API.debug("Adding portlet to lastPortlet: " + JSON.stringify(portlet));
                 Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
             }
             Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
