@@ -43,6 +43,7 @@
                         <exclude>api.jsca</exclude>
                         <exclude>manifest</exclude>
                         <exclude>Resources/js/gibberishAES.js</exclude>
+                        <exclude>Info.plist</exclude>
                         <exclude>**/*.json</exclude>
                         <exclude>**/*.pdf</exclude>
                         <exclude>**/*.psd</exclude>
