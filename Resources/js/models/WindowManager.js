@@ -17,7 +17,7 @@
  * under the License.
  */
 var WindowManager = function (facade) {
-    var app=facade, init, hidePreviousWindow, _self = this, PortalWindow, PortletWindow, LocalDictionary,
+    var app=facade, init, hidePreviousWindow, _self = this, PortalWindow, PortletWindow, LocalDictionary, Device,
     applicationWindows = new Array(), activityStack = [], saveLastWindow,
         onAndroidBack, onShowWindow, onShowPortlet, onNetworkConnectionError, ensureOpenTimer;
 
@@ -44,6 +44,9 @@ var WindowManager = function (facade) {
         if (!PortletWindow) {
             PortletWindow = app.controllers.portletWindowController;
         }
+        if (!Device) {
+            Device = app.models.deviceProxy;
+        }
         
         Ti.API.debug("openWindow() in WindowManager, key: " + windowKey);
         var callback, 
@@ -65,14 +68,14 @@ var WindowManager = function (facade) {
 
             if (activityStack.length > 0) {
                 Ti.API.debug("Passes condition: activityStack.length > 0");
-                if (!applicationWindows[windowKey].isModal) {
+                if ((Device.isIOS() && !applicationWindows[windowKey].isModal) || Device.isAndroid()) {
                     //If the new window is a modal, it would look bad for the previous window to be black
                     //when the modal is in opening/closing transitions
                     applicationWindows[_self.getCurrentWindow()].close();
                 }
             }
             
-            if (!_self.getCurrentWindow().isModal) {
+            if ((Device.isIOS() && !_self.getCurrentWindow().isModal) || Device.isAndroid()) {
                 applicationWindows[windowKey].open(portlet ? portlet : null );
             }
             activityStack.push(windowKey);
