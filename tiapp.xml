@@ -29,7 +29,7 @@
     </deployment-targets>
     <id>org.jasig.umobile.app</id>
     <name>uMobile</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC1</version>
     <publisher>Jasig</publisher>
     <url>http://www.jasig.org/umobile</url>
     <description>uMobile native campus application</description>
