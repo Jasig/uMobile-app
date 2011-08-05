@@ -17,15 +17,14 @@
  * under the License.
  */
 var UI = function (facade) {
-    var _self = this, app=facade, init, Device, Styles, WindowManager, SettingsWindow, PortalWindow, PortletWindow, LocalDictionary;
+    var _self = this, app=facade, init, Device, Styles, SettingsWindow, PortalWindow, PortletWindow, LocalDictionary;
     
     init = function () {
         Device = app.models.deviceProxy;
         Config = app.config;
         Styles = app.styles;
-        WindowManager = app.models.windowManager;
         LocalDictionary = app.localDictionary;
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };
@@ -58,7 +57,7 @@ var UI = function (facade) {
             searchBarObject.input.addEventListener('change', opts.change);
         }
         
-        Titanium.App.addEventListener('dimensionchanges', function (e) {
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
             if (searchBar) { searchBar.width = Styles.searchBar.width; }
             if (searchBarInput) { searchBarInput.width = Styles.searchBarInput.width; }
         });
@@ -140,7 +139,7 @@ var UI = function (facade) {
                 settingsButtonContainer.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
             }
             
-            Titanium.App.addEventListener('dimensionchanges', function (e) {
+            Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
                 Ti.API.info("dimensionchanges in UI");
             	if (titleBar) { titleBar.width = Styles.titleBar.width; }
                 if (settingsButtonContainer) { settingsButtonContainer.left = Styles.titleBarSettingsContainer.left; }
@@ -150,7 +149,7 @@ var UI = function (facade) {
         
         onHomeClick = function (e) {
             Ti.API.debug("Home button clicked in GenericTitleBar");
-            WindowManager.openWindow(PortalWindow.key);
+            app.models.windowManager.openWindow(PortalWindow.key);
         };
 
         onHomePressDown = function (e) {
@@ -173,7 +172,7 @@ var UI = function (facade) {
         
         onInfoClick = function (e) {
             Ti.API.debug("Info button clicked in GenericTitleBar");
-            WindowManager.openWindow(PortletWindow.key, {
+            app.models.windowManager.openWindow(PortletWindow.key, {
                 fname: 'info',
                 externalModule: true,
                 title: LocalDictionary.info,
@@ -200,7 +199,7 @@ var UI = function (facade) {
         };
         
         onSettingsClick = function (e) {
-            WindowManager.openWindow(SettingsWindow.key);
+            app.models.windowManager.openWindow(SettingsWindow.key);
         };
 
         onSettingsPressDown = function (e) {
@@ -252,7 +251,7 @@ var UI = function (facade) {
             _titleLabel.text = newTitle;
         };
         
-        Titanium.App.addEventListener('dimensionchanges', function (e) {
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
             var _visibility = _secondaryNavBar.visible;
             Ti.API.debug("visibility of secondaryNavBar: " + _visibility);
             _titleLabel.width = Styles.secondaryNavBarLabel.width;
@@ -295,7 +294,7 @@ var UI = function (facade) {
             dialog.width = Styles.activityIndicatorDialog.width;
         };
         
-        Titanium.App.addEventListener('dimensionchanges', function (e) {
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
             indicator.resetDimensions();
         });
         
@@ -306,8 +305,8 @@ var UI = function (facade) {
         Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
         Device.setCurrentOrientation(e.orientation);
         app.styles = new Styles(app);
-        Ti.App.fireEvent('updatestylereference');
-        Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+        Ti.App.fireEvent(ApplicationFacade.events['STYLESHEET_UPDATED']);
+        Ti.App.fireEvent(ApplicationFacade.events['DIMENSION_CHANGES'], {orientation: e.orientation});
     };
     
     init();

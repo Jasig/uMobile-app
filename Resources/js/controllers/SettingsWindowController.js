@@ -22,7 +22,7 @@
  * user settings tab.
  */
 var SettingsWindowController = function(facade){
-    var win, app = facade, _self = this, Device, User, UI, LocalDictionary, Styles, UPM, Login, WindowManager,
+    var win, app = facade, _self = this, Device, User, UI, LocalDictionary, Styles, UPM, Login,
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar, settingsTable, credentialsGroup,
         init, createTitleBar, createCredentialsForm,
@@ -31,18 +31,18 @@ var SettingsWindowController = function(facade){
     init = function () {
         _self.key = 'settings';
         _self.isModal = true;
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };
     
     this.open = function () {
         Ti.API.debug("this.open() in SettingsWindowController");
-        
+
         if (!initialized) {
-            Ti.App.addEventListener('EstablishNetworkSessionSuccess', onSessionSuccess);
-            Ti.App.addEventListener('EstablishNetworkSessionFailure', onSessionError);
-            Ti.App.addEventListener('PortalProxyPortletsLoaded', onPortalProxyPortletsLoaded);
+            Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
+            Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
+            Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
 
             Device = app.models.deviceProxy;
             User = app.models.userProxy;
@@ -51,7 +51,6 @@ var SettingsWindowController = function(facade){
             Styles = app.styles;
             UPM = app.config;
             Login = app.models.loginProxy;
-            WindowManager = app.models.windowManager;
             PortalWindow = app.controllers.portalWindowController;
 
             credentials = User.getCredentials();
@@ -201,7 +200,7 @@ var SettingsWindowController = function(facade){
                 passwordInput.blur();
             }
         })*/
-        Titanium.App.addEventListener('dimensionchanges', function (e) {
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
             usernameInput.width = Styles.settingsUsernameInput.width;
             passwordInput.width = Styles.settingsPasswordInput.width;
         });
@@ -210,7 +209,7 @@ var SettingsWindowController = function(facade){
     onUpdateCredentials = function (e) {
         Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
         if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { /*usernameInput.blur();*/ }
+        if (usernameInput) { usernameInput.blur(); }
         if (Device.checkNetwork()) {
             if (usernameInput.value === '') {
                 Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
@@ -229,7 +228,7 @@ var SettingsWindowController = function(facade){
             }
         }
         else {
-            Ti.App.fireEvent('networkConnectionError');
+            Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
         }
     };
     
@@ -284,8 +283,8 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
-        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + WindowManager.getCurrentWindow());
-        if(WindowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
+        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
+        if(app.models.windowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
             if (e.user === usernameInput.value) {
                 logOutButton.show();
                 if (Device.isAndroid()) {
@@ -335,7 +334,7 @@ var SettingsWindowController = function(facade){
     
     onPortalProxyPortletsLoaded = function (e) {
         if (wasFormSubmitted) {
-            WindowManager.openWindow(PortalWindow.key);
+            app.models.windowManager.openWindow(PortalWindow.key);
             wasFormSubmitted = false;
             wasLogOutClicked = false;
         }
@@ -351,7 +350,7 @@ var SettingsWindowController = function(facade){
         }
         if (e.user && e.user != User.getCredentials().username && wasFormSubmitted) {
             /*if (!win || !win.visible) {
-                WindowManager.openWindow(_self.key);
+                app.models.windowManager.openWindow(_self.key);
             }*/
             Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
                 message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]

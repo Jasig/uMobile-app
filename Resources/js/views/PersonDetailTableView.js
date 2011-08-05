@@ -31,7 +31,7 @@ var PersonDetailTableView = function (facade) {
         LocalDictionary = app.localDictionary;
         Styles = app.styles;
         Device = app.models.deviceProxy;
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };

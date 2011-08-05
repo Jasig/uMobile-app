@@ -49,11 +49,11 @@ var DirectoryWindowController = function (facade) {
             app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
             
             //Listen for events, mostly fired from models.DirectoryProxy
-            Titanium.App.addEventListener('DirectoryProxySearching', onProxySearching);
-            Titanium.App.addEventListener('DirectoryProxySearchComplete', onProxySearchComplete);
-            Titanium.App.addEventListener('DirectoryProxySearchError', onProxySearchError);
-            Titanium.App.addEventListener('DirectoryWindowSearchChange', onDirectoryWindowSearchChange);
-            Titanium.App.addEventListener('DirectoryWindowSearchSubmit', onSearchSubmit);
+            Titanium.App.addEventListener(DirectoryProxy.events['SEARCHING'], onProxySearching);
+            Titanium.App.addEventListener(DirectoryProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
+            Titanium.App.addEventListener(DirectoryProxy.events['SEARCH_ERROR'], onProxySearchError);
+            Titanium.App.addEventListener(DirectoryWindowView.events['SEARCH_CHANGE'], onDirectoryWindowSearchChange);
+            Titanium.App.addEventListener(DirectoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
 
             //Set pointers to necessary members of facade
             Directory = app.models.directoryProxy;

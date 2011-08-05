@@ -66,18 +66,18 @@ var LocalLogin = function (facade) {
             Ti.API.info("_layoutUser matches credentials.username");
             Ti.API.info("Login.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent('EstablishNetworkSessionSuccess', {user: User.getLayoutUserName()});
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: User.getLayoutUserName()});
             Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
             Ti.API.error("Network session failed");
-            Ti.App.fireEvent('EstablishNetworkSessionFailure', {user: _layoutUser});
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _layoutUser});
         }
     };
     
     onLoginError = function (e) {
         Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent('EstablishNetworkSessionFailure');
+        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
     };
     
     init();

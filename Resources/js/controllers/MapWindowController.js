@@ -40,14 +40,14 @@ var MapWindowController = function(facade) {
             
             app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
             app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
-            
-            Ti.App.addEventListener('MapProxySearching', onProxySearching);
-            Ti.App.addEventListener('MapProxySearchComplete', onProxySearchComplete);
-            Ti.App.addEventListener('MapProxyEmptySearch', onProxyEmptySearch);
-            Ti.App.addEventListener('MapProxyLoadError', onProxyLoadError);
-            Ti.App.addEventListener('MapProxyLoading', onProxyLoading);
-            Ti.App.addEventListener('MapProxyPointsLoaded', onProxyLoaded);
-            Ti.App.addEventListener('updatestylereference', function (e) {
+
+            Ti.App.addEventListener(MapProxy.events['SEARCHING'], onProxySearching);
+            Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
+            Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], onProxyEmptySearch);
+            Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], onProxyLoadError);
+            Ti.App.addEventListener(MapProxy.events['LOADING'], onProxyLoading);
+            Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], onProxyLoaded);
+            Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
                 Styles = app.styles;
             });
 
@@ -155,7 +155,7 @@ var MapWindowController = function(facade) {
                     Ti.API.error("mapView doesn't exist to place the buttonBar into.");
                 }
                 
-                Titanium.App.addEventListener('dimensionchanges', function (e) {
+                Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
                     buttonBar.top = Styles.mapButtonBar.top;
                 });
 
@@ -247,7 +247,7 @@ var MapWindowController = function(facade) {
         Ti.API.info("Map clicked, and source of click event is: " + JSON.stringify(e));
         if (e.clicksource === 'title' && e.title) {
             _annotation = Map.getAnnotationByTitle(e.title);
-            mapView.fireEvent('loaddetail', _annotation);
+            mapView.fireEvent(MapWindowController.events['LOAD_DETAIL'], _annotation);
         }
         else {
             Ti.API.info("Clicksource: " + e.clicksource);
@@ -317,7 +317,7 @@ var MapWindowController = function(facade) {
         Ti.API.debug(JSON.stringify(e));
         
         switch (e.errorCode) {
-            case Map.requestErrors.NETWORK_UNAVAILABLE:
+            case MapProxy.requestErrors.NETWORK_UNAVAILABLE:
                 alertDialog = Titanium.UI.createAlertDialog({
                     title: LocalDictionary.error,
                     message: LocalDictionary.map_NETWORK_UNAVAILABLE,
@@ -325,7 +325,7 @@ var MapWindowController = function(facade) {
                 });
                 alertDialog.show();
                 break;
-            case Map.requestErrors.REQUEST_TIMEOUT:
+            case MapProxy.requestErrors.REQUEST_TIMEOUT:
                 alertDialog = Titanium.UI.createAlertDialog({
                     title: LocalDictionary.error,
                     message: LocalDictionary.map_REQUEST_TIMEOUT,
@@ -333,7 +333,7 @@ var MapWindowController = function(facade) {
                 });
                 alertDialog.show();
                 break;
-            case Map.requestErrors.SERVER_ERROR:
+            case MapProxy.requestErrors.SERVER_ERROR:
                 alertDialog = Titanium.UI.createAlertDialog({
                     title: LocalDictionary.error,
                     message: LocalDictionary.map_SERVER_ERROR,
@@ -341,7 +341,7 @@ var MapWindowController = function(facade) {
                 });
                 alertDialog.show();
                 break;
-            case Map.requestErrors.NO_DATA_RETURNED:
+            case MapProxy.requestErrors.NO_DATA_RETURNED:
                 alertDialog = Titanium.UI.createAlertDialog({
                     title: LocalDictionary.error,
                     message: LocalDictionary.map_NO_DATA_RETURNED,
@@ -349,7 +349,7 @@ var MapWindowController = function(facade) {
                 });
                 alertDialog.show();
                 break;
-            case Map.requestErrors.INVALID_DATA_RETURNED: 
+            case MapProxy.requestErrors.INVALID_DATA_RETURNED: 
                 alertDialog = Titanium.UI.createAlertDialog({
                     title: LocalDictionary.error,
                     message: LocalDictionary.map_INVALID_DATA_RETURNED,
@@ -370,4 +370,7 @@ var MapWindowController = function(facade) {
     if (!initialized) {
         init();
     }
+};
+MapWindowController.events = {
+    LOAD_DETAIL : 'loaddetail'
 };

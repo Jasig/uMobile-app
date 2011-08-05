@@ -41,7 +41,7 @@ var DirectoryProxy = function (facade,opts) {
         }        
         else if (query === '') {
             people = [];
-            Ti.App.fireEvent('DirectoryProxySearchComplete');
+            Ti.App.fireEvent(DirectoryProxy.events['SEARCH_COMPLETE']);
         }
         else {
             doXhrSearch(query);
@@ -86,12 +86,12 @@ var DirectoryProxy = function (facade,opts) {
         xhrSearchClient.open('GET', url);
         xhrSearchClient.send();
         
-        Ti.App.fireEvent('DirectoryProxySearching');
+        Ti.App.fireEvent(DirectoryProxy.events['SEARCHING']);
     };
     
     onXhrSearchLoad = function (e) {
         //When the search is complete, reset the main people array
-        Ti.App.fireEvent('SessionActivity', {context: Login.sessionTimeContexts.NETWORK});
+        Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: Login.sessionTimeContexts.NETWORK});
 
         people = [];
         (function() {
@@ -101,17 +101,23 @@ var DirectoryProxy = function (facade,opts) {
                     Ti.API.info('calling method');
                     people.push(_people[i].attributes);
                 }
-                Ti.App.fireEvent('DirectoryProxySearchComplete');
+                Ti.App.fireEvent(DirectoryProxy.events['SEARCH_COMPLETE']);
             }
             catch (err) {
-                Ti.App.fireEvent('DirectoryProxySearchComplete', {error: LocalDictionary.directoryErrorFetching});
+                Ti.App.fireEvent(DirectoryProxy.events['SEARCH_COMPLETE'], {error: LocalDictionary.directoryErrorFetching});
             }            
         })();
     };
     
     onXhrSearchError = function (e) {
-        Ti.App.fireEvent('DirectoryProxySearchError');
+        Ti.App.fireEvent(DirectoryProxy.events['SEARCH_ERROR']);
     };
     
     init();
+};
+DirectoryProxy.events = {
+    SEARCHING       : 'DirectoryProxySearching',
+    SEARCH_COMPLETE : 'DirectoryProxySearchComplete',
+    SEARCH_ERROR    : 'DirectoryProxySearchError'
+    
 };

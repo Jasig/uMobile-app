@@ -21,7 +21,7 @@
 */
 var PortalGridView = function (facade) {
     var app = facade, _self = this, init, Styles, Device, Portal, PortalWindow, User, Windows,
-    completeWidth, completeHeight, _gridView, _gridItems = [], numColumns, leftPadding, gridViewDefaults, isGuestLayout, didLayoutCleanup = false, _state,
+    completeWidth, completeHeight, _gridView, _gridItems = {}, numColumns, leftPadding, gridViewDefaults, isGuestLayout, didLayoutCleanup = false, _state,
     createGridItem, rearrangeGrid,
     onOrientationChange, onGridItemClick, onGridItemPressUp, onGridItemPressDown, onLayoutCleanup;
     
@@ -45,7 +45,7 @@ var PortalGridView = function (facade) {
         numColumns = Math.floor(Device.getWidth() / completeWidth);
         leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
         
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
             completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
             completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
@@ -53,8 +53,8 @@ var PortalGridView = function (facade) {
             leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
         });
         
-        Ti.App.addEventListener('dimensionchanges', onOrientationChange);
-        Ti.App.addEventListener('layoutcleanup', onLayoutCleanup);
+        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], onOrientationChange);
+        Ti.App.addEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], onLayoutCleanup);
         
         _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
         
@@ -67,7 +67,7 @@ var PortalGridView = function (facade) {
     
     this.setState = function (newState) {
         _state = newState;
-        Ti.App.fireEvent('PortalGridViewStateChange', {state: _state});
+        Ti.App.fireEvent(PortalGridView.events['STATE_CHANGE'], {state: _state});
     };
     
     this.getGridView = function (options) {
@@ -79,6 +79,8 @@ var PortalGridView = function (facade) {
     };
     
     this.updateGrid = function (portlets) {
+        Ti.API.debug("updateGrid() in PortalGridView");
+        Ti.API.debug("_gridItems: " + JSON.stringify(_gridItems));
         var _portlets = portlets || [], _item;
 
         /*
@@ -93,11 +95,15 @@ var PortalGridView = function (facade) {
             if (_gridItems.hasOwnProperty(_item)) {
                 for (var j=0, jLength = _portlets.length; j<jLength; j++) {
                     if ('fName' + _portlets[j].fname === _item) {
+                        Ti.API.debug("Not destroying: " + _item);
                         break;
                     }
                     else if (j == jLength - 1) {
                         Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _gridItems[_item].destroy);
                         _gridItems[_item].destroy();
+                    }
+                    else {
+                        Ti.API.info("Didn't destroy " + _item + " because it wasn't " + _portlets[j].fname);
                     }
                 }
             }
@@ -106,13 +112,16 @@ var PortalGridView = function (facade) {
         for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
             //Place the item in the scrollview and listen for singletaps
             if (!_gridItems['fName' + _portlets[i].fname]) {
+                Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
                 //Create the item, implicity add to local array, and explicitly assign sort order
                 _gridView.add(createGridItem(_portlets[i], i).view);
             }
             else if (didLayoutCleanup) {
+                Ti.API.debug('didLayoutCleanup');
                 _gridView.add(createGridItem(_portlets[i], i).view);
             }
             else {
+                Ti.API.debug("else");
                 //We just need to tell the item its new sort order
                 _gridItems['fName' + _portlets[i].fname].sortOrder = i;
             }
@@ -284,4 +293,8 @@ var PortalGridView = function (facade) {
     };
     
     init ();
+};
+
+PortalGridView.events = {
+    STATE_CHANGE    : 'PortalGridViewStateChange'
 };

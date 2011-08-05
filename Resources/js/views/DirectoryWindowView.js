@@ -32,7 +32,7 @@ var DirectoryWindowView = function (facade) {
         app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
         app.registerView('DirectoryDetailView', new DirectoryDetailView(app)); // Subcontext in DirectoryWindowController to show
         
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
         
@@ -244,11 +244,11 @@ var DirectoryWindowView = function (facade) {
     onSearchSubmit = function(e) {
         Ti.API.debug('onSearchSubmit() in DirectoryWindowView');
         blurSearch();
-        Ti.App.fireEvent('DirectoryWindowSearchSubmit', {value: searchBar.input.value});
+        Ti.App.fireEvent(DirectoryWindowView.events['SEARCH_SUBMIT'], {value: searchBar.input.value});
     };
     
     onSearchChange = function (e) {
-        Ti.App.fireEvent('DirectoryWindowSearchChange', {value: searchBar.input.value});
+        Ti.App.fireEvent(DirectoryWindowView.events['SEARCH_CHANGE'], {value: searchBar.input.value});
         if(searchBar.input.value === '') {
             _self.updateTable(_viewModel.emergencyContacts);
             if (peopleListTable) {
@@ -273,4 +273,9 @@ var DirectoryWindowView = function (facade) {
     };
     
     init();
+};
+
+DirectoryWindowView.events = {
+    SEARCH_SUBMIT   : 'DirectoryWindowSearchSubmit',
+    SEARCH_CHANGE   : 'DirectoryWindowSearchChange'
 };

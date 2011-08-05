@@ -23,9 +23,9 @@ var WindowManager = function (facade) {
 
     init = function () {
         LocalDictionary = app.localDictionary;
-        Ti.App.addEventListener('showWindow', onShowWindow);
-        Ti.App.addEventListener('showPortlet', onShowPortlet);
-        Ti.App.addEventListener('networkConnectionError', onNetworkConnectionError);
+        Ti.App.addEventListener(ApplicationFacade.events['SHOW_WINDOW'], onShowWindow);
+        Ti.App.addEventListener(ApplicationFacade.events['SHOW_PORTLET'], onShowPortlet);
+        Ti.App.addEventListener(ApplicationFacade.events['NETWORK_ERROR'], onNetworkConnectionError);
     };
     
     this.addWindow = function (windowParams) {
@@ -63,7 +63,7 @@ var WindowManager = function (facade) {
             if (portlet) {
                 _newWindowEvent.portlet = portlet;
             }
-            Ti.App.fireEvent('OpeningNewWindow', _newWindowEvent);
+            Ti.App.fireEvent(WindowManager.events['WINDOW_OPENING'], _newWindowEvent);
 
 
             if (activityStack.length > 0) {
@@ -84,9 +84,9 @@ var WindowManager = function (facade) {
             if (portlet) {
                 Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
             }
-            Ti.App.fireEvent('NewWindowOpened', {key: windowKey});
+            Ti.App.fireEvent(WindowManager.events['WINDOW_OPENED'], {key: windowKey});
             if (_self.getPreviousWindow()) {
-                Ti.App.fireEvent('layoutcleanup', {win: _self.getPreviousWindow()});
+                Ti.App.fireEvent(ApplicationFacade.events['LAYOUT_CLEANUP'], {win: _self.getPreviousWindow()});
             }
         }
         else {
@@ -188,4 +188,9 @@ var WindowManager = function (facade) {
     };
     
     init();
+};
+//Static object so events can be accessed without instance of WindowManager
+WindowManager.events = {
+    WINDOW_OPENING  : 'OpeningNewWindow',
+    WINDOW_OPENED   : 'NewWindowOpened'
 };

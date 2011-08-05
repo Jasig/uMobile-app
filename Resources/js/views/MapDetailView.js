@@ -35,7 +35,7 @@ var MapDetailView = function (facade) {
         LocalDictionary = app.localDictionary;
         UI = app.UI;
         
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };

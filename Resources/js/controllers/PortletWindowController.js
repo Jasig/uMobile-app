@@ -32,7 +32,7 @@ var PortletWindowController = function (facade) {
         
         Config = app.config;
         
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };
@@ -128,7 +128,7 @@ var PortletWindowController = function (facade) {
         
         includePortlet(activePortlet);
 
-        Titanium.App.addEventListener('dimensionchanges', function (e) {
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
             if (!isHome()) {
                 navBar.visible = true;
                 webView.top = titleBar.height + navBar.height;
@@ -292,7 +292,7 @@ var PortletWindowController = function (facade) {
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
-            Ti.App.fireEvent('SessionActivity', {context: LoginProxy.sessionTimeContexts.WEBVIEW});
+            Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts.WEBVIEW});
             //We want to be able to open any video now, so we'll clear the YouTube workaround variable
             _lastVideoOpened = '';
             webView.externalModule = false;

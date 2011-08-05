@@ -26,8 +26,8 @@
 * @constructor
 */
 var PortalWindowController = function (facade) {
-    var win, app = facade, _self = this, init, Portal, PortalView, WindowManager, User, Device, Sessions, LoginProxy,
-        initialized, _newNetworkDowntime = true,
+    var win, app = facade, _self = this, init, firstTimeOpened=true,
+        initialized, _newNetworkDowntime = true, //This var is to prevent multiple notifications of network downtime. Set to false as soon as downtime is encountered
         onGettingPortlets, onPortletsLoaded, onNetworkSessionSuccess, onNetworkSessionFailure, onPortalProxyNetworkError, onAndroidSearchClick,
         onWindowFocus, onAppWindowOpening, onAppWindowOpened, onPortalDownNotificationClicked,
         pathToRoot = '../../';
@@ -36,26 +36,16 @@ var PortalWindowController = function (facade) {
         Ti.API.debug("init() in PortalWindowController");
         //Assign the unique key
         _self.key = 'home';
-        
-        //Pointers to Facade members
-        Device = app.models.deviceProxy;
-        Portal = app.models.portalProxy;
-        LocalDictionary = app.localDictionary;
-        WindowManager = app.models.windowManager;
-        SettingsWindow = app.controllers.settingsWindowController;
-        Sessions = app.models.sessionProxy;
-        LoginProxy = app.models.loginProxy;
-        User = app.models.userProxy;
 
-    	Ti.App.addEventListener("PortalProxyGettingPortlets", onGettingPortlets);
-    	Ti.App.addEventListener("PortalProxyPortletsLoaded", onPortletsLoaded);
-        Ti.App.addEventListener('PortalProxyNetworkError', onPortalProxyNetworkError);
-        Ti.App.addEventListener('OpeningNewWindow', onAppWindowOpening);
-        Ti.App.addEventListener('NewWindowOpened', onAppWindowOpened);
-        Ti.App.addEventListener('EstablishNetworkSessionSuccess', onNetworkSessionSuccess);
-        Ti.App.addEventListener('PortalDownNotificationClicked', onPortalDownNotificationClicked);
-        Ti.App.addEventListener('EstablishNetworkSessionFailure', onNetworkSessionFailure);
-        Ti.App.addEventListener('HomeAndroidSearchButtonClicked', onAndroidSearchClick);
+    	Ti.App.addEventListener(PortalProxy.events['GETTING_PORTLETS'], onGettingPortlets);
+    	Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], onPortletsLoaded);
+        Ti.App.addEventListener(PortalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
+        Ti.App.addEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
+        Ti.App.addEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
+        Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
+        Ti.App.addEventListener(PortalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
+        Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
+        Ti.App.addEventListener(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
         
         initialized = true;
     };
@@ -67,62 +57,61 @@ var PortalWindowController = function (facade) {
         // window was open last time the app closed, and will manage the process
         // of establishing a session and opening the window.
         if (!app.models.deviceProxy.checkNetwork()) {
-            Ti.App.fireEvent('networkConnectionError');
+            Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
             return;
         }
-        else if (!Sessions.isActive(LoginProxy.sessionTimeContexts.NETWORK)) {
+        else if (!app.models.sessionProxy.isActive(app.models.loginProxy.sessionTimeContexts.NETWORK)) {
             app.models.loginProxy.establishNetworkSession();
         }
 
-        if (!PortalView) {
-            Titanium.include('js/views/PortalWindowView.js');
-            PortalView = new PortalWindowView(app);
-            PortalView.open( [], { firstLoad: true });
+        if (firstTimeOpened) {
+            app.views.portalWindowView.open( [], { firstLoad: true });
+            firstTimeOpened = false;
         }
         else {
-            PortalView.open( Portal.getPortlets(), { isGuestLayout: User.isGuestUser(), isPortalReachable: Portal.getIsPortalReachable() });
+            app.views.portalWindowView.open( app.models.portalProxy.getPortlets(), { isGuestLayout: app.models.userProxy.isGuestUser(), isPortalReachable: app.models.portalProxy.getIsPortalReachable() });
         }
         
     };
     
     this.close = function () {
-        if (PortalView) {
-            PortalView.close();
+        if (app.views.portalWindowView) {
+            app.views.portalWindowView.close();
         }
     };
     
     onAndroidSearchClick = function (e) {
     	Ti.API.debug("onAndroidSearchClick() in PortalWindowController");
-    	var _searchPortlet = Portal.getPortletByFName('search'); 
+    	var _searchPortlet = app.models.portalProxy.getPortletByFName('search'); 
     	if (_searchPortlet) {
-    		Portal.getShowPortletFunc(_searchPortlet)();
+    		app.models.portalProxy.getShowPortletFunc(_searchPortlet)();
     	}
     };
     
     onNetworkSessionSuccess = function (e) {
         _newNetworkDowntime = true;
-        Portal.getPortletsForUser();
+        app.models.portalProxy.getPortletsForUser();
     };
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
         // if (e.user && e.user === 'guest') {
-            Portal.getPortletsForUser();
+            app.models.portalProxy.getPortletsForUser();
         // }
         // else if (!e.user) {
         if (!e.user) {
-            Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + Portal.getIsPortalReachable());
-            if (Device.checkNetwork()) {
+            Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + app.models.portalProxy.getIsPortalReachable());
+            if (app.models.deviceProxy.checkNetwork()) {
                 if (_newNetworkDowntime) {
-                    PortalView.alert(LocalDictionary.error, LocalDictionary.failedToLoadPortlets);
+                    app.views.portalWindowView.alert(app.localDictionary.error, app.localDictionary.failedToLoadPortlets);
                     _newNetworkDowntime = false;
                 }
-                PortalView.updateModules( Portal.getPortlets(), {
-                    isPortalReachable: Portal.getIsPortalReachable()
+                app.views.portalWindowView.updateModules( app.models.portalProxy.getPortlets(), {
+                    isPortalReachable: app.models.portalProxy.getIsPortalReachable()
                 });
             }
             else {
-                Ti.App.fireEvent('networkConnectionError');
+                Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
             }
             
         }
@@ -136,28 +125,28 @@ var PortalWindowController = function (facade) {
     };
     
     onPortletsLoaded = function (e) {
-        PortalView.updateModules(Portal.getPortlets(), {isGuestLayout: User.isGuestUser(), isPortalReachable: Portal.getIsPortalReachable() });
+        app.views.portalWindowView.updateModules(app.models.portalProxy.getPortlets(), {isGuestLayout: app.models.userProxy.isGuestUser(), isPortalReachable: app.models.portalProxy.getIsPortalReachable() });
     };
     
     onPortalProxyNetworkError = function (e) {
         //This event responds to any type of error in retrieving portlets from the sever.
-        // PortalView.alert(LocalDictionary.error, e.message);
+        // app.views.portalWindowView.alert(app.localDictionary.error, e.message);
     };
     
     onPortalDownNotificationClicked = function (e) {
         _newNetworkDowntime = true;
-        LoginProxy.establishNetworkSession();
+        app.models.loginProxy.establishNetworkSession();
     };
     
     onAppWindowOpened = function (e) {
-        if (WindowManager.getCurrentWindow !== _self.key) {
-            // PortalView.hideActivityIndicator();
+        if (app.models.windowManager.getCurrentWindow !== _self.key) {
+            // app.views.portalWindowView.hideActivityIndicator();
         }
     };
     
     onAppWindowOpening = function (e) {
         if (win && win.visible) {
-            // PortalView.showActivityIndicator(LocalDictionary.loading);
+            // app.views.portalWindowView.showActivityIndicator(app.localDictionary.loading);
         }
     };
     

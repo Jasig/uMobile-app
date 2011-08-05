@@ -38,7 +38,7 @@ var SessionProxy = function (facade) {
         //Gets the session expiration time from the config in seconds,
         //converts to milliseconds for use in the setTimeout
         sessionLifeTimeMilli = parseInt(Config.SERVER_SESSION_TIMEOUT * 1000, 10);
-        Ti.App.addEventListener('SessionActivity', onSessionActivity);
+        Ti.App.addEventListener(ApplicationFacade.events['SESSION_ACTIVITY'], onSessionActivity);
     };
     
     this.resetTimer = function(context) {
@@ -163,7 +163,7 @@ var SessionProxy = function (facade) {
     
     onTimeout = function (session) {
         Ti.API.info("SessionTimerExpired" + session.context);
-        Ti.App.fireEvent("SessionTimerExpired", { context: session.context });
+        Ti.App.fireEvent(SessionProxy.events['TIMER_EXPIRED'], { context: session.context });
     };
     
     onSessionActivity = function (e) {
@@ -179,4 +179,8 @@ var SessionProxy = function (facade) {
     };
     
     init();
+};
+
+SessionProxy.events = {
+    TIMER_EXPIRED   : "SessionTimerExpired"
 };

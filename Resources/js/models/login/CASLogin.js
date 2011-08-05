@@ -56,11 +56,11 @@ var CASLogin = function (facade) {
         var failureRegex = new RegExp(/body id="cas"/);
         if (failureRegex.exec(client.responseText)) {
             Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent('EstablishNetworkSessionFailure');
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
         } else {
             Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             if (!options || !options.isUnobtrusive) {
-                Ti.App.fireEvent('EstablishNetworkSessionSuccess');
+                Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS']);
             }
         }
     };
@@ -68,13 +68,13 @@ var CASLogin = function (facade) {
     onLoginError = function (e) {
         Ti.API.error("onLoginError() in CASLogin");
         Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent('EstablishNetworkSessionFailure');
+        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
     };
     
     onInitialError = function (e) {
         Ti.API.error("onInitialError() in CASLogin");
         Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent('EstablishNetworkSessionFailure');
+        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
     };
     
     onInitialResponse = function (e) {

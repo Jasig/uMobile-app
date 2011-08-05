@@ -38,7 +38,7 @@ if (typeof Object.create !== 'function') {
     };
 }
 
-var app, loadingWindow, WindowManager, startup, onOrientationChange;
+var app, loadingWindow, startup, onOrientationChange;
 
 
 
@@ -61,6 +61,10 @@ startup = function (e) {
     Titanium.include('js/models/SessionProxy.js');
     Titanium.include('js/models/UserProxy.js');
     Titanium.include('js/models/WindowManager.js');
+    
+    Titanium.include('js/views/PortalWindowView.js');
+    Titanium.include('js/views/PortalGridView.js');
+    
 
     Titanium.include('js/controllers/DirectoryWindowController.js');
     Titanium.include('js/controllers/MapWindowController.js');
@@ -86,7 +90,6 @@ startup = function (e) {
     app.registerMember('UI', new UI(app));
     app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
     
-    
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('localLogin', new LocalLogin(app));
@@ -101,32 +104,32 @@ startup = function (e) {
     app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
     app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
 
+    app.registerView('portalWindowView', new PortalWindowView(app));
+    app.registerView('portalGridView', new PortalGridView(app));
+    
     // Add window controllers to the window manager,
     // which manages the stack of window activities, and manages opening and closing
     // of windows so that controllers don't have to be concerned with details,
     // they just tell the window manager what to open, and it handles the rest.
-    WindowManager = app.models.windowManager;
 
-    WindowManager.addWindow(app.controllers.portalWindowController); //Home controller
-    WindowManager.addWindow(app.controllers.portletWindowController);
-    WindowManager.addWindow(app.controllers.directoryWindowController);
-    WindowManager.addWindow(app.controllers.mapWindowController);
-    WindowManager.addWindow(app.controllers.settingsWindowController);
+    app.models.windowManager.addWindow(app.controllers.portalWindowController); //Home controller
+    app.models.windowManager.addWindow(app.controllers.portletWindowController);
+    app.models.windowManager.addWindow(app.controllers.directoryWindowController);
+    app.models.windowManager.addWindow(app.controllers.mapWindowController);
+    app.models.windowManager.addWindow(app.controllers.settingsWindowController);
     
-    WindowManager.openWindow(app.controllers.portalWindowController.key);
+    app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
 
-    
-    
     if (app.models.deviceProxy.isIOS()) {
         Titanium.Gesture.addEventListener('orientationchange', onOrientationChange);
     }
     else {
         //Android doesn't register global orientation events, only in the context of a specific activity.
         //So we'll listen for it in each activity and broadcast a global event instead.
-        Ti.App.addEventListener('androidorientationchange', onOrientationChange);
+        Ti.App.addEventListener(ApplicationFacade.events['ANDROID_ORIENTATION_CHANGE'], onOrientationChange);
     }
     
-    Ti.App.addEventListener('OpenExternalURL', function (e) {
+    Ti.App.addEventListener(ApplicationFacade.events['OPEN_EXTERNAL_URL'], function (e) {
     	if (e.url) {
 			Ti.Platform.openURL(e.url);    		
     	}
@@ -143,8 +146,8 @@ onOrientationChange = function (e) {
     if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
         app.models.deviceProxy.setCurrentOrientation(e.orientation);
         app.styles = new Styles(app);
-        Ti.App.fireEvent('updatestylereference');
-        Ti.App.fireEvent('dimensionchanges', {orientation: e.orientation});
+        Ti.App.fireEvent(ApplicationFacade.events['STYLESHEET_UPDATED']);
+        Ti.App.fireEvent(ApplicationFacade.events['DIMENSION_CHANGES'], {orientation: e.orientation});
     }
     else {
         Ti.API.debug("Same orientation as before");

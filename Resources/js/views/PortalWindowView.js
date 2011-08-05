@@ -27,7 +27,7 @@
 * @implements {IWindowView}
 */
 var PortalWindowView = function (facade) {
-    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, WindowManager, Portal, SettingsWindow, PortalWindow, GridView, Login,
+    var app = facade, init, _self = this, Styles, UI, LocalDictionary, Device, Portal, SettingsWindow, PortalWindow, Login,
     portlets, _isGuestLayout = false, _isPortalReachable = true,  _state,
     win, contentLayer, gridView,
     titleBar, activityIndicator, guestNotificationView,
@@ -41,7 +41,6 @@ var PortalWindowView = function (facade) {
         Portal = app.models.portalProxy;
         Device = app.models.deviceProxy;
         LocalDictionary = app.localDictionary;
-        WindowManager = app.models.windowManager;
         SettingsWindow = app.controllers.settingsWindowController;
         PortalWindow = app.controllers.portalWindowController;
         
@@ -51,11 +50,11 @@ var PortalWindowView = function (facade) {
             CLOSED: "Closed"
         };
         
-        Ti.App.addEventListener('updatestylereference', function (e) {
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
-        Ti.App.addEventListener('PortalGridViewStateChange', onPortalGridViewStateChange);
-        Ti.App.addEventListener('dimensionchanges', onDimensionChanges);
+        Ti.App.addEventListener(PortalGridView.events['STATE_CHANGE'], onPortalGridViewStateChange);
+        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], onDimensionChanges);
         
         _self.setState(_self.states.INITIALIZED);
     };
@@ -80,11 +79,6 @@ var PortalWindowView = function (facade) {
                 win.addEventListener('focus', onWindowFocus);
                 win.addEventListener('android:search', onAndroidSearch);
             }
-            
-            if (!GridView) {
-                Ti.include('js/views/PortalGridView.js');
-                GridView = new PortalGridView(app);
-            }
 
             contentLayer = Ti.UI.createView(Styles.portalContentLayer);
             win.add(contentLayer);
@@ -108,9 +102,9 @@ var PortalWindowView = function (facade) {
 
             win.add(activityIndicator);
 
-            contentLayer.add(GridView.getGridView({isGuestLayout: _isGuestLayout, winHeight: win.height }));
+            contentLayer.add(app.views.portalGridView.getGridView({isGuestLayout: _isGuestLayout, winHeight: win.height }));
             _self.showActivityIndicator();
-            GridView.updateGrid(portlets);
+            app.views.portalGridView.updateGrid(portlets);
 
             titleBar = UI.createTitleBar({
         	    title: LocalDictionary.homeTitle,
@@ -122,11 +116,10 @@ var PortalWindowView = function (facade) {
         }
         else if (win && !win.visible) {
             Ti.API.debug("Just show the portal window");
+            app.views.portalGridView.updateGrid();
             win.show();
         }
         
-        
-    	
         if (options.firstLoad) {
             _self.showActivityIndicator(LocalDictionary.gettingPortlets);
         }
@@ -169,9 +162,9 @@ var PortalWindowView = function (facade) {
         _isPortalReachable = options.isPortalReachable !== undefined ? options.isPortalReachable : _isPortalReachable;
 
         portlets = modules;
-        if (WindowManager.getCurrentWindow() === PortalWindow.key) {
-            if (GridView) {
-                GridView.updateGrid(portlets);
+        if (app.models.windowManager.getCurrentWindow() === PortalWindow.key) {
+            if (app.views.portalGridView) {
+                app.views.portalGridView.updateGrid(portlets);
                 // _self.showActivityIndicator(); //This should be quick enough that an indicator is not necessary
             }
         }
@@ -231,19 +224,19 @@ var PortalWindowView = function (facade) {
         if (!_isPortalReachable) {
             guestNotificationView.addEventListener('click', function (e) {
                 Ti.API.info("Clicked portal notification, establishing network session");
-                Ti.App.fireEvent('PortalDownNotificationClicked');
+                Ti.App.fireEvent(PortalWindowView.events['NOTIFICATION_CLICKED']);
             });            
         }
         else {
             guestNotificationView.addEventListener('click', function (e) {
                 Ti.API.info("Clicked guest notification, opening settings");
-                WindowManager.openWindow(SettingsWindow.key);
+                app.models.windowManager.openWindow(SettingsWindow.key);
             });
         }
     };
     
     onAndroidSearch = function (e) {
-    	Ti.App.fireEvent('HomeAndroidSearchButtonClicked', {eventBody: e});
+    	Ti.App.fireEvent(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], {eventBody: e});
     };
     
     onDimensionChanges = function (e) {
@@ -265,19 +258,22 @@ var PortalWindowView = function (facade) {
     };
     
     onWindowFocus = function (e) {
-    	if (WindowManager.getCurrentWindow() !== PortalWindow.key) {
-    		WindowManager.openWindow(PortalWindow.key);
+    	if (app.models.windowManager.getCurrentWindow() !== PortalWindow.key) {
+    		app.models.windowManager.openWindow(PortalWindow.key);
     	}
     };
     
     onPortalGridViewStateChange = function (e) {
         Ti.API.debug("onPortalGridViewStateChange() in PortalWindowView. State is: " + e.state);
-        if (GridView && activityIndicator && e.state === GridView.states.COMPLETE && portlets.length > 0) {
+        if (app.views.portalGridView && activityIndicator && e.state === app.views.portalGridView.states.COMPLETE && portlets.length > 0) {
             _self.hideActivityIndicator();
         }
     };
     
-    
-    
     init();
+};
+
+PortalWindowView.events = {
+    ANDROID_SEARCH_CLICKED  : 'HomeAndroidSearchButtonClicked',
+    NOTIFICATION_CLICKED    : 'PortalDownNotificationClicked'
 };
