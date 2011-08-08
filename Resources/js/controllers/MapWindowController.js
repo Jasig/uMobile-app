@@ -194,7 +194,7 @@ var MapWindowController = function(facade) {
         searchBlur();
 
         
-        if (!locationDetailView) {
+        if (!locationDetailView || Device.isIOS()) {
             locationDetailViewOptions = Styles.view.clone();
             locationDetailViewOptions.data = e;
             locationDetailView = MapDetail.getDetailView();

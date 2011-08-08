@@ -111,8 +111,9 @@ var MapDetailView = function (facade) {
             mapImageGroup = Ti.UI.createTableViewSection({
                 headerTitle: LocalDictionary.locationImage
             });
-            detailImageRow = Ti.UI.createTableViewRow();
+            detailImageRow = Ti.UI.createTableViewRow(app.styles.mapDetailImageRow);
             detailImage = Titanium.UI.createImageView({
+                height: 200,
                 image: viewModel.img.replace(/\/thumbnail\//,'/photo/')
             });
             detailImageRow.add(detailImage);

@@ -446,6 +446,9 @@ var Styles = function (facade) {
     	    top: defaults.TITLEBAR_HEIGHT,
     	    style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     	},
+    	mapDetailImageRow: {
+    	    height: 220
+    	},
     	mapDetailLocationTitle: {
     	    left: 10,
     	    top: 10,
