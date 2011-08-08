@@ -18,25 +18,16 @@
  */
 var LocalLogin = function (facade) {
     var app = facade, init, _self = this,
-    Config, Login, Session, User, client, url, credentials, onLoginComplete, onLoginError;
-    
-    init = function () {
-        Config = app.config;
+    client, url, credentials, onLoginComplete, onLoginError;
+    this._variables = {
+        
     };
     
     this.login = function (creds, options) {
         Ti.API.debug("login() in LocalLogin");
-        if (!Login) {
-            Login = app.models.loginProxy;
-        }
-        if (!Session) {
-            Session = app.models.sessionProxy;
-        }
-        if (!User) {
-            User = app.models.userProxy;
-        }
+        
         credentials = creds;
-        url = Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Config.PORTAL_CONTEXT + '/layout.json';
+        url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + app.config.PORTAL_CONTEXT + '/layout.json';
 
         client = Titanium.Network.createHTTPClient({
             onload: onLoginComplete,
@@ -50,23 +41,20 @@ var LocalLogin = function (facade) {
     
     this.getLoginURL = function (url) {
         // This method returns a URL suitable to automatically login a user in a webview.
-        if (!User) {
-            User = app.models.userProxy;
-        }
-        credentials = User.getCredentials();
-        return Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
+        credentials = app.models.userProxy.getCredentials();
+        return app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
     };
     
     onLoginComplete = function (e) {
         Ti.API.debug("onLoginComplete() in LocalLogin");
         
-        User.setLayoutUserName(Login.getLayoutUser(client));
+        app.models.userProxy.setLayoutUserName(app.models.loginProxy.getLayoutUser(client));
         
-        if (User.getLayoutUserName() === credentials.username || User.getLayoutUserName() === 'guest') {
+        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === 'guest') {
             Ti.API.info("_layoutUser matches credentials.username");
-            Ti.API.info("Login.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
-            Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: User.getLayoutUserName()});
+            Ti.API.info("app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
+            app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
             Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
@@ -76,9 +64,7 @@ var LocalLogin = function (facade) {
     };
     
     onLoginError = function (e) {
-        Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
         Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
     };
-    
-    init();
 };

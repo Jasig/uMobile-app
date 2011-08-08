@@ -20,67 +20,62 @@
 ** @constructor
 */
 var PortalGridView = function (facade) {
-    var app = facade, _self = this, init, Styles, Device, Portal, PortalWindow, User, Windows,
-    completeWidth, completeHeight, _gridView, _gridItems = {}, numColumns, leftPadding, gridViewDefaults, isGuestLayout, didLayoutCleanup = false, _state,
-    createGridItem, rearrangeGrid,
-    onOrientationChange, onGridItemClick, onGridItemPressUp, onGridItemPressDown, onLayoutCleanup;
+    var app = facade, _self = this;
     
-    init = function () {
-        Styles = app.styles;
-        Device = app.models.deviceProxy;
-        Portal = app.models.portalProxy;
-        PortalWindow = app.controllers.portalWindowController;
-        User = app.models.userProxy;
-        Windows = app.models.windowManager;
-        
-        _self.states = {
-            INITIALIZED: "Initialized",
-            LOADING: "Loading",
-            COMPLETE: "Complete",
-            HIDDEN: "Hidden"
-        };
-        
-        completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-        completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-        numColumns = Math.floor(Device.getWidth() / completeWidth);
-        leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
+    //Pseudo private variables
+    this._completeWidth;
+    this._completeHeight;
+    this._numColumns;
+    this._leftPadding;
+    this._didLayoutCleanup = false;
+    this._state;
+    
+    //Pseudo private views
+    this._gridView;
+    this._gridItems = {};
+    
+    this._init = function () {
+        _self._completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        _self._completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        _self._numColumns = Math.floor(app.models.deviceProxy.getWidth() / _self._completeWidth);
+        _self._leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_self._completeWidth * _self._numColumns))) / 2);
         
         Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
-            Styles = app.styles;
-            completeWidth = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-            completeHeight = Styles.gridItem.width + 2 * Styles.gridItem.padding;
-            numColumns = Math.floor(Device.getWidth() / completeWidth);
-            leftPadding = Math.floor(((Device.getWidth() - (completeWidth * numColumns))) / 2);
+            _self._completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+            _self._completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+            _self._numColumns = Math.floor(app.models.deviceProxy.getWidth() / _self._completeWidth);
+            _self._leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_self._completeWidth * _self._numColumns))) / 2);
         });
         
-        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], onOrientationChange);
-        Ti.App.addEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], onLayoutCleanup);
+        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onOrientationChange);
+        Ti.App.addEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
         
-        _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
+        _self._gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
         
-        _self.setState(_self.states.INITIALIZED);
+        _self.setState(PortalGridView.states.INITIALIZED);
     };
     
     this.getState = function () {
-        return _state;
+        return _self._state;
     };
     
     this.setState = function (newState) {
-        _state = newState;
-        Ti.App.fireEvent(PortalGridView.events['STATE_CHANGE'], {state: _state});
+        _self._state = newState;
+        Ti.App.fireEvent(PortalGridView.events['STATE_CHANGE'], {state: _self._state});
+        
     };
     
     this.getGridView = function (options) {
-        if (didLayoutCleanup || !_gridView) {
-            _gridView = Titanium.UI.createScrollView(Styles.homeGrid);
+        if (_self._didLayoutCleanup || !_self._gridView) {
+            _self._gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
         }
-        rearrangeGrid();
-        return _gridView;
+        this._rearrangeGrid();
+        return _self._gridView;
     };
     
     this.updateGrid = function (portlets) {
         Ti.API.debug("updateGrid() in PortalGridView");
-        Ti.API.debug("_gridItems: " + JSON.stringify(_gridItems));
+        Ti.API.debug("_gridItems: " + JSON.stringify(_self._gridItems));
         var _portlets = portlets || [], _item;
 
         /*
@@ -91,50 +86,53 @@ var PortalGridView = function (facade) {
         * then we iterate through the latest correction from the portalProxy and add them if they don't exist.
         */
         
-        for (_item in _gridItems) {
-            if (_gridItems.hasOwnProperty(_item)) {
+        for (_item in _self._gridItems) {
+            if (_self._gridItems.hasOwnProperty(_item)) {
                 for (var j=0, jLength = _portlets.length; j<jLength; j++) {
                     if ('fName' + _portlets[j].fname === _item) {
                         Ti.API.debug("Not destroying: " + _item);
                         break;
                     }
                     else if (j == jLength - 1) {
-                        Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _gridItems[_item].destroy);
-                        _gridItems[_item].destroy();
+                        Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _self._gridItems[_item].destroy);
+                        _self._gridItems[_item].destroy();
                     }
                     else {
                         Ti.API.info("Didn't destroy " + _item + " because it wasn't " + _portlets[j].fname);
                     }
                 }
             }
+            else {
+                Ti.API.error("_gridItems does NOT have own Property of " + _item);
+            }
         }
         
         for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
             //Place the item in the scrollview and listen for singletaps
-            if (!_gridItems['fName' + _portlets[i].fname]) {
+            if (!_self._gridItems['fName' + _portlets[i].fname]) {
                 Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
                 //Create the item, implicity add to local array, and explicitly assign sort order
-                _gridView.add(createGridItem(_portlets[i], i).view);
+                _self._gridView.add(this._createGridItem(_portlets[i], i).view);
             }
-            else if (didLayoutCleanup) {
+            else if (_self._didLayoutCleanup) {
                 Ti.API.debug('didLayoutCleanup');
-                _gridView.add(createGridItem(_portlets[i], i).view);
+                _self._gridView.add(this._createGridItem(_portlets[i], i).view);
             }
             else {
                 Ti.API.debug("else");
                 //We just need to tell the item its new sort order
-                _gridItems['fName' + _portlets[i].fname].sortOrder = i;
+                _self._gridItems['fName' + _portlets[i].fname].sortOrder = i;
             }
         }
         
-        rearrangeGrid();
-        didLayoutCleanup = false;
+        this._rearrangeGrid();
+        _self._didLayoutCleanup = false;
     };
     
-    createGridItem = function (portlet, sortOrder) {
+    this._createGridItem = function (portlet, sortOrder) {
         // Create the container for the grid item
         var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
-        gridItemDefaults = Styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
+        gridItemDefaults = app.styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
         
         gridItem.view = Ti.UI.createView(gridItemDefaults);
 
@@ -143,15 +141,15 @@ var PortalGridView = function (facade) {
 
         //Add a label to the grid item
         if (portlet.title) {
-            var gridItemLabelDefaults = Styles.gridItemLabel;
+            var gridItemLabelDefaults = app.styles.gridItemLabel;
             gridItemLabelDefaults.text =  portlet.title.toLowerCase();
             gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
             gridItem.view.add(gridItemLabel);
         }
 
         //Add an icon to the grid item
-        gridItemIconDefaults = Styles.gridIcon;
-        gridItemIconDefaults.image = Portal.getIconUrl(portlet);
+        gridItemIconDefaults = app.styles.gridIcon;
+        gridItemIconDefaults.image = app.models.portalProxy.getIconUrl(portlet);
         gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
         gridItemIcon.portlet = portlet;
         gridItem.view.add(gridItemIcon);
@@ -159,19 +157,19 @@ var PortalGridView = function (facade) {
         // if the module has a new item count of more than zero (no new items)
         // add a badge number to the home screen icon
         if (portlet.newItemCount > 0) {
-            gridBadgeBackgroundDefaults = Styles.gridBadgeBackground;
+            gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
             gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
             gridItem.view.add(gridBadgeBackground);
 
-            gridBadgeNumberDefaults = Styles.gridBadgeNumber;
+            gridBadgeNumberDefaults = app.styles.gridBadgeNumber;
             gridBadgeNumberDefaults.text = portlet.newItemCount;
             gridBadgeNumber = Ti.UI.createLabel(gridBadgeNumberDefaults);
             gridItem.view.add(gridBadgeNumber);
         }
         
-        gridItemIcon.addEventListener("singletap", onGridItemClick);
-        gridItemIcon.addEventListener("touchstart", onGridItemPressDown);
-        gridItemIcon.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onGridItemPressUp);
+        gridItemIcon.addEventListener("singletap", this._onGridItemClick);
+        gridItemIcon.addEventListener("touchstart", this._onGridItemPressDown);
+        gridItemIcon.addEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', this._onGridItemPressUp);
         
         
         gridItem.view.visible = false;
@@ -181,80 +179,80 @@ var PortalGridView = function (facade) {
             if (gridItem.view.getParent()) {
                 Ti.API.info("GridItem has a parent");
                 gridItem.view.getParent().remove(gridItem.view);
-                delete _gridItems['fName'+portlet.fname];
+                delete _self._gridItems['fName'+portlet.fname];
             }
             else {
                 Ti.API.error("gridItem doesn't have a parent");
             }
         };
         
-        _gridItems['fName'+portlet.fname] = gridItem;
+        _self._gridItems['fName'+portlet.fname] = gridItem;
         
         return gridItem;
     };
     
-    rearrangeGrid = function (e) {
+    this._rearrangeGrid = function (e) {
         var _gridItem;
         Ti.API.debug("rearrangeGrid() in PortalGridView");
-        if (User.isGuestUser() || !Portal.getIsPortalReachable()) {
+        if (app.models.userProxy.isGuestUser() || !app.models.portalProxy.getIsPortalReachable()) {
             Ti.API.debug("User.isGuestUser() in rearrangeGrid()");
-            if (Device.isAndroid()) {
-                _gridView.height = Ti.Platform.displayCaps.platformHeight - Styles.titleBar.height - Styles.homeGuestNote.height - 25; //20 is the height of the status bar
+            if (app.models.deviceProxy.isAndroid()) {
+                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - app.styles.homeGuestNote.height - 25; //20 is the height of the status bar
             }
             else {
-                _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - Styles.titleBar.height - Styles.homeGuestNote.height;
+                _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height - app.styles.homeGuestNote.height;
             }
         }
         else {
             Ti.API.debug("!User.isGuestUser() in rearrangeGrid()");
-            if (Device.isAndroid()) {
-                _gridView.height = Ti.Platform.displayCaps.platformHeight - Styles.titleBar.height - 25;//20 is the size of the status bar.
+            if (app.models.deviceProxy.isAndroid()) {
+                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//20 is the size of the status bar.
             }
             else {
-                _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - Styles.titleBar.height;
+                _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
             }
             
         }
         
-        for (_gridItem in _gridItems) {
-            if (_gridItems.hasOwnProperty(_gridItem)) {
-                _gridItems[_gridItem].view.top = Styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / numColumns) * completeHeight;
-                _gridItems[_gridItem].view.left = leftPadding + Styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % numColumns) * completeWidth;
-                _gridItems[_gridItem].view.show();
+        for (_gridItem in _self._gridItems) {
+            if (_self._gridItems.hasOwnProperty(_gridItem)) {
+                _self._gridItems[_gridItem].view.top = app.styles.gridItem.padding + Math.floor(_self._gridItems[_gridItem].sortOrder / _self._numColumns) * _self._completeHeight;
+                _self._gridItems[_gridItem].view.left = _self._leftPadding + app.styles.gridItem.padding + (_self._gridItems[_gridItem].sortOrder % _self._numColumns) * _self._completeWidth;
+                _self._gridItems[_gridItem].view.show();
             }
             else {
                 Ti.API.debug("NOT _gridItems.hasOwnProperty(_gridItem)");
             }
         }
         
-        _self.setState(_self.states.COMPLETE); 
+        _self.setState(PortalGridView.states.COMPLETE); 
     };
     
-    onLayoutCleanup = function (e) {
+    this._onLayoutCleanup = function (e) {
         Ti.API.debug("onLayoutCleanup() in PortalGridView");
-        if (e.win === PortalWindow.key) {
-            Ti.API.debug("current window is " + PortalWindow.key);
-            didLayoutCleanup = true;
-            _self.setState(_self.states.HIDDEN);
+        if (e.win === app.controllers.portalWindowController.key) {
+            Ti.API.debug("current window is " + app.controllers.portalWindowController.key);
+            _self._didLayoutCleanup = true;
+            _self.setState(PortalGridView.states.HIDDEN);
         }
         else {
-            Ti.API.debug("current window is NOT " + PortalWindow.key + ', it\'s ' + e.win);
+            Ti.API.debug("current window is NOT " + app.controllers.portalWindowController.key + ', it\'s ' + e.win);
         }
     };
     
-    onOrientationChange = function (e) {
-        if (Windows.getCurrentWindow() === PortalWindow.key || Device.isAndroid()) {
+    this._onOrientationChange = function (e) {
+        if (app.models.windowManager.getCurrentWindow() === app.controllers.portalWindowController.key || app.models.deviceProxy.isAndroid()) {
             //If the device is Android, we always want to rearrange the grid to 
             //account for the back button circumventing the windowManager
-            rearrangeGrid();
+            this._rearrangeGrid();
         }
     };
     
-    onGridItemClick = function (e) {
+    this._onGridItemClick = function (e) {
         var func;
-        Ti.API.debug("onGridItemClick() in PortalWindowController " + JSON.stringify(e.source.portlet));
+        Ti.API.debug("onGridItemClick() in PortalGridView " + JSON.stringify(e.source.portlet));
         if (e.source.portlet) {
-            func = Portal.getShowPortletFunc(e.source.portlet);
+            func = app.models.portalProxy.getShowPortletFunc(e.source.portlet);
             func();
         }
         else {
@@ -262,14 +260,14 @@ var PortalGridView = function (facade) {
         }
     };
     
-    onGridItemPressDown = function (e) {
+    this._onGridItemPressDown = function (e) {
         Ti.API.debug("Home button pressed down, source: " + e.source.type);
-        if(Device.isIOS()) {
+        if(app.models.deviceProxy.isIOS()) {
             if (e.source.type === 'gridIcon') {
-                e.source.getParent().opacity = Styles.gridItem.pressOpacity;
+                e.source.getParent().opacity = app.styles.gridItem.pressOpacity;
             }
             else {
-                e.source.opacity = Styles.gridItem.pressOpacity;
+                e.source.opacity = app.styles.gridItem.pressOpacity;
             }
         }
         else {
@@ -277,9 +275,9 @@ var PortalGridView = function (facade) {
         }
     };
 
-    onGridItemPressUp = function (e) {
+    this._onGridItemPressUp = function (e) {
         Ti.API.debug("Home button pressed up");
-        if(Device.isIOS()) {
+        if(app.models.deviceProxy.isIOS()) {
             if (e.source.type === 'gridIcon') {
                 e.source.getParent().setOpacity(1.0);
             }
@@ -292,7 +290,15 @@ var PortalGridView = function (facade) {
         }
     };
     
-    init ();
+    this._init ();
+};
+
+PortalGridView.states = {
+    INCLUDED    : "Included",
+    INITIALIZED : "Initialized",
+    LOADING     : "Loading",
+    COMPLETE    : "Complete",
+    HIDDEN      : "Hidden"
 };
 
 PortalGridView.events = {

@@ -62,10 +62,9 @@ startup = function (e) {
     Titanium.include('js/models/UserProxy.js');
     Titanium.include('js/models/WindowManager.js');
     
-    Titanium.include('js/views/PortalWindowView.js');
     Titanium.include('js/views/PortalGridView.js');
+    Titanium.include('js/views/PortalWindowView.js');
     
-
     Titanium.include('js/controllers/DirectoryWindowController.js');
     Titanium.include('js/controllers/MapWindowController.js');
 
