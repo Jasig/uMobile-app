@@ -199,6 +199,7 @@ var UI = function (facade) {
         };
         
         onSettingsClick = function (e) {
+            Ti.API.debug("onSettingsClick in UI");
             app.models.windowManager.openWindow(SettingsWindow.key);
         };
 

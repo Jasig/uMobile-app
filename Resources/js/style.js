@@ -276,7 +276,7 @@ var Styles = function (facade) {
         //PORTAL VIEW STYLES
         portalWindow: {
             url: 'js/views/WindowContext.js',
-            exitOnClose: true,
+            exitOnClose: false,
             navBarHidden: true,
             fullScreen: false,
             orientationModes: [

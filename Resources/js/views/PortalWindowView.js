@@ -49,10 +49,11 @@ var PortalWindowView = function (facade) {
         _self.setState(PortalWindowView.states['INITIALIZED']);
     };
     
-    this.open = function (modules, options) {
-        this._portlets = modules;
+    this.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
+        //portlets, _isGuestLayout, _isPortalReachable, _isFirstOpen
+        this._portlets = _modules;
         
-        if (!_self._win || app.models.deviceProxy.isIOS()) {
+        // if (!_self._win || app.models.deviceProxy.isIOS()) {
             Ti.API.debug("Create and open the portal window");
             //We want to create a new window and redraw the whole UI each time on iOS
             _self._win = Ti.UI.createWindow(app.styles.portalWindow);
@@ -73,9 +74,13 @@ var PortalWindowView = function (facade) {
             _self._contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
             _self._win.add(_self._contentLayer);
             
-            this._isGuestLayout = options.isGuestLayout || false;
+            this._isGuestLayout = _isGuestLayout || false;
             if (this._isGuestLayout) {
+                Ti.API.debug("Adding guest layout indicator in open() in PortalWindowView. _isGuestLayout: " + _isGuestLayout + " & this._isGuestLayout: " + this._isGuestLayout);
                 this._addSpecialLayoutIndicator();
+            }
+            else {
+                this._removeSpecialLayoutIndicator();
             }
             
             if (!_self._activityIndicator || app.models.deviceProxy.isIOS()) {
@@ -103,14 +108,14 @@ var PortalWindowView = function (facade) {
         	    infoButton: true
         	});
             _self._win.add(_self._titleBar);
-        }
+        /*}
         else if (_self._win && !_self._win.visible) {
             Ti.API.debug("Just show the portal window");
             app.views.portalGridView.updateGrid();
             _self._win.show();
-        }
+        }*/
         
-        if (options.firstLoad) {
+        if (_isFirstOpen) {
             _self.showActivityIndicator(app.localDictionary.gettingPortlets);
         }
         else {
@@ -122,9 +127,9 @@ var PortalWindowView = function (facade) {
     };
     
     this.close = function () {
-        if (_self._win && app.models.deviceProxy.isIOS()) {
+        // if (_self._win && app.models.deviceProxy.isIOS()) {
             _self._win.close();
-        }
+        /*}
         else if (_self._win) {
         	//Infer that the OS is Android
             try {
@@ -134,7 +139,7 @@ var PortalWindowView = function (facade) {
                 Ti.API.error("Could not remove event listener 'focus' from home window");
             }
             _self._win.hide();
-        }
+        }*/
         _self.setState(PortalWindowView.states.CLOSED);
     };
     
@@ -147,7 +152,7 @@ var PortalWindowView = function (facade) {
     };
     
     this.updateModules = function (modules, options) {
-        Ti.API.debug("updateModules() in PortalWindowView. options.isPortalReachable: " + options.isPortalReachable);
+        Ti.API.debug("updateModules() in PortalWindowView. _isPortalReachable: " + options.isPortalReachable);
         this._isGuestLayout = options.isGuestLayout || false; //Defaults to false unless told otherwise
         _self._isPortalReachable = options.isPortalReachable !== undefined ? options.isPortalReachable : _self._isPortalReachable;
 
@@ -169,27 +174,22 @@ var PortalWindowView = function (facade) {
     };
     
     this.showActivityIndicator = function (message) {
-        if (_self._activityIndicator) {
-            if (message) {
-                _self._activityIndicator.setLoadingMessage(message);
-            }
-            else {
-                _self._activityIndicator.setLoadingMessage(app.localDictionary.loading);
-            }
+        try {
+            _self._activityIndicator.setLoadingMessage(message || app.localDictionary.loading);
             _self._activityIndicator.show();
         }
-        else {
+        catch (e) {
             Ti.API.error("Activity Indicator isn't defined.");
         }
     };
     
     this.hideActivityIndicator = function () {
         Ti.API.debug("hideActivityIndicator() in PortalWindowView");
-        if (_self._activityIndicator) {
+        try {
             _self._activityIndicator.hide();
         }
-        else {
-            Ti.API.debug("activityIndicator not defined.");
+        catch (e) {
+            Ti.API.debug("activityIndicator not defined in hideActivityIndicator.");
         }
     };
     
@@ -198,6 +198,16 @@ var PortalWindowView = function (facade) {
         Titanium.UI.createAlertDialog({ title: title,
             message: message, buttonNames: [app.localDictionary.OK]
             }).show();
+    };
+    this._removeSpecialLayoutIndicator = function () {
+        try {
+            _self._guestNotificationView.hide();
+            _self._contentLayer.remove(_self._guestNotificationView);
+            delete _self._guestNotificationView;
+        }
+        catch (e) {
+            Ti.API.error("Couldn't remove guest layout indicator");
+        }
     };
     
     this._addSpecialLayoutIndicator = function () {
@@ -227,7 +237,7 @@ var PortalWindowView = function (facade) {
                 });
             }
             clearTimeout(_timeout);
-        }, 250);
+        }, 500);
     };
     
     this._onAndroidSearch = function (e) {
@@ -253,9 +263,10 @@ var PortalWindowView = function (facade) {
     };
     
     this._onWindowFocus = function (e) {
-    	if (app.models.windowManager.getCurrentWindow() !== app.controllers.portalWindowController.key) {
-    		app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
-    	}
+        //Jeff Cross Commented this out, wasn't sure the purpose, but it was causing the window manager to reopen the home screen several times.
+    	/*if (app.models.windowManager.getCurrentWindow() !== app.controllers.portalWindowController.key) {
+            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+    	}*/
     };
     
     this._onPortalGridViewStateChange = function (e) {

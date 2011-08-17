@@ -60,23 +60,22 @@ var PortalWindowController = function (facade) {
             Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
             return;
         }
-        else if (!app.models.sessionProxy.isActive(app.models.loginProxy.sessionTimeContexts.NETWORK)) {
+        else if (firstTimeOpened && !app.models.sessionProxy.isActive(app.models.loginProxy.sessionTimeContexts.NETWORK)) {
             app.models.loginProxy.establishNetworkSession();
         }
-
-        if (firstTimeOpened) {
-            app.views.portalWindowView.open( [], { firstLoad: true });
-            firstTimeOpened = false;
-        }
-        else {
-            app.views.portalWindowView.open( app.models.portalProxy.getPortlets(), { isGuestLayout: app.models.userProxy.isGuestUser(), isPortalReachable: app.models.portalProxy.getIsPortalReachable() });
-        }
         
+        //Open the portal window
+        //portlets, isGuestLayout, isPortalReachable, isFirstOpen
+        app.views.portalWindowView.open(app.models.portalProxy.getPortlets(), app.models.userProxy.isGuestUser(), app.models.portalProxy.getIsPortalReachable(), firstTimeOpened);
+        firstTimeOpened = false;        
     };
     
     this.close = function () {
-        if (app.views.portalWindowView) {
+        try {
             app.views.portalWindowView.close();
+        }
+        catch (e) {
+            Ti.API.error("Couldn't close portalWindowView");
         }
     };
     

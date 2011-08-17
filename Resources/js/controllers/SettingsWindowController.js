@@ -333,6 +333,7 @@ var SettingsWindowController = function(facade){
     };
     
     onPortalProxyPortletsLoaded = function (e) {
+        Ti.API.debug("onPortalProxyPortletsLoaded in SettingsWindowController");
         if (wasFormSubmitted) {
             app.models.windowManager.openWindow(PortalWindow.key);
             wasFormSubmitted = false;
