@@ -65,7 +65,7 @@ var PortalGridView = function (facade) {
         
     };
     
-    this.getGridView = function (options) {
+    this.getGridView = function () {
         if (_self._didLayoutCleanup || !_self._gridView) {
             _self._gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
         }
@@ -75,7 +75,6 @@ var PortalGridView = function (facade) {
     
     this.updateGrid = function (portlets) {
         Ti.API.debug("updateGrid() in PortalGridView");
-        Ti.API.debug("_gridItems: " + JSON.stringify(_self._gridItems));
         var _portlets = portlets || [], _item;
 
         /*

@@ -291,7 +291,7 @@ var Styles = function (facade) {
         portalContentLayer: {
             top: defaults.TITLEBAR_HEIGHT,
             width: OS === 'android' ? 'auto' : Ti.Platform.displayCaps.platformWidth,
-            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
+            height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - 20,
             backgroundColor: "#2A4F95"
         },
         homeGrid: {

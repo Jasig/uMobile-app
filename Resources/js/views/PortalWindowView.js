@@ -52,7 +52,7 @@ var PortalWindowView = function (facade) {
     this.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
         //portlets, _isGuestLayout, _isPortalReachable, _isFirstOpen
         this._portlets = _modules;
-        this._isGuestLayout = _isGuestLayout || false;
+        _self._isGuestLayout = _isGuestLayout || false;
         
         //We want to create a new window and redraw the whole UI each time on iOS
         _self._win = Ti.UI.createWindow(app.styles.portalWindow);
@@ -63,57 +63,32 @@ var PortalWindowView = function (facade) {
         this.drawUI();
         
         _self.showActivityIndicator(app.localDictionary.gettingPortlets);
-        
+        app.views.portalGridView.updateGrid(this._portlets);
+                
         this._onDimensionChanges();
         _self.setState(PortalWindowView.states.OPENED);
     };
     
     this.close = function () {
-        // if (_self._win && app.models.deviceProxy.isIOS()) {
-            _self._win.close();
-        /*}
-        else if (_self._win) {
-        	//Infer that the OS is Android
-            try {
-                _self._win.removeEventListener('android:search', this._onAndroidSearch);
-            }
-            catch (e) {
-                Ti.API.error("Could not remove event listener 'focus' from home window");
-            }
-            _self._win.hide();
-        }*/
+        // Close the window to free up memory.
+        _self._win.close();
         _self.setState(PortalWindowView.states.CLOSED);
     };
     
     this.drawUI = function () {
-        
+        Ti.API.debug("drawUI() in PortalWindowView");
+        // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
         _self._contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
         _self._win.add(_self._contentLayer);
         
-        if (this._isGuestLayout) {
-            this._addSpecialLayoutIndicator();
-        }
-        else {
-            this._removeSpecialLayoutIndicator();
-        }
+        _self._contentLayer.add(app.views.portalGridView.getGridView());
         
-        if (!_self._activityIndicator || app.models.deviceProxy.isIOS()) {
-            _self._activityIndicator = app.UI.createActivityIndicator();
-        }
-        else {
-            try {
-                _self._win.remove(_self._activityIndicator);
-            }
-            catch (err) {
-                Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
-            }            
-        }
-
+        //Hide or show the guest layout indicator
+        Ti.API.debug("_self._isGuestLayout in drawUI(): " + _self._isGuestLayout ? "yes" : "no");
+        this[_self._isGuestLayout ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator']();
+            
+        _self._activityIndicator = app.UI.createActivityIndicator();
         _self._win.add(_self._activityIndicator);
-
-        _self._contentLayer.add(app.views.portalGridView.getGridView({isGuestLayout: this._isGuestLayout, winHeight: _self._win.height }));
-        _self.showActivityIndicator();
-        app.views.portalGridView.updateGrid(this._portlets);
 
         _self._titleBar = app.UI.createTitleBar({
     	    title: app.localDictionary.homeTitle,
@@ -132,25 +107,23 @@ var PortalWindowView = function (facade) {
         return this._state;
     };
     
-    this.updateModules = function (modules, options) {
-        Ti.API.debug("updateModules() in PortalWindowView. _isPortalReachable: " + options.isPortalReachable);
-        this._isGuestLayout = options.isGuestLayout || false; //Defaults to false unless told otherwise
-        _self._isPortalReachable = options.isPortalReachable !== undefined ? options.isPortalReachable : _self._isPortalReachable;
+    this.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
+        Ti.API.debug("updateModules(" + _modules + ", " + _isPortalReachable + ", " + _isGuestLayout + ") in PortalWindowView.");
+        _self._isGuestLayout = _isGuestLayout || false; //Defaults to false unless told otherwise
+        
+        _self._isPortalReachable = _isPortalReachable || _self._isPortalReachable;
 
-        this._portlets = modules;
+        this._portlets = _modules;
+        
         if (app.models.windowManager.getCurrentWindow() === app.controllers.portalWindowController.key) {
             if (app.views.portalGridView) {
                 app.views.portalGridView.updateGrid(_self._portlets);
-                // _self.showActivityIndicator(); //This should be quick enough that an indicator is not necessary
             }
         }
-        Ti.API.debug("Is portal reachable in updateModules? " + _self._isPortalReachable);
-        if (this._isGuestLayout || !_self._isPortalReachable) {
+        if (_self._isGuestLayout || !_self._isPortalReachable) {
             this._addSpecialLayoutIndicator();
         }
-        else {
-            Ti.API.debug("No need to add specialLayoutIndicator in PortalWindowView > updateModules(). this._isGuestLayout: " + this._isGuestLayout + " & _self._isPortalReachable: " + _self._isPortalReachable );
-        }
+        
         _self.hideActivityIndicator();
     };
     
@@ -183,7 +156,6 @@ var PortalWindowView = function (facade) {
     this._removeSpecialLayoutIndicator = function () {
         try {
             _self._guestNotificationView.hide();
-            _self._contentLayer.remove(_self._guestNotificationView);
             delete _self._guestNotificationView;
         }
         catch (e) {
@@ -205,15 +177,15 @@ var PortalWindowView = function (facade) {
             _self._guestNotificationView.add(guestNotificationLabel);
 
             _self._contentLayer.add(_self._guestNotificationView);
+
+            // If portal isn't reachable
             if (!_self._isPortalReachable) {
                 _self._guestNotificationView.addEventListener('click', function (e) {
-                    Ti.API.info("Clicked portal notification, establishing network session");
                     Ti.App.fireEvent(PortalWindowView.events['NOTIFICATION_CLICKED']);
                 });            
             }
             else {
                 _self._guestNotificationView.addEventListener('click', function (e) {
-                    Ti.API.info("Clicked guest notification, opening settings");
                     app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
                 });
             }
@@ -230,29 +202,14 @@ var PortalWindowView = function (facade) {
         // We want to make sure the content layer (the view holding the icons) 
         // is the appropriate size when the device rotates
         // Let's update the Styles reference again for good measure
-        
-        try {
+        if (_self._contentLayer) {
             _self._contentLayer.width = app.styles.portalContentLayer.width;
-            _self._contentLayer.height = app.styles.portalContentLayer.height;
-        }
-        catch (e) {
-            Ti.API.error("Couldn't set contentLayer dimensions");
+            _self._contentLayer.height = app.styles.portalContentLayer.height;            
         }
         
         if (_self._guestNotificationView) {
             _self._guestNotificationView.top = _self._win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
-            _self._contentLayer.height = app.styles.portalContentLayer.height - app.styles.homeGuestNote.height;
         }
-        else {
-            Ti.API.debug("No guest notification view");
-        }
-    };
-    
-    this._onWindowFocus = function (e) {
-        //Jeff Cross Commented this out, wasn't sure the purpose, but it was causing the window manager to reopen the home screen several times.
-    	/*if (app.models.windowManager.getCurrentWindow() !== app.controllers.portalWindowController.key) {
-            app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
-    	}*/
     };
     
     this._onPortalGridViewStateChange = function (e) {

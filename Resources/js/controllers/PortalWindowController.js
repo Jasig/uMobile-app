@@ -105,9 +105,7 @@ var PortalWindowController = function (facade) {
                     app.views.portalWindowView.alert(app.localDictionary.error, app.localDictionary.failedToLoadPortlets);
                     _newNetworkDowntime = false;
                 }
-                app.views.portalWindowView.updateModules( app.models.portalProxy.getPortlets(), {
-                    isPortalReachable: app.models.portalProxy.getIsPortalReachable()
-                });
+                app.views.portalWindowView.updateModules(app.models.portalProxy.getPortlets(), app.models.portalProxy.getIsPortalReachable(), app.models.userProxy.isGuestUser());
             }
             else {
                 Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
@@ -124,7 +122,7 @@ var PortalWindowController = function (facade) {
     };
     
     onPortletsLoaded = function (e) {
-        app.views.portalWindowView.updateModules(app.models.portalProxy.getPortlets(), {isGuestLayout: app.models.userProxy.isGuestUser(), isPortalReachable: app.models.portalProxy.getIsPortalReachable() });
+        app.views.portalWindowView.updateModules(app.models.portalProxy.getPortlets(), app.models.portalProxy.getIsPortalReachable(), app.models.userProxy.isGuestUser());
     };
     
     onPortalProxyNetworkError = function (e) {
