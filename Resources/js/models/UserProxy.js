@@ -102,7 +102,7 @@ var UserProxy = function (facade) {
     };
     
     this.isGuestUser = function () {
-        if (_layoutUserName === 'guest') {
+        if (!_layoutUserName || _layoutUserName === 'guest') {
             return true;
         }
         else {

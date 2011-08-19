@@ -52,75 +52,17 @@ var PortalWindowView = function (facade) {
     this.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
         //portlets, _isGuestLayout, _isPortalReachable, _isFirstOpen
         this._portlets = _modules;
+        this._isGuestLayout = _isGuestLayout || false;
         
-        // if (!_self._win || app.models.deviceProxy.isIOS()) {
-            Ti.API.debug("Create and open the portal window");
-            //We want to create a new window and redraw the whole UI each time on iOS
-            _self._win = Ti.UI.createWindow(app.styles.portalWindow);
-            _self._win.open();
-            if (app.models.deviceProxy.isAndroid()) {
-            	try {
-            		_self._win.removeEventListener('focus', this._onWindowFocus);
-            	}
-            	catch (e) {
-            		Ti.API.debug("Couldn't remove focus from PortalWindowView");
-            	}
-                // If the user gets to this window via the back button, we want to make sure we adaps
-                // to any recent device orientation changes
-                _self._win.addEventListener('focus', this._onWindowFocus);
-                _self._win.addEventListener('android:search', this._onAndroidSearch);
-            }
+        //We want to create a new window and redraw the whole UI each time on iOS
+        _self._win = Ti.UI.createWindow(app.styles.portalWindow);
+        _self._win.open();
 
-            _self._contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
-            _self._win.add(_self._contentLayer);
-            
-            this._isGuestLayout = _isGuestLayout || false;
-            if (this._isGuestLayout) {
-                Ti.API.debug("Adding guest layout indicator in open() in PortalWindowView. _isGuestLayout: " + _isGuestLayout + " & this._isGuestLayout: " + this._isGuestLayout);
-                this._addSpecialLayoutIndicator();
-            }
-            else {
-                this._removeSpecialLayoutIndicator();
-            }
-            
-            if (!_self._activityIndicator || app.models.deviceProxy.isIOS()) {
-                _self._activityIndicator = app.UI.createActivityIndicator();
-            }
-            else {
-                try {
-                    _self._win.remove(_self._activityIndicator);
-                }
-                catch (err) {
-                    Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
-                }            
-            }
+        _self._win.addEventListener('android:search', this._onAndroidSearch);
 
-            _self._win.add(_self._activityIndicator);
-
-            _self._contentLayer.add(app.views.portalGridView.getGridView({isGuestLayout: this._isGuestLayout, winHeight: _self._win.height }));
-            _self.showActivityIndicator();
-            app.views.portalGridView.updateGrid(this._portlets);
-
-            _self._titleBar = app.UI.createTitleBar({
-        	    title: app.localDictionary.homeTitle,
-        	    settingsButton: true,
-        	    homeButton: false,
-        	    infoButton: true
-        	});
-            _self._win.add(_self._titleBar);
-        /*}
-        else if (_self._win && !_self._win.visible) {
-            Ti.API.debug("Just show the portal window");
-            app.views.portalGridView.updateGrid();
-            _self._win.show();
-        }*/
+        this.drawUI();
         
-        if (_isFirstOpen) {
-            _self.showActivityIndicator(app.localDictionary.gettingPortlets);
-        }
-        else {
-            Ti.API.debug("This isn't the first time we're loading");
-        }
+        _self.showActivityIndicator(app.localDictionary.gettingPortlets);
         
         this._onDimensionChanges();
         _self.setState(PortalWindowView.states.OPENED);
@@ -141,6 +83,45 @@ var PortalWindowView = function (facade) {
             _self._win.hide();
         }*/
         _self.setState(PortalWindowView.states.CLOSED);
+    };
+    
+    this.drawUI = function () {
+        
+        _self._contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
+        _self._win.add(_self._contentLayer);
+        
+        if (this._isGuestLayout) {
+            this._addSpecialLayoutIndicator();
+        }
+        else {
+            this._removeSpecialLayoutIndicator();
+        }
+        
+        if (!_self._activityIndicator || app.models.deviceProxy.isIOS()) {
+            _self._activityIndicator = app.UI.createActivityIndicator();
+        }
+        else {
+            try {
+                _self._win.remove(_self._activityIndicator);
+            }
+            catch (err) {
+                Ti.API.debug("No activityIndicator to remove from win in this.open() in PortalWindowView");
+            }            
+        }
+
+        _self._win.add(_self._activityIndicator);
+
+        _self._contentLayer.add(app.views.portalGridView.getGridView({isGuestLayout: this._isGuestLayout, winHeight: _self._win.height }));
+        _self.showActivityIndicator();
+        app.views.portalGridView.updateGrid(this._portlets);
+
+        _self._titleBar = app.UI.createTitleBar({
+    	    title: app.localDictionary.homeTitle,
+    	    settingsButton: true,
+    	    homeButton: false,
+    	    infoButton: true
+    	});
+        _self._win.add(_self._titleBar);
     };
     
     this.setState = function (newState) {
@@ -250,12 +231,17 @@ var PortalWindowView = function (facade) {
         // is the appropriate size when the device rotates
         // Let's update the Styles reference again for good measure
         
-        if (_self._contentLayer) {
+        try {
             _self._contentLayer.width = app.styles.portalContentLayer.width;
             _self._contentLayer.height = app.styles.portalContentLayer.height;
         }
+        catch (e) {
+            Ti.API.error("Couldn't set contentLayer dimensions");
+        }
+        
         if (_self._guestNotificationView) {
             _self._guestNotificationView.top = _self._win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+            _self._contentLayer.height = app.styles.portalContentLayer.height - app.styles.homeGuestNote.height;
         }
         else {
             Ti.API.debug("No guest notification view");
