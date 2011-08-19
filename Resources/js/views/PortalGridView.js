@@ -243,7 +243,7 @@ var PortalGridView = function (facade) {
         if (app.models.windowManager.getCurrentWindow() === app.controllers.portalWindowController.key || app.models.deviceProxy.isAndroid()) {
             //If the device is Android, we always want to rearrange the grid to 
             //account for the back button circumventing the windowManager
-            this._rearrangeGrid();
+            _self._rearrangeGrid();
         }
     };
     
