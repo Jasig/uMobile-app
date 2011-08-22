@@ -55,13 +55,19 @@ var PortalWindowView = function (facade) {
         _self._isGuestLayout = _isGuestLayout || false;
         
         //We want to create a new window and redraw the whole UI each time on iOS
-        _self._win = Ti.UI.createWindow(app.styles.portalWindow);
-        _self._win.open();
-
+        if (!_self._win){
+            _self._win = Ti.UI.createWindow(app.styles.portalWindow);
+            _self._win.open();
+            
+            this.drawUI();
+        }
+        else {
+            this.drawUI();
+            _self._win.show();
+        }
+        
         _self._win.addEventListener('android:search', this._onAndroidSearch);
 
-        this.drawUI();
-        
         _self.showActivityIndicator(app.localDictionary.gettingPortlets);
         app.views.portalGridView.updateGrid(this._portlets);
                 
@@ -71,13 +77,21 @@ var PortalWindowView = function (facade) {
     
     this.close = function () {
         // Close the window to free up memory.
-        _self._win.close();
+        _self._win.hide();
         _self.setState(PortalWindowView.states.CLOSED);
     };
     
     this.drawUI = function () {
         Ti.API.debug("drawUI() in PortalWindowView");
         // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
+        if (_self._contentLayer) {
+            try {
+                _self._win.remove(_self._contentLayer);
+            }
+            catch (e) {
+                Ti.API.error("Couldn't remove content layer");
+            }
+        }
         _self._contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
         _self._win.add(_self._contentLayer);
         
