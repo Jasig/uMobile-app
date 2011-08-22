@@ -18,146 +18,135 @@
  */
 
 var PortletWindowController = function (facade) {
-    var win, _self = this, app = facade, 
-        Device, Windows, PortalWindow, Styles, UI, LocalDictionary, Login, UPM, Session, Config,
-        activityIndicator, titleBar, navBar, navBackButton, webView,
-        initialized, winListeners = [], activePortlet, _homeURL, _homeFName, _lastVideoOpened = '', isListeningForAndroidBack = false,
-        pathToRoot = '../../',
-        init, drawWindow, getQualifiedURL, getLocalUrl, getFNameFromURL,
-        includePortlet, onPortletLoad, onPortletBeforeLoad, onWindowOpen, onAppResume, onBackBtnPress, onAndroidBack;
+    var _self = this;
 
-    init = function () {
+    //Pseudo private variables
+    this._initialized;
+    this._activePortlet;
+    this._homeURL;
+    this._homeFName;
+    this._lastVideoOpened = '';
+    this._isListeningForAndroidBack = false;
+    this._app = facade;
+    
+    //Pseudo private views
+    this._win;
+    this._activityIndicator;
+    this._titleBar;
+    this._navBar;
+    this._webView;
+
+    this._init = function () {
         Ti.API.debug("init() in PortletWindowController");
         _self.key = 'portlet';
-        
-        Config = app.config;
-        
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
-            Styles = app.styles;
-        });
+        _self._initialized = true;
     };
     
-    this.close = function (options) {
+    this.close = function () {
         Ti.API.info("close() in PortletWindowController");
-        if (webView && Device && Device.isAndroid()) {
-            webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
+        if (_self._webView && _self._app.models.deviceProxy.isAndroid()) {
+            _self._webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
         }
-        if (win) {
-        	removeAndroidBackListener();
-            win.close();
+        if (_self._win) {
+        	_self._removeAndroidBackListener();
+            _self._win.close();
         }
     };
     
     this.open = function (portlet) {
         Ti.API.debug("open() in PortletWindowController");
         
-        if (!initialized) {
-            //Declare pointers to facade members
-            Device = app.models.deviceProxy;
-            Windows = app.models.windowManager;
-            PortalWindow = app.controllers.portalWindowController;
-            Styles = app.styles;
-            UI = app.UI;
-            LocalDictionary = app.localDictionary;
-            Login = app.models.loginProxy;
-            UPM = app.config;
-            Session = app.models.sessionProxy;
-            
-            initialized = true;
-        }
-        
         if (portlet) {
-            activePortlet = portlet;
+            _self._activePortlet = portlet;
         }
         else {
             Ti.API.error("No portlet was passed to includePortlet() in PortletWindowController");
-            Windows.openWindow(PortalWindow.key);
+            _self._app.models.windowManager.openWindow(_self._app.controllers.portalWindowController.key);
             return;
         }
         
-        win = Titanium.UI.createWindow({
+        _self._win = Titanium.UI.createWindow({
             url: 'js/views/WindowContext.js',
             key: 'portlet',
-            backgroundColor: Styles.backgroundColor,
+            backgroundColor: _self._app.styles.backgroundColor,
             exitOnClose: false,
             navBarHidden: true
-            // orientationModes: [Ti.UI.PORTRAIT]
         });
-        win.open();
+        _self._win.open();
         
-        titleBar = UI.createTitleBar({
+        _self._titleBar = _self._app.UI.createTitleBar({
             title: portlet.title,
             settingsButton: false,
             homeButton: true
         });
         
         // initialize navigation bar for URLs outside the portal
-        navBar = UI.createSecondaryNavBar({
+        _self._navBar = _self._app.UI.createSecondaryNavBar({
             backButton: true,
-            backButtonHandler: onBackBtnPress,
+            backButtonHandler: _self._onBackBtnPress,
             btnFloatLeft: true
         });
-        navBar.top = 40;
-        navBar.visible = false;
+        _self._navBar.top = 40;
+        _self._navBar.visible = false;
 
-        activityIndicator = UI.createActivityIndicator();
-        activityIndicator.hide();
+        _self._activityIndicator = _self._app.UI.createActivityIndicator();
+        _self._activityIndicator.hide();
 
-        win.add(titleBar);
-        win.add(navBar);
-        if (Device.isIOS() || !webView) {
+        _self._win.add(_self._titleBar);
+        _self._win.add(_self._navBar);
+        if (_self._app.models.deviceProxy.isIOS() || !_self._webView) {
             Ti.API.debug("The device is iOS or there isn't a webView yet");
-            webView = Titanium.UI.createWebView(Styles.portletView);
-            webView.scalePageToFit = true;
-            webView.addEventListener('load', onPortletLoad);
-            webView.addEventListener('beforeload', onPortletBeforeLoad);
-            webView.hide();
+            _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
+            _self._webView.scalePageToFit = true;
+            _self._webView.addEventListener('load', _self._onPortletLoad);
+            _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+            _self._webView.hide();
         }
         else {
             Ti.API.debug("It's Android and there's already a webview");
             try {
-                win.remove(webView);
+                _self._win.remove(_self._webView);
             }
             catch (e) {
                 Ti.API.error("Couldn't remove webview: " + JSON.stringify(e));
             }
         }
-        webView.visible = false;
-        win.add(webView);
-        win.add(activityIndicator);
+        _self._webView.visible = false;
+        _self._win.add(_self._webView);
+        _self._win.add(_self._activityIndicator);
         
-        includePortlet(activePortlet);
+        _self._includePortlet(_self._activePortlet);
 
         Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
-            if (!isHome()) {
-                navBar.visible = true;
-                webView.top = titleBar.height + navBar.height;
-                webView.height = win.height - titleBar.height - navBar.height;
+            if (!_self._isHome()) {
+                _self._navBar.visible = true;
+                _self._webView.top = _self._titleBar.height + _self._navBar.height;
+                _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
             }
             else {
                 Ti.API.info("Webview can't go back");
-                webView.top = titleBar.height;
-                webView.height = win.height - titleBar.height;
+                _self._webView.top = _self._titleBar.height;
+                _self._webView.height = _self._win.height - _self._titleBar.height;
             }
         });
     };
     
-    includePortlet = function (portlet) {
+    this._includePortlet = function (portlet) {
         Ti.API.debug("includePortlet() in PortletWindowController");
-        webView.visible = false;
-        activityIndicator.setLoadingMessage(LocalDictionary.loading);
-        activityIndicator.show();
+        _self._webView.visible = false;
+        _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
+        _self._activityIndicator.show();
         
-        _homeURL = getQualifiedURL(portlet.url);
-        _homeFName = getFNameFromURL(portlet.url);
-        Ti.API.debug("_homeFName in PortletWindowController is " + _homeFName);
-        webView.url = _homeURL;
+        _self._homeURL = _self._getQualifiedURL(portlet.url);
+        _self._homeFName = _self._getFNameFromURL(portlet.url);
+        Ti.API.debug("_homeFName in PortletWindowController is " + _self._homeFName);
+        _self._webView.url = _self._homeURL;
         
-        titleBar.updateTitle(portlet.title);
+        _self._titleBar.updateTitle(portlet.title);
     };
     
-    getFNameFromURL = function (url) {
-    	if (url.indexOf('/' === 0 || url.indexOf(Config.BASE_PORTAL_URL))) {
+    this._getFNameFromURL = function (url) {
+    	if (url.indexOf('/' === 0 || url.indexOf(_self._app.config.BASE_PORTAL_URL))) {
     		var _urlParts = url.split('/');
     		for (var i = 0, iLength = _urlParts.length; i<iLength; i++) {
     			if (_urlParts[i] === 'p') {
@@ -168,7 +157,7 @@ var PortletWindowController = function (facade) {
     	return false;
     };
     
-    getLocalUrl = function (url) {
+    this._getLocalUrl = function (url) {
         var localUrl, isValidSession;
         Ti.API.debug("getLocalUrl() in SharedWebView");
         /*
@@ -177,22 +166,22 @@ var PortletWindowController = function (facade) {
         This method only returns a URL, doesn't actually set the url property of the webview.
         */
 
-        if (!Device.checkNetwork()) {
+        if (!_self._app.models.deviceProxy.checkNetwork()) {
             return false;
         }
 
         //We only need to check the session if it's a link to the portal.
-        isValidSession = Login.isValidWebViewSession();
+        isValidSession = _self._app.models.loginProxy.isValidWebViewSession();
         if (!isValidSession) {
             Ti.API.debug("!isValidSession in getLocalUrl()");
-            Login.getLoginURL(url);
-            localUrl = Login.getLoginURL(url);
+            _self._app.models.loginProxy.getLoginURL(url);
+            localUrl = _self._app.models.loginProxy.getLoginURL(url);
         }
         else {
             Ti.API.debug("isValidSession in getLocalUrl()");
             if (url.indexOf('/') === 0) {
                 Ti.API.info("Index of / in URL is 0");
-                var newUrl = UPM.BASE_PORTAL_URL + url;
+                var newUrl = _self._app.config.BASE_PORTAL_URL + url;
                 Ti.API.info(newUrl);
                 localUrl = newUrl;
             }
@@ -204,44 +193,45 @@ var PortletWindowController = function (facade) {
         return localUrl;
     };
     
-    getQualifiedURL = function (url) {
+    this._getQualifiedURL = function (url) {
         Ti.API.debug("getQualifiedURL() in PortletWindowController");
         var _url;
         if (url.indexOf('/') == 0) {
             Ti.API.debug("Portlet URL is local");
-            if (Session.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW]) {
+            if (_self._app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW]) {
                 Ti.API.debug("Session is active in getQualifiedURL()");
-                _url = getLocalUrl(url);
+                _url = _self._getLocalUrl(url);
             }
             else {
-                Ti.API.debug("Session is NOT active in getQualifiedURL(): " + JSON.stringify(Session.validateSessions()));
-                _url = Login.getLoginURL(url);
+                Ti.API.debug("Session is NOT active in getQualifiedURL(): " + JSON.stringify(_self._app.models.sessionProxy.validateSessions()));
+                _url = _self._app.models.loginProxy.getLoginURL(url);
             }
-            webView.externalModule = false;
-            webView.top = titleBar.height;
-        } else {
+            _self._webView.externalModule = false;
+            _self._webView.top = _self._titleBar.height;
+        }
+        else {
             Ti.API.debug("Portlet URL is external in getQualifiedURL()");
             _url = url;
-            webView.externalModule = true;
+            _self._webView.externalModule = true;
         }
         
         return _url;
     };
     
-    onPortletBeforeLoad = function (e) {
-        Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + webView.url);
+    this._onPortletBeforeLoad = function (e) {
+        Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + _self._webView.url);
 
-        if (Device.isAndroid()) {
-            webView.hide();
+        if (_self._app.models.deviceProxy.isAndroid()) {
+            _self._webView.hide();
         }
         //We want to make sure we don't need to re-establish a session.
-        if (webView.url !== getQualifiedURL(webView.url)) {
-            webView.stopLoading();
-            webView.url = getQualifiedURL(webView.url);
+        if (_self._webView.url !== _self._getQualifiedURL(_self._webView.url)) {
+            _self._webView.stopLoading();
+            _self._webView.url = _self._getQualifiedURL(_self._webView.url);
         }
-        else if (e.url.indexOf('http://m.youtube.com') === 0 && Device.isAndroid()) {
+        else if (e.url.indexOf('http://m.youtube.com') === 0 && _self._app.models.deviceProxy.isAndroid()) {
         	var _URLToOpen = e.url, _params = e.url.split('?')[1].split('&');
-        	webView.stopLoading();
+        	_self._webView.stopLoading();
 
         	for (var i=0, iLength = _params.length; i<iLength; i++) {
         		Ti.API.info("iterating through url params");
@@ -253,80 +243,79 @@ var PortletWindowController = function (facade) {
         		}
         	}
         	Ti.API.info("Opening: " + _URLToOpen);
-        	if (_URLToOpen !== _lastVideoOpened) {
-        	    webView.stopLoading();
+        	if (_URLToOpen !== _self._lastVideoOpened) {
+        	    _self._webView.stopLoading();
                 Ti.Platform.openURL(_URLToOpen);
                 //Set the last video to this, so that it doesn't try to broadcast the intent twice.
-                _lastVideoOpened = _URLToOpen;
+                _self._lastVideoOpened = _URLToOpen;
         	}
         	if (e.url.indexOf('http://m.youtube.com') === 0) {
         	    Ti.API.debug("The WebView is YouTube: " + e.url);
-        	    if (_homeFName === 'videos') {
+        	    if (_self._homeFName === 'videos') {
         	        Ti.API.debug("_homeFName is 'videos', so loading the videos home URL");
-        	        webView.url = _homeURL;
+        	        _self._webView.url = _self._homeURL;
         	    }
         	}
         	else {
         	    Ti.API.debug("The WebView isn't youtube: " + e.url);
         	}
         }
-        activityIndicator.setLoadingMessage(LocalDictionary.loading);
-        activityIndicator.show();
+        _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
+        _self._activityIndicator.show();
     };
     
-    onBackBtnPress = function (e) {
-        webView.goBack();
+    this._onBackBtnPress = function (e) {
+        _self._webView.goBack();
     };
     
-    onAndroidBack = function (e) {
+    this._onAndroidBack = function (e) {
     	Ti.API.debug("onAndroidBack() in PortletWindowController");
-    	webView.goBack();
+    	_self._webView.goBack();
     };
     
-    onPortletLoad = function (e) {
-        var portalIndex = e.url.indexOf(UPM.BASE_PORTAL_URL);
+    this._onPortletLoad = function (e) {
+        var portalIndex = e.url.indexOf(_self._app.config.BASE_PORTAL_URL);
         Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
-        webView.show();
+        _self._webView.show();
         
-        activityIndicator.hide();
+        _self._activityIndicator.hide();
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
             Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts.WEBVIEW});
             //We want to be able to open any video now, so we'll clear the YouTube workaround variable
-            _lastVideoOpened = '';
-            webView.externalModule = false;
-            navBar.visible = false;
-            webView.top = titleBar.height;
-            webView.height = win.height - titleBar.height;
-            Login.updateSessionTimeout(Login.sessionTimeContexts.WEBVIEW);
-            if (isHome()) {
-                removeAndroidBackListener();
+            _self._lastVideoOpened = '';
+            _self._webView.externalModule = false;
+            _self._navBar.visible = false;
+            _self._webView.top = _self._titleBar.height;
+            _self._webView.height = _self._win.height - _self._titleBar.height;
+            _self._app.models.loginProxy.updateSessionTimeout(_self._app.models.loginProxy.sessionTimeContexts.WEBVIEW);
+            if (_self._isHome()) {
+                _self._removeAndroidBackListener();
             }
         }
         else {
-            Ti.API.debug("Visiting an external link. Webview.url = " + webView.url + " & e.url = " + e.url);
-            webView.externalModule = true;
-            if (!isHome(e)) {
-                navBar.visible = true;
-                webView.top = titleBar.height + navBar.height;
-                webView.height = win.height - titleBar.height - navBar.height;
-                addAndroidBackListener();
+            Ti.API.debug("Visiting an external link. Webview.url = " + _self._webView.url + " & e.url = " + e.url);
+            _self._webView.externalModule = true;
+            if (!_self._isHome(e)) {
+                _self._navBar.visible = true;
+                _self._webView.top = _self._titleBar.height + _self._navBar.height;
+                _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
+                _self._addAndroidBackListener();
             }
             else {
                 Ti.API.info("Webview can't go back");
-                webView.top = titleBar.height;
-                webView.height = win.height - titleBar.height;
-                removeAndroidBackListener();
+                _self._webView.top = _self._titleBar.height;
+                _self._webView.height = _self._win.height - _self._titleBar.height;
+                _self._removeAndroidBackListener();
             }
-            Ti.API.debug("WebView height is: " + webView.height);
         }
         
-        webView.show();
-        activityIndicator.hide();
+        _self._webView.show();
+        _self._activityIndicator.hide();
     };
     
-    var isHome = function (e) {
+    this._isHome = function (e) {
         Ti.API.debug('isHome() in PortletWindowController');
         var _newURL, treatAsLocalhost;
         
@@ -338,33 +327,33 @@ var PortletWindowController = function (facade) {
         // New URL will ideally be the event object url (more consistent)
         // If localhost is in the base URL (simulator), we will use webview.url because the
         // e object doesn't contain localhost in the path.
-        _newURL = e ? (_homeURL.indexOf('file://' > -1 && Device.isIOS()) ? treatAsLocalhost(e.url) : e.url) : webView.url;
+        _newURL = e ? (_self._homeURL.indexOf('file://') > -1 && _self._app.models.deviceProxy.isIOS()) ? treatAsLocalhost(e.url) : e.url : _self._webView.url;
         
         //It's either a portlet (with an fname) or not
         //If _homeFName is defined, we'll see if the user is viewing the portlet
         //otherwise we'll check the URL for a match
         
         Ti.API.debug(" Checking this condition: if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL))");
-        Ti.API.debug('_homeFName: ' + _homeFName + ' & getFNameFromURL(): ' + getFNameFromURL(_newURL) + ' & _newURL: ' + _newURL + ' & _homeURL: ' + _homeURL);
+        Ti.API.debug('_homeFName: ' + _self._homeFName + ' & getFNameFromURL(): ' + _self._getFNameFromURL(_newURL) + ' & _newURL: ' + _newURL + ' & _homeURL: ' + _self._homeURL);
         
-    	if ((_homeFName && getFNameFromURL(_newURL) === _homeFName) || (!_homeFName && _newURL === _homeURL)) {
+    	if ((_self._homeFName && _self._getFNameFromURL(_newURL) === _self._homeFName) || (!_self._homeFName && _newURL === _self._homeURL)) {
 			return true;
 		}
     	return false;
     };
     
-    var addAndroidBackListener = function () {
-    	if (!isListeningForAndroidBack && Device.isAndroid()) {
-    		win.addEventListener('android:back', onAndroidBack);
-    		isListeningForAndroidBack = true;
+    this._addAndroidBackListener = function () {
+    	if (!_self._isListeningForAndroidBack && _self._app.models.deviceProxy.isAndroid()) {
+    		_self._win.addEventListener('android:back', _self._onAndroidBack);
+    		_self._isListeningForAndroidBack = true;
     	}
     };
     
-    var removeAndroidBackListener = function () {
-    	if (isListeningForAndroidBack && Device.isAndroid()) {
+    this._removeAndroidBackListener = function () {
+    	if (_self._isListeningForAndroidBack && _self._app.models.deviceProxy.isAndroid()) {
     		try {
-	            win.removeEventListener('android:back', onAndroidBack);
-				isListeningForAndroidBack = false;
+	            _self._win.removeEventListener('android:back', _self._onAndroidBack);
+				_self._isListeningForAndroidBack = false;
 			}
 			catch (e) {
 				Ti.API.error("Couldn't remove android:back event listener in onPortletLoad()");
@@ -372,7 +361,7 @@ var PortletWindowController = function (facade) {
     	}
     };
     
-    if (!initialized) {
-        init();
+    if (!_self._initialized) {
+        _self._init();
     }
 };

@@ -154,16 +154,6 @@ var WindowManager = function (facade) {
         _self.openWindow(PortalWindow);
     };
     
-    hidePreviousWindow = function (options) {
-        // This will hide the previous window, presuming that the previous window
-        // exists, and that it isn't the home screen.
-        if (activityStack.length > 0 && _self.getCurrentWindow() !== PortalWindow.key) {
-            //If there IS a previous window, and the current window isn't home.
-            Ti.API.debug("Hiding previous window: " + activityStack[activityStack.length - 1]);
-            applicationWindows[activityStack[activityStack.length - 1]].close(options);
-        }
-    };
-    
     //Event Handlers
     onAndroidBack = function (e) {
         _self.goBack();
