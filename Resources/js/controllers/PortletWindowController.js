@@ -70,7 +70,15 @@ var PortletWindowController = function (facade) {
             key: 'portlet',
             backgroundColor: _self._app.styles.backgroundColor,
             exitOnClose: false,
-            navBarHidden: true
+            navBarHidden: true,
+            orientationModes: [
+            	Titanium.UI.PORTRAIT,
+            	Titanium.UI.UPSIDE_PORTRAIT,
+            	Titanium.UI.LANDSCAPE_LEFT,
+            	Titanium.UI.LANDSCAPE_RIGHT,
+            	Titanium.UI.FACE_UP,
+            	Titanium.UI.FACE_DOWN
+            ]
         });
         _self._win.open();
         

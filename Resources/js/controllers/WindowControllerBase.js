@@ -16,7 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+ 
 /* 
+* [jcross]: This is an experimental base prototype for window controllers. Currently not implemented.
 * @Interface
 */
 var WindowControllerBase = function () {
