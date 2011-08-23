@@ -57,14 +57,10 @@ var PortalWindowView = function (facade) {
         //We want to create a new window and redraw the whole UI each time on iOS
         if (!_self._win){
             _self._win = Ti.UI.createWindow(app.styles.portalWindow);
-            _self._win.open();
-            
-            this.drawUI();
         }
-        else {
-            this.drawUI();
-            _self._win.show();
-        }
+
+        _self._win[app.models.deviceProxy.isAndroid() ? 'show' : 'open']();
+        this.drawUI();
         
         _self._win.addEventListener('android:search', this._onAndroidSearch);
 
@@ -77,7 +73,7 @@ var PortalWindowView = function (facade) {
     
     this.close = function () {
         // Close the window to free up memory.
-        _self._win.hide();
+        _self._win[app.models.deviceProxy.isAndroid() ? 'hide':'close']();
         _self.setState(PortalWindowView.states.CLOSED);
     };
     
