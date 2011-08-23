@@ -260,7 +260,7 @@ var UI = function (facade) {
                 _navBackButton.left = Styles.secondaryNavBarButton.left;
             }
             _secondaryNavBar.width = Styles.secondaryNavBar.width;
-            _secondaryNavBar.visible = _visibility;
+            _secondaryNavBar.visible = _visibility || true;
         });
         
         return _secondaryNavBar;
