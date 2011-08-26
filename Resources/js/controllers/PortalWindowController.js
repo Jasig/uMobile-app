@@ -124,27 +124,15 @@ var PortalWindowController = function (facade) {
     onPortletsLoaded = function (e) {
         app.views.portalWindowView.updateModules(app.models.portalProxy.getPortlets(), app.models.portalProxy.getIsPortalReachable(), app.models.userProxy.isGuestUser());
     };
-    
+
     onPortalProxyNetworkError = function (e) {
         //This event responds to any type of error in retrieving portlets from the sever.
-        // app.views.portalWindowView.alert(app.localDictionary.error, e.message);
+        app.views.portalWindowView.alert(app.localDictionary.error, e.message);
     };
     
     onPortalDownNotificationClicked = function (e) {
         _newNetworkDowntime = true;
         app.models.loginProxy.establishNetworkSession();
-    };
-    
-    onAppWindowOpened = function (e) {
-        if (app.models.windowManager.getCurrentWindow !== _self.key) {
-            // app.views.portalWindowView.hideActivityIndicator();
-        }
-    };
-    
-    onAppWindowOpening = function (e) {
-        if (win && win.visible) {
-            // app.views.portalWindowView.showActivityIndicator(app.localDictionary.loading);
-        }
     };
     
     if(!initialized) {

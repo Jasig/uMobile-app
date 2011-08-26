@@ -24,6 +24,7 @@ var PortletWindowController = function (facade) {
     this._initialized;
     this._activePortlet;
     this._homeURL;
+    this._currentURL;
     this._homeFName;
     this._lastVideoOpened = '';
     this._isListeningForAndroidBack = false;
@@ -44,13 +45,10 @@ var PortletWindowController = function (facade) {
     
     this.close = function () {
         Ti.API.info("close() in PortletWindowController");
-        if (_self._webView && _self._app.models.deviceProxy.isAndroid()) {
-            _self._webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
-        }
-        if (_self._win) {
-        	_self._removeAndroidBackListener();
-            _self._win.close();
-        }
+        //Set the webview to blank.html if Android, otherwise leave it.
+        if (_self._app.models.deviceProxy.isAndroid()) _self._webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
+    	_self._removeAndroidBackListener();
+        _self._win.close();
     };
     
     this.open = function (portlet) {
@@ -65,21 +63,7 @@ var PortletWindowController = function (facade) {
             return;
         }
         
-        _self._win = Titanium.UI.createWindow({
-            url: 'js/views/WindowContext.js',
-            key: 'portlet',
-            backgroundColor: _self._app.styles.backgroundColor,
-            exitOnClose: false,
-            navBarHidden: true,
-            orientationModes: [
-            	Titanium.UI.PORTRAIT,
-            	Titanium.UI.UPSIDE_PORTRAIT,
-            	Titanium.UI.LANDSCAPE_LEFT,
-            	Titanium.UI.LANDSCAPE_RIGHT,
-            	Titanium.UI.FACE_UP,
-            	Titanium.UI.FACE_DOWN
-            ]
-        });
+        _self._win = Titanium.UI.createWindow(_self._app.styles.portletWindow);
         _self._win.open();
         
         _self._titleBar = _self._app.UI.createTitleBar({
@@ -125,18 +109,7 @@ var PortletWindowController = function (facade) {
         
         _self._includePortlet(_self._activePortlet);
 
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
-            if (!_self._isHome()) {
-                _self._navBar.visible = true;
-                _self._webView.top = _self._titleBar.height + _self._navBar.height;
-                _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
-            }
-            else {
-                Ti.API.info("Webview can't go back");
-                _self._webView.top = _self._titleBar.height;
-                _self._webView.height = _self._win.height - _self._titleBar.height;
-            }
-        });
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
     };
     
     this._includePortlet = function (portlet) {
@@ -145,10 +118,11 @@ var PortletWindowController = function (facade) {
         _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
         _self._activityIndicator.show();
         
-        _self._homeURL = _self._getQualifiedURL(portlet.url);
+        _self._homeURL = _self._webView.url = _self._currentURL = _self._getQualifiedURL(portlet.url);
         _self._homeFName = _self._getFNameFromURL(portlet.url);
         Ti.API.debug("_homeFName in PortletWindowController is " + _self._homeFName);
-        _self._webView.url = _self._homeURL;
+        // _self._webView.url = _self._homeURL;
+        
         
         _self._titleBar.updateTitle(portlet.title);
     };
@@ -272,6 +246,20 @@ var PortletWindowController = function (facade) {
         _self._activityIndicator.show();
     };
     
+    this._onDimensionChanges = function (e) {
+        if (_self._isHome()) {
+            Ti.API.info("Webview is home, can't go back");
+            _self._navBar.visible = false;
+            _self._webView.top = _self._titleBar.height;
+            _self._webView.height = _self._win.height - _self._titleBar.height;
+        }
+        else {
+            _self._navBar.visible = true;
+            _self._webView.top = _self._titleBar.height + _self._navBar.height;
+            _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
+        }
+    };
+    
     this._onBackBtnPress = function (e) {
         _self._webView.goBack();
     };
@@ -285,6 +273,7 @@ var PortletWindowController = function (facade) {
         var portalIndex = e.url.indexOf(_self._app.config.BASE_PORTAL_URL);
         Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
         _self._webView.show();
+        _self._currentURL = e.url;
         
         _self._activityIndicator.hide();
         
@@ -335,7 +324,8 @@ var PortletWindowController = function (facade) {
         // New URL will ideally be the event object url (more consistent)
         // If localhost is in the base URL (simulator), we will use webview.url because the
         // e object doesn't contain localhost in the path.
-        _newURL = e ? (_self._homeURL.indexOf('file://') > -1 && _self._app.models.deviceProxy.isIOS()) ? treatAsLocalhost(e.url) : e.url : _self._webView.url;
+        // Conditions: if e, use the e.url property, potentially with "localhost added". Otherwise, get the url from the webview.
+        _newURL = (_self._homeURL.indexOf('file://') > -1 && _self._app.models.deviceProxy.isIOS()) ? treatAsLocalhost(_self._currentURL) : _self._currentURL;
         
         //It's either a portlet (with an fname) or not
         //If _homeFName is defined, we'll see if the user is viewing the portlet

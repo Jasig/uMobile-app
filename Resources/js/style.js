@@ -65,6 +65,21 @@ var Styles = function (facade) {
             top: defaults.TITLEBAR_HEIGHT,
             height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT
         },
+        portletWindow: {
+            url: 'js/views/WindowContext.js',
+            key: 'portlet',
+            backgroundColor: "#fff",
+            exitOnClose: false,
+            navBarHidden: true,
+            orientationModes: [
+            	Titanium.UI.PORTRAIT,
+            	Titanium.UI.UPSIDE_PORTRAIT,
+            	Titanium.UI.LANDSCAPE_LEFT,
+            	Titanium.UI.LANDSCAPE_RIGHT,
+            	Titanium.UI.FACE_UP,
+            	Titanium.UI.FACE_DOWN
+            ]
+        },
         textField: {
             height: OS === 'iphone' ? 35 : 45,
         	width: 150,
@@ -276,7 +291,7 @@ var Styles = function (facade) {
         //PORTAL VIEW STYLES
         portalWindow: {
             url: 'js/views/WindowContext.js',
-            exitOnClose: false,
+            exitOnClose: true,
             navBarHidden: true,
             fullScreen: false,
             orientationModes: [
