@@ -113,10 +113,6 @@ var PortalGridView = function (facade) {
                 //Create the item, implicity add to local array, and explicitly assign sort order
                 _self._gridView.add(this._createGridItem(_portlets[i], i).view);
             }
-            else if (_self._didLayoutCleanup) {
-                Ti.API.debug('didLayoutCleanup');
-                _self._gridView.add(this._createGridItem(_portlets[i], i).view);
-            }
             else {
                 Ti.API.debug("else");
                 //We just need to tell the item its new sort order

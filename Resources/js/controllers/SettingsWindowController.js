@@ -357,14 +357,24 @@ var SettingsWindowController = function(facade){
         if (activityIndicator) {
             activityIndicator.hide();
         }
+        
+        //If we at least received a user layout back from the service
         if (e.user && e.user != User.getCredentials().username && wasFormSubmitted) {
-            /*if (!win || !win.visible) {
-                app.models.windowManager.openWindow(_self.key);
-            }*/
+            Ti.API.debug("Condition 1 passes in onSessionError() in Settings Window Controller");
             Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
                 message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
                 }).show();
         }
+        else if (wasFormSubmitted){
+            Ti.API.debug("Condition 2 passes in onSessionError() in Settings Window Controller");
+            Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                message: LocalDictionary.couldNotLoginToPortal, buttonNames: [LocalDictionary.OK]
+                }).show();
+        }
+        else {
+            Ti.API.debug("Settings form wasn't submitted");
+        }
+        
         wasFormSubmitted = false;
         wasLogOutClicked = false;
     };

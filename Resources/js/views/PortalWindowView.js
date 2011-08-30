@@ -100,9 +100,6 @@ var PortalWindowView = function (facade) {
     
     this._updateUI = function (_isGuestLayout, _isPortalReachable) {
         Ti.API.debug("_updateUI() in PortalWindowView");
-        //This method is for when a UI is already added to the window, but just needs updated
-        _self._contentLayer.clear();
-        _self._contentLayer.add(app.views.portalGridView.getGridView());
         this[_isGuestLayout || !_isPortalReachable ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator'](_isGuestLayout, _isPortalReachable);
     };
     

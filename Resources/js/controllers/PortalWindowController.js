@@ -40,8 +40,8 @@ var PortalWindowController = function (facade) {
     	Ti.App.addEventListener(PortalProxy.events['GETTING_PORTLETS'], onGettingPortlets);
     	Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], onPortletsLoaded);
         Ti.App.addEventListener(PortalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
-        Ti.App.addEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
-        Ti.App.addEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
+        // Ti.App.addEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
+        // Ti.App.addEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
         Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
         Ti.App.addEventListener(PortalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
         Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
@@ -127,7 +127,11 @@ var PortalWindowController = function (facade) {
 
     onPortalProxyNetworkError = function (e) {
         //This event responds to any type of error in retrieving portlets from the sever.
-        app.views.portalWindowView.alert(app.localDictionary.error, e.message);
+        if (_newNetworkDowntime) {
+            app.views.portalWindowView.alert(app.localDictionary.error, e.message);
+            _newNetworkDonwtime = false;
+        }
+        
     };
     
     onPortalDownNotificationClicked = function (e) {
