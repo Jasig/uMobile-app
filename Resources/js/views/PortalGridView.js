@@ -108,7 +108,7 @@ var PortalGridView = function (facade) {
         
         for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
             //Place the item in the scrollview and listen for singletaps
-            if (!_self._gridItems['fName' + _portlets[i].fname]) {
+            if (!_self._gridItems['fName' + _portlets[i].fname] || app.models.deviceProxy.isIOS()) {
                 Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
                 //Create the item, implicity add to local array, and explicitly assign sort order
                 _self._gridView.add(this._createGridItem(_portlets[i], i).view);
