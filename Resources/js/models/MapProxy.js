@@ -189,7 +189,7 @@ var MapProxy = function (facade) {
                         
                     }
                     db.close();
-                    this._onPointsLoaded();                
+                    _self._onPointsLoaded();
                 }
                 else {
                     //No location objects in the response, so fire an event so the controller is aware.
