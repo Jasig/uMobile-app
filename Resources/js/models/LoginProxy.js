@@ -87,9 +87,10 @@ var LoginProxy = function (facade) {
         Possible options: 
             isUnobtrusive (Bool), tells it not to reload anything, just establish-the session again behind the scenes
         */
-        Ti.API.info("Establishing Network Session");
+        
 
         credentials = app.models.userProxy.getCredentials();
+        Ti.API.info("Establishing Network Session for username: " + credentials.username);
         _self._variables['loginMethod'](credentials, options);
     };
     

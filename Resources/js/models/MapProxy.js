@@ -47,8 +47,7 @@ var MapProxy = function (facade) {
     };
     
     this.search = function (query, opts) {
-
-        var result = [], _db, queryResult;
+        var result = [], _db, queryResult, _isFirstResult = true;
 
         //If a search isn't already executing
         if(query != '' && typeof query == 'string') {
@@ -64,37 +63,39 @@ var MapProxy = function (facade) {
             queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ?', query, query, query);
             
             //Iterate through the query result to add objects to the result array
-            if (queryResult) {
-                _self._variables['mapCenter'].latLow = parseFloat(queryResult.fieldByName('latitude'));
-                _self._variables['mapCenter'].latHigh = parseFloat(queryResult.fieldByName('latitude')); 
-                _self._variables['mapCenter'].longLow = parseFloat(queryResult.fieldByName('longitude'));
-                _self._variables['mapCenter'].longHigh = parseFloat(queryResult.fieldByName('longitude'));
-                
-                while (queryResult.isValidRow()) {
-                    result.push({
-                        title: queryResult.fieldByName('title'),
-                        address: queryResult.fieldByName('address'),
-                        latitude: parseFloat(queryResult.fieldByName('latitude')),
-                        longitude: parseFloat(queryResult.fieldByName('longitude')),
-                        img: queryResult.fieldByName('img')
-                    });
-                    Ti.API.info(queryResult.fieldByName('img'));
-                    if (queryResult.fieldByName('latitude') < _self._variables['mapCenter'].latLow) {
-                        _self._variables['mapCenter'].latLow = parseFloat(queryResult.fieldByName('latitude'));
-                    }
-                    else if (queryResult.fieldByName('latitude') > _self._variables['mapCenter'].latHigh) {
-                        _self._variables['mapCenter'].latHigh = parseFloat(queryResult.fieldByName('latitude'));
-                    }
-                    if (queryResult.fieldByName('longitude') < _self._variables['mapCenter'].longLow) {
-                        _self._variables['mapCenter'].longLow = parseFloat(queryResult.fieldByName('longitude'));
-                    }
-                    else if (queryResult.fieldByName('longitude') > _self._variables['mapCenter'].longHigh) {
-                        _self._variables['mapCenter'].longHigh = parseFloat(queryResult.fieldByName('longitude'));
-                    }
-                    queryResult.next();
+            while (queryResult.isValidRow()) {
+                if (_isFirstResult) {
+                    _self._variables['mapCenter'].latLow = parseFloat(queryResult.fieldByName('latitude'));
+                    _self._variables['mapCenter'].latHigh = parseFloat(queryResult.fieldByName('latitude')); 
+                    _self._variables['mapCenter'].longLow = parseFloat(queryResult.fieldByName('longitude'));
+                    _self._variables['mapCenter'].longHigh = parseFloat(queryResult.fieldByName('longitude'));
                 }
-                queryResult.close();
+                result.push({
+                    title: queryResult.fieldByName('title'),
+                    address: queryResult.fieldByName('address'),
+                    latitude: parseFloat(queryResult.fieldByName('latitude')),
+                    longitude: parseFloat(queryResult.fieldByName('longitude')),
+                    img: queryResult.fieldByName('img')
+                });
+                Ti.API.info(queryResult.fieldByName('img'));
+                if (queryResult.fieldByName('latitude') < _self._variables['mapCenter'].latLow) {
+                    _self._variables['mapCenter'].latLow = parseFloat(queryResult.fieldByName('latitude'));
+                }
+                else if (queryResult.fieldByName('latitude') > _self._variables['mapCenter'].latHigh) {
+                    _self._variables['mapCenter'].latHigh = parseFloat(queryResult.fieldByName('latitude'));
+                }
+                if (queryResult.fieldByName('longitude') < _self._variables['mapCenter'].longLow) {
+                    _self._variables['mapCenter'].longLow = parseFloat(queryResult.fieldByName('longitude'));
+                }
+                else if (queryResult.fieldByName('longitude') > _self._variables['mapCenter'].longHigh) {
+                    _self._variables['mapCenter'].longHigh = parseFloat(queryResult.fieldByName('longitude'));
+                }
+                _isFirstResult = false;
+                queryResult.next();
             }
+            queryResult.close();
+
+
             _db.close();
             
             this._onSearchComplete(result);

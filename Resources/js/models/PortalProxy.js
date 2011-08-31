@@ -110,6 +110,7 @@ var PortalProxy = function (facade) {
 
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
+                Ti.API.debug('Layout for user: ' + layoutClient.responseText);
                 var responseJSON, nativeModules = app.config.getLocalModules(), module;
                 _self.setIsPortalReachable(true);
                 responseJSON = JSON.parse(layoutClient.responseText);
