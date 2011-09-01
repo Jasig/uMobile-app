@@ -50,6 +50,49 @@ var PortalProxy = function (facade) {
         Ti.API.debug("getPortlets() in PortalProxy");
         return _self._variables.portlets;
     };
+    
+    this.setPortlets = function (_portlets) {
+        Ti.API.debug("setPortlets() in PortalProxy. Portlets: " + JSON.stringify(_portlets));
+        var nativeModules = app.config.getLocalModules(), module;
+        _self._variables.portlets = _portlets;
+
+        for (module in nativeModules) {
+            if (nativeModules.hasOwnProperty(module)) {
+                nativeModules[module].added = false;
+            }
+        }
+        for (var i = 0, iLength = _self._variables.portlets.length; i<iLength; i++ ) {
+            if(nativeModules[_self._variables.portlets[i].fname]) {
+                Ti.API.info("We have a match for " + _self._variables.portlets[i].fname + ", and it is: " + JSON.stringify(nativeModules[_self._variables.portlets[i].fname]));
+                _self._variables.portlets[i] = nativeModules[_self._variables.portlets[i].fname];
+                nativeModules[_self._variables.portlets[i].fname].added = true;
+            }
+        }
+
+        for (module in nativeModules) {
+            if (nativeModules.hasOwnProperty(module)) {
+                Ti.API.info("Remaining module: " + JSON.stringify(nativeModules[module]));
+                if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
+                    // As long as the module has a title, hasn't already been added, and doesn't 
+                    // require the fname for the module to be returned in the personalized layout.
+                    _self._variables.portlets.push(nativeModules[module]);
+                }
+                else {
+                    Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
+                }                        
+            }
+        }
+
+        _self._variables.portlets.sort(_self._sortPortlets);
+
+        // uPortal 3.2 isn't capable of sending the layout as JSON, so the response
+        // will be an XML document with the appropriate JSON contained in a 
+        // "json-layout" element.  Parse this element as JSON and use the data 
+        // array as the initial module list.
+        // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
+
+        Ti.App.fireEvent(PortalProxy.events['PORTLETS_LOADED']);
+    };
 
     this.getPortletByFName = function (fname) {
     	for (var i=0, iLength = _self._variables.portlets.length; i<iLength; i++ ) {
@@ -111,48 +154,12 @@ var PortalProxy = function (facade) {
             onGetPortletsComplete = function (e) {
                 Ti.API.debug('onGetPortletsComplete with responseHeader: ' + layoutClient.getResponseHeader('Content-Type'));
                 Ti.API.debug('Layout for user: ' + layoutClient.responseText);
-                var responseJSON, nativeModules = app.config.getLocalModules(), module;
+                var responseJSON;
                 _self.setIsPortalReachable(true);
                 responseJSON = JSON.parse(layoutClient.responseText);
-                _self._variables.portlets = responseJSON.layout;
-
-                for (module in nativeModules) {
-                    if (nativeModules.hasOwnProperty(module)) {
-                        nativeModules[module].added = false;
-                    }
+                if (responseJSON.user === app.models.userProxy.getCredentials().username || !app.models.userProxy.getCredentials().username) {
+                    _self.setPortlets(responseJSON.layout);
                 }
-                for (var i = 0, iLength = _self._variables.portlets.length; i<iLength; i++ ) {
-
-                    if(nativeModules[_self._variables.portlets[i].fname]) {
-                        Ti.API.info("We have a match for " + _self._variables.portlets[i].fname + ", and it is: " + JSON.stringify(nativeModules[_self._variables.portlets[i].fname]));
-                        _self._variables.portlets[i] = nativeModules[_self._variables.portlets[i].fname];
-                        nativeModules[_self._variables.portlets[i].fname].added = true;
-                    }
-                }
-
-                for (module in nativeModules) {
-                    if (nativeModules.hasOwnProperty(module)) {
-                        Ti.API.info("Remaining module: " + JSON.stringify(nativeModules[module]));
-                        if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
-                            // As long as the module has a title, hasn't already been added, and doesn't 
-                            // require the fname for the module to be returned in the personalized layout.
-                            _self._variables.portlets.push(nativeModules[module]);
-                        }
-                        else {
-                            Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
-                        }                        
-                    }
-                }
-
-                _self._variables.portlets.sort(_self._sortPortlets);
-
-                // uPortal 3.2 isn't capable of sending the layout as JSON, so the response
-                // will be an XML document with the appropriate JSON contained in a 
-                // "json-layout" element.  Parse this element as JSON and use the data 
-                // array as the initial module list.
-                // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
-
-                Ti.App.fireEvent(PortalProxy.events['PORTLETS_LOADED'], {user: responseJSON.user});
             };
 
             onGetPortletsError = function (e) {

@@ -220,9 +220,15 @@ var SettingsWindowController = function(facade){
         if (usernameInput) { usernameInput.blur(); }
         if (Device.checkNetwork()) {
             if (usernameInput.value === '') {
-                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                    message: LocalDictionary.enterAUserName, buttonNames: [LocalDictionary.OK]
-                    }).show();
+                try {
+                    Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                        message: LocalDictionary.enterAUserName, buttonNames: [LocalDictionary.OK]
+                        }).show();
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't fire alert. Window is probably closed.");
+                }
+                
             }
             else {
                 wasFormSubmitted = true;
@@ -303,9 +309,14 @@ var SettingsWindowController = function(facade){
                     _toast.show();
                 }
                 else {
-                    Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
-                        message: LocalDictionary.authenticationSuccessful, buttonNames: [LocalDictionary.OK]
-                        }).show();                    
+                    try {
+                        Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
+                            message: LocalDictionary.authenticationSuccessful, buttonNames: [LocalDictionary.OK]
+                            }).show();
+                    }
+                    catch (e) {
+                        Ti.API.error("Couldn't fire alert. Window is probably closed.");
+                    }
                 }
             }
             else if (e.user === 'guest' && wasLogOutClicked) {
@@ -317,18 +328,28 @@ var SettingsWindowController = function(facade){
                     _toast.show();
                 }
                 else {
-                    Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
-                        message: LocalDictionary.logOutSuccessful, buttonNames: [LocalDictionary.OK]
-                        }).show();
-                        logOutButton.hide();
+                    try {                     
+                        Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
+                            message: LocalDictionary.logOutSuccessful, buttonNames: [LocalDictionary.OK]
+                            }).show();
+                            logOutButton.hide();
+                    }
+                    catch (e) {
+                        Ti.API.error("Couldn't fire alert. Window is probably closed.");
+                    }
                 }
             }
             else if (e.user === 'guest') {
                 wasFormSubmitted = false;
                 logOutButton.hide();
-                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                    message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
-                    }).show();
+                try {
+                    Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                        message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
+                        }).show();
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't fire alert. Window is probably closed.");
+                }
             }
             else {
                 Ti.API.error("Logout must not've worked, user: " + e.user);
@@ -361,15 +382,25 @@ var SettingsWindowController = function(facade){
         //If we at least received a user layout back from the service
         if (e.user && e.user != User.getCredentials().username && wasFormSubmitted) {
             Ti.API.debug("Condition 1 passes in onSessionError() in Settings Window Controller");
-            Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
-                }).show();
+            try {
+                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                    message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
+                    }).show();
+            }
+            catch (e) {
+                Ti.API.error("Couldn't fire alert. Window is probably closed.");
+            }
         }
         else if (wasFormSubmitted){
             Ti.API.debug("Condition 2 passes in onSessionError() in Settings Window Controller");
-            Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                message: LocalDictionary.couldNotLoginToPortal, buttonNames: [LocalDictionary.OK]
-                }).show();
+            try {
+                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
+                    message: LocalDictionary.couldNotLoginToPortal, buttonNames: [LocalDictionary.OK]
+                    }).show();
+            }
+            catch (e) {
+                Ti.API.error("Couldn't fire alert. Window is probably closed.");
+            }
         }
         else {
             Ti.API.debug("Settings form wasn't submitted");

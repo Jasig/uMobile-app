@@ -153,12 +153,17 @@ var PortalWindowView = function (facade) {
             }).show();
     };
     this._removeSpecialLayoutIndicator = function (_isGuestLayout, _isPortalReachable) {
-        try {
+        if (app.models.deviceProxy.isAndroid() && _self._guestNotificationView) {
             _self._guestNotificationView.hide();
-            delete _self._guestNotificationView;
         }
-        catch (e) {
-            Ti.API.error("Couldn't remove guest layout indicator");
+        else {
+            try {
+                _self._guestNotificationView.hide();
+                delete _self._guestNotificationView;
+            }
+            catch (e) {
+                Ti.API.error("Couldn't remove guest layout indicator");
+            }            
         }
     };
     
@@ -168,25 +173,31 @@ var PortalWindowView = function (facade) {
         // We add the layout indicator after 250 seconds so that any soft 
         // keyboards have an opportunity to close before the height is calculated
         _timeout = setTimeout(function () {
-            _self._guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
-            _self._guestNotificationView.top = _self._win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
-
-            guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
-            guestNotificationLabel.text = _isPortalReachable ? app.localDictionary.viewingGuestLayout : app.localDictionary.portalNotReachable;
-            _self._guestNotificationView.add(guestNotificationLabel);
-
-            _self._contentLayer.add(_self._guestNotificationView);
-
-            // If portal isn't reachable
-            if (!_isPortalReachable) {
-                _self._guestNotificationView.addEventListener('click', function (e) {
-                    Ti.App.fireEvent(PortalWindowView.events['NOTIFICATION_CLICKED']);
-                });
+            if (app.models.deviceProxy.isAndroid() && _self._guestNotificationView) {
+                _self._guestNotificationView.show();
             }
             else {
-                _self._guestNotificationView.addEventListener('click', function (e) {
-                    app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
-                });
+                _self._guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
+                _self._guestNotificationView.top = _self._win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+
+                guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+                guestNotificationLabel.text = _isPortalReachable ? app.localDictionary.viewingGuestLayout : app.localDictionary.portalNotReachable;
+                _self._guestNotificationView.add(guestNotificationLabel);
+
+                _self._contentLayer.add(_self._guestNotificationView);
+
+                // If portal isn't reachable
+                if (!_isPortalReachable) {
+                    _self._guestNotificationView.addEventListener('click', function (e) {
+                        Ti.App.fireEvent(PortalWindowView.events['NOTIFICATION_CLICKED']);
+                    });
+                }
+                else {
+                    _self._guestNotificationView.addEventListener('click', function (e) {
+                        app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+                    });
+                }
+                
             }
             clearTimeout(_timeout);
         }, 500);

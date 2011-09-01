@@ -47,9 +47,10 @@ var LocalLogin = function (facade) {
     };
     
     onLoginComplete = function (e) {
-        Ti.API.debug("onLoginComplete() in LocalLogin");
+        Ti.API.debug("onLoginComplete() in LocalLogin. Response: " + client.responseText);
         
         app.models.userProxy.setLayoutUserName(app.models.loginProxy.getLayoutUser(client));
+        app.models.portalProxy.setPortlets(JSON.parse(client.responseText).layout);
         
         if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === 'guest') {
             Ti.API.info("_layoutUser matches credentials.username");

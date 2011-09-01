@@ -89,15 +89,15 @@ var PortalGridView = function (facade) {
             if (_self._gridItems.hasOwnProperty(_item)) {
                 for (var j=0, jLength = _portlets.length; j<jLength; j++) {
                     if ('fName' + _portlets[j].fname === _item) {
-                        Ti.API.debug("Not destroying: " + _item);
+                        // Ti.API.debug("Not destroying: " + _item);
                         break;
                     }
                     else if (j == jLength - 1) {
-                        Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _self._gridItems[_item].destroy);
+                        // Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _self._gridItems[_item].destroy);
                         _self._gridItems[_item].destroy();
                     }
                     else {
-                        Ti.API.info("Didn't destroy " + _item + " because it wasn't " + _portlets[j].fname);
+                        // Ti.API.info("Didn't destroy " + _item + " because it wasn't " + _portlets[j].fname);
                     }
                 }
             }
@@ -109,12 +109,12 @@ var PortalGridView = function (facade) {
         for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
             //Place the item in the scrollview and listen for singletaps
             if (!_self._gridItems['fName' + _portlets[i].fname] || app.models.deviceProxy.isIOS()) {
-                Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
+                // Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
                 //Create the item, implicity add to local array, and explicitly assign sort order
                 _self._gridView.add(this._createGridItem(_portlets[i], i).view);
             }
             else {
-                Ti.API.debug("else");
+                // Ti.API.debug("else");
                 //We just need to tell the item its new sort order
                 _self._gridItems['fName' + _portlets[i].fname].sortOrder = i;
             }
@@ -128,62 +128,71 @@ var PortalGridView = function (facade) {
         // Create the container for the grid item
         var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
         gridItemDefaults = app.styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
-        
-        gridItem.view = Ti.UI.createView(gridItemDefaults);
+        if ('fName'+portlet.fname in _self._gridItems) {
+            _self._gridItems['fName'+portlet.fname].view.show();
+            _self._gridItems['fName'+portlet.fname].sortOrder = sortOrder;
+            return _self._gridItems['fName'+portlet.fname];
+        }
+        else {
+            gridItem.view = Ti.UI.createView(gridItemDefaults);
 
-        gridItem.view.portlet = portlet;
-        gridItem.sortOrder = sortOrder;
+            gridItem.view.portlet = portlet;
+            gridItem.sortOrder = sortOrder;
 
-        //Add a label to the grid item
-        if (portlet.title) {
-            var gridItemLabelDefaults = app.styles.gridItemLabel;
-            gridItemLabelDefaults.text =  portlet.title.toLowerCase();
-            gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
-            gridItem.view.add(gridItemLabel);
+            //Add a label to the grid item
+            if (portlet.title) {
+                var gridItemLabelDefaults = app.styles.gridItemLabel;
+                gridItemLabelDefaults.text =  portlet.title.toLowerCase();
+                gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
+                gridItem.view.add(gridItemLabel);
+            }
+
+            //Add an icon to the grid item
+            gridItemIconDefaults = app.styles.gridIcon;
+            gridItemIconDefaults.image = app.models.portalProxy.getIconUrl(portlet);
+            gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
+            gridItemIcon.portlet = portlet;
+            gridItem.view.add(gridItemIcon);
+
+            // if the module has a new item count of more than zero (no new items)
+            // add a badge number to the home screen icon
+            if (portlet.newItemCount > 0) {
+                gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
+                gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
+                gridItem.view.add(gridBadgeBackground);
+
+                gridBadgeNumberDefaults = app.styles.gridBadgeNumber;
+                gridBadgeNumberDefaults.text = portlet.newItemCount;
+                gridBadgeNumber = Ti.UI.createLabel(gridBadgeNumberDefaults);
+                gridItem.view.add(gridBadgeNumber);
+            }
+
+            gridItemIcon.addEventListener("singletap", this._onGridItemClick);
+            gridItemIcon.addEventListener("touchstart", this._onGridItemPressDown);
+            gridItemIcon.addEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', this._onGridItemPressUp);
+
+
+            gridItem.view.visible = false;
+
+            gridItem.destroy = function () {
+                Ti.API.info("Destroying GridItem!");
+    /*            if (gridItem.view.getParent()) {
+                    Ti.API.info("GridItem has a parent");
+                    gridItem.view.getParent().remove(gridItem.view);
+                    delete _self._gridItems['fName'+portlet.fname];
+                }
+                else {
+                    Ti.API.error("gridItem doesn't have a parent");
+                }*/
+                gridItem.view.hide();
+                gridItem.sortOrder = -1;
+            };
+
+            _self._gridItems['fName'+portlet.fname] = gridItem;
+
+            return gridItem;
         }
 
-        //Add an icon to the grid item
-        gridItemIconDefaults = app.styles.gridIcon;
-        gridItemIconDefaults.image = app.models.portalProxy.getIconUrl(portlet);
-        gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
-        gridItemIcon.portlet = portlet;
-        gridItem.view.add(gridItemIcon);
-        
-        // if the module has a new item count of more than zero (no new items)
-        // add a badge number to the home screen icon
-        if (portlet.newItemCount > 0) {
-            gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
-            gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
-            gridItem.view.add(gridBadgeBackground);
-
-            gridBadgeNumberDefaults = app.styles.gridBadgeNumber;
-            gridBadgeNumberDefaults.text = portlet.newItemCount;
-            gridBadgeNumber = Ti.UI.createLabel(gridBadgeNumberDefaults);
-            gridItem.view.add(gridBadgeNumber);
-        }
-        
-        gridItemIcon.addEventListener("singletap", this._onGridItemClick);
-        gridItemIcon.addEventListener("touchstart", this._onGridItemPressDown);
-        gridItemIcon.addEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', this._onGridItemPressUp);
-        
-        
-        gridItem.view.visible = false;
-        
-        gridItem.destroy = function () {
-            Ti.API.info("Destroying GridItem!");
-            if (gridItem.view.getParent()) {
-                Ti.API.info("GridItem has a parent");
-                gridItem.view.getParent().remove(gridItem.view);
-                delete _self._gridItems['fName'+portlet.fname];
-            }
-            else {
-                Ti.API.error("gridItem doesn't have a parent");
-            }
-        };
-        
-        _self._gridItems['fName'+portlet.fname] = gridItem;
-        
-        return gridItem;
     };
     
     this._rearrangeGrid = function (e) {
@@ -201,7 +210,7 @@ var PortalGridView = function (facade) {
         else {
             Ti.API.debug("!User.isGuestUser() in rearrangeGrid()");
             if (app.models.deviceProxy.isAndroid()) {
-                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//20 is the size of the status bar.
+                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//25 is the size of the status bar.
             }
             else {
                 _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
