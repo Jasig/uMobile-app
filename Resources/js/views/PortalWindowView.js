@@ -31,6 +31,7 @@ var PortalWindowView = function (facade) {
 
     //Pseudo-private variables 
     this._state;
+    this._layoutIndicator = PortalWindowView.indicatorStates['NONE'];
 
     //Pseudo-private views
     this._win;
@@ -42,6 +43,7 @@ var PortalWindowView = function (facade) {
     this.init = function () {
         Ti.App.addEventListener(PortalGridView.events['STATE_CHANGE'], this._onPortalGridViewStateChange);
         Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onDimensionChanges);
+        Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], this._onPortletsLoaded);
 
         _self.setState(PortalWindowView.states['INITIALIZED']);
     };
@@ -82,9 +84,17 @@ var PortalWindowView = function (facade) {
         
         _self._contentLayer.add(app.views.portalGridView.getGridView());
         
-        //Hide or show the guest layout indicator
-        Ti.API.debug("_isGuestLayout in _drawUI(): " + _isGuestLayout ? "yes" : "no");
-        this[_isGuestLayout || !_isPortalReachable ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator'](_isGuestLayout, _isPortalReachable);
+        switch (_self._layoutIndicator) {
+            case PortalWindowView.indicatorStates['GUEST']:
+                _self._addSpecialLayoutIndicator(true, true);
+                break;
+            case PortalWindowView.indicatorStates['NO_USER']:
+                _self._addSpecialLayoutIndicator(false, false);
+                break;
+            default:
+                _self._removeSpecialLayoutIndicator(false, true);
+        }
+
             
         _self._activityIndicator = app.UI.createActivityIndicator();
         _self._win.add(_self._activityIndicator);
@@ -100,7 +110,17 @@ var PortalWindowView = function (facade) {
     
     this._updateUI = function (_isGuestLayout, _isPortalReachable) {
         Ti.API.debug("_updateUI() in PortalWindowView");
-        this[_isGuestLayout || !_isPortalReachable ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator'](_isGuestLayout, _isPortalReachable);
+        // this[_isGuestLayout || !_isPortalReachable ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator'](_isGuestLayout, _isPortalReachable);
+        switch (_self._layoutIndicator) {
+            case PortalWindowView.indicatorStates['GUEST']:
+                _self._addSpecialLayoutIndicator(true, true);
+                break;
+            case PortalWindowView.indicatorStates['NO_USER']:
+                _self._addSpecialLayoutIndicator(false, false);
+                break;
+            default:
+                _self._removeSpecialLayoutIndicator(false, true);
+        }
     };
     
     this.setState = function (newState) {
@@ -118,9 +138,6 @@ var PortalWindowView = function (facade) {
             if (app.views.portalGridView) {
                 app.views.portalGridView.updateGrid(_modules);
             }
-        }
-        if (_isGuestLayout || !_isPortalReachable) {
-            this._addSpecialLayoutIndicator();
         }
         
         _self.hideActivityIndicator();
@@ -163,7 +180,7 @@ var PortalWindowView = function (facade) {
             }
             catch (e) {
                 Ti.API.error("Couldn't remove guest layout indicator");
-            }            
+            }
         }
     };
     
@@ -172,35 +189,41 @@ var PortalWindowView = function (facade) {
         
         // We add the layout indicator after 250 seconds so that any soft 
         // keyboards have an opportunity to close before the height is calculated
-        _timeout = setTimeout(function () {
+        // _timeout = setTimeout(function () {
             if (app.models.deviceProxy.isAndroid() && _self._guestNotificationView) {
+                Ti.API.debug("_self._guestNotificationView.show(). _layoutIndicator: " + _self._layoutIndicator);
                 _self._guestNotificationView.show();
             }
             else {
-                _self._guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
-                _self._guestNotificationView.top = _self._win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+                Ti.API.debug("create _self._guestNotificationView. _layoutIndicator: " + _self._layoutIndicator);
+                if (_self._contentLayer) {
+                    _self._guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
+                    _self._guestNotificationView.top = _self._win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
 
-                guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
-                guestNotificationLabel.text = _isPortalReachable ? app.localDictionary.viewingGuestLayout : app.localDictionary.portalNotReachable;
-                _self._guestNotificationView.add(guestNotificationLabel);
+                    guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+                    guestNotificationLabel.text = _isPortalReachable ? app.localDictionary.viewingGuestLayout : app.localDictionary.portalNotReachable;
+                    _self._guestNotificationView.add(guestNotificationLabel);
 
-                _self._contentLayer.add(_self._guestNotificationView);
+                    _self._contentLayer.add(_self._guestNotificationView);
 
-                // If portal isn't reachable
-                if (!_isPortalReachable) {
-                    _self._guestNotificationView.addEventListener('click', function (e) {
-                        Ti.App.fireEvent(PortalWindowView.events['NOTIFICATION_CLICKED']);
-                    });
+                    // If portal isn't reachable
+                    if (!_isPortalReachable) {
+                        _self._guestNotificationView.addEventListener('click', function (e) {
+                            Ti.App.fireEvent(PortalWindowView.events['NOTIFICATION_CLICKED']);
+                        });
+                    }
+                    else {
+                        _self._guestNotificationView.addEventListener('click', function (e) {
+                            app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+                        });
+                    }
                 }
                 else {
-                    _self._guestNotificationView.addEventListener('click', function (e) {
-                        app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
-                    });
+                    Ti.API.debug("No contentLayer exists to add layoutIndicator");
                 }
-                
             }
-            clearTimeout(_timeout);
-        }, 500);
+            // clearTimeout(_timeout);
+        // }, 500);
     };
     
     this._onAndroidSearch = function (e) {
@@ -222,6 +245,23 @@ var PortalWindowView = function (facade) {
         }
     };
     
+    this._onPortletsLoaded = function (e) {
+        Ti.API.debug("_onPortletsLoaded() in PortalWindowView. State:" + e.state || 'none');
+        switch (app.models.userProxy.getLayoutUserName()) {
+            case LoginProxy.userTypes['GUEST']:
+                _self._addSpecialLayoutIndicator(true);
+                _self._layoutIndicator = PortalWindowView.indicatorStates['GUEST'];
+                break;
+            case LoginProxy.userTypes['NO_USER']:
+                _self._addSpecialLayoutIndicator(false);
+                _self._layoutIndicator = PortalWindowView.indicatorStates['NO_PORTAL'];
+                break;
+            default:
+                _self._removeSpecialLayoutIndicator(false, true);
+                _self._layoutIndicator = PortalWindowView.indicatorStates['NONE'];
+        }
+    };
+    
     this._onPortalGridViewStateChange = function (e) {
         Ti.API.debug("onPortalGridViewStateChange() in PortalWindowView. State is: " + e.state);
         if (app.views.portalGridView && _self._activityIndicator && e.state === PortalGridView.states['COMPLETE']) {
@@ -233,11 +273,17 @@ var PortalWindowView = function (facade) {
 };
 
 PortalWindowView.states = {
-    INCLUDED    : "Included",
-    INITIALIZED : "Initialized",
-    OPENED      : "Opened",
-    HIDDEN      : "Hidden",
-    CLOSED      : "Closed"
+    INCLUDED        : "Included",
+    INITIALIZED     : "Initialized",
+    OPENED          : "Opened",
+    HIDDEN          : "Hidden",
+    CLOSED          : "Closed"
+};
+
+PortalWindowView.indicatorStates = {
+    NONE        : "None",
+    GUEST       : "Guest",
+    NO_PORTAL   : "NoPortal"
 };
 
 PortalWindowView.events = {

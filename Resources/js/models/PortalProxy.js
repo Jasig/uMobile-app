@@ -23,6 +23,7 @@ var PortalProxy = function (facade) {
     var app = facade, _self = this;
     
     this._variables = {
+        currentState: PortalProxy.states['INITIALIZED'],
         isGuestLayout: true,
         isPortalReachable: false,
         portlets: [],
@@ -84,14 +85,10 @@ var PortalProxy = function (facade) {
         }
 
         _self._variables.portlets.sort(_self._sortPortlets);
-
-        // uPortal 3.2 isn't capable of sending the layout as JSON, so the response
-        // will be an XML document with the appropriate JSON contained in a 
-        // "json-layout" element.  Parse this element as JSON and use the data 
-        // array as the initial module list.
-        // Ti.API.debug("layoutClient XML: " + JSON.stringify(layoutClient.responseXML));
-
-        Ti.App.fireEvent(PortalProxy.events['PORTLETS_LOADED']);
+        
+        //Set the state of the portal proxy. Assume local portlets only if _portlets.length < 1
+        _self.setState(PortalProxy.states[_portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
+        Ti.App.fireEvent(PortalProxy.events['PORTLETS_LOADED'],{state: _self.getState()});
     };
 
     this.getPortletByFName = function (fname) {
@@ -234,8 +231,24 @@ var PortalProxy = function (facade) {
             Ti.API.error("Couldn't set value of _isPortalReachable, wasn't type 'boolean' but was type: " + typeof newval);
         }
     };
+    
+    this.setState = function (_state) {
+        for (var state in PortalProxy.states) {
+            if (PortalProxy.states.hasOwnProperty(state)) {
+                if (PortalProxy.states[state] === _state) {
+                    _self._variables.currentState = _state;
+                }
+            }
+        }
+        Ti.API.debug("PortalProxy state set to:" + _self.getState());
+    };
+    
+    this.getState = function () {
+        return _self._variables.currentState;
+    };
 
 };
+
 //Implemented as a static object so other scripts can access before an instance of the proxy exists.
 PortalProxy.events = {
     GETTING_PORTLETS            : 'PortalProxyGettingPortlets',
@@ -243,4 +256,10 @@ PortalProxy.events = {
     PORTLETS_RETRIEVED_FAILURE  : 'PortalProxyPortletsRetrievedFailure',
     PORTLETS_LOADED             : 'PortalProxyPortletsLoaded', //When portlets are sorted, organized, ready to use
     NETWORK_ERROR               : 'PortalProxyNetworkError'
+};
+PortalProxy.states = {
+    INITIALIZED             : "Initialized",
+    PORTLETS_LOADED         : "PortletsLoaded",
+    PORTLETS_LOADED_LOCAL   : "PortletsLoadedLocal",
+    PORTLETS_LOADING        : "PortletsLoading"
 };

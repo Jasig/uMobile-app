@@ -89,15 +89,10 @@ var PortalWindowController = function (facade) {
     
     onNetworkSessionSuccess = function (e) {
         _newNetworkDowntime = true;
-        app.models.portalProxy.getPortletsForUser();
     };
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
-        // if (e.user && e.user === 'guest') {
-            app.models.portalProxy.getPortletsForUser();
-        // }
-        // else if (!e.user) {
         if (!e.user) {
             Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + app.models.portalProxy.getIsPortalReachable());
             if (app.models.deviceProxy.checkNetwork()) {

@@ -108,10 +108,15 @@ var LoginProxy = function (facade) {
     
     this.getLayoutUser = function (client) {
         var _layout, _username, _responseXML;
-        _layout = JSON.parse(client.responseText);
-        _username = _layout.user;
+        try {
+            _layout = JSON.parse(client.responseText);
+            _username = _layout.user;
+        }
+        catch (e) {
+            Ti.API.error("Was not able to parse layout and get username");
+        }
         
-        return _username;
+        return _username || LoginProxy.userTypes['NO_USER'];
     };
     
     this.onNetworkError = function (e) {
@@ -153,4 +158,9 @@ LoginProxy.sessionTimeContexts = {
 LoginProxy.loginMethods = {
     CAS: "Cas",
     LOCAL_LOGIN: "LocalLogin"
+};
+
+LoginProxy.userTypes = {
+    GUEST   : "guest",
+    NO_USER : "NoUser"
 };

@@ -27,7 +27,7 @@ var LocalLogin = function (facade) {
         Ti.API.debug("login() in LocalLogin");
         
         credentials = creds;
-        url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + app.config.PORTAL_CONTEXT + Ti.Network.encodeURIComponent('/layout.json?timestamp=' + (new Date()).getTime());
+        url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + app.config.PORTAL_CONTEXT + '/layout.json';
         Ti.API.info("Requesting URL: " + url);
 
         client = Titanium.Network.createHTTPClient({
