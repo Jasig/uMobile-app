@@ -95,13 +95,20 @@ var DirectoryWindowView = function (facade) {
     };
     
     this.alert = function (attributes) {
-        var alertDialog = Titanium.UI.createAlertDialog({
-            title: attributes.title,
-            message: attributes.message,
-            buttonNames: [LocalDictionary.OK]
-        });
-        activityIndicator.hide();
-        alertDialog.show();
+        if (win.visible) {
+            try {
+                var alertDialog = Titanium.UI.createAlertDialog({
+                    title: attributes.title,
+                    message: attributes.message,
+                    buttonNames: [LocalDictionary.OK]
+                });
+                activityIndicator.hide();
+                alertDialog.show();
+            }
+            catch (e) {
+                Ti.API.error("Couldn't show alert in DirectoryWindowView " + e);
+            }
+        }
     };
     
     this.showActivityIndicator = function (message) {
@@ -138,12 +145,19 @@ var DirectoryWindowView = function (facade) {
         }
         else {
             Ti.API.debug("Not more than 0 results");
-            alertDialog = Titanium.UI.createAlertDialog({
-                title: LocalDictionary.noResults,
-                message: LocalDictionary.noSearchResults,
-                buttonNames: [LocalDictionary.OK]
-            });
-            alertDialog.show();
+            if (win.visible) {
+                try {
+                    alertDialog = Titanium.UI.createAlertDialog({
+                        title: LocalDictionary.noResults,
+                        message: LocalDictionary.noSearchResults,
+                        buttonNames: [LocalDictionary.OK]
+                    });
+                    alertDialog.show();
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't show alert in DirectoryWindowView: " + e);
+                }
+            }
             peopleListTable.setData(defaultTableData);
         }
     };

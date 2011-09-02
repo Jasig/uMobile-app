@@ -164,10 +164,18 @@ var PortalWindowView = function (facade) {
     };
     
     this.alert = function (title, message) {
+        Ti.API.debug("alert() in PortalWindowView");
         _self.hideActivityIndicator();
-        Titanium.UI.createAlertDialog({ title: title,
-            message: message, buttonNames: [app.localDictionary.OK]
-            }).show();
+        if (_self._win.visible) {
+            try {
+                Titanium.UI.createAlertDialog({ title: title,
+                    message: message, buttonNames: [app.localDictionary.OK]
+                    }).show();                
+            }
+            catch (e) {
+                Ti.API.error("Couldn't show alert:" + e);
+            }
+        }
     };
     this._removeSpecialLayoutIndicator = function (_isGuestLayout, _isPortalReachable) {
         if (app.models.deviceProxy.isAndroid() && _self._guestNotificationView) {

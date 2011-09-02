@@ -289,12 +289,19 @@ var MapWindowController = function(facade) {
         activityIndicator.hide();
         
         if(e.points.length < 1) {
-            alertDialog = Titanium.UI.createAlertDialog({
-                title: LocalDictionary.noResults,
-                message: LocalDictionary.mapNoSearchResults,
-                buttonNames: [LocalDictionary.OK]
-            });
-            alertDialog.show();
+            if (win.visible) {
+                try {
+                    alertDialog = Titanium.UI.createAlertDialog({
+                        title: LocalDictionary.noResults,
+                        message: LocalDictionary.mapNoSearchResults,
+                        buttonNames: [LocalDictionary.OK]
+                    });
+                    alertDialog.show();
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't show alert in MapWindowController: " + e);
+                }
+            }
         }
         else {
             plotPoints(e.points);
@@ -323,55 +330,61 @@ var MapWindowController = function(facade) {
         Ti.API.debug("Hiding activity indicator in onProxyLoadError()");
         activityIndicator.hide();
         Ti.API.debug(JSON.stringify(e));
-        
-        switch (e.errorCode) {
-            case MapProxy.requestErrors.NETWORK_UNAVAILABLE:
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: LocalDictionary.error,
-                    message: LocalDictionary.map_NETWORK_UNAVAILABLE,
-                    buttonNames: [LocalDictionary.OK]
-                });
-                alertDialog.show();
-                break;
-            case MapProxy.requestErrors.REQUEST_TIMEOUT:
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: LocalDictionary.error,
-                    message: LocalDictionary.map_REQUEST_TIMEOUT,
-                    buttonNames: [LocalDictionary.OK]
-                });
-                alertDialog.show();
-                break;
-            case MapProxy.requestErrors.SERVER_ERROR:
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: LocalDictionary.error,
-                    message: LocalDictionary.map_SERVER_ERROR,
-                    buttonNames: [LocalDictionary.OK]
-                });
-                alertDialog.show();
-                break;
-            case MapProxy.requestErrors.NO_DATA_RETURNED:
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: LocalDictionary.error,
-                    message: LocalDictionary.map_NO_DATA_RETURNED,
-                    buttonNames: [LocalDictionary.OK]
-                });
-                alertDialog.show();
-                break;
-            case MapProxy.requestErrors.INVALID_DATA_RETURNED: 
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: LocalDictionary.error,
-                    message: LocalDictionary.map_INVALID_DATA_RETURNED,
-                    buttonNames: [LocalDictionary.OK]
-                });
-                alertDialog.show();
-                break;
-            default:
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: LocalDictionary.error,
-                    message: LocalDictionary.map_GENERAL_ERROR,
-                    buttonNames: [LocalDictionary.OK]
-                });
-                alertDialog.show();
+        if (win.visible) {
+            try {
+                switch (e.errorCode) {
+                    case MapProxy.requestErrors.NETWORK_UNAVAILABLE:
+                        alertDialog = Titanium.UI.createAlertDialog({
+                            title: LocalDictionary.error,
+                            message: LocalDictionary.map_NETWORK_UNAVAILABLE,
+                            buttonNames: [LocalDictionary.OK]
+                        });
+                        alertDialog.show();
+                        break;
+                    case MapProxy.requestErrors.REQUEST_TIMEOUT:
+                        alertDialog = Titanium.UI.createAlertDialog({
+                            title: LocalDictionary.error,
+                            message: LocalDictionary.map_REQUEST_TIMEOUT,
+                            buttonNames: [LocalDictionary.OK]
+                        });
+                        alertDialog.show();
+                        break;
+                    case MapProxy.requestErrors.SERVER_ERROR:
+                        alertDialog = Titanium.UI.createAlertDialog({
+                            title: LocalDictionary.error,
+                            message: LocalDictionary.map_SERVER_ERROR,
+                            buttonNames: [LocalDictionary.OK]
+                        });
+                        alertDialog.show();
+                        break;
+                    case MapProxy.requestErrors.NO_DATA_RETURNED:
+                        alertDialog = Titanium.UI.createAlertDialog({
+                            title: LocalDictionary.error,
+                            message: LocalDictionary.map_NO_DATA_RETURNED,
+                            buttonNames: [LocalDictionary.OK]
+                        });
+                        alertDialog.show();
+                        break;
+                    case MapProxy.requestErrors.INVALID_DATA_RETURNED: 
+                        alertDialog = Titanium.UI.createAlertDialog({
+                            title: LocalDictionary.error,
+                            message: LocalDictionary.map_INVALID_DATA_RETURNED,
+                            buttonNames: [LocalDictionary.OK]
+                        });
+                        alertDialog.show();
+                        break;
+                    default:
+                        alertDialog = Titanium.UI.createAlertDialog({
+                            title: LocalDictionary.error,
+                            message: LocalDictionary.map_GENERAL_ERROR,
+                            buttonNames: [LocalDictionary.OK]
+                        });
+                        alertDialog.show();
+                }
+            }
+            catch (e) {
+                Ti.API.error("Couldn't show alert in MapWindowController: " + e);
+            }
         }
     };
 
