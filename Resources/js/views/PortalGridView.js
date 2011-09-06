@@ -200,25 +200,10 @@ var PortalGridView = function (facade) {
     this._rearrangeGrid = function (e) {
         var _gridItem;
         Ti.API.debug("rearrangeGrid() in PortalGridView");
-        if (app.models.userProxy.isGuestUser() || !app.models.portalProxy.getIsPortalReachable()) {
-            Ti.API.debug("User.isGuestUser() in rearrangeGrid()");
-            if (app.models.deviceProxy.isAndroid()) {
-                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - app.styles.homeGuestNote.height - 25; //20 is the height of the status bar
-            }
-            else {
-                _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height - app.styles.homeGuestNote.height;
-            }
-        }
-        else {
-            Ti.API.debug("!User.isGuestUser() in rearrangeGrid()");
-            if (app.models.deviceProxy.isAndroid()) {
-                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//25 is the size of the status bar.
-            }
-            else {
-                _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
-            }
-            
-        }
+        Ti.API.debug("app.models.userProxy.isGuestUser() " + app.models.userProxy.isGuestUser());
+        Ti.API.debug("app.models.portalProxy.getIsPortalReachable()" + app.models.portalProxy.getIsPortalReachable());
+        
+        _self.resizeGrid((app.models.userProxy.isGuestUser() || !app.models.portalProxy.getIsPortalReachable()) ? true : false);
         
         for (_gridItem in _self._gridItems) {
             if (_self._gridItems.hasOwnProperty(_gridItem)) {
@@ -232,6 +217,29 @@ var PortalGridView = function (facade) {
         }
         
         _self.setState(_self._numGridItems > 0 ? PortalGridView.states.COMPLETE : PortalGridView.states.LOADING); 
+    };
+    
+    this.resizeGrid = function (_isSpecialLayout) {
+        //Variable tells if the special layout indicator is displayed or not
+        Ti.API.debug("resizeGrid() in PortalGridView. Special layout: " + _isSpecialLayout);
+         if (_isSpecialLayout) {
+            Ti.API.debug("User.isGuestUser() in resizeGrid()");
+            if (app.models.deviceProxy.isAndroid()) {
+                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - app.styles.homeGuestNote.height - 25; //20 is the height of the status bar
+            }
+            else {
+                _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+            }
+        }
+        else {
+            Ti.API.debug("!User.isGuestUser() in resizeGrid()");
+            if (app.models.deviceProxy.isAndroid()) {
+                _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//25 is the size of the status bar.
+            }
+            else {
+                _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
+            }
+        }
     };
     
     this._onLayoutCleanup = function (e) {

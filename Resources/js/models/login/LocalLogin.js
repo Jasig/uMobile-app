@@ -63,15 +63,17 @@ var LocalLogin = function (facade) {
         app.models.userProxy.setLayoutUserName(_parsedResponse.user);
         app.models.portalProxy.setPortlets(_parsedResponse.layout);
         
-        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === 'guest') {
+        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
             Ti.API.info("_layoutUser matches credentials.username");
             Ti.API.info("app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            app.models.portalProxy.setIsPortalReachable(true);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
             Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
             Ti.API.error("Network session failed");
+            app.models.portalProxy.setIsPortalReachable(false);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
         }
     };

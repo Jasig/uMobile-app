@@ -23,6 +23,7 @@
     <navbar-hidden>false</navbar-hidden>
     <analytics>false</analytics>
     <guid>7ec91aa8-a9a7-4cc6-95a8-9e078be9fdfc</guid>
+    <property name="ti.android.compilejs" type="bool">false</property>
     <iphone>
         <orientations device="iphone">
             <orientation>Ti.UI.PORTRAIT</orientation>

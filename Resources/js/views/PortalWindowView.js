@@ -192,6 +192,7 @@ var PortalWindowView = function (facade) {
                 Ti.API.error("Couldn't remove guest layout indicator");
             }
         }
+        app.views.portalGridView.resizeGrid(false);
     };
     
     this._addSpecialLayoutIndicator = function (_isPortalReachable) {
@@ -232,6 +233,7 @@ var PortalWindowView = function (facade) {
                     Ti.API.debug("No contentLayer exists to add layoutIndicator");
                 }
             }
+            app.views.portalGridView.resizeGrid(true);
             // clearTimeout(_timeout);
         // }, 500);
     };
