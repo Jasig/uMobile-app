@@ -29,6 +29,7 @@ var PortalGridView = function (facade) {
     this._leftPadding;
     this._didLayoutCleanup = false;
     this._state;
+    this._numGridItems = 0;
     
     //Pseudo private views
     this._gridView;
@@ -84,15 +85,16 @@ var PortalGridView = function (facade) {
         * If not, we destroy them (which removes them from the view, and the _gridItems collection)
         * then we iterate through the latest correction from the portalProxy and add them if they don't exist.
         */
-        
+        Ti.API.debug("Setting _self._numGridItems in PortalGridView to " + _portlets.length || 0);
+        _self._numGridItems = _portlets.length || 0;
         for (_item in _self._gridItems) {
             if (_self._gridItems.hasOwnProperty(_item)) {
-                for (var j=0, jLength = _portlets.length; j<jLength; j++) {
+                for (var j=0; j<_self._numGridItems; j++) {
                     if ('fName' + _portlets[j].fname === _item) {
                         // Ti.API.debug("Not destroying: " + _item);
                         break;
                     }
-                    else if (j == jLength - 1) {
+                    else if (j == _self._numGridItems - 1) {
                         // Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _self._gridItems[_item].destroy);
                         _self._gridItems[_item].destroy();
                     }
@@ -106,7 +108,7 @@ var PortalGridView = function (facade) {
             }
         }
         
-        for (var i=0, iLength = _portlets.length; i<iLength; i++ ) {
+        for (var i=0; i<_self._numGridItems; i++ ) {
             //Place the item in the scrollview and listen for singletaps
             if (!_self._gridItems['fName' + _portlets[i].fname] || app.models.deviceProxy.isIOS()) {
                 // Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
@@ -229,7 +231,7 @@ var PortalGridView = function (facade) {
             }
         }
         
-        _self.setState(PortalGridView.states.COMPLETE); 
+        _self.setState(_self._numGridItems > 0 ? PortalGridView.states.COMPLETE : PortalGridView.states.LOADING); 
     };
     
     this._onLayoutCleanup = function (e) {

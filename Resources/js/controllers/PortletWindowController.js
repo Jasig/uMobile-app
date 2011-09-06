@@ -307,9 +307,14 @@ var PortletWindowController = function (facade) {
                 _self._removeAndroidBackListener();
             }
         }
+        try {
+            _self._webView.show();
+            _self._activityIndicator.hide();
+        }
+        catch (e) {
+            Ti.API.error("Couldn't show webView and hide activityIndicator in PortletWindowController");
+        }
         
-        _self._webView.show();
-        _self._activityIndicator.hide();
     };
     
     this._isHome = function (e) {

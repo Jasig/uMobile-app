@@ -93,7 +93,7 @@ var PortalWindowController = function (facade) {
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
-        if (!e.user) {
+        if (!e.user || e.user == LoginProxy.userTypes['NO_USER']) {
             Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + app.models.portalProxy.getIsPortalReachable());
             if (app.models.deviceProxy.checkNetwork()) {
                 if (_newNetworkDowntime) {

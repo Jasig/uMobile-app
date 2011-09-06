@@ -31,40 +31,34 @@ var MapWindowController = function(facade) {
     init = function() {
         Ti.API.debug("init() in MapWindowController");
         _self.key = 'map';
+        
+        Titanium.include('/js/models/MapProxy.js');
+        Titanium.include('/js/views/MapDetailView.js');
+        
+        app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
+        app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
+
+        Ti.App.addEventListener(MapProxy.events['SEARCHING'], onProxySearching);
+        Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
+        Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], onProxyEmptySearch);
+        Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], onProxyLoadError);
+        Ti.App.addEventListener(MapProxy.events['LOADING'], onProxyLoading);
+        Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], onProxyLoaded);
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
+            Styles = app.styles;
+        });
+
+        //Declare pointers to facade members
+        Map = app.models.mapProxy;
+        Device = app.models.deviceProxy;
+        Styles = app.styles;
+        UI = app.UI;
+        LocalDictionary = app.localDictionary;
+        UPM = app.config;
+        MapDetail = app.views.mapDetailView;
     };
     
-    this.open = function () {
-        if (!initialized) {
-            Titanium.include('/js/models/MapProxy.js');
-            Titanium.include('/js/views/MapDetailView.js');
-            
-            app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
-            app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
-
-            Ti.App.addEventListener(MapProxy.events['SEARCHING'], onProxySearching);
-            Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
-            Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], onProxyEmptySearch);
-            Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], onProxyLoadError);
-            Ti.App.addEventListener(MapProxy.events['LOADING'], onProxyLoading);
-            Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], onProxyLoaded);
-            Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
-                Styles = app.styles;
-            });
-
-            //Declare pointers to facade members
-            Map = app.models.mapProxy;
-            Device = app.models.deviceProxy;
-            Styles = app.styles;
-            UI = app.UI;
-            LocalDictionary = app.localDictionary;
-            UPM = app.config;
-            MapDetail = app.views.mapDetailView;
-            
-            Map.init();
-            
-            initialized = true;
-        }
-        
+    this.open = function () {        
         if (win) {
             win.close();
         }
@@ -78,9 +72,7 @@ var MapWindowController = function(facade) {
             	Titanium.UI.PORTRAIT,
             	Titanium.UI.UPSIDE_PORTRAIT,
             	Titanium.UI.LANDSCAPE_LEFT,
-            	Titanium.UI.LANDSCAPE_RIGHT,
-            	Titanium.UI.FACE_UP,
-            	Titanium.UI.FACE_DOWN
+            	Titanium.UI.LANDSCAPE_RIGHT
             ]
         });
         win.open();
@@ -91,6 +83,12 @@ var MapWindowController = function(facade) {
 
         createMainView();
         resetMapLocation();
+        
+        if (!initialized) {
+            Map.init();
+        }
+        
+        initialized = true;
     };
     
     this.close = function (options) {
@@ -272,7 +270,10 @@ var MapWindowController = function(facade) {
     };
     
     onProxyLoading = function (e) {
-        activityIndicator.setLoadingMessage(LocalDictionary.loading);
+        Ti.API.debug("onProxyLoading() in MapWindowController. Setting activity indicator text to: " + LocalDictionary.mapLoadingLocations);
+        Ti.API.debug("Is activityIndicator defined? " + activityIndicator);
+        Ti.API.debug("Is activityIndicator.setLoadingMessage defined? " + activityIndicator.setLoadingMessage);
+        activityIndicator.setLoadingMessage(LocalDictionary.mapLoadingLocations);
         activityIndicator.show();
     };
     

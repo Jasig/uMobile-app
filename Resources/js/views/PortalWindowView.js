@@ -144,13 +144,14 @@ var PortalWindowView = function (facade) {
     };
     
     this.showActivityIndicator = function (message) {
-        try {
+        Ti.API.debug("showActivityIndicator() in PortalWindowView");
+        // try {
             _self._activityIndicator.setLoadingMessage(message || app.localDictionary.loading);
             _self._activityIndicator.show();
-        }
-        catch (e) {
-            Ti.API.error("Activity Indicator isn't defined.");
-        }
+        // }
+        // catch (e) {
+            // Ti.API.error("Activity Indicator isn't defined.");
+        // }
     };
     
     this.hideActivityIndicator = function () {
@@ -166,15 +167,16 @@ var PortalWindowView = function (facade) {
     this.alert = function (title, message) {
         Ti.API.debug("alert() in PortalWindowView");
         _self.hideActivityIndicator();
-        if (_self._win.visible) {
+        if (app.models.deviceProxy.isIOS() || _self._win.visible) {
             try {
-                Titanium.UI.createAlertDialog({ title: title,
+                alert(message);
+                /*Titanium.UI.createAlertDialog({ title: title,
                     message: message, buttonNames: [app.localDictionary.OK]
-                    }).show();                
+                    }).show();*/
             }
             catch (e) {
                 Ti.API.error("Couldn't show alert:" + e);
-            }
+            }            
         }
     };
     this._removeSpecialLayoutIndicator = function (_isGuestLayout, _isPortalReachable) {

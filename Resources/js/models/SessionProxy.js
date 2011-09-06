@@ -52,7 +52,12 @@ var SessionProxy = function (facade) {
             // between network requests and webviews.
             if(timers[LoginProxy.sessionTimeContexts.NETWORK].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
-                clearTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK].counter);
+                try {
+                    clearTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK].counter);
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't clear timer in SessionProxy");
+                }
             }
             timers[LoginProxy.sessionTimeContexts.NETWORK].counter = setTimeout(function() {
                 onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
@@ -65,7 +70,12 @@ var SessionProxy = function (facade) {
         else if (timers[context]) {
             if(timers[context].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
-                clearTimeout(timers[context].counter);
+                try {
+                    clearTimeout(timers[context].counter);
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't clear timeout in SessionProxy");
+                }
             }
             
             timers[context].counter = setTimeout(function() {

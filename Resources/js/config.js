@@ -36,7 +36,7 @@ var ConfigModule = function(app) {
 	// http[s]://server[:port][/context]. This URL is *not* expected to contain a
 	// trailing slash.
     this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    // this.BASE_PORTAL_URL = 'http://192.168.43.82:8080';
+    // this.BASE_PORTAL_URL = 'http://192.168.1.125:8080';
 	this.PORTAL_CONTEXT = '';
 
 	//------- AUTHENTICATION -------
