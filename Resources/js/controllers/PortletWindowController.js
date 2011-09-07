@@ -286,7 +286,6 @@ var PortletWindowController = function (facade) {
             _self._navBar.visible = false;
             _self._webView.top = _self._titleBar.height;
             _self._webView.height = _self._win.height - _self._titleBar.height;
-            _self._app.models.loginProxy.updateSessionTimeout(_self._app.models.loginProxy.sessionTimeContexts.WEBVIEW);
             if (_self._isHome()) {
                 _self._removeAndroidBackListener();
             }
@@ -314,7 +313,6 @@ var PortletWindowController = function (facade) {
         catch (e) {
             Ti.API.error("Couldn't show webView and hide activityIndicator in PortletWindowController");
         }
-        
     };
     
     this._isHome = function (e) {
