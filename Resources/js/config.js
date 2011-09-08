@@ -37,7 +37,7 @@ var ConfigModule = function(app) {
 	// trailing slash.
     this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
     // this.BASE_PORTAL_URL = 'https://dev-uportal-showcase.unicon.net';
-	this.PORTAL_CONTEXT = '/uPortal';
+	this.PORTAL_CONTEXT = '';
 
 	//------- AUTHENTICATION -------
 

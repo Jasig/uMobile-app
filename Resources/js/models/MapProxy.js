@@ -17,31 +17,53 @@
  * under the License.
  */
 var MapProxy = function (facade) {
-    var app = facade, _self = this;
+    var _self = this;
     
-    this._variables = {
-        mapCenter: {
-            latitude        : false,
-            longitude       : false,
-            latitudeDelta   : 1,
-            longitudeDelta  : 1,
-            latLow          : false,
-            latHigh         : false,
-            longLow         : false,
-            longHigh        : false
-        },
+    this._app = facade;
+    
+    this._mapCenter = {
+        latitude        : false,
+        longitude       : false,
+        latitudeDelta   : 1,
+        longitudeDelta  : 1,
+        latLow          : false,
+        latHigh         : false,
+        longLow         : false,
+        longHigh        : false
+    };
         
-        defaultMapCenter: {
-            latitudeDelta   : 0.005, 
-            longitudeDelta  : 0.005
-        }
+    this._defaultMapCenter = {
+        latitudeDelta   : 0.005, 
+        longitudeDelta  : 0.005
     };
         
     this.init = function () {
         var _db;
-        
         _db = Titanium.Database.open('umobile');
-        _db.execute('CREATE TABLE IF NOT EXISTS "map_locations" ("title" TEXT UNIQUE, "abbreviation" TEXT, "accuracy" INTEGER, "address" TEXT, "alternateName" TEXT, "latitude" REAL, "longitude" REAL, "searchText" TEXT, "zip" TEXT, "img" TEXT)');
+
+        function checkForColumn(_tableName, _columnName) {
+            var _response = false, _resultSet;
+            
+            _resultSet = _db.execute('PRAGMA table_info("map_locations")');
+            while(_resultSet.isValidRow()) {
+                if (_resultSet.fieldByName('name') == _columnName) {
+                    _response = true;
+                    break;
+                }
+                _resultSet.next();
+            }
+            _resultSet.close();
+            
+            return _response;
+        }
+        
+        
+        _db.execute('CREATE TABLE IF NOT EXISTS "map_locations" ("title" TEXT UNIQUE,"abbreviation" TEXT,"accuracy" INTEGER,"address" TEXT,"alternateName" TEXT,"latitude" REAL, "longitude" REAL,"searchText" TEXT,"zip" TEXT, "img" TEXT)');
+        if (!checkForColumn("map_locations","categories")) {
+            _db.execute('ALTER TABLE "map_locations" ADD COLUMN "categories" TEXT');
+        }
+        _db.execute('CREATE TABLE IF NOT EXISTS "map_categories" ("name" TEXT UNIQUE)');
+
         _db.close();
         this.loadMapPoints();
     };
@@ -65,10 +87,10 @@ var MapProxy = function (facade) {
             //Iterate through the query result to add objects to the result array
             while (queryResult.isValidRow()) {
                 if (_isFirstResult) {
-                    _self._variables['mapCenter'].latLow = parseFloat(queryResult.fieldByName('latitude'));
-                    _self._variables['mapCenter'].latHigh = parseFloat(queryResult.fieldByName('latitude')); 
-                    _self._variables['mapCenter'].longLow = parseFloat(queryResult.fieldByName('longitude'));
-                    _self._variables['mapCenter'].longHigh = parseFloat(queryResult.fieldByName('longitude'));
+                    _self._mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
+                    _self._mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude')); 
+                    _self._mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
+                    _self._mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
                 }
                 result.push({
                     title: queryResult.fieldByName('title'),
@@ -78,17 +100,17 @@ var MapProxy = function (facade) {
                     img: queryResult.fieldByName('img')
                 });
                 Ti.API.info(queryResult.fieldByName('img'));
-                if (queryResult.fieldByName('latitude') < _self._variables['mapCenter'].latLow) {
-                    _self._variables['mapCenter'].latLow = parseFloat(queryResult.fieldByName('latitude'));
+                if (queryResult.fieldByName('latitude') < _self._mapCenter.latLow) {
+                    _self._mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
                 }
-                else if (queryResult.fieldByName('latitude') > _self._variables['mapCenter'].latHigh) {
-                    _self._variables['mapCenter'].latHigh = parseFloat(queryResult.fieldByName('latitude'));
+                else if (queryResult.fieldByName('latitude') > _self._mapCenter.latHigh) {
+                    _self._mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude'));
                 }
-                if (queryResult.fieldByName('longitude') < _self._variables['mapCenter'].longLow) {
-                    _self._variables['mapCenter'].longLow = parseFloat(queryResult.fieldByName('longitude'));
+                if (queryResult.fieldByName('longitude') < _self._mapCenter.longLow) {
+                    _self._mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
                 }
-                else if (queryResult.fieldByName('longitude') > _self._variables['mapCenter'].longHigh) {
-                    _self._variables['mapCenter'].longHigh = parseFloat(queryResult.fieldByName('longitude'));
+                else if (queryResult.fieldByName('longitude') > _self._mapCenter.longHigh) {
+                    _self._mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
                 }
                 _isFirstResult = false;
                 queryResult.next();
@@ -129,14 +151,15 @@ var MapProxy = function (facade) {
         //Default returns all points for an institution.
         Ti.API.info("loadMapPoints() in MapProxy");
         Ti.App.fireEvent(MapProxy.events['LOADING']);
-        if (app.models.deviceProxy.checkNetwork()) {
+        if (_self._app.models.deviceProxy.checkNetwork()) {
             request = Titanium.Network.createHTTPClient ({
                 connectionType : 'GET',
-                location : app.config.MAP_SERVICE_URL,
+                // location : _self._app.config.MAP_SERVICE_URL,
+                // location: 'http://192.168.1.125/~jcross/mapData.json',
                 onload : _self._newPointsLoaded,
                 onerror : _self._onLoadError
             });
-            request.open("GET", app.config.MAP_SERVICE_URL);
+            request.open("GET", _self._app.config.MAP_SERVICE_URL);
             request.send();
         }
         else {
@@ -144,65 +167,126 @@ var MapProxy = function (facade) {
         }
 
     };
+    
+    this.getCategoryList = function () {
+        Ti.API.debug("getCategoryList() in MapProxy");
+        var result = [], _resultSet, db;
+
+        db = Titanium.Database.open('umobile');
+        _resultSet = db.execute("SELECT * FROM map_categories");
+
+        while (_resultSet.isValidRow()) {
+
+            result.push({
+                name: _resultSet.fieldByName('name')
+            });
+
+            _resultSet.next();
+        }
+        _resultSet.close();
+        for (var i=0, iLength = result.length; i<iLength; i++) {
+            _resultSet = db.execute("SELECT * FROM map_locations WHERE categories LIKE ?", result[i].name);
+            result[i].numChildren = _resultSet.rowCount;
+            _resultSet.close();
+        }
+        db.close();
+        
+        return result;        
+    };
+    
+    this.getLocationsByCategory = function (_catName) {
+        return {
+            categoryName    : '',
+            locations       : [
+                {
+                    title: '',
+                    address: '',
+                    latitude: parseFloat(0),
+                    longitude: parseFloat(0),
+                    img: ''
+                }
+            ]
+        };
+    };
+    
     this._newPointsLoaded = function (e) {
         Ti.API.info("newPointsLoaded() in MapProxy");
         // Customize the response and add it to the cached mapPoints array in the MapProxy object.
-        var response, responseLength, db;
-        Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
-        (function(){
-            try {
-                response = JSON.parse(e.source.responseText);
-                //Set the default map center
-                _self._variables['defaultMapCenter'].latitude = parseFloat(response.defaultLocation.latitude);
-                _self._variables['defaultMapCenter'].longitude = parseFloat(response.defaultLocation.longitude);
-                responseLength = response.buildings.length;
-                if (responseLength > 0) {
-                    db = Ti.Database.open('umobile');
-                    _self._variables['mapCenter'].latLow = response.buildings[0].latitude;
-                    _self._variables['mapCenter'].latHigh = response.buildings[0].latitude; 
-                    _self._variables['mapCenter'].longLow = response.buildings[0].longitude;
-                    _self._variables['mapCenter'].longHigh = response.buildings[0].longitude; 
+        
+        Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: _self._app.models.loginProxy.sessionTimeContexts.NETWORK});
+        
+        var _response, _responseLength, _db, _categories = {};
+        try {
+            _response = JSON.parse(e.source.responseText);
+            //Set the default map center
+            _self._defaultMapCenter.latitude = parseFloat(_response.defaultLocation.latitude);
+            _self._defaultMapCenter.longitude = parseFloat(_response.defaultLocation.longitude);
+            _responseLength = _response.buildings.length;
+            
+            if (_responseLength > 0) {
+                _db = Ti.Database.open('umobile');
+                _self._mapCenter.latLow = _response.buildings[0].latitude;
+                _self._mapCenter.latHigh = _response.buildings[0].latitude; 
+                _self._mapCenter.longLow = _response.buildings[0].longitude;
+                _self._mapCenter.longHigh = _response.buildings[0].longitude;
+                
+                for (var i = 0; i < _responseLength; i++) {
+                    var building = _response.buildings[i];
+                    
+                    if (building.name && building.latitude && building.longitude) {
+                        building.title = building.name;
+                        building.latitude = parseFloat(building.latitude);
+                        building.longitude = parseFloat(building.longitude);
 
-                    for (var i = 0; i < responseLength; i++) {
-                        var building = response.buildings[i];
-                        
-                        if (building.name && building.latitude && building.longitude) {
-                            building.title = building.name;
-                            building.latitude = parseFloat(building.latitude);
-                            building.longitude = parseFloat(building.longitude);
-
-                            db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                                building.name ? building.name : '',
-                                building.abbreviation ? building.abbreviation : '',
-                                building.accuracy ? building.accuracy : '',
-                                building.address ? building.address : '',
-                                building.alternateName ? building.alternateName : '',
-                                building.latitude ? building.latitude : 0,
-                                building.longitude ? building.longitude : 0,
-                                building.searchText ? building.searchText : '',
-                                building.zip ? building.zip : '',
-                                building.img ? building.img : ''
-                                );
-                        }
-                        else {
-                            Ti.API.debug("Skipping " + building.name);
-                        }
-                        
+                        _db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img, categories) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                            building.name ? building.name : '',
+                            building.abbreviation ? building.abbreviation : '',
+                            building.accuracy ? building.accuracy : '',
+                            building.address ? building.address : '',
+                            building.alternateName ? building.alternateName : '',
+                            building.latitude ? building.latitude : 0,
+                            building.longitude ? building.longitude : 0,
+                            building.searchText ? building.searchText : '',
+                            building.zip || '',
+                            building.img || '',
+                            building.categories || ''
+                            );
                     }
-                    db.close();
-                    _self._onPointsLoaded();
+                    else {
+                        Ti.API.debug("Skipping " + building.name);
+                    }
+                    
+                    if (building.categories) {
+                        //Create array from comma-separated values and remove spaces
+                        building.categories = building.categories.replace(' ','').split(',');
+                        for (var j=0, jLength=building.categories.length; j<jLength; j++) {
+                            _categories[building.categories[j]] = 0;
+                        }
+                    }
+                    
                 }
-                else {
-                    //No location objects in the response, so fire an event so the controller is aware.
-                    Ti.App.fireEvent(MapProxy.events['LOAD_ERROR'], {errorCode: MapProxy.requestErrors.NO_DATA_RETURNED});
+                
+                for (var _category in _categories) {
+                    if (_categories.hasOwnProperty(_category)) {
+                        _db.execute('REPLACE INTO map_categories (name) VALUES (?)', _category);
+                    }
                 }
+                
+                _db.close();
+                _self._onPointsLoaded();
             }
-            catch (err) {
-                Ti.API.info("Data was invalid, calling onInvalidData()");
-                //Data didn't parse, so fire an event so the controller is aware
-                Ti.App.fireEvent(MapProxy.events['LOAD_ERROR'], {errorCode: MapProxy.requestErrors.INVALID_DATA_RETURNED, data: e.source.responseText});
+            else {
+                //No location objects in the response, so fire an event so the controller is aware.
+                Ti.App.fireEvent(MapProxy.events['LOAD_ERROR'], {errorCode: MapProxy.requestErrors.NO_DATA_RETURNED});
             }
-        })();
+        }
+        catch (err) {
+            Ti.API.info("Data was invalid, calling onInvalidData()");
+            //Data didn't parse, so fire an event so the controller is aware
+            Ti.App.fireEvent(MapProxy.events['LOAD_ERROR'], {errorCode: MapProxy.requestErrors.INVALID_DATA_RETURNED, data: e.source.responseText});
+        }
+        
+        Ti.API.debug("Checking for category list method: " + JSON.stringify(_self.getCategoryList()));
     };
     
     this.getMapCenter = function (isDefault) {
@@ -210,16 +294,16 @@ var MapProxy = function (facade) {
         if(isDefault) {
             //Wants the default map location returned from the service, 
             //not the dynamic one generated otherwise
-            return _self._variables['defaultMapCenter'];
+            return _self._defaultMapCenter;
         }
         else {
-            _self._variables['mapCenter'].latitude = (_self._variables['mapCenter'].latLow + _self._variables['mapCenter'].latHigh) / 2;
-            _self._variables['mapCenter'].longitude = (_self._variables['mapCenter'].longLow + _self._variables['mapCenter'].longHigh) / 2;
-            _self._variables['mapCenter'].latitudeDelta = (_self._variables['mapCenter'].latHigh - _self._variables['mapCenter'].latLow) > 0.005 ? _self._variables['mapCenter'].latHigh - _self._variables['mapCenter'].latLow : 0.005;
-            _self._variables['mapCenter'].longitudeDelta = (_self._variables['mapCenter'].longHigh - _self._variables['mapCenter'].longLow) > 0.005 ? _self._variables['mapCenter'].longHigh - _self._variables['mapCenter'].longLow : 0.005;
+            _self._mapCenter.latitude = (_self._mapCenter.latLow + _self._mapCenter.latHigh) / 2;
+            _self._mapCenter.longitude = (_self._mapCenter.longLow + _self._mapCenter.longHigh) / 2;
+            _self._mapCenter.latitudeDelta = (_self._mapCenter.latHigh - _self._mapCenter.latLow) > 0.005 ? _self._mapCenter.latHigh - _self._mapCenter.latLow : 0.005;
+            _self._mapCenter.longitudeDelta = (_self._mapCenter.longHigh - _self._mapCenter.longLow) > 0.005 ? _self._mapCenter.longHigh - _self._mapCenter.longLow : 0.005;
             
-            Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(_self._variables['mapCenter']));
-            return _self._variables['mapCenter'];
+            Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(_self._mapCenter));
+            return _self._mapCenter;
         }
     };
     
