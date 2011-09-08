@@ -153,9 +153,7 @@ var MapProxy = function (facade) {
         Ti.App.fireEvent(MapProxy.events['LOADING']);
         if (_self._app.models.deviceProxy.checkNetwork()) {
             request = Titanium.Network.createHTTPClient ({
-                connectionType : 'GET',
-                // location : _self._app.config.MAP_SERVICE_URL,
-                // location: 'http://192.168.1.125/~jcross/mapData.json',
+                // connectionType : 'GET',
                 onload : _self._newPointsLoaded,
                 onerror : _self._onLoadError
             });
@@ -170,13 +168,20 @@ var MapProxy = function (facade) {
     
     this.getCategoryList = function () {
         Ti.API.debug("getCategoryList() in MapProxy");
-        var result = [], _resultSet, db;
+        /*
+            In this method, we'll 
+            1. load the available categories from the db.
+            2. Create an array of objects (_result) containing each category name
+            3. Query the map_locations db table to determine how many children each 
+            category has, and add a numChildren value to each object in the _result array.
+            4. Return the _result array and be done with it. Array looks like: [{ name: String, numChildren: Int}]
+        */
+        var result = [], _resultSet, db, _categoryName;
 
         db = Titanium.Database.open('umobile');
         _resultSet = db.execute("SELECT * FROM map_categories");
 
         while (_resultSet.isValidRow()) {
-
             result.push({
                 name: _resultSet.fieldByName('name')
             });
@@ -184,14 +189,20 @@ var MapProxy = function (facade) {
             _resultSet.next();
         }
         _resultSet.close();
+        
         for (var i=0, iLength = result.length; i<iLength; i++) {
-            _resultSet = db.execute("SELECT * FROM map_locations WHERE categories LIKE ?", result[i].name);
-            result[i].numChildren = _resultSet.rowCount;
+            _categoryName = '%'+ result[i].name +'%';
+            _resultSet = db.execute("SELECT COUNT(*) FROM map_locations WHERE categories LIKE ?", _categoryName);
+            while (_resultSet.isValidRow()) {
+                result[i].numChildren = _resultSet.field(0);
+                _resultSet.next();
+            }
+            
             _resultSet.close();
         }
         db.close();
         
-        return result;        
+        return result;
     };
     
     this.getLocationsByCategory = function (_catName) {
