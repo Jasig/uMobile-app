@@ -220,20 +220,23 @@ var MapProxy = function (facade) {
                 {title: String, address: String, latitude: Float, longitude: Float, img: String}
             4. Return result and be done with it.
         */
+        Ti.API.debug("getLocationsByCategory() in MapProxy");
+        var _resultSet, _resultLimit, _resultOffset, _result, _db, _catNameQuery;
+        
         
         //Make sure passed in arguments are right type and value
         _catName = _catName && typeof _catName === 'string' ? _catName : '';
         _numResults = _numResults && typeof _numResults === 'number' ? parseInt(_numResults, 10) : -1;
         _pageNum = _pageNum && typeof _pageNum === 'number' ? parseInt(_pageNum, 10) : 0;
         
-        Ti.API.debug("getLocationsByCategory() in MapProxy");
-        var _resultSet, _db, _catNameQuery = '%' + _catName + '%', 
-        _resultLimit = _numResults ? parseInt(_numResults, 10) : -1,
+        _catNameQuery = '%' + _catName + '%';
+        
+        _resultLimit = _numResults ? parseInt(_numResults, 10) : -1;
         _resultOffset = _pageNum && _numResults ? parseInt(_pageNum * _numResults, 10) : 0;
         _result = {
             categoryName    : _catName,
             locations       : [],
-            pageNum      : _resultOffset
+            pageNum         : _pageNum
         };
         
         _db = Titanium.Database.open('umobile');
@@ -342,7 +345,7 @@ var MapProxy = function (facade) {
         }
         
         Ti.API.debug("Checking for category list method: " + JSON.stringify(_self.getCategoryList()));
-        Ti.API.debug("Checking for getLocationsByCategory method: " + JSON.stringify(_self.getLocationsByCategory(50, 'nonsense', 'nonsense')));
+        Ti.API.debug("Checking for getLocationsByCategory method: " + JSON.stringify(_self.getLocationsByCategory("food", 10, 3)));
     };
     
     this.getMapCenter = function (isDefault) {
