@@ -205,19 +205,57 @@ var MapProxy = function (facade) {
         return result;
     };
     
-    this.getLocationsByCategory = function (_catName) {
-        return {
-            categoryName    : '',
-            locations       : [
-                {
-                    title: '',
-                    address: '',
-                    latitude: parseFloat(0),
-                    longitude: parseFloat(0),
-                    img: ''
-                }
-            ]
+    this.getLocationsByCategory = function (_catName, _numResults, _pageNum) {
+        /*
+            _catName arg is a string for the category name to query for
+            _numResults (optional) is the number of results to return. All by default.
+            _pageNum (optional) requires _numResults, and shows a specific page of results. Index starts at 0.
+            In this method, we'll
+            1. Construct the initial result object, {categoryName: String, 
+                totalResults: Int, returnedResultNum: Int, pageNum: Int, locations: Array}
+            2. Query the map_locations table for rows which contain the provided
+                category (_catName) in the "categories" column. NOTE: If no _catName
+                is provided, we'll return uncategorized locations.
+            3. Add each location to the result.locations array: 
+                {title: String, address: String, latitude: Float, longitude: Float, img: String}
+            4. Return result and be done with it.
+        */
+        Ti.API.debug("getLocationsByCategory() in MapProxy");
+        var _resultSet, _db, _catNameQuery = '%' + _catName + '%', 
+        _resultLimit = _numResults ? parseInt(_numResults, 10) : -1,
+        _resultOffset = _pageNum && _numResults ? parseInt(_pageNum * _numResults, 10) : 0;
+        _result = {
+            categoryName    : _catName,
+            locations       : [],
+            pageNum      : _resultOffset
         };
+        
+        _db = Titanium.Database.open('umobile');
+        
+        _resultSet = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE categories LIKE ? ORDER BY title ASC LIMIT ? OFFSET ? ', _catNameQuery, _resultLimit, _resultOffset);
+        _result.returnedResultNum = _resultSet.rowCount;
+        while (_resultSet.isValidRow()) {
+            try {
+                _result.locations.push({
+                    title       : _resultSet.fieldByName('title'),
+                    address     : _resultSet.fieldByName('address'),
+                    latitude    : parseFloat(_resultSet.fieldByName('latitude')),
+                    longitude   : parseFloat(_resultSet.fieldByName('longitude')),
+                    img         : _resultSet.fieldByName('img')
+                });
+            }
+            catch (e) {
+                Ti.API.error("Couldn't add object to getLocationsByCategory response. Title: " + _resultSet.fieldByName('title'));
+            }
+            _resultSet.next();
+        }
+        
+        _result.totalResults = parseInt(_db.execute("SELECT COUNT(*) FROM map_locations WHERE categories LIKE ?", _catNameQuery).field(0), 10);
+        
+        _resultSet.close();
+        _db.close();
+        
+        return _result;
     };
     
     this._newPointsLoaded = function (e) {
@@ -298,6 +336,7 @@ var MapProxy = function (facade) {
         }
         
         Ti.API.debug("Checking for category list method: " + JSON.stringify(_self.getCategoryList()));
+        Ti.API.debug("Checking for getLocationsByCategory method: " + JSON.stringify(_self.getLocationsByCategory('food', 10, 0)));
     };
     
     this.getMapCenter = function (isDefault) {
