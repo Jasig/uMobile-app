@@ -135,6 +135,7 @@ var ConfigModule = function(app) {
 		map : 'map.png',
 		news : 'feed.png',
 		presentations : 'opencast.png',
+		search: 'search.png',
 		stats : 'stats.png',
 		transit : 'transit.png',
 		twitter : 'twitter.png',
