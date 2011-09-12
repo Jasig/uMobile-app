@@ -129,6 +129,7 @@ var ConfigModule = function(app) {
 
 	this.nativeIcons = {
 		calendar : 'calendar.png',
+		courses: 'courses.png',
 		directory : 'directory.png',
 		library : 'library.png',
 		map : 'map.png',
