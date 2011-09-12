@@ -86,24 +86,13 @@ var PortletWindowController = function (facade) {
 
         _self._win.add(_self._titleBar);
         _self._win.add(_self._navBar);
-        if (_self._app.models.deviceProxy.isIOS() || !_self._webView) {
-            Ti.API.debug("The device is iOS or there isn't a webView yet");
-            _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
-            _self._webView.scalePageToFit = true;
-            _self._webView.addEventListener('load', _self._onPortletLoad);
-            _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
-            _self._webView.hide();
-        }
-        else {
-            Ti.API.debug("It's Android and there's already a webview");
-            try {
-                _self._win.remove(_self._webView);
-            }
-            catch (e) {
-                Ti.API.error("Couldn't remove webview: " + JSON.stringify(e));
-            }
-        }
-        _self._webView.visible = false;
+
+        _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
+        _self._webView.scalePageToFit = true;
+        _self._webView.addEventListener('load', _self._onPortletLoad);
+        _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+        _self._webView.hide();
+
         _self._win.add(_self._webView);
         _self._win.add(_self._activityIndicator);
         
@@ -114,15 +103,12 @@ var PortletWindowController = function (facade) {
     
     this._includePortlet = function (portlet) {
         Ti.API.debug("includePortlet() in PortletWindowController");
-        _self._webView.visible = false;
         _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
         _self._activityIndicator.show();
         
         _self._homeURL = _self._webView.url = _self._currentURL = _self._getQualifiedURL(portlet.url);
         _self._homeFName = _self._getFNameFromURL(portlet.url);
         Ti.API.debug("_homeFName in PortletWindowController is " + _self._homeFName);
-        // _self._webView.url = _self._homeURL;
-        
         
         _self._titleBar.updateTitle(portlet.title);
     };
@@ -203,9 +189,6 @@ var PortletWindowController = function (facade) {
     this._onPortletBeforeLoad = function (e) {
         Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + _self._webView.url);
 
-        if (_self._app.models.deviceProxy.isAndroid()) {
-            _self._webView.hide();
-        }
         //We want to make sure we don't need to re-establish a session.
         if (_self._webView.url !== _self._getQualifiedURL(_self._webView.url)) {
             _self._webView.stopLoading();
