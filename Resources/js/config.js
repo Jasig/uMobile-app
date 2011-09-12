@@ -143,12 +143,24 @@ var ConfigModule = function(app) {
 		info : 'default-icon.png'
 	};
 
-	this.directoryEmergencyContacts = [{
-		displayName : ["Westin Bonaventure Hotel and Suites"],
-		telephoneNumber : ['(866) 716-8137'],
-		postalAddress : ['404 South Figueroa Street$Los Angeles, CA 90071'],
-		url : ['http://www.starwoodhotels.com/westin/search/hotel_detail.html?propertyID=1004']
-	}];
+	this.directoryEmergencyContacts = [
+	    {
+		    displayName : ["OUPD"],
+		    telephoneNumber : ['(740) 593-1911'],
+		    postalAddress : ['135 Scott Quad$Athens, Ohio 45701'],
+		    url : ['http://www.ohio.edu/police/alerts/']
+	    },
+	    {
+		    displayName : ["Fire"],
+		    telephoneNumber : ['911']
+	    },
+	    {
+		    displayName : ["Counseling"],
+		    telephoneNumber : ['(740) 593-1616'],
+		    postalAddress : ['Hudson Health Center, 3rd Floor$2 Health Center Drive$Athens, Ohio 45701'],
+		    url : ['http://www.ohio.edu/counseling/index.cfm']
+	    }
+	];
 
-	this.phoneDirectoryNumber = "602 555 5555";
+	this.phoneDirectoryNumber = "(740) 593-1000";
 };
