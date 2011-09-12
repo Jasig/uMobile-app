@@ -343,9 +343,6 @@ var MapProxy = function (facade) {
             //Data didn't parse, so fire an event so the controller is aware
             Ti.App.fireEvent(MapProxy.events['LOAD_ERROR'], {errorCode: MapProxy.requestErrors.INVALID_DATA_RETURNED, data: e.source.responseText});
         }
-        
-        Ti.API.debug("Checking for category list method: " + JSON.stringify(_self.getCategoryList()));
-        Ti.API.debug("Checking for getLocationsByCategory method: " + JSON.stringify(_self.getLocationsByCategory("food", 10, 3)));
     };
     
     this.getMapCenter = function (isDefault) {
