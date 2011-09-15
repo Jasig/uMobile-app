@@ -35,12 +35,14 @@
                     <aggregate>true</aggregate>
                     <excludes>
                         <exclude>build/**</exclude>
+                        <exclude>build.log</exclude>
                         <exclude>pom.xml.*</exclude>
                         <exclude>release.properties</exclude>
                         <exclude>LICENSE</exclude>
                         <exclude>NOTICE</exclude>
                         <exclude>NOTICE.template</exclude>
                         <exclude>api.jsca</exclude>
+                        <exclude>tiapp.xml</exclude>
                         <exclude>manifest</exclude>
                         <exclude>Resources/js/gibberishAES.js</exclude>
                         <exclude>Info.plist</exclude>
