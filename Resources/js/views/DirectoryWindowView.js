@@ -95,7 +95,7 @@ var DirectoryWindowView = function (facade) {
     };
     
     this.alert = function (attributes) {
-        if (win.visible) {
+        if (win.visible || Device.isIOS()) {
             try {
                 var alertDialog = Titanium.UI.createAlertDialog({
                     title: attributes.title,
@@ -145,7 +145,7 @@ var DirectoryWindowView = function (facade) {
         }
         else {
             Ti.API.debug("Not more than 0 results");
-            if (win.visible) {
+            if (win.visible || Device.isIOS()) {
                 try {
                     alertDialog = Titanium.UI.createAlertDialog({
                         title: LocalDictionary.noResults,

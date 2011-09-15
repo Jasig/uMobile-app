@@ -220,15 +220,11 @@ var SettingsWindowController = function(facade){
         if (usernameInput) { usernameInput.blur(); }
         if (Device.checkNetwork()) {
             if (usernameInput.value === '') {
-                try {
+                if (win.visible || _self._app.models.deviceProxy.isIOS()) {
                     Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
                         message: LocalDictionary.enterAUserName, buttonNames: [LocalDictionary.OK]
                         }).show();
                 }
-                catch (e) {
-                    Ti.API.error("Couldn't fire alert. Window is probably closed.");
-                }
-                
             }
             else {
                 wasFormSubmitted = true;

@@ -31,6 +31,7 @@ var Styles = function (facade) {
     
     defaults = {
         TITLEBAR_HEIGHT: 40,
+        STATUSBAR_HEIGHT: Ti.Platform.osname === 'android' ? 25 : 20,
         SEARCHBAR_HEIGHT: Ti.Platform.osname === 'android' ? 48 : 40,
         DETAIL_TOP_TITLE_COLOR: '#333',
         DETAIL_TOP_BACKGROUND_COLOR: '#eee',
@@ -429,7 +430,8 @@ var Styles = function (facade) {
     	// MAP STYLES
     	mapView: {
             top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-            // height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT),
+            // height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + 50),
+            height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT), //Temporary adjustment for v1.0 pre-browsing-features
             mapType: Titanium.Map.STANDARD_TYPE,
             regionFit: true,
             animate: true,
@@ -438,13 +440,15 @@ var Styles = function (facade) {
     	mapAnnotation: {
     	    
     	},
+    	mapNavView: {
+    	    top: Ti.Platform.displayCaps.platformHeight - 50 - defaults.STATUSBAR_HEIGHT,
+            height              : 50
+            // , backgroundGradient  : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+    	},
     	mapButtonBar: {
-            labels: ['+', '-'],
             color: '#fff',
             backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
             style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-            top: Ti.Platform.displayCaps.platformHeight - 140,
-            width: 100,
             height: 35
     	},
     	mapDetailTopView: {
@@ -549,6 +553,7 @@ var Styles = function (facade) {
     if(Ti.Platform.osname === 'android') {
         stylesheet.titleBar.backgroundImage = '/img/titlebarbg.png';
         stylesheet.searchBar.backgroundImage = '/img/secondarybarbg.png';
+        stylesheet.mapNavView.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.secondaryNavBar.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.homeGuestNote.backgroundImage = '/img/secondarybarbg.png';
         stylesheet.mapAnnotation.image = '/img/mapPin.png';

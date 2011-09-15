@@ -45,6 +45,7 @@ var MapWindowController = function(facade) {
         _self._app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
         _self._app.registerView('mapWindowView', new MapWindowView(app));
 
+        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
         Ti.App.addEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
         Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
         Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
@@ -62,7 +63,6 @@ var MapWindowController = function(facade) {
             backgroundColor: _self._app.styles.backgroundColor,
             exitOnClose: false,
             navBarHidden: true,
-            visible: true,
             orientationModes: [
             	Titanium.UI.PORTRAIT,
             	Titanium.UI.UPSIDE_PORTRAIT,
@@ -97,12 +97,11 @@ var MapWindowController = function(facade) {
         	}
         }
         if (_self._win) {
-            _self._win.visible = false;
             _self._win.close();
         }
     };
 
-    this._loadDetail = function(e) {
+    this._loadDetail = function(_annotation) {
         //Create and open the view for the map detail
         Ti.API.debug('loadDetail() in MapWindowController');
         _self._app.views.mapWindowView._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
@@ -112,11 +111,11 @@ var MapWindowController = function(facade) {
         
         if (!_self._locationDetailView || _self._app.models.deviceProxy.isIOS()) {
             _self._locationDetailViewOptions = _self._app.styles.view.clone();
-            _self._locationDetailViewOptions.data = e;
+            _self._locationDetailViewOptions.data = _annotation;
             _self._locationDetailView = _self._app.views.mapDetailView.getDetailView();
             _self._win.add(_self._locationDetailView);
         }
-        _self._app.views.mapDetailView.render(e);
+        _self._app.views.mapDetailView.render(_annotation);
         
         _self._locationDetailView.show();
 
@@ -132,9 +131,9 @@ var MapWindowController = function(facade) {
         var _annotation;
         Ti.API.info("_onMapViewClick() in MapWindowController");
         if (e.clicksource === 'title' && e.title) {
+            // _self._app.views.mapWindowView.searchBlur(); //Search should already be blurred...
             _annotation = _self._app.models.mapProxy.getAnnotationByTitle(e.title);
             _self._loadDetail(_annotation);
-            // _self._mapView.fireEvent(MapWindowController.events['LOAD_DETAIL'], _annotation);
         }
         else {
             Ti.API.info("Clicksource: " + e.clicksource);
@@ -169,7 +168,7 @@ var MapWindowController = function(facade) {
         _self._app.views.mapWindowView._activityIndicator.hide();
         
         if(e.points.length < 1) {
-            if (_self._win.visible) {
+            if (_self._win.visible || _self._app.models.deviceProxy.isIOS()) {
                 try {
                     alertDialog = Titanium.UI.createAlertDialog({
                         title: _self._app.localDictionary.noResults,
@@ -183,7 +182,7 @@ var MapWindowController = function(facade) {
                 }
             }
             else {
-                Ti.API.debug("Window not visible to show alert: " + _self._win.isVisible());
+                Ti.API.debug("Window not visible to show alert");
             }
         }
         else {
@@ -212,7 +211,7 @@ var MapWindowController = function(facade) {
         
         _self._app.views.mapWindowView._activityIndicator.hide();
         
-        if (_self._win.visible) {
+        if (_self._win.visible || _self._app.models.deviceProxy.isIOS()) {
             try {
                 switch (e.errorCode) {
                     case MapProxy.requestErrors.NETWORK_UNAVAILABLE:
@@ -267,6 +266,12 @@ var MapWindowController = function(facade) {
             catch (e) {
                 Ti.API.error("Couldn't show alert in MapWindowController: " + e);
             }
+        }
+    };
+    
+    this._onOrientationChange = function (e) {
+        if (_self._app.models.deviceProxy.isIOS() || _self._win.visible) {
+            _self._app.views.mapWindowView.resetDimensions();
         }
     };
 

@@ -29,6 +29,8 @@ var MapWindowView = function (facade) {
     this._mapView;
     this._searchBar;
     this._titleBar;
+    this._bottomNavView;
+    this._bottonNavButtons;
     
     this.createView = function () {
         
@@ -78,14 +80,31 @@ var MapWindowView = function (facade) {
         else {
             _self._view.add(_self._mapView);
         }
-
+        
         if (_self._app.models.deviceProxy.isIOS()) {
             // create controls for zoomin / zoomout
             // included in Android by default
+            
+            _self._bottomNavView = Ti.UI.createView(_self._app.styles.mapNavView);
+            _self._view.add(_self._bottomNavView);
+
+            /*
+            Commented out for v1.0
+            _self._bottonNavButtons = Titanium.UI.createTabbedBar(_self._app.styles.mapButtonBar);
+            _self._bottonNavButtons.labels = ['Search', 'Browse', 'Favorites'];
+            _self._bottonNavButtons.width = 225;
+            _self._bottonNavButtons.left = 5;
+            _self._bottomNavView.add(_self._bottonNavButtons);*/
+            
 
             buttonBar = Titanium.UI.createButtonBar(_self._app.styles.mapButtonBar);
+            buttonBar.labels =  ['+', '-'];
+            buttonBar.width = 75;
+            // buttonBar.right = 5; //Should be centered for v1.0
+            
             if (_self._mapView) {
-                _self._mapView.add(buttonBar);
+                // _self._mapView.add(buttonBar);
+                _self._bottomNavView.add(buttonBar);
             }
             else {
                 Ti.API.error("mapView doesn't exist to place the buttonBar into.");
@@ -129,13 +148,13 @@ var MapWindowView = function (facade) {
             _annotation = Titanium.Map.createAnnotation(_annotationParams);
             _self._mapView.addAnnotation(_annotation);
         }
-        Ti.API.debug("Hiding Activity Indicator in plotPoints()");
         
         _self._mapView.setLocation(_self._app.models.mapProxy.getMapCenter());
         _self._activityIndicator.hide();
     };
     
     this.searchBlur = function (e) {
+        Ti.API.debug("searchBlur() in MapWindowView");
         _self._searchBar.input.blur();
     };
 
@@ -155,8 +174,15 @@ var MapWindowView = function (facade) {
         });
     };
     
+    this.resetDimensions = function (e) {
+        Ti.API.debug("resetDimensions() in MapWindowView");
+        _self._mapView.height = _self._app.styles.mapView.height;
+        _self._bottomNavView.top = _self._app.styles.mapNavView.top;
+    };
+    
 };
 MapWindowView.events = {
     SEARCH_SUBMIT   : "MapViewSearchSubmit",
-    MAPVIEW_CLICK   : "MapViewClick"
+    MAPVIEW_CLICK   : "MapViewClick",
+    DETAIL_CLICKED  : "MapViewDetailClick"
 };

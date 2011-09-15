@@ -54,6 +54,7 @@ var PortalWindowView = function (facade) {
         }
 
         _self._win[!app.models.deviceProxy.isAndroid() || _self.getState() === PortalWindowView.states['INITIALIZED'] ?  'open' : 'show']();
+        if (app.models.deviceProxy.isIOS()) _self._win.visible = true;
         _self[!app.models.deviceProxy.isAndroid() || _self.getState() === PortalWindowView.states['INITIALIZED'] ? '_drawUI' : '_updateUI'](_isGuestLayout, _isPortalReachable);
         
         _self._win.addEventListener('android:search', this._onAndroidSearch);
