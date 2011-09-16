@@ -190,9 +190,20 @@ var MapProxy = function (facade) {
         }
         _resultSet.close();
         
+        result.push({
+            name: MapProxy.alternateCategories['UNCATEGORIZED'] //Uncategorized results.
+        });
+        
         for (var i=0, iLength = result.length; i<iLength; i++) {
-            _categoryName = '%'+ result[i].name +'%';
-            _resultSet = db.execute("SELECT COUNT(*) FROM map_locations WHERE categories LIKE ?", _categoryName);
+            
+            if (result[i].name !== MapProxy.alternateCategories['UNCATEGORIZED']) {
+                _categoryName = '%'+ result[i].name +'%';
+                _resultSet = db.execute("SELECT COUNT(*) FROM map_locations WHERE categories LIKE ?", _categoryName);
+            }
+            else if (result[i].name === MapProxy.alternateCategories['UNCATEGORIZED']){
+                _resultSet = db.execute("SELECT COUNT(*) FROM map_locations WHERE categories IS NULL");
+            }
+            
             while (_resultSet.isValidRow()) {
                 result[i].numChildren = _resultSet.field(0);
                 _resultSet.next();
@@ -229,7 +240,7 @@ var MapProxy = function (facade) {
         _numResults = _numResults && typeof _numResults === 'number' ? parseInt(_numResults, 10) : -1;
         _pageNum = _pageNum && typeof _pageNum === 'number' ? parseInt(_pageNum, 10) : 0;
         
-        _catNameQuery = '%' + _catName + '%';
+        
         
         _resultLimit = _numResults ? parseInt(_numResults, 10) : -1;
         _resultOffset = _pageNum && _numResults ? parseInt(_pageNum * _numResults, 10) : 0;
@@ -240,8 +251,14 @@ var MapProxy = function (facade) {
         };
         
         _db = Titanium.Database.open('umobile');
+        if (_catName !== '' && _catName !== MapProxy.alternateCategories['UNCATEGORIZED']) {
+            _catNameQuery = '%' + _catName + '%';
+            _resultSet = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE categories LIKE ? ORDER BY title ASC LIMIT ? OFFSET ? ', _catNameQuery, _resultLimit, _resultOffset);
+        }
+        else {
+            _resultSet = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE categories IS NULL ORDER BY title ASC LIMIT ? OFFSET ? ', _resultLimit, _resultOffset);
+        }
         
-        _resultSet = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE categories LIKE ? ORDER BY title ASC LIMIT ? OFFSET ? ', _catNameQuery, _resultLimit, _resultOffset);
         _result.returnedResultNum = _resultSet.rowCount;
         while (_resultSet.isValidRow()) {
             try {
@@ -307,7 +324,7 @@ var MapProxy = function (facade) {
                             building.searchText ? building.searchText : '',
                             building.zip || '',
                             building.img || '',
-                            building.categories || ''
+                            building.categories ? building.categories.toString() : null
                             );
                     }
                     else {
@@ -315,10 +332,10 @@ var MapProxy = function (facade) {
                     }
                     
                     if (building.categories) {
-                        //Create array from comma-separated values and remove spaces
-                        building.categories = building.categories.replace(' ','').split(',');
-                        for (var j=0, jLength=building.categories.length; j<jLength; j++) {
-                            _categories[building.categories[j]] = 0;
+                        //Populate local array with unique indeces of categories, to be added to db
+                        var _category;
+                        while (_category = building.categories.shift()) {
+                            _categories[_category] = 0;
                         }
                     }
                     
@@ -394,6 +411,10 @@ MapProxy.events = {
     SEARCHING       : 'MapProxySearching',
     SEARCH_COMPLETE : 'MapProxySearchComplete',
     POINTS_LOADED   : 'MapProxyPointsLoaded'
+};
+
+MapProxy.alternateCategories = {
+    UNCATEGORIZED   : 'MapProxyUncategorized'
 };
 
 MapProxy.requestErrors = {
