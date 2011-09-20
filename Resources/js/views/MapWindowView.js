@@ -21,6 +21,7 @@ var MapWindowView = function (facade) {
     
     //Pseudo private variables
     this._app = facade;
+    this._activeView;
     
     // Pseudo private UI objects
     this._view;
@@ -30,7 +31,15 @@ var MapWindowView = function (facade) {
     this._searchBar;
     this._titleBar;
     this._bottomNavView;
-    this._bottonNavButtons;
+    this._bottomNavButtons;
+    this._zoomButtonBar;
+    
+    // Category Browsing UI
+    this._categoryBrowsingView;
+    this._categoryNavBar;
+    
+    // Favorites browsing UI
+    this._favoritesBar;
     
     this.createView = function () {
         
@@ -42,7 +51,7 @@ var MapWindowView = function (facade) {
     };
     
     this._createMainView = function() {
-        var annotations, buttonBar, mapViewOpts;
+        var mapViewOpts;
 
         _self._titleBar = _self._app.UI.createTitleBar({
             homeButton: true,
@@ -80,42 +89,50 @@ var MapWindowView = function (facade) {
         else {
             _self._view.add(_self._mapView);
         }
+
+        _self._bottomNavView = Ti.UI.createView(_self._app.styles.mapNavView);
+        _self._view.add(_self._bottomNavView);
+
+        _self._bottomNavButtons = Titanium.UI.createTabbedBar(_self._app.styles.mapButtonBar);
+        _self._bottomNavButtons.labels = ['Search', 'Browse', 'Favorites'];
+        _self._bottomNavButtons.width = 225;
+        _self._bottomNavView.add(_self._bottomNavButtons);
+        
+        _self._bottomNavButtons.addEventListener('click', function (e) {
+            if (e.index == 0) {
+                _self.changeView(MapWindowView.views['SEARCH']);
+            }
+            else if (e.index == 1) {
+                _self.changeView(MapWindowView.views['CATEGORY_BROWSING']);
+            }
+            else if (e.index == 2) {
+                _self.changeView(MapWindowView.views['FAVORITES_BROWSING']);
+            }
+        });
         
         if (_self._app.models.deviceProxy.isIOS()) {
             // create controls for zoomin / zoomout
             // included in Android by default
-            
-            _self._bottomNavView = Ti.UI.createView(_self._app.styles.mapNavView);
-            _self._view.add(_self._bottomNavView);
+            _self._bottomNavButtons.left = 5;
 
-            /*
-            Commented out for v1.0
-            _self._bottonNavButtons = Titanium.UI.createTabbedBar(_self._app.styles.mapButtonBar);
-            _self._bottonNavButtons.labels = ['Search', 'Browse', 'Favorites'];
-            _self._bottonNavButtons.width = 225;
-            _self._bottonNavButtons.left = 5;
-            _self._bottomNavView.add(_self._bottonNavButtons);*/
-            
-
-            buttonBar = Titanium.UI.createButtonBar(_self._app.styles.mapButtonBar);
-            buttonBar.labels =  ['+', '-'];
-            buttonBar.width = 75;
-            // buttonBar.right = 5; //Should be centered for v1.0
+            _self._zoomButtonBar = Titanium.UI.createButtonBar(_self._app.styles.mapButtonBar);
+            _self._zoomButtonBar.labels =  ['+', '-'];
+            _self._zoomButtonBar.width = 75;
+            _self._zoomButtonBar.right = 5;
             
             if (_self._mapView) {
-                // _self._mapView.add(buttonBar);
-                _self._bottomNavView.add(buttonBar);
+                _self._bottomNavView.add(_self._zoomButtonBar);
             }
             else {
-                Ti.API.error("mapView doesn't exist to place the buttonBar into.");
+                Ti.API.error("mapView doesn't exist to place the _self._zoomButtonBar into.");
             }
             
             Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
-                buttonBar.top = _self._app.styles.mapButtonBar.top;
+                _self._zoomButtonBar.top = _self._app.styles.mapButtonBar.top;
             });
 
             // add event listeners for the zoom buttons
-            buttonBar.addEventListener('click', function(e) {
+            _self._zoomButtonBar.addEventListener('click', function(e) {
                 if (e.index == 0) {
                     _self._mapView.zoom(1);
                 } else {
@@ -180,9 +197,136 @@ var MapWindowView = function (facade) {
         _self._bottomNavView.top = _self._app.styles.mapNavView.top;
     };
     
+    this.openCategoryBrowsingView = function (_categories) {
+        Ti.API.debug("openCategoryBrowsingView() in MapWindowView. searchBar: " + _self._searchBar);
+        if (_self._searchBar) _self._searchBar.input.hide();
+        if (_self._favoritesBar) _self._favoritesBar.hide();
+        
+        if (!_self._categoryNavBar) {
+            // Create the secondary nav bar for category browsing
+            Ti.include('/js/views/SecondaryNav.js');
+            _self._categoryNavBar = new SecondaryNav();
+            _self._categoryNavBar.init(_self._app);
+            _self._categoryNavBar.leftButton.title = _self._app.localDictionary.map;
+            _self._categoryNavBar.titleLabel.text = _self._app.localDictionary.browseLocations;
+            _self._view.add(_self._categoryNavBar.view);
+            Ti.API.debug("What is the categoryNavBar?" + _self._categoryNavBar);
+            Ti.API.debug("What is the categoryNavBar.view?" + _self._categoryNavBar.view);
+            _self._categoryNavBar.view.top = _self._app.styles.titleBar.height;
+        }
+        else {
+            _self._categoryNavBar.view.show();
+        }
+        
+        if (!_self._categoryBrowsingView) {
+            // Create the view to hold tableviews listing categories and locations.
+            Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(_categories));
+            _self._categoryBrowsingView = Ti.UI.createTableView({
+                data: (function(c) {
+                    var _data = [];
+                    for (var i=0, iLength = c.length; i<iLength; i++) {
+                        _data.push(Titanium.UI.createTableViewRow({
+                            title: c[i]['name'],
+                            font: {
+                                fontSize: 12
+                            },
+                            hasChild: true
+                        }));
+                        _data[i].add(Ti.UI.createLabel({
+                            text: c[i]['numChildren'], 
+                            backgroundColor:'#ccc', 
+                            width: 30, 
+                            height:30, 
+                            right: 15, 
+                            borderRadius: 5, 
+                            fontWeight: 'bold',
+                            font: {
+                                fontSize: 12,
+                                fontWeight: 'bold'
+                            },
+                            textAlign: 'center'}));
+                    }
+                    
+                    return _data;
+                })(_categories),
+                height: _self._app.styles.mapView.height,
+                top: _self._app.styles.mapView.top
+            });
+            _self._view.add(_self._categoryBrowsingView);
+        }
+        else {
+            _self._categoryBrowsingView.show();
+        }
+    };
+    
+    this.openCategoryMapView = function () {
+        Ti.API.debug("openCategoryMapView() in MapWindowView");
+    };
+    
+    this.openSearchView = function () {
+        Ti.API.debug("openSearchView() in MapWindowView");
+        if (_self._categoryNavBar) _self._categoryNavBar.view.hide();
+        if (_self._favoritesBar) _self._favoritesBar.hide();
+        if (_self._searchBar) _self._searchBar.input.show();
+        if (_self._categoryBrowsingView) _self._categoryBrowsingView.hide();
+    };
+    
+    this.openFavoritesBrowsingView = function () {
+        Ti.API.debug("openFavoritesBrowsingView() in MapWindowView");
+    };
+    
+    this.openFavoritesMapView = function () {
+        Ti.API.debug("openFavoritesMapView() in MapWindowView");
+        
+    };
+    
+    this.changeView = function (_newView) {
+        //First we want to make sure the _newView is legit
+        //And set the _activeView to _newView if it is.
+        for (var _view in MapWindowView.views) {
+            if (MapWindowView.views.hasOwnProperty(_view)) {
+                if (MapWindowView.views[_view] === _newView) {
+                    _self._activeView = _newView;
+                    break;
+                }
+            }
+        }
+        
+        // Now we want to actually show the proper view, presuming 
+        // the _newView matches the (hopefully) newly set _self._activeView
+        if (_self._activeView === _newView) {
+            switch (_newView) {
+                case MapWindowView.views['SEARCH']:
+                    _self.openSearchView();
+                    break;
+                case MapWindowView.views['CATEGORY_BROWSING']:
+                    _self.openCategoryBrowsingView(_self._app.models.mapProxy.getCategoryList());
+                    break;
+                case MapWindowView.views['CATEGORY_MAP']:
+                    _self.openCategoryMapView();
+                    break;
+                case MapWindowView.views['FAVORITES_BROWSING']:
+                    _self.openFavoritesBrowsingView();
+                    break;
+                case MapWindowView.views['FAVORITES_MAP']:
+                    _self.openFavoritesMapView();
+                    break;
+            }
+                
+        }
+    };
+    
 };
 MapWindowView.events = {
     SEARCH_SUBMIT   : "MapViewSearchSubmit",
     MAPVIEW_CLICK   : "MapViewClick",
     DETAIL_CLICKED  : "MapViewDetailClick"
+};
+
+MapWindowView.views = {
+    SEARCH              : "MapWindowSearchView",
+    CATEGORY_BROWSING   : "MapWindowCategoryBrowsing",
+    CATEGORY_MAP        : "MapWindowCategoryMap",
+    FAVORITES_BROWSING  : "MapWindowFavoritesBrowsing",
+    FAVORITES_MAP       : "MapWindowFavoritesMap"
 };

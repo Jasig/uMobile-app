@@ -227,12 +227,13 @@ var UI = function (facade) {
     
     this.createSecondaryNavBar = function (opts) {
         var _secondaryNavBar, _backBtnOptions, _navBackButton, _titleLabel;
+        // Possible parameters: backBtnText:String, btnFloatLeft:Bool, title:String, backButtonHandler:Function
         // A partial view used in some views to place a nav bar just below the titleBar
         _secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
         if (!opts) { opts = {}; }
         if(opts.backButtonHandler) {
             _backBtnOptions = Styles.secondaryNavBarButton.clone();
-            _backBtnOptions.title = LocalDictionary.back;
+            _backBtnOptions.title = opts.backBtnText || LocalDictionary.back;
 
             _navBackButton = Titanium.UI.createButton(_backBtnOptions);
             _navBackButton.addEventListener('click', opts.backButtonHandler);

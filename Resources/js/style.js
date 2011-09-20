@@ -246,10 +246,26 @@ var Styles = function (facade) {
         	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
         	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
         },
+        
         secondaryNavBarLabel: {
-            width: Ti.Platform.displayCaps.platformWidth - 70 * 2 - 10 * 3,
+            width: Ti.Platform.displayCaps.platformWidth - 70 * 2 - 10 * 4,
             left: 10,
             buttonLeftFloat: 70 + 10 * 2,
+            height: defaults.TITLEBAR_HEIGHT,
+            color: defaults.SECONDARY_BAR_COLOR,
+            textAlign: "center",
+            ellipsize: true,
+            wordWrap: false,
+            minimumFontSize: 14,
+            font: {
+                fontSize: 14,
+                fontWeight: 'bold'
+            }
+    	},
+    	// Styles for new prototype in v1.1, views/SecondaryNav.js
+    	secondaryNavLabel: {
+    	    width: Ti.Platform.displayCaps.platformWidth - 70 * 2 - 10 * 4,
+            left: 70 + 10 * 2,
             height: defaults.TITLEBAR_HEIGHT,
             color: defaults.SECONDARY_BAR_COLOR,
             textAlign: "center",
@@ -272,6 +288,25 @@ var Styles = function (facade) {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
             left: Ti.Platform.displayCaps.platformWidth - 50 - 10,
             leftFloat: 10,
+            width: 50,
+            height: 30,
+            optionalImage: 'img/back-icon.png',
+        	backgroundImage: 'img/secondarybarbtnbg.png',
+        	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
+        	color: '#fff',
+        	selectedColor: "#fff",
+            borderRadius: 10,
+            borderColor: '#294D6B',
+            borderWidth: 1,
+        	font: {
+        	    fontSize: 12,
+        	    fontWeight: "bold"
+        	}
+        },
+        // Styles for new prototype for v1.1, views/SecondaryNav.js
+        secondaryNavButton: {
+            style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
+            left: 10,
             width: 50,
             height: 30,
             optionalImage: 'img/back-icon.png',
@@ -430,8 +465,7 @@ var Styles = function (facade) {
     	// MAP STYLES
     	mapView: {
             top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-            // height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + 50),
-            height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT), //Temporary adjustment for v1.0 pre-browsing-features
+            height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50 /*mapNavView.height*/),
             mapType: Titanium.Map.STANDARD_TYPE,
             regionFit: true,
             animate: true,
@@ -442,8 +476,8 @@ var Styles = function (facade) {
     	},
     	mapNavView: {
     	    top: Ti.Platform.displayCaps.platformHeight - 50 - defaults.STATUSBAR_HEIGHT,
-            height              : 50
-            // , backgroundGradient  : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+            height              : 50,
+            backgroundGradient  : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
     	},
     	mapButtonBar: {
             color: '#fff',
