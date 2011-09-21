@@ -38,6 +38,11 @@ if (typeof Object.create !== 'function') {
     };
 }
 
+String.prototype.toCapitalized = function () { 
+    return this.length > 1 ? this.charAt(0).toUpperCase() + this.substr(1) : this.toUpperCase();
+};
+
+
 var app, loadingWindow, startup, onOrientationChange;
 
 

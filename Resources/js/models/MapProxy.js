@@ -414,7 +414,7 @@ MapProxy.events = {
 };
 
 MapProxy.alternateCategories = {
-    UNCATEGORIZED   : 'MapProxyUncategorized'
+    UNCATEGORIZED   : 'uncategorized'
 };
 
 MapProxy.requestErrors = {

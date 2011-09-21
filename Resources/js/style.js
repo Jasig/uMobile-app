@@ -474,6 +474,25 @@ var Styles = function (facade) {
     	mapAnnotation: {
     	    
     	},
+    	mapCategoryRow: {
+    	    font: {
+                fontSize: 12
+            },
+            hasChild: true
+    	},
+    	mapCategoryCount: {
+    	    backgroundColor:'#ccc',
+            width: 30, 
+            height:30, 
+            right: 15, 
+            borderRadius: 5, 
+            fontWeight: 'bold',
+            font: {
+                fontSize: 12,
+                fontWeight: 'bold'
+            },
+            textAlign: 'center'
+    	},
     	mapNavView: {
     	    top: Ti.Platform.displayCaps.platformHeight - 50 - defaults.STATUSBAR_HEIGHT,
             height              : 50,

@@ -53,6 +53,8 @@ localDictionary.en_US = {
     
     //Map Window & Map Detail Window
     map: "Map",
+    browse: "Browse",
+    favorites: "Favorites",
     viewOnMap   : "View on Map", 
     browseLocations : "Browse Locations",
     mapLoadingLocations: "Loading locations from server",

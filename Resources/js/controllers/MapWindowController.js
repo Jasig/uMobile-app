@@ -37,9 +37,9 @@ var MapWindowController = function(facade) {
         Ti.API.debug("init() in MapWindowController");
         _self.key = 'map';
         
-        Titanium.include('/js/models/MapProxy.js');
-        Titanium.include('/js/views/MapDetailView.js');
-        Titanium.include('/js/views/MapWindowView.js');
+        if (typeof MapProxy === "undefined")        Titanium.include('/js/models/MapProxy.js');
+        if (typeof MapDetailView === "undefined")   Titanium.include('/js/views/MapDetailView.js');
+        if (typeof MapWindowView === "undefined")   Titanium.include('/js/views/MapWindowView.js');
         
         _self._app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
         _self._app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
@@ -54,7 +54,9 @@ var MapWindowController = function(facade) {
         Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
         Ti.App.addEventListener(MapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
         Ti.App.addEventListener(MapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
-        Ti.App.addEventListener(MapWindowView.events['DETAIL_CLICKED'], _self._loadDetail);
+        Ti.App.addEventListener(MapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
+        Ti.App.addEventListener(MapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
+        Ti.App.addEventListener(MapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
     };
     
     this.open = function () {
@@ -122,7 +124,7 @@ var MapWindowController = function(facade) {
         _self._app.views.mapWindowView._activityIndicator.hide();
     };
     
-    
+    // Mapview events
     this._onMapSearch = function (e) {
         _self._app.models.mapProxy.search(e.value);
     };
@@ -140,6 +142,30 @@ var MapWindowController = function(facade) {
             Ti.API.info("Title: " + e.title);
             Ti.API.info("Result of search: " + _self._app.models.mapProxy.getAnnotationByTitle(e.title));
         }
+    };
+    
+    this._onNavButtonClick = function (e) {
+        switch (e.buttonName) {
+            case MapWindowView.navButtonValues[0]:
+                _self._app.views.mapWindowView.changeView(MapWindowView.views['SEARCH']);
+                break;
+            case MapWindowView.navButtonValues[1]:
+                _self._app.views.mapWindowView.changeView(MapWindowView.views['CATEGORY_BROWSING'], _self._app.models.mapProxy.getCategoryList());
+                break;
+            case MapWindowView.navButtonValues[2]:
+                _self._app.views.mapWindowView.changeView(MapWindowView.views['FAVORITES_BROWSING']);
+                break;
+            default:
+                Ti.API.error("No case matched in _handleNavButtonClick");
+        }
+    };
+    
+    this._onCategoryRowClick = function (e) {
+        // Will receive an event, with "category" string property
+        // Tell the map window view to open the locations list, and pass 
+        // collection of locations for that category
+        Ti.API.info("_onCategoryRowClick() in MapWindowController. Category:" + e.category);
+        _self._app.views.mapWindowView.changeView(MapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(e.category));
     };
 
     //Proxy Events

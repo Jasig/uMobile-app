@@ -94,20 +94,14 @@ var MapWindowView = function (facade) {
         _self._view.add(_self._bottomNavView);
 
         _self._bottomNavButtons = Titanium.UI.createTabbedBar(_self._app.styles.mapButtonBar);
-        _self._bottomNavButtons.labels = ['Search', 'Browse', 'Favorites'];
+        _self._bottomNavButtons.labels = MapWindowView.navButtonValues;
         _self._bottomNavButtons.width = 225;
         _self._bottomNavView.add(_self._bottomNavButtons);
         
         _self._bottomNavButtons.addEventListener('click', function (e) {
-            if (e.index == 0) {
-                _self.changeView(MapWindowView.views['SEARCH']);
-            }
-            else if (e.index == 1) {
-                _self.changeView(MapWindowView.views['CATEGORY_BROWSING']);
-            }
-            else if (e.index == 2) {
-                _self.changeView(MapWindowView.views['FAVORITES_BROWSING']);
-            }
+            Ti.App.fireEvent(MapWindowView.events['NAV_BUTTON_CLICK'], {
+                buttonName: MapWindowView.navButtonValues[e.index] || ''
+            });
         });
         
         if (_self._app.models.deviceProxy.isIOS()) {
@@ -207,7 +201,8 @@ var MapWindowView = function (facade) {
             Ti.include('/js/views/SecondaryNav.js');
             _self._categoryNavBar = new SecondaryNav();
             _self._categoryNavBar.init(_self._app);
-            _self._categoryNavBar.leftButton.title = _self._app.localDictionary.map;
+            _self._categoryNavBar.leftButton.hide();
+            _self._categoryNavBar.rightButton.title = _self._app.localDictionary.map;
             _self._categoryNavBar.titleLabel.text = _self._app.localDictionary.browseLocations;
             _self._view.add(_self._categoryNavBar.view);
             Ti.API.debug("What is the categoryNavBar?" + _self._categoryNavBar);
@@ -223,28 +218,24 @@ var MapWindowView = function (facade) {
             Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(_categories));
             _self._categoryBrowsingView = Ti.UI.createTableView({
                 data: (function(c) {
-                    var _data = [];
+                    var _data = [], _labelStyle = _self._app.styles.mapCategoryCount.clone(), _rowStyle = _self._app.styles.mapCategoryRow.clone(), _categoryName;
+                    
+                    // Iterate through array of categories and create table view rows for user to select.
                     for (var i=0, iLength = c.length; i<iLength; i++) {
-                        _data.push(Titanium.UI.createTableViewRow({
-                            title: c[i]['name'],
-                            font: {
-                                fontSize: 12
-                            },
-                            hasChild: true
-                        }));
-                        _data[i].add(Ti.UI.createLabel({
-                            text: c[i]['numChildren'], 
-                            backgroundColor:'#ccc', 
-                            width: 30, 
-                            height:30, 
-                            right: 15, 
-                            borderRadius: 5, 
-                            fontWeight: 'bold',
-                            font: {
-                                fontSize: 12,
-                                fontWeight: 'bold'
-                            },
-                            textAlign: 'center'}));
+                        // Create a row with the category name
+                        _categoryName = c[i]['name'];
+                        _rowStyle.title = _categoryName.toCapitalized();
+                        _data.push(Titanium.UI.createTableViewRow(_rowStyle));
+                        
+                        // Add a count to the row with number of children for category.
+                        _labelStyle.text = c[i]['numChildren'];
+                        _data[i].add(Ti.UI.createLabel(_labelStyle));
+                        
+                        // Add a listener to the row to let the controller 
+                        // know the user wants to explore the category
+                        _data[i].addEventListener('click', function (e) {
+                            Ti.App.fireEvent(MapWindowView.events['CATEGORY_ROW_CLICK'], { category : e.row.title.toLowerCase() });
+                        });
                     }
                     
                     return _data;
@@ -280,30 +271,33 @@ var MapWindowView = function (facade) {
         
     };
     
-    this.changeView = function (_newView) {
-        //First we want to make sure the _newView is legit
-        //And set the _activeView to _newView if it is.
+    this.changeView = function (newView, viewModel) {
+        //First we want to make sure the newView is legit
+        //And set the _activeView to newView if it is.
         for (var _view in MapWindowView.views) {
             if (MapWindowView.views.hasOwnProperty(_view)) {
-                if (MapWindowView.views[_view] === _newView) {
-                    _self._activeView = _newView;
+                if (MapWindowView.views[_view] === newView) {
+                    _self._activeView = newView;
                     break;
                 }
             }
         }
         
         // Now we want to actually show the proper view, presuming 
-        // the _newView matches the (hopefully) newly set _self._activeView
-        if (_self._activeView === _newView) {
-            switch (_newView) {
+        // the newView matches the (hopefully) newly set _self._activeView
+        if (_self._activeView === newView) {
+            switch (newView) {
                 case MapWindowView.views['SEARCH']:
                     _self.openSearchView();
                     break;
                 case MapWindowView.views['CATEGORY_BROWSING']:
-                    _self.openCategoryBrowsingView(_self._app.models.mapProxy.getCategoryList());
+                    _self.openCategoryBrowsingView(viewModel);
                     break;
                 case MapWindowView.views['CATEGORY_MAP']:
                     _self.openCategoryMapView();
+                    break;
+                case MapWindowView.views['CATEGORY_LOCATIONS_LIST']:
+                    Ti.API.debug("Category Locations List would open... Viewmodel: " + JSON.stringify(viewModel));
                     break;
                 case MapWindowView.views['FAVORITES_BROWSING']:
                     _self.openFavoritesBrowsingView();
@@ -318,15 +312,25 @@ var MapWindowView = function (facade) {
     
 };
 MapWindowView.events = {
-    SEARCH_SUBMIT   : "MapViewSearchSubmit",
-    MAPVIEW_CLICK   : "MapViewClick",
-    DETAIL_CLICKED  : "MapViewDetailClick"
+    SEARCH_SUBMIT       : "MapViewSearchSubmit",
+    MAPVIEW_CLICK       : "MapViewClick",
+    NAV_BUTTON_CLICK    : "MapNavButtonClick",
+    DETAIL_CLICK        : "MapViewDetailClick",
+    CATEGORY_ROW_CLICK  : "MapViewCategoryRowClick"
 };
 
+if (typeof localDictionary === "undefined") Ti.include('/js/localization.js');
+MapWindowView.navButtonValues = [
+    localDictionary[Titanium.App.Properties.getString('locale')]['search'],
+    localDictionary[Titanium.App.Properties.getString('locale')]['browse'],
+    localDictionary[Titanium.App.Properties.getString('locale')]['favorites']
+];
+
 MapWindowView.views = {
-    SEARCH              : "MapWindowSearchView",
-    CATEGORY_BROWSING   : "MapWindowCategoryBrowsing",
-    CATEGORY_MAP        : "MapWindowCategoryMap",
-    FAVORITES_BROWSING  : "MapWindowFavoritesBrowsing",
-    FAVORITES_MAP       : "MapWindowFavoritesMap"
+    SEARCH                  : "MapWindowSearchView",
+    CATEGORY_BROWSING       : "MapWindowCategoryBrowsing",
+    CATEGORY_LOCATIONS_LIST : "MapWindowCategoryLocationsList",
+    CATEGORY_MAP            : "MapWindowCategoryMap",
+    FAVORITES_BROWSING      : "MapWindowFavoritesBrowsing",
+    FAVORITES_MAP           : "MapWindowFavoritesMap"
 };
