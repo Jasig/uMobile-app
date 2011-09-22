@@ -36,14 +36,14 @@ var ConfigModule = function(app) {
 	// http[s]://server[:port][/context]. This URL is *not* expected to contain a
 	// trailing slash.
     this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-    // this.BASE_PORTAL_URL = 'http://192.168.1.125:8080';
-	this.PORTAL_CONTEXT = '';
+    // this.BASE_PORTAL_URL = 'https://dev-uportal-showcase.unicon.net';
+	this.PORTAL_CONTEXT = '/uPortal';
 
 	//------- AUTHENTICATION -------
 
 	this.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
 	//in seconds = two hours
-	this.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
+	this.LOGIN_METHOD = LoginProxy.loginMethods.CAS;
 	//References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
 	this.CAS_URL = this.BASE_PORTAL_URL + '/cas';
 	this.ENCRYPTION_KEY = 'um0b1le';

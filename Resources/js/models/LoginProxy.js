@@ -134,7 +134,8 @@ var LoginProxy = function (facade) {
 
 LoginProxy.events = {
     NETWORK_SESSION_FAILURE : 'EstablishNetworkSessionFailure',
-    NETWORK_SESSION_SUCCESS : 'EstablishNetworkSessionSuccess'
+    NETWORK_SESSION_SUCCESS : 'EstablishNetworkSessionSuccess',
+    LOGIN_METHOD_COMPLETE   : 'LoginProxyLoginMethodComplete'
 };
 
 LoginProxy.sessionTimeContexts = {

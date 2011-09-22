@@ -17,97 +17,214 @@
  * under the License.
  */
 var CASLogin = function (facade) {
-    var app = facade, init, _self = this, Session, Config, 
-    client, credentials, options, url,
-    onLoginError, onLoginComplete, onInitialResponse, onInitialError;
+    var _self = this;
     
-    init = function () {
-        Config = app.config;
+    // Pseudo private variables
+    this._app = facade;
+    this._url;
+    this._credentials;
+    this._refUrl = _self._app.config.PORTAL_CONTEXT + '/layout.json';
+    this._serviceUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _self._refUrl;
+    this._logoutUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/logout';
+    
+    // XHR client
+    this._client;
+    
+    this._init = function () {
+        // Nothing to init
     };
     
-    this.login = function (creds, opts) {
-        if (!Session) {
-            Session = app.models.sessionProxy;
+    this.login = function (credentials, opts) {
+        _self._credentials = credentials;
+        if (_self._credentials.username === '') {
+            _self._credentials.username = LoginProxy.userTypes['GUEST'];
+            _self._credentials.password = LoginProxy.userTypes['GUEST'];
+            _self.logout();
         }
-        credentials = creds;
-        options = opts;
+        else {
+            _self._url = _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_self._serviceUrl);
 
-        url = Config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(Config.BASE_PORTAL_URL + Config.PORTAL_CONTEXT + '/Login?isNativeDevice=true');
+            // Send an initial response to the CAS login page
+            _self._client = Titanium.Network.createHTTPClient({
+                onload: _self._onInitialResponse,
+                onerror: _self._onInitialError
+            });
+            _self._client.open('GET', _self._url, false);
 
-        // Send an initial response to the CAS login page
-        client = Titanium.Network.createHTTPClient({
-            onload: onInitialResponse,
-            onerror: onInitialError
+            _self._client.send();            
+        }
+    };
+    
+    this.logout = function () {
+        Ti.API.debug("logout() in CASLogin");
+        _self._client = Titanium.Network.createHTTPClient({
+            onload: _self._onLogoutComplete,
+            onerror: _self._onInitialError
         });
-        client.open('GET', url, false);
+        _self._client.open('GET', _self._logoutUrl, false);
 
-        client.send();
+        _self._client.send();
+    };
+    
+    this._onLogoutComplete = function (e) {
+        Ti.API.debug("_onLogoutComplete() in CASLogin");
+        _self._client = Titanium.Network.createHTTPClient({
+            onload: function (e) {
+                _self._processResponse(_self._client.responseText);
+            },
+            onerror: _self._onInitialError
+        });
+        _self._client.open('GET', _self._serviceUrl, false);
+
+        _self._client.send();
     };
     
     this.getLoginURL = function (url) {
         var separator = url.indexOf('?') >= 0 ? '&' : '?';
-        return Config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
+        return _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
     };
     
-    onLoginComplete = function (e) {
-        Ti.API.debug("onLoginComplete() in CASLogin");
+    this._onLoginComplete = function (e) {
+        Ti.API.debug("_self._onLoginComplete() in CASLogin " + _self._client.location);
         // Examine the response to determine if authentication was successful.  If
         // we get back a CAS page, assume that the credentials were invalid.
-        var failureRegex = new RegExp(/body id="cas"/);
-        if (failureRegex.exec(client.responseText)) {
-            Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        
+        var _failureRegex;
+        
+        _failureRegex = new RegExp(/body id="cas"/);
+        if (_failureRegex.exec(_self._client.responseText)) {
+            _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
-        } else {
-            Session.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            if (!options || !options.isUnobtrusive) {
-                Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS']);
-            }
+        } 
+        else {
+            _self._processResponse(_self._client.responseText);
         }
     };
     
-    onLoginError = function (e) {
-        Ti.API.error("onLoginError() in CASLogin");
-        Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
-    };
-    
-    onInitialError = function (e) {
-        Ti.API.error("onInitialError() in CASLogin");
-        Session.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
-    };
-    
-    onInitialResponse = function (e) {
-        Ti.API.debug("onInitialResponse() in CASLogin");
-        var flowRegex, flowId, initialResponse, data;
-        // Parse the returned page, looking for the Spring Webflow ID.  We'll need
-        // to post this token along with our credentials.
-        initialResponse = client.responseText;
-        Ti.API.debug("initialResponse: " + initialResponse);
-        flowRegex = new RegExp(/input type="hidden" name="lt" value="([a-z0-9]*)?"/);
-        Ti.API.debug("flowRegex: " + flowRegex);
-        flowId = flowRegex.exec(initialResponse)[1];
-        Ti.API.debug("flowId: " + flowId);
+    this._processResponse = function (responseText) {
+        Ti.API.debug("_processResponse() in CASLogin");
+        var _parsedResponse;
+        try {
+            _parsedResponse = JSON.parse(responseText);
+        }
+        catch (e) {
+            _parsedResponse = {
+                user: LoginProxy.userTypes['NO_USER'],
+                layout: []
+            };
+        }   
 
-        // Post the user credentials and other required webflow parameters to the 
-        // CAS login page.  This step should accomplish authentication and redirect
-        // to the portal if the user is successfully authenticated.
-        client = Titanium.Network.createHTTPClient({
-            onload: onLoginComplete,
-            onerror: onLoginError
-        });
-        client.open('POST', url, true);
-        
-        data = { 
-            username: credentials.username, 
-            password: credentials.password, 
-            lt: flowId, 
-            _eventId: 'submit', 
-            submit: 'LOGIN' 
-        };
-        client.send(data);
-        Ti.API.debug("client.send() with data: " + JSON.stringify(data));
+        _self._app.models.userProxy.setLayoutUserName(_parsedResponse.user);
+        _self._app.models.portalProxy.setPortlets(_parsedResponse.layout);
+
+        if (_self._app.models.userProxy.getLayoutUserName() === _self._credentials.username || _self._app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
+            Ti.API.info("_layoutUser matches _self._credentials.username");
+            Ti.API.info("_self._app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
+            _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            _self._app.models.portalProxy.setIsPortalReachable(true);
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: _self._app.models.userProxy.getLayoutUserName()});
+            Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
+        }
+        else {
+            Ti.API.error("Network session failed");
+            _self._app.models.portalProxy.setIsPortalReachable(false);
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+        }
     };
     
-    init();
+    this._onLoginError = function (e) {
+        Ti.API.error("_self._onLoginError() in CASLogin");
+        _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+    };
+    
+    this._onInitialError = function (e) {
+        Ti.API.error("_self._onInitialError() in CASLogin");
+        _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+    };
+    
+    this._onInitialResponse = function (e) {
+        Ti.API.debug("_self._onInitialResponse() in CASLogin");
+        var flowRegex, flowId, initialResponse, data, _parsedResponse;
+        
+        // CAS will redirect to layout.json if the user has already logged in, so we want 
+        // to check if the base URL is what should only be returned after login
+        if (_self._client.location.indexOf(_self._app.config.BASE_PORTAL_URL + _self._refUrl) == 0) {
+            Ti.API.debug("_self._client.location.indexOf(_self._app.config.BASE_PORTAL_URL + _self._refUrl) == 0");
+            
+            function _reLogin () {
+                _self._client = Titanium.Network.createHTTPClient({
+                    onload: function (e) {
+                        _self._client = Titanium.Network.createHTTPClient({
+                            onload: _self._onInitialResponse,
+                            onerror: _self._onInitialError
+                        });
+                        _self._client.open('GET', _self._url, false);
+                        Ti.API.debug("Preparing to load " + _self._url);
+
+                        _self._client.send();
+                    },
+                    onerror: _self._onInitialError
+                });
+                _self._client.open('GET', _self._logoutUrl, false);
+
+                _self._client.send();
+            }
+            
+            // Check if a) the response can parse, and b) if the returned user matches 
+            // The user we're trying to authenticate. If so, we're done with the login and 
+            // can proceed with processing the response.
+            try {
+                _parsedResponse = JSON.parse(_self._client.responseText);
+                if (_parsedResponse.user === _self._credentials.username) {
+                    Ti.API.debug("_parsedResponse.user === _self._credentials.username");
+                    _self._processResponse(_self._client.responseText);
+                }
+                else {
+                    _reLogin();
+                }
+            }
+            catch (e) {
+                Ti.API.error("Couldn't parse JSON");
+                _reLogin();
+            }
+        }
+        else {
+            // Parse the returned page, looking for the Spring Webflow ID.  We'll need
+            // to post this token along with our credentials.
+            initialResponse = _self._client.responseText;
+            Ti.API.debug("initialResponse: " + initialResponse);
+            flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
+            Ti.API.debug("flowRegex: " + flowRegex);
+
+            flowId = flowRegex.exec(initialResponse)[1];
+            Ti.API.debug("flowId: " + flowId);
+
+            // Post the user credentials and other required webflow parameters to the 
+            // CAS login page.  This step should accomplish authentication and redirect
+            // to the portal if the user is successfully authenticated.
+            _self._client = Titanium.Network.createHTTPClient({
+                onload: _self._onLoginComplete,
+                onerror: _self._onLoginError
+            });
+            _self._client.open('POST', _self._url, true);
+
+            Ti.API.debug("Getting ready to populate data object");
+            Ti.API.debug(_self._credentials.username);
+
+
+            data = { 
+                username: _self._credentials.username, 
+                password: _self._credentials.password, 
+                lt: flowId, 
+                _eventId: 'submit', 
+                submit: 'LOGIN' 
+            };
+            _self._client.send(data);
+            Ti.API.debug("_self._client.send() with data: " + JSON.stringify(data));
+        }
+    };
+    
+    _self._init();
 };
