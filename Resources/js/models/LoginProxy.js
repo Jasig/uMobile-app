@@ -43,6 +43,9 @@ var LoginProxy = function (facade) {
             case LoginProxy.loginMethods.LOCAL_LOGIN:
                 _self._variables['loginMethod'] = app.models.localLogin.login;
                 break;
+            case LoginProxy.loginMethods.SHIBBOLETH2:
+                _self._variables['loginMethod'] = app.models.Shibboleth2Login.login;
+                break;
             default:
                 Ti.API.info("Login method not recognized in LoginProxy.this.init()");
         }
@@ -100,6 +103,8 @@ var LoginProxy = function (facade) {
                 return app.models.localLogin.getLoginURL(url);
             case LoginProxy.loginMethods.CAS:
                 return app.models.CASLogin.getLoginURL(url);
+            case LoginProxy.loginMethods.SHIBBOLETH2:
+                return app.models.Shibboleth2Login.getLoginURL(url);
             default:
                 Ti.API.error("No login method matches " + app.config.LOGIN_METHOD);
                 return false;                
@@ -144,8 +149,9 @@ LoginProxy.sessionTimeContexts = {
 };
 
 LoginProxy.loginMethods = {
-    CAS: "Cas",
-    LOCAL_LOGIN: "LocalLogin"
+    CAS         : "Cas",
+    LOCAL_LOGIN : "LocalLogin",
+    SHIBBOLETH2  : "Shibboleth"
 };
 
 LoginProxy.userTypes = {

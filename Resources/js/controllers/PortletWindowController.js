@@ -89,6 +89,7 @@ var PortletWindowController = function (facade) {
 
         _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
         _self._webView.scalePageToFit = true;
+        _self._webView.validatesSecureCertificate = false;
         _self._webView.addEventListener('load', _self._onPortletLoad);
         _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
         _self._webView.hide();

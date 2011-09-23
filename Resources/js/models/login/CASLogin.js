@@ -49,7 +49,7 @@ var CASLogin = function (facade) {
                 onload: _self._onInitialResponse,
                 onerror: _self._onInitialError
             });
-            _self._client.open('GET', _self._url, false);
+            _self._client.open('GET', _self._url, true);
 
             _self._client.send();            
         }
@@ -61,7 +61,7 @@ var CASLogin = function (facade) {
             onload: _self._onLogoutComplete,
             onerror: _self._onInitialError
         });
-        _self._client.open('GET', _self._logoutUrl, false);
+        _self._client.open('GET', _self._logoutUrl, true);
 
         _self._client.send();
     };
@@ -74,7 +74,7 @@ var CASLogin = function (facade) {
             },
             onerror: _self._onInitialError
         });
-        _self._client.open('GET', _self._serviceUrl, false);
+        _self._client.open('GET', _self._serviceUrl, true);
 
         _self._client.send();
     };
@@ -160,14 +160,14 @@ var CASLogin = function (facade) {
                             onload: _self._onInitialResponse,
                             onerror: _self._onInitialError
                         });
-                        _self._client.open('GET', _self._url, false);
+                        _self._client.open('GET', _self._url, true);
                         Ti.API.debug("Preparing to load " + _self._url);
 
                         _self._client.send();
                     },
                     onerror: _self._onInitialError
                 });
-                _self._client.open('GET', _self._logoutUrl, false);
+                _self._client.open('GET', _self._logoutUrl, true);
 
                 _self._client.send();
             }
@@ -198,31 +198,38 @@ var CASLogin = function (facade) {
             flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
             Ti.API.debug("flowRegex: " + flowRegex);
 
-            flowId = flowRegex.exec(initialResponse)[1];
-            Ti.API.debug("flowId: " + flowId);
+            try {
+                flowId = flowRegex.exec(initialResponse)[1];
+                Ti.API.debug("flowId: " + flowId);
+                // Post the user credentials and other required webflow parameters to the 
+                // CAS login page.  This step should accomplish authentication and redirect
+                // to the portal if the user is successfully authenticated.
+                _self._client = Titanium.Network.createHTTPClient({
+                    onload: _self._onLoginComplete,
+                    onerror: _self._onLoginError
+                });
+                _self._client.open('POST', _self._url, true);
 
-            // Post the user credentials and other required webflow parameters to the 
-            // CAS login page.  This step should accomplish authentication and redirect
-            // to the portal if the user is successfully authenticated.
-            _self._client = Titanium.Network.createHTTPClient({
-                onload: _self._onLoginComplete,
-                onerror: _self._onLoginError
-            });
-            _self._client.open('POST', _self._url, true);
-
-            Ti.API.debug("Getting ready to populate data object");
-            Ti.API.debug(_self._credentials.username);
+                Ti.API.debug("Getting ready to populate data object");
+                Ti.API.debug(_self._credentials.username);
 
 
-            data = { 
-                username: _self._credentials.username, 
-                password: _self._credentials.password, 
-                lt: flowId, 
-                _eventId: 'submit', 
-                submit: 'LOGIN' 
-            };
-            _self._client.send(data);
-            Ti.API.debug("_self._client.send() with data: " + JSON.stringify(data));
+                data = { 
+                    username: _self._credentials.username, 
+                    password: _self._credentials.password, 
+                    lt: flowId, 
+                    _eventId: 'submit', 
+                    submit: 'LOGIN' 
+                };
+                _self._client.send(data);
+                Ti.API.debug("_self._client.send() with data: " + JSON.stringify(data));
+            }
+            catch (e) {
+                Ti.API.error("Couldn't get flowID from response");
+                Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+            }
+
+
         }
     };
     

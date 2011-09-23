@@ -23,6 +23,11 @@ var ILoginMethod = function () {
         //This method establishes a session, and has event handlers to fire success or failure events
         //The credentials will be { username: string, password: string }
         //Options might contain isUnObtrusive:bool, which will tell the login method not to broadcast an event on success, only on failure.
+        //Ultimately should retrieve user's layout and process it into other models
+    };
+    
+    this.logout = function () {
+        //Logs out and loads guest layout into other models
     };
     
     this.getLoginURL = function (strURL) {
