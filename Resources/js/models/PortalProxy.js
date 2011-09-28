@@ -143,7 +143,7 @@ var PortalProxy = function (facade) {
         return _iconUrl;
     };
 
-    this._loadPortletList = function() {
+/*    this._loadPortletList = function() {
         Ti.API.debug('loadPortletList() in PortalProxy');
         var layoutUrl, layoutClient, layoutText,
             onRequestComplete, onRequestError, onGetPortletsComplete, onGetPortletsError;
@@ -206,7 +206,7 @@ var PortalProxy = function (facade) {
         }
         layoutClient.open('GET', layoutUrl, true);
         layoutClient.send();
-    };
+    };*/
 
     this.getPortletsForUser = function() {
         var _portlets;

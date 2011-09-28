@@ -48,6 +48,7 @@ var LocalLogin = function (facade) {
     
     onLoginComplete = function (e) {
         Ti.API.debug("onLoginComplete() in LocalLogin. Response: " + client.responseText);
+        Ti.API.debug("Response cookies: " + client.getResponseHeader('Set-Cookie'));
         try {
             _parsedResponse = JSON.parse(client.responseText);
         }

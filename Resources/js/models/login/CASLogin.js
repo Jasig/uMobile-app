@@ -148,7 +148,7 @@ var CASLogin = function (facade) {
     
     this._onInitialResponse = function (e) {
         Ti.API.debug("_self._onInitialResponse() in CASLogin");
-        if (_self._app.models.deviceProxy.isAndroid()) _self._androidCookie = _self._client.getResponseHeader('Set-Cookie');
+        if (_self._app.models.deviceProxy.isAndroid()) Ti.App.Properties.setString("androidCookie", _self._client.getResponseHeader('Set-Cookie'));
         
         var flowRegex, flowId, initialResponse, data, _parsedResponse;
         
@@ -200,7 +200,6 @@ var CASLogin = function (facade) {
             initialResponse = _self._client.responseText;
             Ti.API.debug("initialResponse: " + initialResponse);
             flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
-            Ti.API.debug("flowRegex: " + flowRegex);
 
             try {
                 flowId = flowRegex.exec(initialResponse)[1];
@@ -217,7 +216,7 @@ var CASLogin = function (facade) {
                 _self._client.open('POST', _self._url, true);
                 
                 Ti.API.debug("If this is Android, we're going to manually set a cookie: " + _self._androidCookie);
-                if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('Cookie', _self._androidCookie);
+                if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));
                 
 
                 Ti.API.debug("Getting ready to populate data object");
