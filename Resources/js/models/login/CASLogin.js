@@ -23,6 +23,7 @@ var CASLogin = function (facade) {
     this._app = facade;
     this._url;
     this._credentials;
+    this._androidCookie;
     this._refUrl = _self._app.config.PORTAL_CONTEXT + '/layout.json';
     this._serviceUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _self._refUrl;
     this._logoutUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/logout';
@@ -47,7 +48,8 @@ var CASLogin = function (facade) {
             // Send an initial response to the CAS login page
             _self._client = Titanium.Network.createHTTPClient({
                 onload: _self._onInitialResponse,
-                onerror: _self._onInitialError
+                onerror: _self._onInitialError,
+                validatesSecureCertificate: false
             });
             _self._client.open('GET', _self._url, true);
 
@@ -146,6 +148,8 @@ var CASLogin = function (facade) {
     
     this._onInitialResponse = function (e) {
         Ti.API.debug("_self._onInitialResponse() in CASLogin");
+        if (_self._app.models.deviceProxy.isAndroid()) _self._androidCookie = _self._client.getResponseHeader('Set-Cookie');
+        
         var flowRegex, flowId, initialResponse, data, _parsedResponse;
         
         // CAS will redirect to layout.json if the user has already logged in, so we want 
@@ -208,7 +212,13 @@ var CASLogin = function (facade) {
                     onload: _self._onLoginComplete,
                     onerror: _self._onLoginError
                 });
+                Ti.API.debug("Getting ready to open URL: " + _self._url);
+
                 _self._client.open('POST', _self._url, true);
+                
+                Ti.API.debug("If this is Android, we're going to manually set a cookie: " + _self._androidCookie);
+                if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('Cookie', _self._androidCookie);
+                
 
                 Ti.API.debug("Getting ready to populate data object");
                 Ti.API.debug(_self._credentials.username);

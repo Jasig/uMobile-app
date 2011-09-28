@@ -54,6 +54,7 @@ var LoginProxy = function (facade) {
         app.models.sessionProxy.createSessionTimer(_self.sessionTimeContexts.WEBVIEW);
         
         Ti.App.addEventListener(SessionProxy.events['TIMER_EXPIRED'], this.onSessionExpire);
+        Ti.App.addEventListener(LoginProxy.events['LOGIN_METHOD_RESPONSE'], this._processLoginResponse);
     };
     
     this.updateSessionTimeout = function(context) {
@@ -134,12 +135,47 @@ var LoginProxy = function (facade) {
         }
     };
     
+    this._processLoginResponse = function (e) {
+        var _responseText = e.responseText, _parsedResponse;
+        
+        Ti.API.debug("onLoginComplete() in LocalLogin. Response: " + client.responseText);
+        try {
+            _parsedResponse = JSON.parse(client.responseText);
+        }
+        catch (e) {
+            _parsedResponse = {
+                user: LoginProxy.userTypes['NO_USER'],
+                layout: []
+            };
+        }
+        
+        Ti.API.debug("Parsed response: " + JSON.stringify(_parsedResponse));
+        
+        app.models.userProxy.setLayoutUserName(_parsedResponse.user);
+        app.models.portalProxy.setPortlets(_parsedResponse.layout);
+        
+        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
+            Ti.API.info("_layoutUser matches credentials.username");
+            Ti.API.info("app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
+            app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            app.models.portalProxy.setIsPortalReachable(true);
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
+            Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
+        }
+        else {
+            Ti.API.error("Network session failed");
+            app.models.portalProxy.setIsPortalReachable(false);
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+        }
+    };
+    
     this.init();
 };
 
 LoginProxy.events = {
     NETWORK_SESSION_FAILURE : 'EstablishNetworkSessionFailure',
     NETWORK_SESSION_SUCCESS : 'EstablishNetworkSessionSuccess',
+    LOGIN_METHOD_RESPONSE   : "LoginProxyLoginMethodResponse",
     LOGIN_METHOD_COMPLETE   : 'LoginProxyLoginMethodComplete'
 };
 

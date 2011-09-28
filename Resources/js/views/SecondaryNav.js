@@ -10,14 +10,14 @@ SecondaryNav.prototype.view;
 
 // The left button, typically "back" for the secondary nav bar
 SecondaryNav.prototype.leftButton;
-SecondaryNav.prototype._leftButtonClickHandler = function (e) {
+/*SecondaryNav.prototype._leftButtonClickHandler = function (e) {
     _self.view.fireEvent("LeftButtonClick");
-};
+};*/
 
 SecondaryNav.prototype.rightButton;
-SecondaryNav.prototype._rightButtonClickHandler = function (e) {
+/*SecondaryNav.prototype._rightButtonClickHandler = function (e) {
     _self.view.fireEvent("RightButtonClick");
-};
+};*/
 
 // Centered title label
 SecondaryNav.prototype.titleLabel;
@@ -40,13 +40,13 @@ SecondaryNav.prototype.init = function (facade) {
     _self.view = Titanium.UI.createView(_self._app.styles.secondaryNavBar);
     
     _self.leftButton = Titanium.UI.createButton(_self._app.styles.secondaryNavButton);
-    _self.leftButton.addEventListener('click', _self._leftButtonClickHandler);
+    // _self.leftButton.addEventListener('click', _self._leftButtonClickHandler);
     _self.view.add(_self.leftButton);
     
     _self.rightButton = Titanium.UI.createButton(_self._app.styles.secondaryNavButton);
     _self.rightButton.left = 'auto';
     _self.rightButton.right = 10;
-    _self.rightButton.addEventListener('click', _self._rightButtonClickHandler);
+    // _self.rightButton.addEventListener('click', _self._rightButtonClickHandler);
     _self.view.add(_self.rightButton);
     
     _self.titleLabel = Titanium.UI.createLabel(_self._app.styles.secondaryNavLabel);

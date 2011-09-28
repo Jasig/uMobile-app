@@ -37,6 +37,7 @@ var MapWindowView = function (facade) {
     // Category Browsing UI
     this._categoryBrowsingView;
     this._categoryNavBar;
+    this._categoryLocationsListView;
     
     // Favorites browsing UI
     this._favoritesBar;
@@ -143,15 +144,15 @@ var MapWindowView = function (facade) {
         }
     };
     
-    this._plotPoints = function (_newPoints) {
+    this._plotPoints = function (points) {
         //Clears the map of all annotations, takes an array of points, creates annotations of them, and plots them on the map.
         _self._mapView.removeAllAnnotations();
-        for (var i=0, iLength = _newPoints.length; i<iLength; i++) {
+        for (var i=0, iLength = points.length; i<iLength; i++) {
             var _annotationParams, _annotation;
             _annotationParams = _self._app.styles.mapAnnotation;
-            _annotationParams.title = _newPoints[i].title || _self._app.localDictionary.titleNotAvailable;
-            _annotationParams.latitude = _newPoints[i].latitude;
-            _annotationParams.longitude = _newPoints[i].longitude;
+            _annotationParams.title = points[i].title || _self._app.localDictionary.titleNotAvailable;
+            _annotationParams.latitude = points[i].latitude;
+            _annotationParams.longitude = points[i].longitude;
             _annotationParams.myid = 'annotation' + i;
             _annotationParams.subtitle = '';
             _annotationParams.rightButton = Titanium.UI.iPhone.SystemButtonStyle.BORDERED;
@@ -191,31 +192,46 @@ var MapWindowView = function (facade) {
         _self._bottomNavView.top = _self._app.styles.mapNavView.top;
     };
     
-    this.openCategoryBrowsingView = function (_categories) {
-        Ti.API.debug("openCategoryBrowsingView() in MapWindowView. searchBar: " + _self._searchBar);
+    this._hideAllViews = function () {
+        // This method hides all of the different views within this context,
+        // so that the different methods don't have to worry about what views to close
         if (_self._searchBar) _self._searchBar.input.hide();
+        if (_self._mapView) _self._mapView.hide();
         if (_self._favoritesBar) _self._favoritesBar.hide();
+        if (_self._categoryNavBar) _self._categoryNavBar.view.hide();
+        if (_self._categoryBrowsingView) _self._categoryBrowsingView.hide();
+        if (_self._categoryLocationsListView) _self._categoryLocationsListView.hide();
+    };
+    
+    this._createAndAddCategoryNav = function () {
+        Ti.API.debug("_createAndAddCategoryNav() in MapWindowView");
+        Ti.include('/js/views/SecondaryNav.js');
+        _self._categoryNavBar = new SecondaryNav();
+        _self._categoryNavBar.init(_self._app);
+        _self._categoryNavBar.leftButton.text = _self._app.localDictionary.back;
+        _self._view.add(_self._categoryNavBar.view);
+        _self._categoryNavBar.view.top = _self._app.styles.titleBar.height;
         
-        if (!_self._categoryNavBar) {
-            // Create the secondary nav bar for category browsing
-            Ti.include('/js/views/SecondaryNav.js');
-            _self._categoryNavBar = new SecondaryNav();
-            _self._categoryNavBar.init(_self._app);
-            _self._categoryNavBar.leftButton.hide();
-            _self._categoryNavBar.rightButton.title = _self._app.localDictionary.map;
-            _self._categoryNavBar.titleLabel.text = _self._app.localDictionary.browseLocations;
-            _self._view.add(_self._categoryNavBar.view);
-            Ti.API.debug("What is the categoryNavBar?" + _self._categoryNavBar);
-            Ti.API.debug("What is the categoryNavBar.view?" + _self._categoryNavBar.view);
-            _self._categoryNavBar.view.top = _self._app.styles.titleBar.height;
-        }
-        else {
-            _self._categoryNavBar.view.show();
-        }
+        _self._categoryNavBar.rightButton.addEventListener('click', function (e) {
+            Ti.App.fireEvent(MapWindowView.events['CATEGORY_RIGHT_BTN_CLICK']);
+        });
+    };
+    
+    this.openCategoryBrowsingView = function (categories) {
+        Ti.API.debug("openCategoryBrowsingView() in MapWindowView. searchBar: " + _self._searchBar);
+        _self._hideAllViews();
+        
+        // If there isn't a _categoryNavBar yet, go ahead and create one.
+        if (!_self._categoryNavBar) _self._createAndAddCategoryNav();
+        
+        _self._categoryNavBar.view.show();
+        _self._categoryNavBar.leftButton.hide();
+        _self._categoryNavBar.titleLabel.text = _self._app.localDictionary.browseLocations;
+        _self._categoryNavBar.rightButton.title = _self._app.localDictionary.map;
         
         if (!_self._categoryBrowsingView) {
             // Create the view to hold tableviews listing categories and locations.
-            Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(_categories));
+            Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(categories));
             _self._categoryBrowsingView = Ti.UI.createTableView({
                 data: (function(c) {
                     var _data = [], _labelStyle = _self._app.styles.mapCategoryCount.clone(), _rowStyle = _self._app.styles.mapCategoryRow.clone(), _categoryName;
@@ -239,7 +255,7 @@ var MapWindowView = function (facade) {
                     }
                     
                     return _data;
-                })(_categories),
+                })(categories),
                 height: _self._app.styles.mapView.height,
                 top: _self._app.styles.mapView.top
             });
@@ -250,28 +266,74 @@ var MapWindowView = function (facade) {
         }
     };
     
-    this.openCategoryMapView = function () {
-        Ti.API.debug("openCategoryMapView() in MapWindowView");
+    this.openCategoryLocationsListView = function (viewModel) {
+        Ti.API.debug("openCategoryLocationsListView() in MapWindowView");
+        _self._hideAllViews();
+        
+        if (!_self._categoryLocationsListView) {
+            _self._categoryLocationsListView = Ti.UI.createTableView({
+                top: _self._app.styles.mapView.top,
+                height: _self._app.styles.mapView.height
+            });
+            _self._view.add(_self._categoryLocationsListView);
+        }
+        
+        _self._categoryLocationsListView.show();
+        if (!_self._categoryNavBar) _self._createAndAddCategoryNav();
+        _self._categoryNavBar.view.show();
+        _self._categoryNavBar.leftButton.show();
+        _self._categoryNavBar.titleLabel.text = viewModel.categoryName;
+        _self._categoryNavBar.rightButton.title = _self._app.localDictionary.map;
+        
+        _self._categoryLocationsListView.setData(viewModel.locations);
+    };
+    
+    this.openCategoryLocationsMapView = function (viewModel) {
+        Ti.API.debug("openCategoryLocationsMapView() in MapWindowView");
+        
+        _self._hideAllViews();
+        
+        // If there isn't a _categoryNavBar yet, go ahead and create one.
+        if (!_self._categoryNavBar) _self._createAndAddCategoryNav();
+        
+        _self._categoryNavBar.view.show();
+        _self._mapView.show();
+
+        _self._categoryNavBar.titleLabel.text = _self._app.localDictionary.browseLocations;
+        _self._categoryNavBar.rightButton.title = _self._app.localDictionary.list;
+        
+        /*
+            TODO Actually plot the points on the map.
+        */
     };
     
     this.openSearchView = function () {
         Ti.API.debug("openSearchView() in MapWindowView");
-        if (_self._categoryNavBar) _self._categoryNavBar.view.hide();
-        if (_self._favoritesBar) _self._favoritesBar.hide();
+        _self._hideAllViews();
         if (_self._searchBar) _self._searchBar.input.show();
-        if (_self._categoryBrowsingView) _self._categoryBrowsingView.hide();
+        if (_self._mapView) {
+            _self._mapView.show();
+        }
+        else {
+            // TODO Create a mapview, although it should already exist
+        }
     };
     
     this.openFavoritesBrowsingView = function () {
         Ti.API.debug("openFavoritesBrowsingView() in MapWindowView");
+        _self._hideAllViews();
     };
     
     this.openFavoritesMapView = function () {
         Ti.API.debug("openFavoritesMapView() in MapWindowView");
-        
+        _self._hideAllViews();
     };
     
-    this.changeView = function (newView, viewModel) {
+    this.getView = function () {
+        return _self._activeView;
+    };
+    
+    this.setView = function (newView, viewModel) {
         //First we want to make sure the newView is legit
         //And set the _activeView to newView if it is.
         for (var _view in MapWindowView.views) {
@@ -293,11 +355,11 @@ var MapWindowView = function (facade) {
                 case MapWindowView.views['CATEGORY_BROWSING']:
                     _self.openCategoryBrowsingView(viewModel);
                     break;
-                case MapWindowView.views['CATEGORY_MAP']:
-                    _self.openCategoryMapView();
+                case MapWindowView.views['CATEGORY_LOCATIONS_MAP']:
+                    _self.openCategoryLocationsMapView(viewModel);
                     break;
                 case MapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-                    Ti.API.debug("Category Locations List would open... Viewmodel: " + JSON.stringify(viewModel));
+                    _self.openCategoryLocationsListView(viewModel);
                     break;
                 case MapWindowView.views['FAVORITES_BROWSING']:
                     _self.openFavoritesBrowsingView();
@@ -306,31 +368,32 @@ var MapWindowView = function (facade) {
                     _self.openFavoritesMapView();
                     break;
             }
-                
         }
     };
     
 };
 MapWindowView.events = {
-    SEARCH_SUBMIT       : "MapViewSearchSubmit",
-    MAPVIEW_CLICK       : "MapViewClick",
-    NAV_BUTTON_CLICK    : "MapNavButtonClick",
-    DETAIL_CLICK        : "MapViewDetailClick",
-    CATEGORY_ROW_CLICK  : "MapViewCategoryRowClick"
+    SEARCH_SUBMIT               : "MapViewSearchSubmit",
+    MAPVIEW_CLICK               : "MapViewClick",
+    NAV_BUTTON_CLICK            : "MapNavButtonClick",
+    DETAIL_CLICK                : "MapViewDetailClick",
+    CATEGORY_ROW_CLICK          : "MapViewCategoryRowClick",
+    CATEGORY_RIGHT_BTN_CLICK    : "MapViewCategoryRightButtonClick"
 };
 
 if (typeof localDictionary === "undefined") Ti.include('/js/localization.js');
+MapWindowView._locale = Titanium.App.Properties.getString('locale');
 MapWindowView.navButtonValues = [
-    localDictionary[Titanium.App.Properties.getString('locale')]['search'],
-    localDictionary[Titanium.App.Properties.getString('locale')]['browse'],
-    localDictionary[Titanium.App.Properties.getString('locale')]['favorites']
+    localDictionary[MapWindowView._locale]['search'],
+    localDictionary[MapWindowView._locale]['browse'],
+    localDictionary[MapWindowView._locale]['favorites']
 ];
 
 MapWindowView.views = {
     SEARCH                  : "MapWindowSearchView",
     CATEGORY_BROWSING       : "MapWindowCategoryBrowsing",
     CATEGORY_LOCATIONS_LIST : "MapWindowCategoryLocationsList",
-    CATEGORY_MAP            : "MapWindowCategoryMap",
+    CATEGORY_LOCATIONS_MAP  : "MapWindowCategoryMap",
     FAVORITES_BROWSING      : "MapWindowFavoritesBrowsing",
     FAVORITES_MAP           : "MapWindowFavoritesMap"
 };

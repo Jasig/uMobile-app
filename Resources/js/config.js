@@ -42,7 +42,7 @@ var ConfigModule = function(app) {
 
 	this.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
 	//in seconds = two hours
-	this.LOGIN_METHOD = LoginProxy.loginMethods.CAS;
+	this.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
 	//References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
 	this.CAS_URL = this.BASE_PORTAL_URL + '/cas';
 	this.ENCRYPTION_KEY = 'um0b1le';

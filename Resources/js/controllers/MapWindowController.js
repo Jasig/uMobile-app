@@ -29,6 +29,9 @@ var MapWindowController = function(facade) {
     this._initialized;
     this._locationDetailViewOptions;
     this._rawAnnotations = [];
+    this._activeCategory;
+    this._categoryPage;
+    this._categoryResultsPerPage = 10;
     
     this._win;
 
@@ -57,6 +60,7 @@ var MapWindowController = function(facade) {
         Ti.App.addEventListener(MapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
         Ti.App.addEventListener(MapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
         Ti.App.addEventListener(MapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
+        Ti.App.addEventListener(MapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
     };
     
     this.open = function () {
@@ -147,13 +151,13 @@ var MapWindowController = function(facade) {
     this._onNavButtonClick = function (e) {
         switch (e.buttonName) {
             case MapWindowView.navButtonValues[0]:
-                _self._app.views.mapWindowView.changeView(MapWindowView.views['SEARCH']);
+                _self._app.views.mapWindowView.setView(MapWindowView.views['SEARCH']);
                 break;
             case MapWindowView.navButtonValues[1]:
-                _self._app.views.mapWindowView.changeView(MapWindowView.views['CATEGORY_BROWSING'], _self._app.models.mapProxy.getCategoryList());
+                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_BROWSING'], _self._app.models.mapProxy.getCategoryList());
                 break;
             case MapWindowView.navButtonValues[2]:
-                _self._app.views.mapWindowView.changeView(MapWindowView.views['FAVORITES_BROWSING']);
+                _self._app.views.mapWindowView.setView(MapWindowView.views['FAVORITES_BROWSING']);
                 break;
             default:
                 Ti.API.error("No case matched in _handleNavButtonClick");
@@ -165,7 +169,30 @@ var MapWindowController = function(facade) {
         // Tell the map window view to open the locations list, and pass 
         // collection of locations for that category
         Ti.API.info("_onCategoryRowClick() in MapWindowController. Category:" + e.category);
-        _self._app.views.mapWindowView.changeView(MapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(e.category));
+        _self._activeCategory = e.category;
+        _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(e.category, _self._categoryResultsPerPage));
+    };
+    
+    this._onCategoryRightBtnClick = function (e) {
+        // Will respond when user presses the right-side button in 
+        // map category view navigation
+        
+        // Will get the current active view, and determine what view
+        // Should be shown.
+        switch (_self._app.views.mapWindowView.getView()) {
+            case MapWindowView.views['CATEGORY_BROWSING']:
+                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_MAP'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
+                break;
+            case MapWindowView.views['CATEGORY_LOCATIONS_LIST']:
+                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_MAP'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
+                break;
+            case MapWindowView.views['CATEGORY_LOCATIONS_MAP']:
+                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
+                break;
+            default:
+                return;
+        }
+        
     };
 
     //Proxy Events

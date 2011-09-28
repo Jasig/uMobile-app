@@ -55,6 +55,7 @@ localDictionary.en_US = {
     map: "Map",
     browse: "Browse",
     favorites: "Favorites",
+    list    : "List",
     viewOnMap   : "View on Map", 
     browseLocations : "Browse Locations",
     mapLoadingLocations: "Loading locations from server",
