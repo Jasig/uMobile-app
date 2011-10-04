@@ -52,17 +52,28 @@ var PortletWindowController = function (facade) {
     };
     
     this.open = function (portlet) {
+        /*
+            The open method is concerned with creating the UI for viewing web-based portlets.
+            This method isn't called until the user has selected a webview-based portlet
+            from the home screen.
+        */
         Ti.API.debug("open() in PortletWindowController");
         
         if (portlet) {
             _self._activePortlet = portlet;
         }
         else {
-            Ti.API.error("No portlet was passed to includePortlet() in PortletWindowController");
             _self._app.models.windowManager.openWindow(_self._app.controllers.portalWindowController.key);
             return;
         }
         
+        _self._createView(portlet);
+        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
+        
+        _self._includePortlet(_self._activePortlet);
+    };
+    
+    this._createView = function (portlet) {
         _self._win = Titanium.UI.createWindow(_self._app.styles.portletWindow);
         _self._win.open();
         
@@ -90,31 +101,55 @@ var PortletWindowController = function (facade) {
         _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
         _self._webView.scalePageToFit = true;
         _self._webView.validatesSecureCertificate = false;
-        _self._webView.addEventListener('load', _self._onPortletLoad);
-        _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+        
         _self._webView.hide();
 
         _self._win.add(_self._webView);
         _self._win.add(_self._activityIndicator);
         
-        _self._includePortlet(_self._activePortlet);
-
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
     };
     
     this._includePortlet = function (portlet) {
+        var _isValidSession;
+        
         Ti.API.debug("includePortlet() in PortletWindowController");
         _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
         _self._activityIndicator.show();
         
-        _self._homeURL = _self._webView.url = _self._currentURL = _self._getQualifiedURL(portlet.url);
-        _self._homeFName = _self._getFNameFromURL(portlet.url);
-        Ti.API.debug("_homeFName in PortletWindowController is " + _self._homeFName);
+        _isValidSession = _self._app.models.loginProxy.isValidWebViewSession();
+        
+        if (!_isValidSession && (_self._app.config.LOGIN_METHOD === LoginProxy.loginMethods.CAS || _self._app.config.LOGIN_METHOD === LoginProxy.loginMethods.SHIBBOLETH2)) {
+            Ti.API.debug("No valid session in _includePortlet, need to login with web-based login method.");
+            _self._homeURL = _self._currentURL = portlet.url;
+            _self._homeFName = _self.getFNameFromURL(portlet.url);
+            
+            _self._app.models.loginProxy.createWebViewSession(_self._app.models.userProxy.getCredentials(), _self._webView, portlet.url);
+            
+            Ti.App.addEventListener(LoginProxy.events['WEBVIEW_LOGIN_FAILURE'], function _onLoginFailure (e) {
+                Ti.App.removeEventListener(LoginProxy.events['WEBVIEW_LOGIN_FAILURE'], _onLoginFailure);
+                alert("Login failed!"); //TODO: Clean this up and use i18n
+            });
+            
+            Ti.App.addEventListener(LoginProxy.events['WEBVIEW_LOGIN_SUCCESS'], function _onLoginSuccess (e) {
+                Ti.API.debug("IS valid session in _includePortlet, need to login with web-based login method.");
+                Ti.App.removeEventListener(LoginProxy.events['WEBVIEW_LOGIN_SUCCESS'], _onLoginSuccess);
+                _self._homeURL = _self._webView.url = _self._currentURL = _self._getQualifiedURL(portlet.url);
+                _self._onPortletLoad(_self._webView);
+                _self._webView.addEventListener('load', _self._onPortletLoad);
+                _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+            });
+        }
+        else {
+            _self._homeURL = _self._webView.url = _self._currentURL = _self._getQualifiedURL(portlet.url);
+            _self._homeFName = _self.getFNameFromURL(portlet.url);
+            _self._webView.addEventListener('load', _self._onPortletLoad);
+            _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+        }
         
         _self._titleBar.updateTitle(portlet.title);
     };
     
-    this._getFNameFromURL = function (url) {
+    this.getFNameFromURL = function (url) {
     	if (url.indexOf('/' === 0 || url.indexOf(_self._app.config.BASE_PORTAL_URL))) {
     		var _urlParts = url.split('/');
     		for (var i = 0, iLength = _urlParts.length; i<iLength; i++) {
@@ -141,9 +176,9 @@ var PortletWindowController = function (facade) {
 
         //We only need to check the session if it's a link to the portal.
         isValidSession = _self._app.models.loginProxy.isValidWebViewSession();
-        if (!isValidSession) {
+
+        if (!isValidSession && _self._app.config.LOGIN_METHOD === LoginProxy.loginMethods['LOCAL_LOGIN']) {
             Ti.API.debug("!isValidSession in getLocalUrl()");
-            _self._app.models.loginProxy.getLoginURL(url);
             localUrl = _self._app.models.loginProxy.getLoginURL(url);
         }
         else {
@@ -163,28 +198,32 @@ var PortletWindowController = function (facade) {
     };
     
     this._getQualifiedURL = function (url) {
+        /*
+            This method is used when accessing portal links that require authentication,
+            to determine (based on session timers in the app) if the user is already 
+            logged in or if they need to be automatically logged in again.
+            
+            It does its best to abstract different login methods, by asking the loginProxy
+            what the Login URL should be. However, to automate the process, there will need
+            to be some process-specific logic in this controller.
+        */
         Ti.API.debug("getQualifiedURL() in PortletWindowController");
         var _url;
         if (url.indexOf('/') == 0) {
-            Ti.API.debug("Portlet URL is local");
-            if (_self._app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.WEBVIEW]) {
-                Ti.API.debug("Session is active in getQualifiedURL()");
-                _url = _self._getLocalUrl(url);
-            }
-            else {
-                Ti.API.debug("Session is NOT active in getQualifiedURL(): " + JSON.stringify(_self._app.models.sessionProxy.validateSessions()));
-                _url = _self._app.models.loginProxy.getLoginURL(url);
-            }
+            _url = _self._getLocalUrl(url);
             _self._webView.externalModule = false;
             _self._webView.top = _self._titleBar.height;
         }
         else {
-            Ti.API.debug("Portlet URL is external in getQualifiedURL()");
             _url = url;
             _self._webView.externalModule = true;
         }
         
         return _url;
+    };
+    
+    this.getHomeFName = function () {
+        return _self._homeFName;
     };
     
     this._onPortletBeforeLoad = function (e) {
@@ -196,6 +235,12 @@ var PortletWindowController = function (facade) {
             _self._webView.url = _self._getQualifiedURL(_self._webView.url);
         }
         else if (e.url.indexOf('http://m.youtube.com') === 0 && _self._app.models.deviceProxy.isAndroid()) {
+            /*
+                Android had/has a bug that won't play youTube videos inside of a webView,
+                so we want to broadcast an intent outside of our app for the OS to handle
+                the url. This will usually give a choice between opening the video in the
+                native YouTube app or the Browser.
+            */
         	var _URLToOpen = e.url, _params = e.url.split('?')[1].split('&');
         	_self._webView.stopLoading();
 
@@ -231,6 +276,7 @@ var PortletWindowController = function (facade) {
     };
     
     this._onDimensionChanges = function (e) {
+        // Handle device rotation changes
         if (_self._isHome()) {
             Ti.API.info("Webview is home, can't go back");
             _self._navBar.visible = false;
@@ -249,13 +295,19 @@ var PortletWindowController = function (facade) {
     };
     
     this._onAndroidBack = function (e) {
-    	Ti.API.debug("onAndroidBack() in PortletWindowController");
+        // Responds to hardware back button press
     	_self._webView.goBack();
     };
     
     this._onPortletLoad = function (e) {
+        /*
+            Once the webView is done loading, we want to take care of some business,
+            such as determining whether to reset the webview session timer,
+            and show the nav bar with back button
+        */
+        Ti.API.debug("onPortletLoad() in PortletWindowController");
         var portalIndex = e.url.indexOf(_self._app.config.BASE_PORTAL_URL);
-        Ti.API.debug("onPortletLoad() in PortletWindowController, index: " + portalIndex);
+
         _self._webView.show();
         _self._currentURL = e.url;
         
@@ -263,7 +315,7 @@ var PortletWindowController = function (facade) {
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
-            Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts.WEBVIEW});
+            Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts['WEBVIEW']});
             //We want to be able to open any video now, so we'll clear the YouTube workaround variable
             _self._lastVideoOpened = '';
             _self._webView.externalModule = false;
@@ -277,7 +329,7 @@ var PortletWindowController = function (facade) {
         else {
             Ti.API.debug("Visiting an external link. Webview.url = " + _self._webView.url + " & e.url = " + e.url);
             _self._webView.externalModule = true;
-            if (!_self._isHome(e)) {
+            if (!_self._isHome()) {
                 _self._navBar.visible = true;
                 _self._webView.top = _self._titleBar.height + _self._navBar.height;
                 _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
@@ -290,6 +342,7 @@ var PortletWindowController = function (facade) {
                 _self._removeAndroidBackListener();
             }
         }
+        
         try {
             _self._webView.show();
             _self._activityIndicator.hide();
@@ -299,35 +352,45 @@ var PortletWindowController = function (facade) {
         }
     };
     
-    this._isHome = function (e) {
+    this._isHome = function () {
+        /*
+            This private method is used to determine if the current URL of the
+            webView is the home URL (the url that was first loaded when the user
+            opened the module/portlet). This is primarily used to determine if the
+            back button should be displayed or not.
+        */
         Ti.API.debug('isHome() in PortletWindowController');
+
         var _newURL, treatAsLocalhost;
         
-        //For the iOS simulator, the e.url and webView.url don't consistently contain localhost, so we need to work around it.
+        /*
+            For the iOS simulator, the e.url and webView.url don't 
+            consistently contain localhost, so we need to work around it.
+        */
         treatAsLocalhost = function (_url) {
         	return _url.replace('file://', 'file://localhost');
         };
-        
-        // New URL will ideally be the event object url (more consistent)
-        // If localhost is in the base URL (simulator), we will use webview.url because the
-        // e object doesn't contain localhost in the path.
-        // Conditions: if e, use the e.url property, potentially with "localhost added". Otherwise, get the url from the webview.
+        /*
+            New URL will ideally be the event object url (more consistent)
+            If localhost is in the base URL (simulator), we will use webview.url 
+            because the e object doesn't contain localhost in the path.
+        */
         _newURL = (_self._homeURL.indexOf('file://') > -1 && _self._app.models.deviceProxy.isIOS()) ? treatAsLocalhost(_self._currentURL) : _self._currentURL;
         
-        //It's either a portlet (with an fname) or not
-        //If _homeFName is defined, we'll see if the user is viewing the portlet
-        //otherwise we'll check the URL for a match
-        
-        Ti.API.debug(" Checking this condition: if ((_homeFName && getFNameFromURL(e ? e.url : webView.url) === _homeFName) || (!_homeFName && (e ? e.url : webView.url) === _homeURL))");
-        Ti.API.debug('_homeFName: ' + _self._homeFName + ' & getFNameFromURL(): ' + _self._getFNameFromURL(_newURL) + ' & _newURL: ' + _newURL + ' & _homeURL: ' + _self._homeURL);
-        
-    	if ((_self._homeFName && _self._getFNameFromURL(_newURL) === _self._homeFName) || (!_self._homeFName && _newURL === _self._homeURL)) {
+        /*
+            It's either a portlet (with an fname) or not
+            If _homeFName is defined, we'll see if the user is viewing the portlet
+            otherwise we'll check the URL for a match
+        */
+                
+    	if ((_self._homeFName && _self.getFNameFromURL(_newURL) === _self._homeFName) || (!_self._homeFName && _newURL === _self._homeURL)) {
 			return true;
 		}
     	return false;
     };
     
     this._addAndroidBackListener = function () {
+        // Add listener for Android hardware back button
     	if (!_self._isListeningForAndroidBack && _self._app.models.deviceProxy.isAndroid()) {
     		_self._win.addEventListener('android:back', _self._onAndroidBack);
     		_self._isListeningForAndroidBack = true;

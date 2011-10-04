@@ -208,7 +208,7 @@ var PortalProxy = function (facade) {
         layoutClient.send();
     };*/
 
-    this.getPortletsForUser = function() {
+/*    this.getPortletsForUser = function() {
         var _portlets;
 
         Ti.App.fireEvent(PortalProxy.events['GETTING_PORTLETS']);
@@ -216,7 +216,7 @@ var PortalProxy = function (facade) {
         // Get the module list for this user from the portal server and create a 
         // layout based on this list.
         _portlets = _self._loadPortletList();
-    };
+    };*/
 
     this.getIsPortalReachable = function () {
         return _self._variables.isPortalReachable;

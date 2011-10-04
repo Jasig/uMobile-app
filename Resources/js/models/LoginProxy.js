@@ -19,9 +19,7 @@
 var LoginProxy = function (facade) {
     var app = facade, _self = this;
     
-    this._variables = {
-        loginMethod         : ''
-    };
+    this._loginMethod = {};
     
     this.init = function () {
         // Create an instance of the static loginMethods variable, so other actors
@@ -38,13 +36,13 @@ var LoginProxy = function (facade) {
         
         switch (app.config.LOGIN_METHOD) {
             case LoginProxy.loginMethods.CAS:
-                _self._variables['loginMethod'] = app.models.CASLogin.login;
+                _self._loginMethod = app.models.CASLogin;
                 break;
             case LoginProxy.loginMethods.LOCAL_LOGIN:
-                _self._variables['loginMethod'] = app.models.localLogin.login;
+                _self._loginMethod = app.models.localLogin;
                 break;
             case LoginProxy.loginMethods.SHIBBOLETH2:
-                _self._variables['loginMethod'] = app.models.Shibboleth2Login.login;
+                _self._loginMethod = app.models.Shibboleth2Login;
                 break;
             default:
                 Ti.API.info("Login method not recognized in LoginProxy.this.init()");
@@ -86,19 +84,25 @@ var LoginProxy = function (facade) {
      * Establish a session on the uPortal server.
      */
     this.establishNetworkSession = function(options) {
-        var credentials, url;
-        /* 
-        Possible options: 
-            isUnobtrusive (Bool), tells it not to reload anything, just establish-the session again behind the scenes
+        /*
+            Very commonly-used method in the app to create network sessions
+            when the app starts up, when the user updates their credentials, 
+            and when the local network session timer expires.
         */
-        
+        var credentials, url;
 
         credentials = app.models.userProxy.getCredentials();
-        Ti.API.info("Establishing Network Session for username: " + credentials.username);
-        _self._variables['loginMethod'](credentials, options);
+        _self._loginMethod.login(credentials, options);
     };
     
     this.getLoginURL = function (url) {
+        /*
+            Method created specifically for use in the Portlet Window 
+            Controller, for use with 
+        */
+        _self._loginMethod.getLoginURL(url);
+        
+        /* Old method, deprecated 9/30/2011 by Jeff Cross
         switch (app.config.LOGIN_METHOD) {
             case LoginProxy.loginMethods.LOCAL_LOGIN:
                 return app.models.localLogin.getLoginURL(url);
@@ -110,6 +114,17 @@ var LoginProxy = function (facade) {
                 Ti.API.error("No login method matches " + app.config.LOGIN_METHOD);
                 return false;                
         }
+        */
+    };
+    
+    this.createWebViewSession = function (credentials, webView, returnURL) {
+        /*
+            This creates a new webview and logs it in to automatically store
+            cookies. Credentials contain decrypted username and password.
+            
+        */
+        Ti.API.debug("createWebViewSession() in LoginProxy.");
+        _self._loginMethod.createWebViewSession(credentials, webView, returnURL);
     };
     
     this.onNetworkError = function (e) {
@@ -173,10 +188,13 @@ var LoginProxy = function (facade) {
 };
 
 LoginProxy.events = {
-    NETWORK_SESSION_FAILURE : 'EstablishNetworkSessionFailure',
-    NETWORK_SESSION_SUCCESS : 'EstablishNetworkSessionSuccess',
+    NETWORK_SESSION_FAILURE : "EstablishNetworkSessionFailure",
+    NETWORK_SESSION_SUCCESS : "EstablishNetworkSessionSuccess",
     LOGIN_METHOD_RESPONSE   : "LoginProxyLoginMethodResponse",
-    LOGIN_METHOD_COMPLETE   : 'LoginProxyLoginMethodComplete'
+    LOGIN_METHOD_COMPLETE   : "LoginProxyLoginMethodComplete",
+    WEBVIEW_LOGIN_RESPONSE  : "LoginProxyWebviewLoginResponse",
+    WEBVIEW_LOGIN_FAILURE   : "LoginProxyWebviewLoginFailure",
+    WEBVIEW_LOGIN_SUCCESS   : "LoginProxyWebviewLoginSuccess"
 };
 
 LoginProxy.sessionTimeContexts = {

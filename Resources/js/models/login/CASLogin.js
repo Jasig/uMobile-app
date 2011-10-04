@@ -26,7 +26,7 @@ var CASLogin = function (facade) {
     this._androidCookie;
     this._refUrl = _self._app.config.PORTAL_CONTEXT + '/layout.json';
     this._serviceUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _self._refUrl;
-    this._logoutUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/logout';
+    this._logoutUrl = _self._app.config.CAS_URL + '/logout';
     
     // XHR client
     this._client;
@@ -44,7 +44,8 @@ var CASLogin = function (facade) {
         }
         else {
             _self._url = _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_self._serviceUrl);
-
+            
+            if (_self._app.models.deviceProxy.isAndroid()) Ti.userAgent = "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530";
             // Send an initial response to the CAS login page
             _self._client = Titanium.Network.createHTTPClient({
                 onload: _self._onInitialResponse,
@@ -58,7 +59,7 @@ var CASLogin = function (facade) {
     };
     
     this.logout = function () {
-        Ti.API.debug("logout() in CASLogin");
+        // Log out the network session, which also clears the webView session in iPhone
         _self._client = Titanium.Network.createHTTPClient({
             onload: _self._onLogoutComplete,
             onerror: _self._onInitialError
@@ -66,6 +67,104 @@ var CASLogin = function (facade) {
         _self._client.open('GET', _self._logoutUrl, true);
 
         _self._client.send();
+        
+        // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
+        if (_self._app.models.deviceProxy.isAndroid() && Ti.Android.clearCookies) Ti.Android.clearCookies();
+    };
+    
+    this.createWebViewSession = function (credentials, webView, url) {
+        /*
+            Login process for webViews in Android.
+            Step 1: Load login form, send event to notify controller
+            Step 2: Populate form with username and password, then submit
+            Step 3: Determine if response was successful, broadcast success
+            or failure event
+        */
+        Ti.API.debug("createWebViewSession in CASLogin.");
+        
+        function _checkForCASForm () {
+            Ti.API.debug('_checkForCASForm() in CASLogin');
+            var _casForm = webView.evalJS('document.getElementById("fm1")');
+            Ti.API.debug("_casForm is: " + _casForm);
+            if (_casForm !== 'null') {
+                Ti.API.debug("_casForm is true");
+                return true;
+            }
+            Ti.API.debug("_casForm is not true");
+            return false;
+        }
+        
+        function _populateAndSubmitForm () {
+            /*
+                Injecting Javascript into the webView, and then manually
+                setting username and password values in the HTML form, then
+                submitting the form. 
+            */
+            Ti.API.debug("_populateAndSubmitForm() in CASLogin");
+            webView.executeJS('document.getElementById("username").value = "' + credentials.username + '";');
+            webView.executeJS('document.getElementById("password").value = "' + credentials.password + '";');
+            webView.executeJS('document.getElementById("fm1").submit.click()');
+        }
+        
+        function _isPageStillCAS () {
+            /*
+                Instead of verifying that the current page IS what it should
+                be, we want to make sure that it ISN'T CAS. We don't want to
+                make assumptions about the page that's supposed to be rendered.
+            */
+            Ti.API.debug("_isPageStillCAS() In CASLogin");
+            var _bodyId = webView.evalJS('document.getElementsByTagName("body")[0].id');
+            if (_bodyId === 'cas') {
+                return true;
+            }
+            return false;
+        }
+        
+        function _firstLoad (e) {
+            /*
+                When the webview first loads, we want to check that it contains
+                the form we're looking for. Then we'll populate it with login
+                credentials, and submit it
+            */
+            Ti.API.debug("_firstLoad() in CASLogin" + webView.url);
+            webView.removeEventListener('load', _firstLoad);
+            
+            if (_checkForCASForm()) {
+                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_RESPONSE']);
+                webView.addEventListener('load', _secondLoad);
+                _populateAndSubmitForm();
+            }
+            else if (e.url.indexOf(url) == 0 || _self._app.controllers.portletWindowController.getFNameFromURL(e.url) === _self._app.controllers.portletWindowController.getHomeFName()) {
+                Ti.API.debug("");
+                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
+            }
+            else {
+                Ti.API.debug("Couldn't get form, and urls don't match. e.url: " + e.url + " & webView.url: " + webView.url + " & url:" + url);  
+                Ti.API.debug("Fname in URL: " + _self._app.controllers.portletWindowController.getFNameFromURL(e.url) + " & homeFName: " + _self._app.controllers.portletWindowController.getHomeFName());
+                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_FAILURE']);
+            }
+        }
+        
+        function _secondLoad (e) {
+            /*
+                We just need to check that the login was successful, and 
+                broadcast the outcome. Nothing else to do after that.
+            */
+            Ti.API.debug("_secondLoad() in CASLogin" + webView.url);
+            webView.removeEventListener('load', _secondLoad);
+            
+            if (!_isPageStillCAS()) {
+                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
+            }
+            else {
+                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_FAILURE']);
+            }
+        }
+        
+        webView.addEventListener('load', _firstLoad);
+        if (url.indexOf('/') == 0) url = _self._app.config.BASE_PORTAL_URL + url;
+        webView.url = _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url);
+        webView.show();
     };
     
     this._onLogoutComplete = function (e) {
@@ -123,6 +222,13 @@ var CASLogin = function (facade) {
             Ti.API.info("_layoutUser matches _self._credentials.username");
             Ti.API.info("_self._app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            
+            if (_self._app.models.deviceProxy.isAndroid()) {
+                
+                Ti.Android.setCookie(_self._app.config.BASE_PORTAL_URL, Ti.App.Properties.getString("androidCookie"));
+                _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
+            }
+            
             _self._app.models.portalProxy.setIsPortalReachable(true);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: _self._app.models.userProxy.getLayoutUserName()});
             Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
