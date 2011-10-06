@@ -19,16 +19,11 @@
 var LocalLogin = function (facade) {
     var app = facade, init, _self = this,
     client, url, credentials, onLoginComplete, onLoginError;
-    this._variables = {
-        
-    };
     
     this.login = function (creds, options) {
-        Ti.API.debug("login() in LocalLogin");
-        
         credentials = creds;
         url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + app.config.PORTAL_CONTEXT + '/layout.json';
-        Ti.API.info("Requesting URL: " + url);
+        // url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password;
 
         client = Titanium.Network.createHTTPClient({
             onload: onLoginComplete,
@@ -40,15 +35,30 @@ var LocalLogin = function (facade) {
         client.send();
     };
     
+    this.logout = function () {
+        _self.login({username: '', password: ''});
+        if (app.models.deviceProxy.isAndroid()) {
+            Ti.Android.clearCookies();
+            Ti.App.Properties.setString("androidCookie", "");
+        }
+    };
+    
     this.getLoginURL = function (url) {
         // This method returns a URL suitable to automatically login a user in a webview.
         credentials = app.models.userProxy.getCredentials();
         return app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
     };
-    
+
     onLoginComplete = function (e) {
-        Ti.API.debug("onLoginComplete() in LocalLogin. Response: " + client.responseText);
-        Ti.API.debug("Response cookies: " + client.getResponseHeader('Set-Cookie'));
+        var _cookie = client.getResponseHeader('Set-Cookie');
+        
+        if (app.models.deviceProxy.isAndroid()) {
+            // Need to manually set cookies for later httpclient use, and for webview
+            Ti.App.Properties.setString("androidCookie", _cookie);
+            if (Ti.Android.setCookie) Ti.Android.setCookie(app.config.BASE_PORTAL_URL, _cookie);
+            Ti.API.debug("cookie:" + _cookie);
+        }
+        
         try {
             _parsedResponse = JSON.parse(client.responseText);
         }
@@ -59,21 +69,15 @@ var LocalLogin = function (facade) {
             };
         }
         
-        Ti.API.debug("Parsed response: " + JSON.stringify(_parsedResponse));
-        
         app.models.userProxy.setLayoutUserName(_parsedResponse.user);
         app.models.portalProxy.setPortlets(_parsedResponse.layout);
         
         if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
-            Ti.API.info("_layoutUser matches credentials.username");
-            Ti.API.info("app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             app.models.portalProxy.setIsPortalReachable(true);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
-            Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
-            Ti.API.error("Network session failed");
             app.models.portalProxy.setIsPortalReachable(false);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
         }

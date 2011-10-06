@@ -37,14 +37,19 @@ var ConfigModule = function(app) {
 	// trailing slash.
     this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
 	this.PORTAL_CONTEXT = '';
+	this.LAYOUT_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/layout.json';
 
 	//------- AUTHENTICATION -------
 
+    //session timeout in seconds = two hours
 	this.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
-	//in seconds = two hours
-	this.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
-	//References value of LoginProxy.loginMethods constant. Would be ideal to implement a static object in LoginProxy instead of using a literal here.
+	
+	//References value of LoginProxy.loginMethods constant.
+	this.LOGIN_METHOD = LoginProxy.loginMethods.SHIBBOLETH2;
+	
 	this.CAS_URL = this.BASE_PORTAL_URL + '/cas';
+	this.SHIB_URL = this.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + Ti.Network.encodeURIComponent(this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + "/Login?refUrl=" + Ti.Network.encodeURIComponent(this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + "/layout.json"));
+	this.SHIB_POST_URL = "";
 	this.ENCRYPTION_KEY = 'um0b1le';
 	this.FORGOT_PASSWORD_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/p/forgot-password';
 
@@ -106,14 +111,6 @@ var ConfigModule = function(app) {
 		url : 'http://mobile.lib.uchicago.edu/',
 		externalModule : true
 	};
-
-	// This module is called manually from the title bar on the home screen.
-	// this.LOCAL_MODULES.info = {
-	//  title: 'info',
-	//  fname: 'info',
-	//  url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html?portal-url='+ this.BASE_PORTAL_URL).nativePath,
-	//  externalModule: true
-	// };
 
 	this.getLocalModules = function() {
 		return this.LOCAL_MODULES;

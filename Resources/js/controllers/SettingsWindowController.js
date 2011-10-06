@@ -261,7 +261,7 @@ var SettingsWindowController = function(facade){
         });
         usernameInput.value = '';
         passwordInput.value = '';
-        Login.establishNetworkSession();
+        Login.clearSession();
         wasLogOutClicked = true;
     };
     

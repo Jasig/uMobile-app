@@ -38,22 +38,31 @@ var CASLogin = function (facade) {
     this.login = function (credentials, opts) {
         _self._credentials = credentials;
         if (_self._credentials.username === '') {
-            _self._credentials.username = LoginProxy.userTypes['GUEST'];
+            /*_self._credentials.username = LoginProxy.userTypes['GUEST'];
             _self._credentials.password = LoginProxy.userTypes['GUEST'];
-            _self.logout();
+            _self.logout();*/
+            _self._client = Titanium.Network.createHTTPClient({
+                onload: _self._onLoginComplete,
+                onerror: _self._onLoginError,
+                validatesSecureCertificate: false
+            });
+            
+            _self._client.open('GET', _self._serviceUrl, true);
+            _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            _self._client.send();
         }
         else {
             _self._url = _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_self._serviceUrl);
             
-            if (_self._app.models.deviceProxy.isAndroid()) Ti.userAgent = "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530";
             // Send an initial response to the CAS login page
             _self._client = Titanium.Network.createHTTPClient({
                 onload: _self._onInitialResponse,
                 onerror: _self._onInitialError,
                 validatesSecureCertificate: false
             });
+            
             _self._client.open('GET', _self._url, true);
-
+            _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             _self._client.send();            
         }
     };
@@ -176,7 +185,7 @@ var CASLogin = function (facade) {
             onerror: _self._onInitialError
         });
         _self._client.open('GET', _self._serviceUrl, true);
-
+        _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         _self._client.send();
     };
     
@@ -271,7 +280,7 @@ var CASLogin = function (facade) {
                             onerror: _self._onInitialError
                         });
                         _self._client.open('GET', _self._url, true);
-                        Ti.API.debug("Preparing to load " + _self._url);
+                        _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
 
                         _self._client.send();
                     },
@@ -320,6 +329,7 @@ var CASLogin = function (facade) {
                 Ti.API.debug("Getting ready to open URL: " + _self._url);
 
                 _self._client.open('POST', _self._url, true);
+                _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
                 
                 Ti.API.debug("If this is Android, we're going to manually set a cookie: " + _self._androidCookie);
                 if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));

@@ -95,6 +95,10 @@ var LoginProxy = function (facade) {
         _self._loginMethod.login(credentials, options);
     };
     
+    this.clearSession = function () {
+        _self._loginMethod.logout();
+    };
+    
     this.getLoginURL = function (url) {
         /*
             Method created specifically for use in the Portlet Window 
@@ -151,11 +155,10 @@ var LoginProxy = function (facade) {
     };
     
     this._processLoginResponse = function (e) {
-        var _responseText = e.responseText, _parsedResponse;
+        var _responseText = e.responseText, _credentials = e.credentials, _parsedResponse;
         
-        Ti.API.debug("onLoginComplete() in LocalLogin. Response: " + client.responseText);
         try {
-            _parsedResponse = JSON.parse(client.responseText);
+            _parsedResponse = JSON.parse(_responseText);
         }
         catch (e) {
             _parsedResponse = {
@@ -169,13 +172,12 @@ var LoginProxy = function (facade) {
         app.models.userProxy.setLayoutUserName(_parsedResponse.user);
         app.models.portalProxy.setPortlets(_parsedResponse.layout);
         
-        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
+        if (app.models.userProxy.getLayoutUserName() === _credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
             Ti.API.info("_layoutUser matches credentials.username");
-            Ti.API.info("app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
+
             app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             app.models.portalProxy.setIsPortalReachable(true);
             Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
-            Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
             Ti.API.error("Network session failed");
