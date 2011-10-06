@@ -6,6 +6,7 @@ var Shibboleth2Login = function (facade) {
     this._client;
     this._loginURL = _self._app.config.SHIB_URL;
     this._postURL = _self._app.config.SHIB_POST_URL;
+    this._logoutURL = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Logout";
     
     this.login = function (credentials, options) {
         Ti.API.debug("login() in Shibboleth2Login");
@@ -23,11 +24,16 @@ var Shibboleth2Login = function (facade) {
     };
     
     this.logout = function () {
-        
+        _self._client = Ti.Network.createHTTPClient({
+            onload  : _self._onPortalSessionEstablished,
+            onerror : _self._onPortalSessionEstablishedError
+        });
+        _self._client.open('GET', _self._logoutURL);
+        _self._client.send();
     };
     
     this.getLoginURL = function (url) {
-        
+        return _self._loginURL;
     };
     
     this._onInitialResponse = function (e) {
@@ -65,16 +71,7 @@ var Shibboleth2Login = function (facade) {
         Ti.API.error("_onInitialError() in Shibboleth2Login");
     };
     
-    this._isLoginSuccess = function (responseText) {
-        /*
-            Will evaluate responseText to tell you if a response
-            contains info indicating that login was successful.
-        */
-        if (responseText.indexOf("SAMLResponse") > -1) {
-            return true;
-        }
-        return false;
-    };
+
     
     this._getRedirectURL = function (responseText) {
         //https://mysandbox.uchicago.edu/Shibboleth.sso/SAML2/POST
@@ -103,8 +100,8 @@ var Shibboleth2Login = function (facade) {
         return _relayRegex.exec(responseText)[1];
     };
     
-    this._onFinalRedirect = function (e) {
-        Ti.API.debug("_onFinalRedirect: " + _self._client.responseText);
+    this._onPortalSessionEstablished = function (e) {
+        Ti.API.debug("_onPortalSessionEstablished: " + _self._client.responseText);
         _self._client = Ti.Network.createHTTPClient({
             onload: function (e) {
                 Ti.App.fireEvent(LoginProxy.events['LOGIN_METHOD_RESPONSE'], {
@@ -122,8 +119,19 @@ var Shibboleth2Login = function (facade) {
         Ti.API.debug("opened " + _self._app.config.LAYOUT_URL);
     };
     
-    this._onFinalRedirectError = function (e) {
+    this._onPortalSessionEstablishedError = function (e) {
         Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
+    };
+    
+    this._isLoginSuccess = function (responseText) {
+        /*
+            Will evaluate responseText to tell you if a response
+            contains info indicating that login was successful.
+        */
+        if (responseText.indexOf("SAMLResponse") > -1) {
+            return true;
+        }
+        return false;
     };
     
     this._onLoginComplete = function (e) {
@@ -134,8 +142,8 @@ var Shibboleth2Login = function (facade) {
             Ti.API.debug("_self._isLoginSuccess() == true");
 
             _self._client = Titanium.Network.createHTTPClient({
-                onload: _self._onFinalRedirect,
-                onerror: _self._onFinalRedirectError
+                onload: _self._onPortalSessionEstablished,
+                onerror: _self._onPortalSessionEstablishedError
             });
             _self._client.open("POST", _self._getRedirectURL(_loginCompleteResponse));
             _self._client.send({
@@ -145,6 +153,12 @@ var Shibboleth2Login = function (facade) {
         }
         else {
             Ti.API.error("!_self._isLoginSuccess()");
+            /*
+                Apparently the login process has stalled, so we're going to
+                attempt to just load the layout anyway and let the app
+                figure out how to let the user know.
+            */
+            _self._onPortalSessionEstablished(e);
         }
     };
     

@@ -136,21 +136,22 @@ var LoginProxy = function (facade) {
     };
     
     this.onSessionExpire = function (e) {
-        // If it's not Android, we can just re-establish a session for 
-        // webviews and network requests behind the scenes.
-        // Otherwise, we can re-establish network session behind the scenes,
-        // but would need to set a flag for re-auth in the webview.
+        /*
+            If it's not Android, we can just re-establish a session for 
+            webviews and network requests behind the scenes.
+            Otherwise, we can re-establish network session behind the scenes,
+            but would need to set a flag for re-auth in the webview.
+        */
         Ti.API.debug("this.onSessionExpire() in LoginProxy");
         switch (e.context) {
             case _self.sessionTimeContexts.NETWORK:
                 _self.establishNetworkSession({isUnobtrusive: true});
                 break;
             case _self.sessionTimeContexts.WEBVIEW:  
-                Ti.API.info("Stopping webViewSessionTimer");
                 app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
                 break;
             default:
-                Ti.API.info("Didn't recognize the context");
+                Ti.API.error("Didn't recognize the context");
         }
     };
     
