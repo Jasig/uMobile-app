@@ -33,7 +33,6 @@ var PortalWindowController = function (facade) {
         pathToRoot = '../../';
 
     init = function () {
-        Ti.API.debug("init() in PortalWindowController");
         //Assign the unique key
         _self.key = 'home';
 
@@ -51,8 +50,6 @@ var PortalWindowController = function (facade) {
     };
     
     this.open = function () {
-        Ti.API.debug("open() in PortalWindowController");
-        
         // This will determine if a network session exists, and what 
         // window was open last time the app closed, and will manage the process
         // of establishing a session and opening the window.

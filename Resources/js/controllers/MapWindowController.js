@@ -37,7 +37,6 @@ var MapWindowController = function(facade) {
 
 
     init = function() {
-        Ti.API.debug("init() in MapWindowController");
         _self.key = 'map';
         
         if (typeof MapProxy === "undefined")        Titanium.include('/js/models/MapProxy.js');

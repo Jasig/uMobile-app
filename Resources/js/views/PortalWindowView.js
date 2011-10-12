@@ -133,8 +133,6 @@ var PortalWindowView = function (facade) {
     };
     
     this.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
-        Ti.API.debug("updateModules(" + _modules + ", " + _isPortalReachable + ", " + _isGuestLayout + ") in PortalWindowView.");
-        
         if (app.models.windowManager.getCurrentWindow() === app.controllers.portalWindowController.key) {
             if (app.views.portalGridView) {
                 app.views.portalGridView.updateGrid(_modules);
@@ -145,7 +143,6 @@ var PortalWindowView = function (facade) {
     };
     
     this.showActivityIndicator = function (message) {
-        Ti.API.debug("showActivityIndicator() in PortalWindowView");
         // try {
             _self._activityIndicator.setLoadingMessage(message || app.localDictionary.loading);
             _self._activityIndicator.show();
@@ -156,7 +153,6 @@ var PortalWindowView = function (facade) {
     };
     
     this.hideActivityIndicator = function () {
-        Ti.API.debug("hideActivityIndicator() in PortalWindowView");
         try {
             _self._activityIndicator.hide();
         }
@@ -244,7 +240,6 @@ var PortalWindowView = function (facade) {
     };
     
     this._onDimensionChanges = function (e) {
-        Ti.API.debug('onDimensionChanges() in PortalWindowView');
         // We want to make sure the content layer (the view holding the icons) 
         // is the appropriate size when the device rotates
         // Let's update the Styles reference again for good measure
@@ -276,7 +271,6 @@ var PortalWindowView = function (facade) {
     };
     
     this._onPortalGridViewStateChange = function (e) {
-        Ti.API.debug("onPortalGridViewStateChange() in PortalWindowView. State is: " + e.state);
         if (app.views.portalGridView && _self._activityIndicator && e.state === PortalGridView.states['COMPLETE']) {
             _self.hideActivityIndicator();
         }

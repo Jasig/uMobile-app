@@ -263,6 +263,7 @@ var SettingsWindowController = function(facade){
         passwordInput.value = '';
         Login.clearSession();
         wasLogOutClicked = true;
+        activityIndicator.show();
     };
     
     onLogOutButtonPress = function (e) {

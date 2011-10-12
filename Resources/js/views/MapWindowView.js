@@ -188,8 +188,8 @@ var MapWindowView = function (facade) {
     
     this.resetDimensions = function (e) {
         Ti.API.debug("resetDimensions() in MapWindowView");
-        _self._mapView.height = _self._app.styles.mapView.height;
-        _self._bottomNavView.top = _self._app.styles.mapNavView.top;
+        if (_self._mapView) _self._mapView.height = _self._app.styles.mapView.height;
+        if (_self._bottomNavView) _self._bottomNavView.top = _self._app.styles.mapNavView.top;
     };
     
     this._hideAllViews = function () {

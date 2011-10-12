@@ -48,7 +48,6 @@ var PortalProxy = function (facade) {
     };
 
     this.getPortlets = function () {
-        Ti.API.debug("getPortlets() in PortalProxy");
         return _self._variables.portlets;
     };
     

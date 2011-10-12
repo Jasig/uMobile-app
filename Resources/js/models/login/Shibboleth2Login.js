@@ -9,18 +9,33 @@ var Shibboleth2Login = function (facade) {
     this._logoutURL = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Logout";
     
     this.login = function (credentials, options) {
-        Ti.API.debug("login() in Shibboleth2Login");
-        
         _self._credentials = credentials;
-        
-        // First step is to load the HTML form, so we can scrape it
-        // and submit login info
-        _self._client = Ti.Network.createHTTPClient({
-            onload  : _self._onInitialResponse,
-            onerror : _self._onInitialError
-        });
-        _self._client.open('GET', _self._loginURL);
-        _self._client.send();
+        if (_self._credentials.username === '') {
+            //No credentials with which to login, let's load layout.json
+            _self._onPortalSessionEstablished();
+        }
+        else {
+            /*
+                First step is to load the HTML form, which sets the cookies
+                that will be used to complete the login process and login to
+                the portal.
+            */
+            _self._client = Ti.Network.createHTTPClient({
+                onload: function (e) {
+                    _self._client = Ti.Network.createHTTPClient({
+                        onload  : _self._onInitialResponse,
+                        onerror : _self._onInitialError
+                    });
+                    _self._client.open('GET', _self._loginURL);
+                    _self._client.send();
+                },
+                onerror: function (e) {
+                    Ti.API.error("There was an error requesting the portal");
+                }
+            });
+            _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT);
+            _self._client.send();
+        }
     };
     
     this.logout = function () {
@@ -41,9 +56,6 @@ var Shibboleth2Login = function (facade) {
     };
     
     this._onInitialResponse = function (e) {
-        Ti.API.debug("_onInitialResponse() In Shibboleth2Login...");
-        Ti.API.debug("response: " + _self._client.responseText);
-        
         var initialResponse = _self._client.responseText;
 
         try {
@@ -64,7 +76,6 @@ var Shibboleth2Login = function (facade) {
                 j_password: _self._credentials.password
             };
             _self._client.send(data);
-            Ti.API.debug("Sent request after initial response, location: " + _self._client.location);
         }
         catch (e) {
             Ti.API.error("Couldn't log in with Shibboleth");
@@ -74,11 +85,11 @@ var Shibboleth2Login = function (facade) {
     
     this._onInitialError = function (e) {
         Ti.API.error("_onInitialError() in Shibboleth2Login");
+        Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
     };
     
     this._getRedirectURL = function (responseText) {
         //https://mysandbox.uchicago.edu/Shibboleth.sso/SAML2/POST
-        Ti.API.debug("_getRedirectURL() in Shib");
         var redirectURL = responseText.split('<form action="')[1].split('" method="post">')[0];
 
         redirectURL = redirectURL.replace("&#x3a;",":");
@@ -102,7 +113,10 @@ var Shibboleth2Login = function (facade) {
     };
     
     this._onPortalSessionEstablished = function (e) {
-        Ti.API.debug("_onPortalSessionEstablished: " + _self._client.responseText);
+        /*
+            Shibboleth has posted back to the portal to log the user in. Now
+            we just need to retrieve layout.json.
+        */
         _self._client = Ti.Network.createHTTPClient({
             onload: function (e) {
                 Ti.App.fireEvent(LoginProxy.events['LOGIN_METHOD_RESPONSE'], {
@@ -114,22 +128,19 @@ var Shibboleth2Login = function (facade) {
                 Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
             }
         });
-        
-        _self._client.open("GET", _self._app.config.LAYOUT_URL);
-        if (_self._credentials.username === '') {
+
+        if (_self._app.models.deviceProxy.isIOS() && _self._credentials.username === '') {
             try {
-                Ti.API.debug("Need to set empty cookie.");
-                _self._client.setRequestHeader("Cookie");
+                _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
+                _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
+                _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
             }
             catch (e) {
-                Ti.API.error("Couldn't set cookie");
+                Ti.API.error("Couldn't clear cookies. Is method defined?" + _self._client.clearCookies);
             }
         }
-        else {
-            Ti.API.debug("No need to set empty cookie. username: " + _self._credentials.username);
-        }
+        _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");        
         _self._client.send();
-        Ti.API.debug("opened " + _self._app.config.LAYOUT_URL);
     };
     
     this._onPortalSessionEstablishedError = function (e) {
@@ -141,7 +152,6 @@ var Shibboleth2Login = function (facade) {
             Will evaluate responseText to tell you if a response
             contains info indicating that login was successful.
         */
-        Ti.API.debug("Executing _isLoginSuccess");
         if (responseText.indexOf("SAMLResponse") > -1) {
             return true;
         }
@@ -149,13 +159,9 @@ var Shibboleth2Login = function (facade) {
     };
     
     this._onLoginComplete = function (e) {
-        Ti.API.debug("_onLoginComplete() in Shibboleth2Login");
         var _loginCompleteResponse = _self._client.responseText;
-        Ti.API.debug(_loginCompleteResponse);
         
         if (_self._isLoginSuccess(_loginCompleteResponse)) {
-            Ti.API.debug("_self._isLoginSuccess() == true");
-
             _self._client = Titanium.Network.createHTTPClient({
                 onload: _self._onPortalSessionEstablished,
                 onerror: _self._onPortalSessionEstablishedError
@@ -182,9 +188,5 @@ var Shibboleth2Login = function (facade) {
     this._onLoginError = function (e) {
         Ti.API.debug("_onLoginError() in Shibboleth2Login");
         Ti.API.debug("responseText: " + _self._client.responseText);
-    };
-    
-    this._processResponse = function (responseText) {
-        
     };
 };

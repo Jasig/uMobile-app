@@ -140,7 +140,6 @@ var UI = function (facade) {
             }
             
             Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
-                Ti.API.info("dimensionchanges in UI");
             	if (titleBar) { titleBar.width = Styles.titleBar.width; }
                 if (settingsButtonContainer) { settingsButtonContainer.left = Styles.titleBarSettingsContainer.left; }
                 if (homeButtonContainer) { homeButtonContainer.left = Styles.titleBarHomeContainer.left; }
@@ -148,7 +147,6 @@ var UI = function (facade) {
         };
         
         onHomeClick = function (e) {
-            Ti.API.debug("Home button clicked in GenericTitleBar");
             app.models.windowManager.openWindow(PortalWindow.key);
         };
 
@@ -171,7 +169,6 @@ var UI = function (facade) {
         };
         
         onInfoClick = function (e) {
-            Ti.API.debug("Info button clicked in GenericTitleBar");
             app.models.windowManager.openWindow(PortletWindow.key, {
                 fname: 'info',
                 externalModule: true,
@@ -199,7 +196,6 @@ var UI = function (facade) {
         };
         
         onSettingsClick = function (e) {
-            Ti.API.debug("onSettingsClick in UI");
             app.models.windowManager.openWindow(SettingsWindow.key);
         };
 
@@ -279,13 +275,11 @@ var UI = function (facade) {
         dialog.add(messageLabel);
         
         indicator.setLoadingMessage = function (m) {
-            Ti.API.info("loadingMessage() in GlobalActivityIndicator");
             if (typeof m == 'string') {
-                Ti.API.debug("Setting activity indicator text to: " + m);
                 messageLabel.text = m;
             }
             else {
-                Ti.API.debug("Message isn't valid:" + m + ' ' + typeof m);
+                Ti.API.error("Message isn't valid:" + m + ' ' + typeof m);
             }
         };
         
@@ -304,7 +298,6 @@ var UI = function (facade) {
     };
     
     this.onOrientationChange = function (e) {
-        Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
         Device.setCurrentOrientation(e.orientation);
         app.styles = new Styles(app);
         Ti.App.fireEvent(ApplicationFacade.events['STYLESHEET_UPDATED']);

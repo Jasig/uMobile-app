@@ -91,15 +91,12 @@ var SessionProxy = function (facade) {
     };
     
     this.isActive = function (context) {
-        Ti.API.debug("this.isActive() in SessionProxy, with context: " + context);
         if (Device.isIOS()) {
             //If it's iphone, we only need to check that one context has an active session.
             if(timers[LoginProxy.sessionTimeContexts.NETWORK]) {
-                Ti.API.debug("in isActive() in SessionProxy, there IS a timer for the request, and is it active? " + timers[LoginProxy.sessionTimeContexts.NETWORK].isActive);
                 return timers[LoginProxy.sessionTimeContexts.NETWORK].isActive;
             }
             else {
-                Ti.API.debug("in isActive() in SessionProxy, there's no timer for the request.");
                 return false;
             }
         }
@@ -129,9 +126,6 @@ var SessionProxy = function (facade) {
             session.context = context;
             session.isActive = false;
             timers[context] = session;
-        }
-        else {
-            Ti.API.debug("The platform wasn't android, or the context wasn't network. No need for another context.");
         }
     };
     

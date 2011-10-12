@@ -124,7 +124,6 @@ startup = function (e) {
     app.models.windowManager.addWindow(app.controllers.mapWindowController);
     app.models.windowManager.addWindow(app.controllers.settingsWindowController);
     
-    Ti.API.debug("About to openWindow in app.js");
     app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
 
     if (app.models.deviceProxy.isIOS()) {

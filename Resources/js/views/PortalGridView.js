@@ -75,7 +75,6 @@ var PortalGridView = function (facade) {
     };
     
     this.updateGrid = function (portlets) {
-        Ti.API.debug("updateGrid() in PortalGridView");
         var _portlets = portlets || [], _item;
 
         /*
@@ -85,7 +84,6 @@ var PortalGridView = function (facade) {
         * If not, we destroy them (which removes them from the view, and the _gridItems collection)
         * then we iterate through the latest correction from the portalProxy and add them if they don't exist.
         */
-        Ti.API.debug("Setting _self._numGridItems in PortalGridView to " + _portlets.length || 0);
         _self._numGridItems = _portlets.length || 0;
         for (_item in _self._gridItems) {
             if (_self._gridItems.hasOwnProperty(_item)) {
@@ -102,9 +100,6 @@ var PortalGridView = function (facade) {
                         // Ti.API.info("Didn't destroy " + _item + " because it wasn't " + _portlets[j].fname);
                     }
                 }
-            }
-            else {
-                Ti.API.error("_gridItems does NOT have own Property of " + _item);
             }
         }
         
@@ -199,9 +194,6 @@ var PortalGridView = function (facade) {
     
     this._rearrangeGrid = function (e) {
         var _gridItem;
-        Ti.API.debug("rearrangeGrid() in PortalGridView");
-        Ti.API.debug("app.models.userProxy.isGuestUser() " + app.models.userProxy.isGuestUser());
-        Ti.API.debug("app.models.portalProxy.getIsPortalReachable()" + app.models.portalProxy.getIsPortalReachable());
         
         _self.resizeGrid((app.models.userProxy.isGuestUser() || !app.models.portalProxy.getIsPortalReachable()) ? true : false);
         
@@ -211,9 +203,6 @@ var PortalGridView = function (facade) {
                 _self._gridItems[_gridItem].view.left = _self._leftPadding + app.styles.gridItem.padding + (_self._gridItems[_gridItem].sortOrder % _self._numColumns) * _self._completeWidth;
                 _self._gridItems[_gridItem].view.show();
             }
-            else {
-                Ti.API.debug("NOT _gridItems.hasOwnProperty(_gridItem)");
-            }
         }
         
         _self.setState(_self._numGridItems > 0 ? PortalGridView.states.COMPLETE : PortalGridView.states.LOADING); 
@@ -221,9 +210,7 @@ var PortalGridView = function (facade) {
     
     this.resizeGrid = function (_isSpecialLayout) {
         //Variable tells if the special layout indicator is displayed or not
-        Ti.API.debug("resizeGrid() in PortalGridView. Special layout: " + _isSpecialLayout);
          if (_isSpecialLayout) {
-            Ti.API.debug("User.isGuestUser() in resizeGrid()");
             if (app.models.deviceProxy.isAndroid()) {
                 _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - app.styles.homeGuestNote.height - 25; //20 is the height of the status bar
             }
@@ -232,7 +219,6 @@ var PortalGridView = function (facade) {
             }
         }
         else {
-            Ti.API.debug("!User.isGuestUser() in resizeGrid()");
             if (app.models.deviceProxy.isAndroid()) {
                 _self._gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//25 is the size of the status bar.
             }

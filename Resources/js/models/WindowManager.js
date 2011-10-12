@@ -48,14 +48,12 @@ var WindowManager = function (facade) {
             Device = app.models.deviceProxy;
         }
         
-        Ti.API.debug("openWindow() in WindowManager, key: " + windowKey);
         var callback, 
             homeKey = PortalWindow.key,
             portletKey = PortletWindow.key;
         
         
         if (applicationWindows[windowKey]) {
-            Ti.API.debug("if(applicationWindows[windowKey])");
             //Make sure the requested window exists, and that it isn't the current window.
             var _newWindowEvent = {
                 key: windowKey

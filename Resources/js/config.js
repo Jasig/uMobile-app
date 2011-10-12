@@ -45,11 +45,12 @@ var ConfigModule = function(app) {
 	this.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
 	
 	//References value of LoginProxy.loginMethods constant.
-	this.LOGIN_METHOD = LoginProxy.loginMethods.SHIBBOLETH2;
+	this.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
 	
 	this.CAS_URL = this.BASE_PORTAL_URL + '/cas';
-	this.SHIB_URL = this.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + Ti.Network.encodeURIComponent(this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + "/Login?refUrl=" + Ti.Network.encodeURIComponent(this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + "/layout.json"));
-	this.SHIB_POST_URL = "";
+    this.SHIB_URL = this.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + "/Login";
+    this.SHIB_BASE_URL = "";
+	this.SHIB_POST_URL = this.SHIB_BASE_URL + "/idp/Authn/UserPassword";
 	this.ENCRYPTION_KEY = 'um0b1le';
 	this.FORGOT_PASSWORD_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/p/forgot-password';
 
@@ -124,6 +125,7 @@ var ConfigModule = function(app) {
 	};
 
 	this.nativeIcons = {
+	    athletics: 'athletics.png',
 		calendar : 'calendar.png',
 		courses: 'courses.png',
 		directory : 'directory.png',

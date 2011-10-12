@@ -35,7 +35,6 @@ var DirectoryWindowController = function (facade) {
         onNewWindowOpened, onProxySearching, onProxySearchComplete, onProxySearchError, onDirectoryWindowSearchChange, onSearchSubmit;
     
     init = function () {
-        Ti.API.debug("init() in DirectoryWindowController");
         _self.key = 'directory';        
     };
     

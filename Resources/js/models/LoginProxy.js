@@ -32,8 +32,6 @@ var LoginProxy = function (facade) {
         
         CASLogin = app.models.CASLogin;
         
-        Ti.API.debug("Setting login method: " + app.config.LOGIN_METHOD);
-        
         switch (app.config.LOGIN_METHOD) {
             case LoginProxy.loginMethods.CAS:
                 _self._loginMethod = app.models.CASLogin;
@@ -157,6 +155,7 @@ var LoginProxy = function (facade) {
     
     this._processLoginResponse = function (e) {
         var _responseText = e.responseText, _credentials = e.credentials, _parsedResponse;
+        Ti.API.debug("_processLoginResponse() in LoginProxy: " + _responseText );
         
         try {
             _parsedResponse = JSON.parse(_responseText);
@@ -166,6 +165,9 @@ var LoginProxy = function (facade) {
                 user: LoginProxy.userTypes['NO_USER'],
                 layout: []
             };
+            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+            app.models.userProxy.setLayoutUserName(_parsedResponse.user);
+            return;
         }
         
         Ti.API.debug("Parsed response: " + JSON.stringify(_parsedResponse));
