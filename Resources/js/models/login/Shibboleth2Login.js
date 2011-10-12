@@ -24,6 +24,10 @@ var Shibboleth2Login = function (facade) {
     };
     
     this.logout = function () {
+        _self._credentials = {
+            username: '',
+            password: ''
+        };
         _self._client = Ti.Network.createHTTPClient({
             onload  : _self._onPortalSessionEstablished,
             onerror : _self._onPortalSessionEstablishedError
@@ -38,7 +42,7 @@ var Shibboleth2Login = function (facade) {
     
     this._onInitialResponse = function (e) {
         Ti.API.debug("_onInitialResponse() In Shibboleth2Login...");
-        Ti.API.debug("status: " + _self._client.status);
+        Ti.API.debug("response: " + _self._client.responseText);
         
         var initialResponse = _self._client.responseText;
 
@@ -60,6 +64,7 @@ var Shibboleth2Login = function (facade) {
                 j_password: _self._credentials.password
             };
             _self._client.send(data);
+            Ti.API.debug("Sent request after initial response, location: " + _self._client.location);
         }
         catch (e) {
             Ti.API.error("Couldn't log in with Shibboleth");
@@ -67,11 +72,9 @@ var Shibboleth2Login = function (facade) {
         }
     };
     
-    this._onInitialError = function () {
+    this._onInitialError = function (e) {
         Ti.API.error("_onInitialError() in Shibboleth2Login");
     };
-    
-
     
     this._getRedirectURL = function (responseText) {
         //https://mysandbox.uchicago.edu/Shibboleth.sso/SAML2/POST
@@ -83,8 +86,6 @@ var Shibboleth2Login = function (facade) {
         for (var i=0, iLength = redirectURL.split("&#x2f;").length; i<iLength; i++) {
             redirectURL = redirectURL.replace("&#x2f;","/");
         }
-
-        Ti.API.debug("redirectURL: " + redirectURL);
         return redirectURL;
     };
     
@@ -97,7 +98,7 @@ var Shibboleth2Login = function (facade) {
     this._getRelayState = function (responseText) {
         //Select value of <input name="RelayState" value="..."/>
         var _relayRegex = /\"RelayState\" value=\"(.*)\"/;
-        return _relayRegex.exec(responseText)[1];
+        return _relayRegex.exec(responseText)[1].replace('&#x3a;',':');
     };
     
     this._onPortalSessionEstablished = function (e) {
@@ -115,6 +116,18 @@ var Shibboleth2Login = function (facade) {
         });
         
         _self._client.open("GET", _self._app.config.LAYOUT_URL);
+        if (_self._credentials.username === '') {
+            try {
+                Ti.API.debug("Need to set empty cookie.");
+                _self._client.setRequestHeader("Cookie");
+            }
+            catch (e) {
+                Ti.API.error("Couldn't set cookie");
+            }
+        }
+        else {
+            Ti.API.debug("No need to set empty cookie. username: " + _self._credentials.username);
+        }
         _self._client.send();
         Ti.API.debug("opened " + _self._app.config.LAYOUT_URL);
     };
@@ -128,6 +141,7 @@ var Shibboleth2Login = function (facade) {
             Will evaluate responseText to tell you if a response
             contains info indicating that login was successful.
         */
+        Ti.API.debug("Executing _isLoginSuccess");
         if (responseText.indexOf("SAMLResponse") > -1) {
             return true;
         }
@@ -137,6 +151,7 @@ var Shibboleth2Login = function (facade) {
     this._onLoginComplete = function (e) {
         Ti.API.debug("_onLoginComplete() in Shibboleth2Login");
         var _loginCompleteResponse = _self._client.responseText;
+        Ti.API.debug(_loginCompleteResponse);
         
         if (_self._isLoginSuccess(_loginCompleteResponse)) {
             Ti.API.debug("_self._isLoginSuccess() == true");
@@ -146,9 +161,11 @@ var Shibboleth2Login = function (facade) {
                 onerror: _self._onPortalSessionEstablishedError
             });
             _self._client.open("POST", _self._getRedirectURL(_loginCompleteResponse));
+            Ti.API.debug("SAMLResponse hidden field: " + _self._getSAMLResponse(_loginCompleteResponse));
+            Ti.API.debug("RelayState hidden field: " + _self._getRelayState(_loginCompleteResponse));
             _self._client.send({
-                SAMLResponse: _self._getSAMLResponse(_loginCompleteResponse)
-                , RelayState: _self._getRelayState(_loginCompleteResponse)
+                SAMLResponse: _self._getSAMLResponse(_loginCompleteResponse),
+                RelayState: _self._getRelayState(_loginCompleteResponse)
             });
         }
         else {
