@@ -25,12 +25,18 @@ SecondaryNav.prototype.titleLabel;
 SecondaryNav.prototype._onDeviceRotation = function (e) {
     var _visibility = _self.view.visible;
     
-    _self._titleLabel.width = _self._app.styles.secondaryNavLabel.width;
-    _self.leftButton.left = _self.app.styles.secondaryNavButton.left;
-    _self.rightButton.right = _self.app.styles.secondaryNavButton.left;
-    
-    _self.view.width = _self._app.styles.secondaryNavBar.width;
-    _self.view.visible = _visibility || true;
+    try {
+        _self._titleLabel.width = _self._app.styles.secondaryNavLabel.width;
+        _self.leftButton.left = _self.app.styles.secondaryNavButton.left;
+        _self.rightButton.right = _self.app.styles.secondaryNavButton.left;
+
+        _self.view.width = _self._app.styles.secondaryNavBar.width;
+        _self.view.visible = _visibility || true;
+        
+    }
+    catch (e) {
+        Ti.API.error("Couldn't change views in SecondaryNavBar");
+    }
 };
 
 SecondaryNav.prototype.init = function (facade) {

@@ -47,24 +47,24 @@ var MapWindowController = function(facade) {
         _self._app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
         _self._app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
         _self._app.registerView('mapWindowView', new MapWindowView(app));
+        
+        Ti.App.addEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
+        Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
+        Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
+        Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
+        Ti.App.addEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
+        Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
+        Ti.App.addEventListener(MapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
+        Ti.App.addEventListener(MapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
+        Ti.App.addEventListener(MapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
+        Ti.App.addEventListener(MapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
+        Ti.App.addEventListener(MapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
+        Ti.App.addEventListener(MapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
     };
     
     this.open = function () {
-        if (_self._firstOpen) {
-            Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
-            Ti.App.addEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
-            Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
-            Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
-            Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
-            Ti.App.addEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
-            Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
-            Ti.App.addEventListener(MapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
-            Ti.App.addEventListener(MapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
-            Ti.App.addEventListener(MapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
-            Ti.App.addEventListener(MapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
-            Ti.App.addEventListener(MapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
-            Ti.App.addEventListener(MapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
-        }
+        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
+
         _self._win = Titanium.UI.createWindow({
             url: 'js/views/WindowContext.js',
             backgroundColor: _self._app.styles.backgroundColor,
@@ -95,6 +95,7 @@ var MapWindowController = function(facade) {
     this.close = function (options) {
         Ti.API.debug("close() in MapWindowController");
         _self._app.views.mapWindowView.searchBlur();
+        Ti.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
         if (_self._app.models.deviceProxy.isAndroid()) {
         	try {
         		 _self._win.removeEventListener('android:search', _self._onAndroidSearch);
