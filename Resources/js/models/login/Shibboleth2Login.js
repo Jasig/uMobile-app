@@ -34,6 +34,16 @@ var Shibboleth2Login = function (facade) {
                 }
             });
             _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT);
+            if (_self._app.models.deviceProxy.isIOS()) {
+                try {
+                    _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
+                    _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
+                    _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't clear cookies. Is method defined?" + _self._client.clearCookies);
+                }
+            }
             _self._client.send();
         }
     };

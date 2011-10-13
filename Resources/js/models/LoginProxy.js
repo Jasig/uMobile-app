@@ -175,7 +175,7 @@ var LoginProxy = function (facade) {
         app.models.userProxy.setLayoutUserName(_parsedResponse.user);
         app.models.portalProxy.setPortlets(_parsedResponse.layout);
         
-        if (app.models.userProxy.getLayoutUserName() === _credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
+        if (app.models.userProxy.getLayoutUserName() === _credentials.username) {
             Ti.API.info("_layoutUser matches credentials.username");
 
             app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);

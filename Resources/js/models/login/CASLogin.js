@@ -48,7 +48,7 @@ var CASLogin = function (facade) {
             });
             
             _self._client.open('GET', _self._serviceUrl, true);
-            _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             _self._client.send();
         }
         else {
@@ -62,7 +62,7 @@ var CASLogin = function (facade) {
             });
             
             _self._client.open('GET', _self._url, true);
-            _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             _self._client.send();            
         }
     };
@@ -185,7 +185,7 @@ var CASLogin = function (facade) {
             onerror: _self._onInitialError
         });
         _self._client.open('GET', _self._serviceUrl, true);
-        _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         _self._client.send();
     };
     
@@ -250,7 +250,7 @@ var CASLogin = function (facade) {
     };
     
     this._onLoginError = function (e) {
-        Ti.API.error("_self._onLoginError() in CASLogin");
+        Ti.API.error("_self._onLoginError() in CASLogin" + e.responseText);
         _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
         Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
     };
@@ -280,7 +280,7 @@ var CASLogin = function (facade) {
                             onerror: _self._onInitialError
                         });
                         _self._client.open('GET', _self._url, true);
-                        _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+                        if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
 
                         _self._client.send();
                     },
@@ -329,7 +329,7 @@ var CASLogin = function (facade) {
                 Ti.API.debug("Getting ready to open URL: " + _self._url);
 
                 _self._client.open('POST', _self._url, true);
-                _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+                if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
                 
                 Ti.API.debug("If this is Android, we're going to manually set a cookie: " + _self._androidCookie);
                 if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));
