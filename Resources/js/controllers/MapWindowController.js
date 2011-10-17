@@ -84,7 +84,7 @@ var MapWindowController = function(facade) {
         if (_self._app.models.deviceProxy.isAndroid()) {
         	 _self._win.addEventListener('android:search', _self._onAndroidSearch);
         }
-        
+        _self._app.views.mapWindowView._activityIndicator.hide();
         if (! _self._initialized) {
             _self._app.models.mapProxy.init();
         }
@@ -117,12 +117,12 @@ var MapWindowController = function(facade) {
         _self._app.views.mapWindowView.searchBlur();
 
         
-        if (!_self._locationDetailView || _self._app.models.deviceProxy.isIOS()) {
+        // if (!_self._locationDetailView || _self._app.models.deviceProxy.isIOS()) {
             _self._locationDetailViewOptions = _self._app.styles.view.clone();
             _self._locationDetailViewOptions.data = _annotation;
             _self._locationDetailView = _self._app.views.mapDetailView.getDetailView();
             _self._win.add(_self._locationDetailView);
-        }
+        // }
         _self._app.views.mapDetailView.render(_annotation);
         
         _self._locationDetailView.show();

@@ -220,7 +220,7 @@ var SettingsWindowController = function(facade){
         if (usernameInput) { usernameInput.blur(); }
         if (Device.checkNetwork()) {
             if (usernameInput.value === '') {
-                if (win.visible || _self._app.models.deviceProxy.isIOS()) {
+                if (win.visible || app.models.deviceProxy.isIOS()) {
                     Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
                         message: LocalDictionary.enterAUserName, buttonNames: [LocalDictionary.OK]
                         }).show();

@@ -48,7 +48,10 @@ var CASLogin = function (facade) {
             });
             
             _self._client.open('GET', _self._serviceUrl, true);
-            if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            if (_self._app.models.deviceProxy.isAndroid()) {
+                if(Ti.Android.clearCookies) Ti.Android.clearCookies();
+                _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            }
             _self._client.send();
         }
         else {
@@ -269,45 +272,8 @@ var CASLogin = function (facade) {
         
         // CAS will redirect to layout.json if the user has already logged in, so we want 
         // to check if the base URL is what should only be returned after login
-        if (_self._client.location.indexOf(_self._app.config.BASE_PORTAL_URL + _self._refUrl) == 0) {
-            Ti.API.debug("_self._client.location.indexOf(_self._app.config.BASE_PORTAL_URL + _self._refUrl) == 0");
-            
-            function _reLogin () {
-                _self._client = Titanium.Network.createHTTPClient({
-                    onload: function (e) {
-                        _self._client = Titanium.Network.createHTTPClient({
-                            onload: _self._onInitialResponse,
-                            onerror: _self._onInitialError
-                        });
-                        _self._client.open('GET', _self._url, true);
-                        if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-
-                        _self._client.send();
-                    },
-                    onerror: _self._onInitialError
-                });
-                _self._client.open('GET', _self._logoutUrl, true);
-
-                _self._client.send();
-            }
-            
-            // Check if a) the response can parse, and b) if the returned user matches 
-            // The user we're trying to authenticate. If so, we're done with the login and 
-            // can proceed with processing the response.
-            try {
-                _parsedResponse = JSON.parse(_self._client.responseText);
-                if (_parsedResponse.user === _self._credentials.username) {
-                    Ti.API.debug("_parsedResponse.user === _self._credentials.username");
-                    _self._processResponse(_self._client.responseText);
-                }
-                else {
-                    _reLogin();
-                }
-            }
-            catch (e) {
-                Ti.API.error("Couldn't parse JSON");
-                _reLogin();
-            }
+        if (_self._client.responseText.indexOf('"layout": [') > -1) {
+            _self._processResponse(_self._client.responseText);
         }
         else {
             // Parse the returned page, looking for the Spring Webflow ID.  We'll need
