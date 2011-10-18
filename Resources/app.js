@@ -30,6 +30,16 @@ Object.prototype.clone = function() {
     }
     return newObj;
 };
+
+Object.prototype.combine = function (obj) {
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            this[key] = obj[key];
+        }
+    }
+    return this;
+};
+
 if (typeof Object.create !== 'function') {
     Object.create = function (o) {
         function F() {}
