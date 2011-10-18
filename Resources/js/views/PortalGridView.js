@@ -41,13 +41,7 @@ var PortalGridView = function (facade) {
         _self._numColumns = Math.floor(app.models.deviceProxy.getWidth() / _self._completeWidth);
         _self._leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_self._completeWidth * _self._numColumns))) / 2);
         
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
-            _self._completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-            _self._completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-            _self._numColumns = Math.floor(app.models.deviceProxy.getWidth() / _self._completeWidth);
-            _self._leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_self._completeWidth * _self._numColumns))) / 2);
-        });
-        
+        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], this._onRotation);
         Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onOrientationChange);
         Ti.App.addEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
         
@@ -114,6 +108,9 @@ var PortalGridView = function (facade) {
                 // Ti.API.debug("else");
                 //We just need to tell the item its new sort order
                 _self._gridItems['fName' + _portlets[i].fname].sortOrder = i;
+                _self._gridItems['fName' + _portlets[i].fname].view.show();
+                _self._gridItems['fName' + _portlets[i].fname].view.visible =true;
+                _self._gridItems['fName' + _portlets[i].fname].addEventListeners();
             }
         }
         
@@ -164,11 +161,6 @@ var PortalGridView = function (facade) {
                 gridItem.view.add(gridBadgeNumber);
             }
 
-            gridItemIcon.addEventListener("singletap", this._onGridItemClick);
-            gridItemIcon.addEventListener("touchstart", this._onGridItemPressDown);
-            gridItemIcon.addEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', this._onGridItemPressUp);
-
-
             gridItem.view.visible = false;
 
             gridItem.destroy = function () {
@@ -182,9 +174,29 @@ var PortalGridView = function (facade) {
                     Ti.API.error("gridItem doesn't have a parent");
                 }*/
                 gridItem.view.hide();
+                gridItem.view.visible = false;
                 gridItem.sortOrder = -1;
             };
-
+            
+            gridItem.addEventListeners = function () {
+                gridItemIcon.addEventListener("singletap", _self._onGridItemClick);
+                gridItemIcon.addEventListener("touchstart", _self._onGridItemPressDown);
+                gridItemIcon.addEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _self._onGridItemPressUp);
+            };
+            
+            gridItem.removeEventListeners = function () {
+                try {
+                    gridItemIcon.removeEventListener("singletap", _self._onGridItemClick);
+                    gridItemIcon.removeEventListener("touchstart", _self._onGridItemPressDown);
+                    gridItemIcon.removeEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _self._onGridItemPressUp);
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't remove event listeners");
+                }
+            };
+            
+            gridItem.addEventListeners();
+            
             _self._gridItems['fName'+portlet.fname] = gridItem;
 
             return gridItem;
@@ -208,6 +220,18 @@ var PortalGridView = function (facade) {
         _self.setState(_self._numGridItems > 0 ? PortalGridView.states.COMPLETE : PortalGridView.states.LOADING); 
     };
     
+    this.destroy = function () {
+        Ti.App.removeEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], this._onRotation);
+        Ti.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onOrientationChange);
+        Ti.App.removeEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
+        
+        for (var _gridItem in _self._gridItems) {
+            if (_self._gridItems.hasOwnProperty(_gridItems)) {
+                _gridItem.removeEventListeners();
+            }
+        }
+    };
+    
     this.resizeGrid = function (_isSpecialLayout) {
         //Variable tells if the special layout indicator is displayed or not
          if (_isSpecialLayout) {
@@ -226,6 +250,13 @@ var PortalGridView = function (facade) {
                 _self._gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
             }
         }
+    };
+    
+    this._onRotation = function (e) {
+        _self._completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        _self._completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        _self._numColumns = Math.floor(app.models.deviceProxy.getWidth() / _self._completeWidth);
+        _self._leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_self._completeWidth * _self._numColumns))) / 2);
     };
     
     this._onLayoutCleanup = function (e) {

@@ -52,6 +52,9 @@ var CASLogin = function (facade) {
                 if(Ti.Android.clearCookies) Ti.Android.clearCookies();
                 _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             }
+            else if (_self._app.models.deviceProxy.isIOS()) {
+            	if (_self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
+            }
             _self._client.send();
         }
         else {

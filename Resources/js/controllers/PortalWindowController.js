@@ -35,9 +35,19 @@ var PortalWindowController = function (facade) {
     init = function () {
         //Assign the unique key
         _self.key = 'home';
+        initialized = true;
+    };
+    
+    this.open = function () {
+        // This will determine if a network session exists, and what 
+        // window was open last time the app closed, and will manage the process
+        // of establishing a session and opening the window.
+        
+        if (firstTimeOpened) {
+            Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], onPortletsLoaded);
+        }
 
-    	Ti.App.addEventListener(PortalProxy.events['GETTING_PORTLETS'], onGettingPortlets);
-    	Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], onPortletsLoaded);
+        Ti.App.addEventListener(PortalProxy.events['GETTING_PORTLETS'], onGettingPortlets);
         Ti.App.addEventListener(PortalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
         // Ti.App.addEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
         // Ti.App.addEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
@@ -46,13 +56,6 @@ var PortalWindowController = function (facade) {
         Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
         Ti.App.addEventListener(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
         
-        initialized = true;
-    };
-    
-    this.open = function () {
-        // This will determine if a network session exists, and what 
-        // window was open last time the app closed, and will manage the process
-        // of establishing a session and opening the window.
         if (!app.models.deviceProxy.checkNetwork()) {
             Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
             return;
@@ -68,12 +71,21 @@ var PortalWindowController = function (facade) {
     };
     
     this.close = function () {
-        try {
+        // try {
             app.views.portalWindowView.close();
-        }
+            Ti.App.removeEventListener(PortalProxy.events['GETTING_PORTLETS'], onGettingPortlets);
+            Ti.App.removeEventListener(PortalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
+            // Ti.App.removeEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
+            // Ti.App.removeEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
+            Ti.App.removeEventListener(LoginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
+            Ti.App.removeEventListener(PortalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
+            Ti.App.removeEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
+            Ti.App.removeEventListener(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
+            
+        /*}
         catch (e) {
             Ti.API.error("Couldn't close portalWindowView");
-        }
+        }*/
     };
     
     onAndroidSearchClick = function (e) {

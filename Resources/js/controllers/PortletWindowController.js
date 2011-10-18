@@ -44,8 +44,16 @@ var PortletWindowController = function (facade) {
     
     this.close = function () {
         //Set the webview to blank.html if Android, otherwise leave it.
-        if (_self._app.models.deviceProxy.isAndroid()) _self._webView.url = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/blank.html').nativePath;
+        try {
+            _self._webView.removeEventListener('load', _self._onPortletLoad);
+            _self._webView.removeEventListener('beforeload', _self._onPortletBeforeLoad);
+            Titanium.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
+        }
+        catch (e) {
+            Ti.API.error("Couldn't remove events.");
+        }
     	_self._removeAndroidBackListener();
+    	_self._destroyView();
         _self._win.close();
     };
     
@@ -77,36 +85,53 @@ var PortletWindowController = function (facade) {
         _self._win = Titanium.UI.createWindow(_self._app.styles.portletWindow);
         _self._win.open();
         
-        _self._titleBar = _self._app.UI.createTitleBar({
+        _self._titleBar = _self._app.UI.createDisposableTitleBar({
             title: portlet.title,
             settingsButton: false,
             homeButton: true
         });
         
         // initialize navigation bar for URLs outside the portal
-        _self._navBar = _self._app.UI.createSecondaryNavBar({
+        _self._navBar = _self._app.UI.createDisposableSecondaryNavBar({
             backButton: true,
             backButtonHandler: _self._onBackBtnPress,
             btnFloatLeft: true
         });
-        _self._navBar.top = 40;
-        _self._navBar.visible = false;
+        _self._navBar.view.top = 40;
+        _self._navBar.view.visible = false;
 
-        _self._activityIndicator = _self._app.UI.createActivityIndicator();
-        _self._activityIndicator.hide();
+        _self._activityIndicator = _self._app.UI.createDisposableActivityIndicator();
+        _self._activityIndicator.view.hide();
 
-        _self._win.add(_self._titleBar);
-        _self._win.add(_self._navBar);
-
-        _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
+        _self._win.add(_self._titleBar.view);
+        _self._win.add(_self._navBar.view);
+        
+        if (_self._app.models.deviceProxy.isIOS() && typeof _self._webView === "undefined") {
+            _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
+            _self._win.add(_self._webView);
+            _self._webView.addEventListener('load', _self._onPortletLoad);
+            _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+        }
+        else {
+            _self._webView = Titanium.UI.createWebView(_self._app.styles.portletView);
+            _self._win.add(_self._webView);
+            _self._webView.addEventListener('load', _self._onPortletLoad);
+            _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
+        }
         _self._webView.scalePageToFit = true;
         _self._webView.validatesSecureCertificate = false;
         
         _self._webView.hide();
 
-        _self._win.add(_self._webView);
-        _self._win.add(_self._activityIndicator);
         
+        
+        _self._win.add(_self._activityIndicator.view);
+        
+    };
+    this._destroyView = function () {
+        _self._titleBar.destroy();
+        _self._navBar.destroy();
+        _self._activityIndicator.destroy();
     };
     
     this._includePortlet = function (portlet) {
@@ -120,11 +145,8 @@ var PortletWindowController = function (facade) {
         
         Ti.API.debug("includePortlet() in PortletWindowController. Portlet: " + JSON.stringify(portlet));
         _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
-        _self._activityIndicator.show();
+        _self._activityIndicator.view.show();
         
-        _self._webView.addEventListener('load', _self._onPortletLoad);
-        _self._webView.addEventListener('beforeload', _self._onPortletBeforeLoad);
-                
         _self._homeURL = _self._webView.url = _self._currentURL = _self._getAbsoluteURL(portlet.url);
         _self._homeFName = _self.getFNameFromURL(portlet.url);
         
@@ -185,7 +207,7 @@ var PortletWindowController = function (facade) {
         if (url.indexOf('/') == 0) {
             _url = _self._getLocalUrl(url);
             _self._webView.externalModule = false;
-            _self._webView.top = _self._titleBar.height;
+            _self._webView.top = _self._titleBar.view.height;
         }
         else {
             _url = url;
@@ -245,21 +267,21 @@ var PortletWindowController = function (facade) {
         	}
         }
         _self._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
-        _self._activityIndicator.show();
+        _self._activityIndicator.view.show();
     };
     
     this._onDimensionChanges = function (e) {
         // Handle device rotation changes
         if (_self._isHome()) {
             Ti.API.info("Webview is home, can't go back");
-            _self._navBar.visible = false;
-            _self._webView.top = _self._titleBar.height;
-            _self._webView.height = _self._win.height - _self._titleBar.height;
+            _self._navBar.view.visible = false;
+            _self._webView.top = _self._titleBar.view.height;
+            _self._webView.height = _self._win.height - _self._titleBar.view.height;
         }
         else {
-            _self._navBar.visible = true;
-            _self._webView.top = _self._titleBar.height + _self._navBar.height;
-            _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
+            _self._navBar.view.visible = true;
+            _self._webView.top = _self._titleBar.view.height + _self._navBar.view.height;
+            _self._webView.height = _self._win.height - _self._titleBar.view.height - _self._navBar.view.height;
         }
     };
     
@@ -284,7 +306,7 @@ var PortletWindowController = function (facade) {
         _self._webView.show();
         _self._currentURL = e.url;
         
-        _self._activityIndicator.hide();
+        _self._activityIndicator.view.hide();
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
@@ -292,9 +314,9 @@ var PortletWindowController = function (facade) {
             //We want to be able to open any video now, so we'll clear the YouTube workaround variable
             _self._lastVideoOpened = '';
             _self._webView.externalModule = false;
-            _self._navBar.visible = false;
-            _self._webView.top = _self._titleBar.height;
-            _self._webView.height = _self._win.height - _self._titleBar.height;
+            _self._navBar.view.visible = false;
+            _self._webView.top = _self._titleBar.view.height;
+            _self._webView.height = _self._win.height - _self._titleBar.view.height;
             if (_self._isHome()) {
                 _self._removeAndroidBackListener();
             }
@@ -303,15 +325,15 @@ var PortletWindowController = function (facade) {
             Ti.API.debug("Visiting an external link. Webview.url = " + _self._webView.url + " & e.url = " + e.url);
             _self._webView.externalModule = true;
             if (!_self._isHome()) {
-                _self._navBar.visible = true;
-                _self._webView.top = _self._titleBar.height + _self._navBar.height;
-                _self._webView.height = _self._win.height - _self._titleBar.height - _self._navBar.height;
+                _self._navBar.view.visible = true;
+                _self._webView.top = _self._titleBar.view.height + _self._navBar.view.height;
+                _self._webView.height = _self._win.height - _self._titleBar.view.height - _self._navBar.view.height;
                 _self._addAndroidBackListener();
             }
             else {
                 Ti.API.info("Webview can't go back");
-                _self._webView.top = _self._titleBar.height;
-                _self._webView.height = _self._win.height - _self._titleBar.height;
+                _self._webView.top = _self._titleBar.view.height;
+                _self._webView.height = _self._win.height - _self._titleBar.view.height;
                 _self._removeAndroidBackListener();
             }
         }
