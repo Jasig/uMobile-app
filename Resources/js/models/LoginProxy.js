@@ -157,6 +157,10 @@ var LoginProxy = function (facade) {
         var _responseText = e.responseText, _credentials = e.credentials, _parsedResponse;
         Ti.API.debug("_processLoginResponse() in LoginProxy: " + _responseText );
         
+        if (_credentials.username === '') {
+            _credentials.username = LoginProxy.userTypes['GUEST'];
+        }
+        
         try {
             _parsedResponse = JSON.parse(_responseText);
         }

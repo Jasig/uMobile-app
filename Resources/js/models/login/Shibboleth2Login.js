@@ -34,15 +34,13 @@ var Shibboleth2Login = function (facade) {
                 }
             });
             _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT);
-            if (_self._app.models.deviceProxy.isIOS()) {
-                try {
-                    _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
-                    _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
-                    _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
-                }
-                catch (e) {
-                    Ti.API.error("Couldn't clear cookies. Is method defined?" + _self._client.clearCookies);
-                }
+            if (_self._client.clearCookies) {
+                _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
+                _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
+                _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
+            }
+            if (_self._app.models.deviceProxy.isAndroid()) {
+                _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             }
             _self._client.send();
         }
@@ -76,9 +74,7 @@ var Shibboleth2Login = function (facade) {
 
             _self._client.open('POST', _self._postURL, true);
             if (_self._app.models.deviceProxy.isAndroid()) {
-                // If this is Android, we're going to manually set the user agent and a cookie
                 _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-                _self._client.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));
             }
             
             data = { 
@@ -139,17 +135,18 @@ var Shibboleth2Login = function (facade) {
             }
         });
 
-        if (_self._app.models.deviceProxy.isIOS() && _self._credentials.username === '') {
-            try {
-                _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
-                _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
-                _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
-            }
-            catch (e) {
-                Ti.API.error("Couldn't clear cookies. Is method defined?" + _self._client.clearCookies);
-            }
+        if (_self._credentials.username === '' && typeof _self._client.clearCookies !== "undefined") {
+            _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
+            _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
+            _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
+        }
+        else {
+            Ti.API.error("Couldn't clear cookies. Is method defined? " + _self._client.clearCookies);
         }
         _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");        
+        if (_self._app.models.deviceProxy.isAndroid()) {
+            _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        }
         _self._client.send();
     };
     
