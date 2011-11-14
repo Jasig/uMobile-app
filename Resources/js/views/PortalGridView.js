@@ -55,6 +55,7 @@ var PortalGridView = function (facade) {
     };
     
     this.setState = function (newState) {
+        Ti.API.debug("setState() in PortalGridView: " + newState);
         _self._state = newState;
         Ti.App.fireEvent(PortalGridView.events['STATE_CHANGE'], {state: _self._state});
         

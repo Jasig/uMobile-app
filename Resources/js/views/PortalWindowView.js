@@ -159,6 +159,7 @@ var PortalWindowView = function (facade) {
     };
     
     this.hideActivityIndicator = function () {
+        Ti.API.debug("hideActivityIndicator() in PortalWindowView");
         try {
             _self._activityIndicator.view.hide();
         }
@@ -262,8 +263,18 @@ var PortalWindowView = function (facade) {
     };
     
     this._onPortalGridViewStateChange = function (e) {
-        if (app.views.portalGridView && _self._activityIndicator && e.state === PortalGridView.states['COMPLETE']) {
+        Ti.API.debug("_onPortalGridViewStateChange in PortalWindowView");
+        if (typeof app.views.portalGridView !== "undefined" 
+            && typeof _self._activityIndicator !== "undefined" 
+            && typeof e.state !== "undefined"
+            && e.state === PortalGridView.states['COMPLETE']) {
             _self.hideActivityIndicator();
+        }
+        else {
+            Ti.API.debug("A condition wasn't met in _onPortalGridViewStateChange");
+            Ti.API.debug("typeof app.views.portalGridView:" + typeof app.views.portalGridView);
+            Ti.API.debug("typeof _self._activityIndicator:" +  typeof _self._activityIndicator);
+            Ti.API.debug("typeof e.state" + typeof e.state);
         }
     };
     
