@@ -53,7 +53,7 @@ var WindowManager = function (facade) {
             portletKey = PortletWindow.key;
         
         
-        if (applicationWindows[windowKey]) {
+        if (applicationWindows[windowKey] && _self.getCurrentWindow() !== windowKey) {
             //Make sure the requested window exists, and that it isn't the current window.
             var _newWindowEvent = {
                 key: windowKey

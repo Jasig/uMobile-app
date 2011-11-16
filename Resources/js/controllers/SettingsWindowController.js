@@ -360,13 +360,14 @@ var SettingsWindowController = function(facade){
     
     onPortalProxyPortletsLoaded = function (e) {
         Ti.API.debug("onPortalProxyPortletsLoaded in SettingsWindowController");
-        if (wasFormSubmitted) {
+        if (wasFormSubmitted && e.user === credentials.username) {
             app.models.windowManager.openWindow(PortalWindow.key);
             wasFormSubmitted = false;
             wasLogOutClicked = false;
         }
         else {
             Ti.API.debug("The portlets loaded are for " + e.user + " and not for " + credentials.username);
+	        onSessionError(e);
         }
     };
     
@@ -388,7 +389,7 @@ var SettingsWindowController = function(facade){
                 Ti.API.error("Couldn't fire alert. Window is probably closed.");
             }
         }
-        else if (wasFormSubmitted){
+        else if (wasFormSubmitted) {
             Ti.API.debug("Condition 2 passes in onSessionError() in Settings Window Controller");
             try {
                 Titanium.UI.createAlertDialog({ title: LocalDictionary.error,

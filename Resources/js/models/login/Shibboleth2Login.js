@@ -1,3 +1,9 @@
+/*
+This method is only known to work with Titanium SDK 1.7.5, 
+and logout only works if the Ti.Network.HTTPClient.clearCookies method
+has been implemented. Testing with later versions of the Titanium DSK
+*/
+
 var Shibboleth2Login = function (facade) {
     var _self = this;
     
@@ -90,7 +96,6 @@ var Shibboleth2Login = function (facade) {
     };
     
     this._onInitialError = function (e) {
-        Ti.API.error("_onInitialError() in Shibboleth2Login");
         Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
     };
     
@@ -140,14 +145,15 @@ var Shibboleth2Login = function (facade) {
             _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
             _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
         }
-        else {
-            Ti.API.error("Couldn't clear cookies. Is method defined? " + _self._client.clearCookies);
+        else if (typeof _self._client.clearCookies === "undefined") {
+            Ti.API.error("client.clearCookies() isn't defined.");
         }
-        _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");        
+        _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");
+        
         if (_self._app.models.deviceProxy.isAndroid()) {
             _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         }
-        _self._client.send();
+        _self._client.send({autoRedirect:true});
     };
     
     this._onPortalSessionEstablishedError = function (e) {

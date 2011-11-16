@@ -268,7 +268,7 @@ var PortalWindowView = function (facade) {
             && typeof _self._activityIndicator !== "undefined" 
             && typeof e.state !== "undefined"
             && e.state === PortalGridView.states['COMPLETE']) {
-            _self.hideActivityIndicator();
+            _self.hideActivityIndicator(PortalGridView.states['COMPLETE']);
         }
         else {
             Ti.API.debug("A condition wasn't met in _onPortalGridViewStateChange");
