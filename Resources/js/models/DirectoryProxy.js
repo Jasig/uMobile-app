@@ -84,7 +84,6 @@ var DirectoryProxy = function (facade,opts) {
         }
 
         xhrSearchClient.open('GET', url);
-        if (app.models.deviceProxy.isAndroid()) xhrSearchClient.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));
         xhrSearchClient.send();
         
         Ti.App.fireEvent(DirectoryProxy.events['SEARCHING']);

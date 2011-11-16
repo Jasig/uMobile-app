@@ -37,9 +37,8 @@ var LocalLogin = function (facade) {
     
     this.logout = function () {
         _self.login({username: '', password: ''});
-        if (app.models.deviceProxy.isAndroid()) {
-            Ti.Android.clearCookies();
-            Ti.App.Properties.setString("androidCookie", "");
+        if (_self._client.clearCookies) {
+            _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
         }
     };
     
@@ -50,15 +49,6 @@ var LocalLogin = function (facade) {
     };
 
     onLoginComplete = function (e) {
-        var _cookie = client.getResponseHeader('Set-Cookie');
-        
-        if (app.models.deviceProxy.isAndroid()) {
-            // Need to manually set cookies for later httpclient use, and for webview
-            Ti.App.Properties.setString("androidCookie", _cookie);
-            if (Ti.Android.setCookie) Ti.Android.setCookie(app.config.BASE_PORTAL_URL, _cookie);
-            Ti.API.debug("cookie:" + _cookie);
-        }
-        
         try {
             _parsedResponse = JSON.parse(client.responseText);
         }

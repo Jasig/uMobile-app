@@ -23,7 +23,6 @@ var CASLogin = function (facade) {
     this._app = facade;
     this._url;
     this._credentials;
-    this._androidCookie;
     this._refUrl = _self._app.config.PORTAL_CONTEXT + '/layout.json';
     this._serviceUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _self._refUrl;
     this._logoutUrl = _self._app.config.CAS_URL + '/logout';
@@ -49,7 +48,7 @@ var CASLogin = function (facade) {
             
             _self._client.open('GET', _self._serviceUrl, true);
             if (_self._app.models.deviceProxy.isAndroid()) {
-                if(Ti.Android.clearCookies) Ti.Android.clearCookies();
+                if(_self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
                 _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             }
             else if (_self._app.models.deviceProxy.isIOS()) {
@@ -84,7 +83,7 @@ var CASLogin = function (facade) {
         _self._client.send();
         
         // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
-        if (_self._app.models.deviceProxy.isAndroid() && Ti.Android.clearCookies) Ti.Android.clearCookies();
+        if (_self._app.models.deviceProxy.isAndroid() && _self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
     };
     
     this.createWebViewSession = function (credentials, webView, url) {
@@ -116,9 +115,6 @@ var CASLogin = function (facade) {
                 submitting the form. 
             */
             Ti.API.debug("_populateAndSubmitForm() in CASLogin");
-            webView.executeJS('document.getElementById("username").value = "' + credentials.username + '";');
-            webView.executeJS('document.getElementById("password").value = "' + credentials.password + '";');
-            webView.executeJS('document.getElementById("fm1").submit.click()');
         }
         
         function _isPageStillCAS () {
@@ -239,8 +235,6 @@ var CASLogin = function (facade) {
             _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             
             if (_self._app.models.deviceProxy.isAndroid()) {
-                
-                Ti.Android.setCookie(_self._app.config.BASE_PORTAL_URL, Ti.App.Properties.getString("androidCookie"));
                 _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
             }
             
@@ -268,9 +262,6 @@ var CASLogin = function (facade) {
     };
     
     this._onInitialResponse = function (e) {
-        Ti.API.debug("_self._onInitialResponse() in CASLogin");
-        if (_self._app.models.deviceProxy.isAndroid()) Ti.App.Properties.setString("androidCookie", _self._client.getResponseHeader('Set-Cookie'));
-        
         var flowRegex, flowId, initialResponse, data, _parsedResponse;
         
         // CAS will redirect to layout.json if the user has already logged in, so we want 
@@ -300,10 +291,6 @@ var CASLogin = function (facade) {
                 _self._client.open('POST', _self._url, true);
                 if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
                 
-                Ti.API.debug("If this is Android, we're going to manually set a cookie: " + _self._androidCookie);
-                if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));
-                
-
                 Ti.API.debug("Getting ready to populate data object");
                 Ti.API.debug(_self._credentials.username);
 

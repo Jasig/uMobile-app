@@ -158,7 +158,6 @@ var MapProxy = function (facade) {
                 onerror : _self._onLoadError
             });
             request.open("GET", _self._app.config.MAP_SERVICE_URL);
-            if (_self._app.models.deviceProxy.isAndroid()) request.setRequestHeader('Cookie', Ti.App.Properties.getString("androidCookie"));
             request.send();
         }
         else {
