@@ -30,6 +30,7 @@ var MapWindowController = function(facade) {
     this._locationDetailViewOptions;
     this._rawAnnotations = [];
     this._activeCategory;
+    this._activeView;
     this._categoryPage;
     this._categoryResultsPerPage = 10;
     this._firstOpen = true;
