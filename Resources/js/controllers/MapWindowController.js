@@ -34,35 +34,25 @@ var MapWindowController = function(facade) {
     this._categoryResultsPerPage = 10;
     this._firstOpen = true;
     
+    // Private views
+    this._mapWindowView;
+    this._mapDetailView;
+    
     this._win;
+    this.key = 'map';
 
 
     init = function() {
-        _self.key = 'map';
-        
-        if (typeof MapProxy === "undefined")        Titanium.include('/js/models/MapProxy.js');
-        if (typeof MapDetailView === "undefined")   Titanium.include('/js/views/MapDetailView.js');
-        if (typeof MapWindowView === "undefined")   Titanium.include('/js/views/MapWindowView.js');
-        
+        if (typeof MapProxy === "undefined") Titanium.include('/js/models/MapProxy.js');
         _self._app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
-        _self._app.registerView('mapDetailView', new MapDetailView(app)); // Subcontext in MapWindowController to show details of a location on the map
-        _self._app.registerView('mapWindowView', new MapWindowView(app));
-        
-        Ti.App.addEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
-        Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
-        Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
-        Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
-        Ti.App.addEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
-        Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
-        Ti.App.addEventListener(MapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
-        Ti.App.addEventListener(MapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
-        Ti.App.addEventListener(MapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
-        Ti.App.addEventListener(MapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
-        Ti.App.addEventListener(MapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
-        Ti.App.addEventListener(MapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
     };
     
     this.open = function () {
+        if (typeof MapDetailView === "undefined")   Titanium.include('/js/views/MapDetailView.js');
+        
+        _self._mapWindowView = require('/js/views/MapWindowView');
+        _self._mapDetailView = new MapDetailView(app);
+        
         Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
 
         _self._win = Titanium.UI.createWindow({
@@ -79,12 +69,25 @@ var MapWindowController = function(facade) {
         });
         _self._win.open();
         
-        _self._win.add(_self._app.views.mapWindowView.createView());
+        Ti.App.addEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
+        Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
+        Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
+        Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
+        Ti.App.addEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
+        Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
+        Ti.App.addEventListener(_self._mapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
+        Ti.App.addEventListener(_self._mapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
+        Ti.App.addEventListener(_self._mapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
+        Ti.App.addEventListener(_self._mapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
+        Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
+        Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
         
-        if (_self._app.models.deviceProxy.isAndroid()) {
-        	 _self._win.addEventListener('android:search', _self._onAndroidSearch);
-        }
-        _self._app.views.mapWindowView._activityIndicator.hide();
+        _self._win.add(_self._mapWindowView.createView());
+        
+        _self._win.addEventListener('android:search', _self._onAndroidSearch);
+        
+        _self._mapWindowView.hideActivityIndicator();
+        
         if (! _self._initialized) {
             _self._app.models.mapProxy.init();
         }
@@ -93,41 +96,48 @@ var MapWindowController = function(facade) {
     };
     
     this.close = function (options) {
-        Ti.API.debug("close() in MapWindowController");
-        _self._app.views.mapWindowView.searchBlur();
+        _self._mapWindowView.searchBlur();
+        
         Ti.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
-        if (_self._app.models.deviceProxy.isAndroid()) {
-        	try {
-        		 _self._win.removeEventListener('android:search', _self._onAndroidSearch);
-        	}
-        	catch (e) {
-        		Ti.API.error("Couldn't remove search event from Map Window");
-        	}
-        }
-        if (_self._win) {
-            _self._win.close();
-        }
+        Ti.App.removeEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
+        Ti.App.removeEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
+        Ti.App.removeEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
+        Ti.App.removeEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
+        Ti.App.removeEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
+        Ti.App.removeEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
+        Ti.App.removeEventListener(_self._mapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
+        Ti.App.removeEventListener(_self._mapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
+        Ti.App.removeEventListener(_self._mapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
+        Ti.App.removeEventListener(_self._mapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
+        Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
+        Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
+        _self._win.removeEventListener('android:search', _self._onAndroidSearch);
+        
+        _self._mapWindowView = null;
+        _self._mapDetailView = null;
+        
+        _self._win.close();
     };
 
     this._loadDetail = function(_annotation) {
         //Create and open the view for the map detail
         Ti.API.debug('loadDetail() in MapWindowController');
-        _self._app.views.mapWindowView._activityIndicator.setLoadingMessage(_self._app.localDictionary.loading);
-        _self._app.views.mapWindowView._activityIndicator.show();
-        _self._app.views.mapWindowView.searchBlur();
+        _self._mapWindowView.setActivityIndicatorMessage(_self._app.localDictionary.loading);
+        _self._mapWindowView.showActivityIndicator();
+        _self._mapWindowView.searchBlur();
 
         
         // if (!_self._locationDetailView || _self._app.models.deviceProxy.isIOS()) {
             _self._locationDetailViewOptions = _self._app.styles.view.clone();
             _self._locationDetailViewOptions.data = _annotation;
-            _self._locationDetailView = _self._app.views.mapDetailView.getDetailView();
+            _self._locationDetailView = _self._mapDetailView.getDetailView();
             _self._win.add(_self._locationDetailView);
         // }
-        _self._app.views.mapDetailView.render(_annotation);
+        _self._mapDetailView.render(_annotation);
         
         _self._locationDetailView.show();
 
-        _self._app.views.mapWindowView._activityIndicator.hide();
+        _self._mapWindowView.hideActivityIndicator();
     };
     
     // Mapview events
@@ -139,7 +149,7 @@ var MapWindowController = function(facade) {
         var _annotation;
         Ti.API.info("_onMapViewClick() in MapWindowController");
         if (e.clicksource === 'title' && e.title) {
-            // _self._app.views.mapWindowView.searchBlur(); //Search should already be blurred...
+            // _self._mapWindowView.searchBlur(); //Search should already be blurred...
             _annotation = _self._app.models.mapProxy.getAnnotationByTitle(e.title);
             _self._loadDetail(_annotation);
         }
@@ -152,14 +162,14 @@ var MapWindowController = function(facade) {
     
     this._onNavButtonClick = function (e) {
         switch (e.buttonName) {
-            case MapWindowView.navButtonValues[0]:
-                _self._app.views.mapWindowView.setView(MapWindowView.views['SEARCH']);
+            case _self._mapWindowView.navButtonValues[0]:
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['SEARCH']);
                 break;
-            case MapWindowView.navButtonValues[1]:
-                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_BROWSING'], _self._app.models.mapProxy.getCategoryList());
+            case _self._mapWindowView.navButtonValues[1]:
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], _self._app.models.mapProxy.getCategoryList());
                 break;
-            case MapWindowView.navButtonValues[2]:
-                _self._app.views.mapWindowView.setView(MapWindowView.views['FAVORITES_BROWSING']);
+            case _self._mapWindowView.navButtonValues[2]:
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['FAVORITES_BROWSING']);
                 break;
             default:
                 Ti.API.error("No case matched in _handleNavButtonClick");
@@ -172,7 +182,7 @@ var MapWindowController = function(facade) {
         // collection of locations for that category
         Ti.API.info("_onCategoryRowClick() in MapWindowController. Category:" + e.category);
         _self._activeCategory = e.category;
-        _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(e.category, _self._categoryResultsPerPage));
+        _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(e.category, _self._categoryResultsPerPage));
     };
     
     this._onCategoryRightBtnClick = function (e) {
@@ -181,15 +191,15 @@ var MapWindowController = function(facade) {
         
         // Will get the current active view, and determine what view
         // Should be shown.
-        switch (_self._app.views.mapWindowView.getView()) {
-            case MapWindowView.views['CATEGORY_BROWSING']:
-                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_MAP'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
+        switch (_self._mapWindowView.getView()) {
+            case _self._mapWindowView.views['CATEGORY_BROWSING']:
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
                 break;
-            case MapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_MAP'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
+            case _self._mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
                 break;
-            case MapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-                _self._app.views.mapWindowView.setView(MapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
+            case _self._mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _self._app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
                 break;
             default:
                 return;
@@ -200,27 +210,27 @@ var MapWindowController = function(facade) {
     //Proxy Events
     this._onProxySearching = function (e) {
         Ti.API.debug('onProxySearching' + e.query);
-        _self._app.views.mapWindowView._activityIndicator.setLoadingMessage(_self._app.localDictionary.searching);
-        _self._app.views.mapWindowView._activityIndicator.show();
+        _self._mapWindowView.setActivityIndicatorMessage(_self._app.localDictionary.searching);
+        _self._mapWindowView.showActivityIndicator();
     };
     
     this._onProxyLoading = function (e) {
         Ti.API.debug("onProxyLoading() in MapWindowController.");
-        _self._app.views.mapWindowView._activityIndicator.setLoadingMessage(_self._app.localDictionary.mapLoadingLocations);
-        _self._app.views.mapWindowView._activityIndicator.show();
+        _self._mapWindowView.setActivityIndicatorMessage(_self._app.localDictionary.mapLoadingLocations);
+        _self._mapWindowView.showActivityIndicator();
     };
     
     this._onProxyLoaded = function (e) {
         Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(_self._app.models.mapProxy.getMapCenter()));
-        _self._app.views.mapWindowView._resetMapLocation();
-        _self._app.views.mapWindowView._activityIndicator.hide();
+        _self._mapWindowView.resetMapLocation();
+        _self._mapWindowView.hideActivityIndicator();
     };
     
     this._onProxySearchComplete = function (e) {
         Ti.API.debug('onProxySearchComplete');
         var alertDialog;
         
-        _self._app.views.mapWindowView._activityIndicator.hide();
+        _self._mapWindowView.hideActivityIndicator();
         
         if(e.points.length < 1) {
             if (_self._win.visible || _self._app.models.deviceProxy.isIOS()) {
@@ -241,22 +251,22 @@ var MapWindowController = function(facade) {
             }
         }
         else {
-            _self._app.views.mapWindowView._plotPoints(e.points);
+            _self._mapWindowView.plotPoints(e.points);
         }
     };
     
     this._onProxyEmptySearch = function (e) {
         Ti.API.debug("Hiding activity indicator in onProxyEmptySearch()");
-        _self._app.views.mapWindowView._activityIndicator.hide();
+        _self._mapWindowView.hideActivityIndicator();
     };
     
     this._onAndroidSearch = function (e) {
     	Ti.API.debug("onAndroidSearch() in MapWindowController");
-    	if (_self._app.views.mapWindowView._searchBar && _self._app.views.mapWindowView._searchBar.input) {
-    		_self._app.views.mapWindowView._searchBar.input.focus();
+    	if (_self._mapWindowView._searchBar && _self._mapWindowView._searchBar.input) {
+    		_self._mapWindowView._searchBar.input.focus();
     	}
-    	if (_self._app.views.mapWindowView._locationDetailView) {
-    		_self._app.views.mapWindowView._locationDetailView.hide();
+    	if (_self._mapWindowView._locationDetailView) {
+    		_self._mapWindowView._locationDetailView.hide();
     	}
     };
     
@@ -264,7 +274,7 @@ var MapWindowController = function(facade) {
         Ti.API.debug("Hiding activity indicator in onProxyLoadError()");
         var alertDialog;
         
-        _self._app.views.mapWindowView._activityIndicator.hide();
+        _self._mapWindowView.hideActivityIndicator();
         
         if (_self._win.visible || _self._app.models.deviceProxy.isIOS()) {
             try {
@@ -326,7 +336,7 @@ var MapWindowController = function(facade) {
     
     this._onOrientationChange = function (e) {
         if (_self._app.models.deviceProxy.isIOS() || _self._win && _self._win.visible) {
-            _self._app.views.mapWindowView.resetDimensions();
+            _self._mapWindowView.resetDimensions();
         }
     };
 
