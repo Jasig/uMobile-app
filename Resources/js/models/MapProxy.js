@@ -213,6 +213,8 @@ var MapProxy = function (facade) {
         }
         db.close();
         
+        Ti.API.debug("Finished in getCategoryList()");
+        
         return result;
     };
     
