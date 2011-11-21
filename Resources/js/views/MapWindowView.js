@@ -46,6 +46,7 @@ exports.plotPoints = function (points) {
         mapView.addAnnotation(_annotation);
     }
     
+    // Center the map around the active points
     mapView.setLocation(app.models.mapProxy.getMapCenter());
     activityIndicator.hide();
 };
@@ -79,7 +80,6 @@ exports.searchBlur = function (e) {
 };
 
 exports.openCategoryBrowsingView = function (categories) {
-    Ti.API.debug("openCategoryBrowsingView() in MapWindowView. searchBar: " + searchBar);
     _hideAllViews();
     
     // If there isn't a categoryNavBar yet, go ahead and create one.
@@ -92,7 +92,6 @@ exports.openCategoryBrowsingView = function (categories) {
     
     if (!categoryBrowsingView) {
         // Create the view to hold tableviews listing categories and locations.
-        Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(categories));
         categoryBrowsingView = Ti.UI.createTableView({
             data: (function(c) {
                 var _data = [], _labelStyle = app.styles.mapCategoryCount.clone(), _rowStyle = app.styles.mapCategoryRow.clone(), _categoryName;
@@ -128,7 +127,6 @@ exports.openCategoryBrowsingView = function (categories) {
 };
 
 exports.openCategoryLocationsListView = function (viewModel) {
-    Ti.API.debug("openCategoryLocationsListView() in MapWindowView");
     _hideAllViews();
     
     if (!categoryLocationsListView) {
@@ -165,9 +163,7 @@ exports.openCategoryLocationsMapView = function (viewModel) {
     categoryNavBar.rightButton.title = app.localDictionary.list;
     categoryNavBar.rightButton.show();
     
-    /*
-        TODO Actually plot the points on the map.
-    */
+    exports.plotPoints(viewModel.locations);
 };
 
 exports.openSearchView = function () {

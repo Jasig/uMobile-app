@@ -99,7 +99,6 @@ var MapProxy = function (facade) {
                     longitude: parseFloat(queryResult.fieldByName('longitude')),
                     img: queryResult.fieldByName('img')
                 });
-                Ti.API.info(queryResult.fieldByName('img'));
                 if (queryResult.fieldByName('latitude') < _self._mapCenter.latLow) {
                     _self._mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
                 }
@@ -234,7 +233,7 @@ var MapProxy = function (facade) {
             4. Return result and be done with it.
         */
         Ti.API.debug("getLocationsByCategory() in MapProxy");
-        var _resultSet, _resultLimit, _resultOffset, _result, _db, _catNameQuery;
+        var _resultSet, _resultLimit, _resultOffset, _result, _db, _catNameQuery, _isFirstResult = true;
         
         
         //Make sure passed in arguments are right type and value
@@ -263,6 +262,25 @@ var MapProxy = function (facade) {
         
         _result.returnedResultNum = _resultSet.rowCount;
         while (_resultSet.isValidRow()) {
+            if (_isFirstResult) {
+                _self._mapCenter.latLow = parseFloat(_resultSet.fieldByName('latitude'));
+                _self._mapCenter.latHigh = parseFloat(_resultSet.fieldByName('latitude')); 
+                _self._mapCenter.longLow = parseFloat(_resultSet.fieldByName('longitude'));
+                _self._mapCenter.longHigh = parseFloat(_resultSet.fieldByName('longitude'));
+            }
+            if (_resultSet.fieldByName('latitude') < _self._mapCenter.latLow) {
+                _self._mapCenter.latLow = parseFloat(_resultSet.fieldByName('latitude'));
+            }
+            else if (_resultSet.fieldByName('latitude') > _self._mapCenter.latHigh) {
+                _self._mapCenter.latHigh = parseFloat(_resultSet.fieldByName('latitude'));
+            }
+            if (_resultSet.fieldByName('longitude') < _self._mapCenter.longLow) {
+                _self._mapCenter.longLow = parseFloat(_resultSet.fieldByName('longitude'));
+            }
+            else if (_resultSet.fieldByName('longitude') > _self._mapCenter.longHigh) {
+                _self._mapCenter.longHigh = parseFloat(_resultSet.fieldByName('longitude'));
+            }
+            
             try {
                 _result.locations.push({
                     title       : _resultSet.fieldByName('title'),
@@ -275,6 +293,7 @@ var MapProxy = function (facade) {
             catch (e) {
                 Ti.API.error("Couldn't add object to getLocationsByCategory response. Title: " + _resultSet.fieldByName('title'));
             }
+            _isFirstResult = false;
             _resultSet.next();
         }
         
