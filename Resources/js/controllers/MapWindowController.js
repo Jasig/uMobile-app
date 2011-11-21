@@ -72,6 +72,7 @@ var MapWindowController = function() {
         Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
         Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _self._onCategoryLeftBtnClick);
         Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _self._onCategoryListItemClick);
+        Ti.App.addEventListener(_self._mapDetailView.events['VIEW_ON_MAP_CLICK'], _self._onViewDetailOnMap);
         _self._win.addEventListener('android:search', _self._onAndroidSearch);
         
         app.models.mapProxy.init();
@@ -96,8 +97,9 @@ var MapWindowController = function() {
         Ti.App.removeEventListener(_self._mapWindowView.events['NAV_BUTTON_CLICK'], _self._onNavButtonClick);
         Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
         Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
-        Ti.App.remoteEventListener(_self._mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _self._onCategoryLeftBtnClick);
+        Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _self._onCategoryLeftBtnClick);
         Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _self._onCategoryListItemClick);
+        Ti.App.removeEventListener(_self._mapDetailView.events['VIEW_ON_MAP_CLICK'], _self._onViewDetailOnMap);
         _self._win.removeEventListener('android:search', _self._onAndroidSearch);
         
         _self._mapWindowView = null;
@@ -108,7 +110,6 @@ var MapWindowController = function() {
 
     this._loadDetail = function(_annotation) {
         //Create and open the view for the map detail
-        Ti.API.debug('loadDetail() in MapWindowController');
         _self._mapWindowView.setActivityIndicatorMessage(app.localDictionary.loading);
         _self._mapWindowView.showActivityIndicator();
         _self._mapWindowView.searchBlur();
@@ -132,16 +133,10 @@ var MapWindowController = function() {
     
     this._onMapViewClick = function (e) {
         var _annotation;
-        Ti.API.info("_onMapViewClick() in MapWindowController");
         if (e.clicksource === 'title' && e.title) {
             // _self._mapWindowView.searchBlur(); //Search should already be blurred...
             _annotation = app.models.mapProxy.getAnnotationByTitle(e.title);
             _self._loadDetail(_annotation);
-        }
-        else {
-            Ti.API.info("Clicksource: " + e.clicksource);
-            Ti.API.info("Title: " + e.title);
-            Ti.API.info("Result of search: " + app.models.mapProxy.getAnnotationByTitle(e.title));
         }
     };
     
@@ -153,9 +148,6 @@ var MapWindowController = function() {
             case _self._mapWindowView.navButtonValues[1]:
                 _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getCategoryList());
                 break;
-            case _self._mapWindowView.navButtonValues[2]:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['FAVORITES_BROWSING']);
-                break;
             default:
                 Ti.API.error("No case matched in _handleNavButtonClick");
         }
@@ -165,9 +157,8 @@ var MapWindowController = function() {
         // Will receive an event, with "category" string property
         // Tell the map window view to open the locations list, and pass 
         // collection of locations for that category
-        Ti.API.info("_onCategoryRowClick() in MapWindowController. Category:" + e.category);
         _self._activeCategory = e.category;
-        _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(e.category, _self._categoryResultsPerPage));
+        _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(e.category/*, _self._categoryResultsPerPage*/));
     };
     
     this._onCategoryListItemClick = function (e) {
@@ -175,7 +166,7 @@ var MapWindowController = function() {
         //list view, such as "10 W Amistad". Opens detail view
         var _annotation = app.models.mapProxy.getAnnotationByTitle(e.title);
         _self._loadDetail(_annotation);
-    }
+    };
     
     this._onCategoryRightBtnClick = function (e) {
         // Will respond when user presses the right-side button in 
@@ -184,14 +175,11 @@ var MapWindowController = function() {
         // Will get the current active view, and determine what view
         // Should be shown.
         switch (_self._mapWindowView.doGetView()) {
-            case _self._mapWindowView.views['CATEGORY_BROWSING']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
-                break;
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || ''/*, _self._categoryResultsPerPage*/));
                 break;
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory/*, _self._categoryResultsPerPage*/));
                 break;
             default:
                 return;
@@ -207,37 +195,38 @@ var MapWindowController = function() {
         // Should be shown. Presumably, it should go back one step.
         switch (_self._mapWindowView.doGetView()) {
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || ''/*, _self._categoryResultsPerPage*/));
                 break;
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory/*, _self._categoryResultsPerPage*/));
                 break;
             default:
                 return;
         }
     };
+    
+    this._onViewDetailOnMap = function (e) {
+        _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], {locations: [app.models.mapProxy.getAnnotationByTitle(e.title, true)]});
+        _self._mapDetailView.hide();
+    };
 
     //Proxy Events
     this._onProxySearching = function (e) {
-        Ti.API.debug('onProxySearching' + e.query);
         _self._mapWindowView.setActivityIndicatorMessage(app.localDictionary.searching);
         _self._mapWindowView.showActivityIndicator();
     };
     
     this._onProxyLoading = function (e) {
-        Ti.API.debug("onProxyLoading() in MapWindowController.");
         _self._mapWindowView.setActivityIndicatorMessage(app.localDictionary.mapLoadingLocations);
         _self._mapWindowView.showActivityIndicator();
     };
     
     this._onProxyLoaded = function (e) {
-        Ti.API.info("onProxyLoaded in MapWindowController. Center: " + JSON.stringify(app.models.mapProxy.getMapCenter()));
         _self._mapWindowView.resetMapLocation();
         _self._mapWindowView.hideActivityIndicator();
     };
     
     this._onProxySearchComplete = function (e) {
-        Ti.API.debug('onProxySearchComplete');
         var alertDialog;
         
         _self._mapWindowView.hideActivityIndicator();
@@ -256,9 +245,6 @@ var MapWindowController = function() {
                     Ti.API.error("Couldn't show alert in MapWindowController: " + e);
                 }
             }
-            else {
-                Ti.API.debug("Window not visible to show alert");
-            }
         }
         else {
             _self._mapWindowView.plotPoints(e.points);
@@ -266,12 +252,10 @@ var MapWindowController = function() {
     };
     
     this._onProxyEmptySearch = function (e) {
-        Ti.API.debug("Hiding activity indicator in onProxyEmptySearch()");
         _self._mapWindowView.hideActivityIndicator();
     };
     
     this._onAndroidSearch = function (e) {
-    	Ti.API.debug("onAndroidSearch() in MapWindowController");
     	if (_self._mapWindowView._searchBar && _self._mapWindowView._searchBar.input) {
     		_self._mapWindowView._searchBar.input.focus();
     	}
@@ -281,7 +265,6 @@ var MapWindowController = function() {
     };
     
     this._onProxyLoadError = function (e) {
-        Ti.API.debug("Hiding activity indicator in onProxyLoadError()");
         var alertDialog;
         
         _self._mapWindowView.hideActivityIndicator();

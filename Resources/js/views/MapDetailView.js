@@ -57,6 +57,27 @@ exports.render = function (viewModel) {
         title: viewModel.address || app.localDictionary.noAddressAvailable
     }));
     
+    var viewOnMapButton, viewOnMapButtonOptions, viewOnMapRow;
+    viewOnMapButtonOptions = app.styles.contentButton.clone();
+    viewOnMapButtonOptions.width = 150;
+    viewOnMapButtonOptions.title = app.localDictionary.viewOnMap;
+    
+    viewOnMapButton = Ti.UI.createButton(viewOnMapButtonOptions);
+    
+    viewOnMapRow = Ti.UI.createTableViewRow();
+    viewOnMapRow.add(viewOnMapButton);
+    mapGroupAddress.add(viewOnMapRow);
+    viewOnMapButton.addEventListener("click", function (e) {
+        Ti.API.debug('click viewOnMapButton');
+        Ti.App.fireEvent(exports.events["VIEW_ON_MAP_CLICK"], {title: viewModel.title});
+    });
+    viewOnMapButton.addEventListener('touchstart', function (e) {
+        viewOnMapButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+    });
+    viewOnMapButton.addEventListener('touchend', function (e) {
+        viewOnMapButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+    });
+    
     if(viewModel.address) {
         directionsButtonOptions = app.styles.contentButton.clone();
         directionsButtonOptions.width = 150;
@@ -66,7 +87,7 @@ exports.render = function (viewModel) {
         directionsButtonRow = Ti.UI.createTableViewRow();
         directionsButtonRow.add(directionsButton);
         mapGroupAddress.add(directionsButtonRow);
-        
+
         directionsButton.addEventListener("click", function (e) {
             Ti.Platform.openURL('http://maps.google.com/maps?daddr='+ viewModel.address +','+ viewModel.zip +'&ie=UTF8&t=h&z=16');
         });
@@ -98,6 +119,9 @@ exports.render = function (viewModel) {
     exports.detailView.add(mapDetailTableView);
     mapDetailTableView.setData(_tableViewData);
     
+};
+exports.events = {
+    VIEW_ON_MAP_CLICK   : "MapDetailViewViewOnMapClick"
 };
 
 exports.hide = function () {

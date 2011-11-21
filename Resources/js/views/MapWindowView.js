@@ -69,7 +69,6 @@ exports.resetDimensions = function (e) {
 };
 
 exports.resetMapLocation = function () {
-    Ti.API.debug("resetMapLocation() in MapWindowView");
     if (mapView && app.models.mapProxy) {
         mapView.setLocation(app.models.mapProxy.getMapCenter(true));
     }
@@ -148,7 +147,6 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryLocationsListView.setData(viewModel.locations);
     
     categoryLocationsListView.addEventListener('click', function (e) {
-        Ti.API.debug('categoryLocationsListView clicked, row:'+e.rowData.title);
         Ti.App.fireEvent(exports.events['CATEGORY_LIST_ITEM_CLICK'], {title:e.rowData.title});
     });
 };
@@ -259,7 +257,6 @@ var _createMainView = function() {
         // create the map view
         mapViewOpts = app.styles.mapView.clone();
         if (app.config.DEFAULT_MAP_REGION) {
-            Ti.API.info("Temporarily disabled default region in map.");
             mapViewOpts.region = app.config.DEFAULT_MAP_REGION;
         }
 
@@ -270,7 +267,7 @@ var _createMainView = function() {
         mapView.addEventListener("click", _onMapViewClick);
         mapView.addEventListener('regionChanged', exports.searchBlur);
 
-        Ti.API.info("Map added with dimensions of: " + JSON.stringify(mapView.size) );
+        
     }
     else {
         view.add(mapView);
@@ -303,9 +300,6 @@ var _createMainView = function() {
         if (mapView) {
             bottomNavView.add(zoomButtonBar);
         }
-        else {
-            Ti.API.error("mapView doesn't exist to place the zoomButtonBar into.");
-        }
         
         Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
             zoomButtonBar.top = app.styles.mapButtonBar.top;
@@ -323,7 +317,6 @@ var _createMainView = function() {
 };
 
 var _searchSubmit = function (e) {
-    Ti.API.debug('searchSubmit() in MapWindowController');
     exports.searchBlur();
     Ti.App.fireEvent(exports.events['SEARCH_SUBMIT'],{
         value: searchBar.input.value
@@ -378,8 +371,7 @@ var _locale = Titanium.App.Properties.getString('locale');
 
 exports.navButtonValues = [
     localDictionary[_locale]['search'],
-    localDictionary[_locale]['browse'],
-    localDictionary[_locale]['favorites']
+    localDictionary[_locale]['browse']
 ];
 
 exports.views = {

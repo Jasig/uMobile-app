@@ -125,7 +125,7 @@ var MapProxy = function (facade) {
             this._onEmptySearch();
         }
     };
-    this.getAnnotationByTitle = function(t) {
+    this.getAnnotationByTitle = function(t, shouldRecenter) {
         var result = {}, resultSet, db;
         db = Titanium.Database.open('umobile');
         resultSet = db.execute("SELECT * FROM map_locations WHERE title IS ? LIMIT 1", t);
@@ -139,6 +139,27 @@ var MapProxy = function (facade) {
                 zip: resultSet.fieldByName('zip'),
                 img: resultSet.fieldByName('img')
             };
+            
+            if (shouldRecenter) {
+                _self._mapCenter.latLow = parseFloat(resultSet.fieldByName('latitude'));
+                _self._mapCenter.latHigh = parseFloat(resultSet.fieldByName('latitude')); 
+                _self._mapCenter.longLow = parseFloat(resultSet.fieldByName('longitude'));
+                _self._mapCenter.longHigh = parseFloat(resultSet.fieldByName('longitude'));
+                if (resultSet.fieldByName('latitude') < _self._mapCenter.latLow) {
+                    _self._mapCenter.latLow = parseFloat(resultSet.fieldByName('latitude'));
+                }
+                else if (resultSet.fieldByName('latitude') > _self._mapCenter.latHigh) {
+                    _self._mapCenter.latHigh = parseFloat(resultSet.fieldByName('latitude'));
+                }
+                if (resultSet.fieldByName('longitude') < _self._mapCenter.longLow) {
+                    _self._mapCenter.longLow = parseFloat(resultSet.fieldByName('longitude'));
+                }
+                else if (resultSet.fieldByName('longitude') > _self._mapCenter.longHigh) {
+                    _self._mapCenter.longHigh = parseFloat(resultSet.fieldByName('longitude'));
+                }
+            }
+            
+            
             resultSet.next();
         }
         resultSet.close();
