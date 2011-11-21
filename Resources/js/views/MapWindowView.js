@@ -146,11 +146,14 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryNavBar.rightButton.show();
     
     categoryLocationsListView.setData(viewModel.locations);
+    
+    categoryLocationsListView.addEventListener('click', function (e) {
+        Ti.API.debug('categoryLocationsListView clicked, row:'+e.rowData.title);
+        Ti.App.fireEvent(exports.events['CATEGORY_LIST_ITEM_CLICK'], {title:e.rowData.title});
+    });
 };
 
 exports.openCategoryLocationsMapView = function (viewModel) {
-    Ti.API.debug("openCategoryLocationsMapView() in MapWindowView");
-    
     _hideAllViews();
     
     // If there isn't a categoryNavBar yet, go ahead and create one.
@@ -167,7 +170,6 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 };
 
 exports.openSearchView = function () {
-    Ti.API.debug("openSearchView() in MapWindowView");
     _hideAllViews();
     if (searchBar) searchBar.input.show();
     if (mapView) {
@@ -179,12 +181,12 @@ exports.openSearchView = function () {
 };
 
 exports.openFavoritesBrowsingView = function () {
-    Ti.API.debug("openFavoritesBrowsingView() in MapWindowView");
+    //TODO: Implement this view
     _hideAllViews();
 };
 
 exports.openFavoritesMapView = function () {
-    Ti.API.debug("openFavoritesMapView() in MapWindowView");
+    // TODO: Implement this view
     _hideAllViews();
 };
 
@@ -367,7 +369,8 @@ exports.events = {
     DETAIL_CLICK                : "MapViewDetailClick",
     CATEGORY_ROW_CLICK          : "MapViewCategoryRowClick",
     CATEGORY_RIGHT_BTN_CLICK    : "MapViewCategoryRightButtonClick",
-    CATEGORY_LEFT_BTN_CLICK     : "MapViewCategoryLeftButtonClick"
+    CATEGORY_LEFT_BTN_CLICK     : "MapViewCategoryLeftButtonClick",
+    CATEGORY_LIST_ITEM_CLICK    : "MapViewCategoryListItemClick"
 };
 
 if (typeof localDictionary === "undefined") Ti.include('/js/localization.js');

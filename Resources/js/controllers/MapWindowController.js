@@ -71,6 +71,7 @@ var MapWindowController = function() {
         Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
         Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
         Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _self._onCategoryLeftBtnClick);
+        Ti.App.addEventListener(_self._mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _self._onCategoryListItemClick);
         _self._win.addEventListener('android:search', _self._onAndroidSearch);
         
         app.models.mapProxy.init();
@@ -96,6 +97,7 @@ var MapWindowController = function() {
         Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_ROW_CLICK'], _self._onCategoryRowClick);
         Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _self._onCategoryRightBtnClick);
         Ti.App.remoteEventListener(_self._mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _self._onCategoryLeftBtnClick);
+        Ti.App.removeEventListener(_self._mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _self._onCategoryListItemClick);
         _self._win.removeEventListener('android:search', _self._onAndroidSearch);
         
         _self._mapWindowView = null;
@@ -167,6 +169,13 @@ var MapWindowController = function() {
         _self._activeCategory = e.category;
         _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(e.category, _self._categoryResultsPerPage));
     };
+    
+    this._onCategoryListItemClick = function (e) {
+        //Called when the user clicks a specific location in a category 
+        //list view, such as "10 W Amistad". Opens detail view
+        var _annotation = app.models.mapProxy.getAnnotationByTitle(e.title);
+        _self._loadDetail(_annotation);
+    }
     
     this._onCategoryRightBtnClick = function (e) {
         // Will respond when user presses the right-side button in 
