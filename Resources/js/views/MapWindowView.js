@@ -278,7 +278,10 @@ var _createMainView = function() {
 
     bottomNavButtons = Titanium.UI.createTabbedBar(app.styles.mapButtonBar);
     bottomNavButtons.labels = exports.navButtonValues;
+    Ti.API.info("Label 1: " + bottomNavButtons.labels[0]);
+    Ti.API.info("Label 1 selected: " + bottomNavButtons.labels[0].selected);
     bottomNavButtons.width = 225;
+    bottomNavButtons.index = 0;
     bottomNavView.add(bottomNavButtons);
     
     bottomNavButtons.addEventListener('click', function (e) {
@@ -314,6 +317,7 @@ var _createMainView = function() {
             }
         });
     }
+    _activeView = exports.views['SEARCH'];
 };
 
 var _searchSubmit = function (e) {
