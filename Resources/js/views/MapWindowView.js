@@ -88,7 +88,7 @@ exports.openCategoryBrowsingView = function (categories) {
     categoryNavBar.view.show();
     categoryNavBar.leftButton.hide();
     categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
-    categoryNavBar.rightButton.title = app.localDictionary.map;
+    categoryNavBar.rightButton.hide();
     
     if (!categoryBrowsingView) {
         // Create the view to hold tableviews listing categories and locations.
@@ -145,6 +145,7 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryNavBar.leftButton.show();
     categoryNavBar.titleLabel.text = viewModel.categoryName;
     categoryNavBar.rightButton.title = app.localDictionary.map;
+    categoryNavBar.rightButton.show();
     
     categoryLocationsListView.setData(viewModel.locations);
 };
@@ -162,6 +163,7 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 
     categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
     categoryNavBar.rightButton.title = app.localDictionary.list;
+    categoryNavBar.rightButton.show();
     
     /*
         TODO Actually plot the points on the map.
@@ -350,14 +352,13 @@ var _hideAllViews = function () {
 };
 
 var _createAndAddCategoryNav = function () {
-    Ti.API.debug("_createAndAddCategoryNav() in MapWindowView");
-    Ti.include('/js/views/SecondaryNav.js');
-    categoryNavBar = new SecondaryNav();
-    categoryNavBar.init(app);
-    categoryNavBar.leftButton.text = app.localDictionary.back;
+    categoryNavBar = require('/js/views/SecondaryNav');
     view.add(categoryNavBar.view);
     categoryNavBar.view.top = app.styles.titleBar.height;
     
+    categoryNavBar.leftButton.addEventListener('click', function (e) {
+        Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);
+    });
     categoryNavBar.rightButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_RIGHT_BTN_CLICK']);
     });
@@ -369,7 +370,8 @@ exports.events = {
     NAV_BUTTON_CLICK            : "MapNavButtonClick",
     DETAIL_CLICK                : "MapViewDetailClick",
     CATEGORY_ROW_CLICK          : "MapViewCategoryRowClick",
-    CATEGORY_RIGHT_BTN_CLICK    : "MapViewCategoryRightButtonClick"
+    CATEGORY_RIGHT_BTN_CLICK    : "MapViewCategoryRightButtonClick",
+    CATEGORY_LEFT_BTN_CLICK     : "MapViewCategoryLeftButtonClick"
 };
 
 if (typeof localDictionary === "undefined") Ti.include('/js/localization.js');

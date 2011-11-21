@@ -1,60 +1,32 @@
-var SecondaryNav = function () {
-    _self = this;
-};
-
-// Global facade
-SecondaryNav.prototype._app;
-
-// The main view container for the secondary nav bar
-SecondaryNav.prototype.view;
-
-// The left button, typically "back" for the secondary nav bar
-SecondaryNav.prototype.leftButton;
-/*SecondaryNav.prototype._leftButtonClickHandler = function (e) {
-    _self.view.fireEvent("LeftButtonClick");
-};*/
-
-SecondaryNav.prototype.rightButton;
-/*SecondaryNav.prototype._rightButtonClickHandler = function (e) {
-    _self.view.fireEvent("RightButtonClick");
-};*/
-
-// Centered title label
-SecondaryNav.prototype.titleLabel;
-
-SecondaryNav.prototype._onDeviceRotation = function (e) {
-    var _visibility = _self.view.visible;
+var _onDeviceRotation = function (e) {
+    var _visibility = exports.view.visible;
     
     try {
-        _self._titleLabel.width = _self._app.styles.secondaryNavLabel.width;
-        _self.leftButton.left = _self.app.styles.secondaryNavButton.left;
-        _self.rightButton.right = _self.app.styles.secondaryNavButton.left;
+        _titleLabel.width = app.styles.secondaryNavLabel.width;
+        exports.leftButton.left = app.styles.secondaryNavButton.left;
+        exports.rightButton.right = app.styles.secondaryNavButton.left;
 
-        _self.view.width = _self._app.styles.secondaryNavBar.width;
-        _self.view.visible = _visibility || true;
-        
+        exports.view.width = app.styles.secondaryNavBar.width;
+        exports.view.visible = _visibility || true;
     }
     catch (e) {
         Ti.API.error("Couldn't change views in SecondaryNavBar");
     }
 };
 
-SecondaryNav.prototype.init = function (facade) {
-    _self._app = facade;
-    Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDeviceRotation);
+Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _onDeviceRotation);
 
-    _self.view = Titanium.UI.createView(_self._app.styles.secondaryNavBar);
-    
-    _self.leftButton = Titanium.UI.createButton(_self._app.styles.secondaryNavButton);
-    // _self.leftButton.addEventListener('click', _self._leftButtonClickHandler);
-    _self.view.add(_self.leftButton);
-    
-    _self.rightButton = Titanium.UI.createButton(_self._app.styles.secondaryNavButton);
-    _self.rightButton.left = 'auto';
-    _self.rightButton.right = 10;
-    // _self.rightButton.addEventListener('click', _self._rightButtonClickHandler);
-    _self.view.add(_self.rightButton);
-    
-    _self.titleLabel = Titanium.UI.createLabel(_self._app.styles.secondaryNavLabel);
-    _self.view.add(_self.titleLabel);
-};
+exports.view = Titanium.UI.createView(app.styles.secondaryNavBar);
+
+exports.leftButton = Titanium.UI.createButton(app.styles.secondaryNavButton);
+exports.leftButton.title = app.localDictionary.back;
+exports.view.add(exports.leftButton);
+
+exports.rightButton = Titanium.UI.createButton(app.styles.secondaryNavButton);
+exports.rightButton.left = 'auto';
+exports.rightButton.right = 10;
+exports.view.add(exports.rightButton);
+
+exports.titleLabel = Titanium.UI.createLabel(app.styles.secondaryNavLabel);
+exports.view.add(exports.titleLabel);
+
