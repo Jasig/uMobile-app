@@ -275,14 +275,19 @@ var _createMainView = function() {
 
     bottomNavView = Ti.UI.createView(app.styles.mapNavView);
     view.add(bottomNavView);
-
-    bottomNavButtons = Titanium.UI.createTabbedBar(app.styles.mapButtonBar);
-    bottomNavButtons.labels = exports.navButtonValues;
-    Ti.API.info("Label 1: " + bottomNavButtons.labels[0]);
-    Ti.API.info("Label 1 selected: " + bottomNavButtons.labels[0].selected);
-    bottomNavButtons.width = 225;
-    bottomNavButtons.index = 0;
-    bottomNavView.add(bottomNavButtons);
+    if (app.models.deviceProxy.isIOS()) {
+        bottomNavButtons = Titanium.UI.createTabbedBar(app.styles.mapButtonBar);
+        bottomNavButtons.labels = exports.navButtonValues;
+        bottomNavButtons.width = 225;
+        bottomNavButtons.index = 0;        
+    }
+    else {
+        bottomNavButtons = require('/js/views/UI/TabbedBar');
+        bottomNavButtons.doSetLabels(exports.navButtonValues);
+        bottomNavButtons.doSetWidth(225);
+        bottomNavButtons.doSetIndex(0);
+    }
+    bottomNavView.add(app.models.deviceProxy.isAndroid() ? bottomNavButtons.view : bottomNavButtons);
     
     bottomNavButtons.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['NAV_BUTTON_CLICK'], {
