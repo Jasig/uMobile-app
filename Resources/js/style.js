@@ -501,8 +501,8 @@ var Styles = function (facade) {
     	mapButtonBar: {
             color: '#fff',
             backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
-            style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-            height: 35
+            style: Ti.Platform.osname === "iphone" ? Titanium.UI.iPhone.SystemButtonStyle.BAR : "",
+            height: Ti.Platform.osname === "iphone" ? 35 : 50
     	},
     	mapDetailTopView: {
     	    top: defaults.TITLEBAR_HEIGHT,

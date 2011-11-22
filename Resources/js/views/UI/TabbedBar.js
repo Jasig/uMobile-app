@@ -1,22 +1,31 @@
 var labels = [], width, index, _listeners = [], _numButtons = 0;
 
-exports.view = Ti.UI.createView(app.styles.mapNavView);
+exports.view = Ti.UI.createView(app.styles.mapButtonBar);
 
 exports.labels = labels;
 exports.doSetLabels = function (newLabels) {
     if (typeof newLabels === "object") {
         //TODO: Actually update the labels in the view
         labels = newLabels;
-        var _buttonWidth = Math.floor(app.styles.mapNavView.width / _numButtons);
         _numButtons = labels.length;
+        var _buttonWidth = Math.floor((exports.view.width - 20) / _numButtons) - 10;
+        Ti.API.error("Button width: "+_buttonWidth);
         for (var i=0; i<_numButtons; i++) {
-            var _button = Ti.UI.createLabel({
-                width: 100,
-                color: '#fff',
-                height: 'auto',
-                left: i * 100,
-                text: labels[i]
+            var _button = Ti.UI.createButton({
+                width: _buttonWidth,
+                color: "#000",
+                height: app.styles.mapButtonBar.height - 5,
+                top: 5,
+                left: (i * _buttonWidth) + ((i+1) * 10),
+                title: labels[i],
+                index: i
             });
+            (function(index){
+                _button.addEventListener("click", function (e) {
+                    fireEvent("click",{ index: index });
+                });
+            })(i);
+            
             exports.view.add(_button);
         }
     }
@@ -50,7 +59,7 @@ exports.addEventListener = function (event, handler) {
 function fireEvent (event, object) {
     for (var i=0, iLength = _listeners.length; i<iLength; i++) {
         if(_listeners[i].event === event) {
-            _listeners[i].handler();
+            _listeners[i].handler(object);
         }
     }
 }

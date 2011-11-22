@@ -283,13 +283,14 @@ var _createMainView = function() {
     }
     else {
         bottomNavButtons = require('/js/views/UI/TabbedBar');
+        bottomNavButtons.doSetWidth(app.models.deviceProxy.getWidth());
         bottomNavButtons.doSetLabels(exports.navButtonValues);
-        bottomNavButtons.doSetWidth(225);
         bottomNavButtons.doSetIndex(0);
     }
     bottomNavView.add(app.models.deviceProxy.isAndroid() ? bottomNavButtons.view : bottomNavButtons);
     
     bottomNavButtons.addEventListener('click', function (e) {
+        Ti.API.debug("Click event with index: "+e.index);
         Ti.App.fireEvent(exports.events['NAV_BUTTON_CLICK'], {
             buttonName: exports.navButtonValues[e.index] || ''
         });
@@ -352,7 +353,7 @@ var _hideAllViews = function () {
 };
 
 var _createAndAddCategoryNav = function () {
-    categoryNavBar = require('/js/views/SecondaryNav');
+    categoryNavBar = require('/js/views/UI/SecondaryNav');
     view.add(categoryNavBar.view);
     categoryNavBar.view.top = app.styles.titleBar.height;
     

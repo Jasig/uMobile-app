@@ -158,7 +158,7 @@ var MapWindowController = function() {
         // Tell the map window view to open the locations list, and pass 
         // collection of locations for that category
         _self._activeCategory = e.category;
-        _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(e.category/*, _self._categoryResultsPerPage*/));
+        _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(e.category, _self._categoryResultsPerPage));
     };
     
     this._onCategoryListItemClick = function (e) {
@@ -176,10 +176,10 @@ var MapWindowController = function() {
         // Should be shown.
         switch (_self._mapWindowView.doGetView()) {
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || ''/*, _self._categoryResultsPerPage*/));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_MAP'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
                 break;
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory/*, _self._categoryResultsPerPage*/));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_LOCATIONS_LIST'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
                 break;
             default:
                 return;
@@ -195,10 +195,10 @@ var MapWindowController = function() {
         // Should be shown. Presumably, it should go back one step.
         switch (_self._mapWindowView.doGetView()) {
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || ''/*, _self._categoryResultsPerPage*/));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory || '', _self._categoryResultsPerPage));
                 break;
             case _self._mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory/*, _self._categoryResultsPerPage*/));
+                _self._mapWindowView.doSetView(_self._mapWindowView.views['CATEGORY_BROWSING'], app.models.mapProxy.getLocationsByCategory(_self._activeCategory, _self._categoryResultsPerPage));
                 break;
             default:
                 return;
