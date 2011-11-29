@@ -85,11 +85,10 @@ var PortletWindowController = function (facade) {
         _self._win = Titanium.UI.createWindow(_self._app.styles.portletWindow);
         _self._win.open();
         
-        _self._titleBar = _self._app.UI.createDisposableTitleBar({
-            title: portlet.title,
-            settingsButton: false,
-            homeButton: true
-        });
+        _self._titleBar = require('/js/views/UI/TitleBar');
+        _self._titleBar.updateTitle(portlet.title);
+        _self._titleBar.addHomeButton();
+        _self._titleBar.addSettingsButton();
         
         // initialize navigation bar for URLs outside the portal
         _self._navBar = _self._app.UI.createDisposableSecondaryNavBar({
@@ -129,9 +128,10 @@ var PortletWindowController = function (facade) {
         
     };
     this._destroyView = function () {
-        _self._titleBar.destroy();
         _self._navBar.destroy();
+        _self._navBar = null;
         _self._activityIndicator.destroy();
+        _self._activityIndicator = null;
     };
     
     this._includePortlet = function (portlet) {

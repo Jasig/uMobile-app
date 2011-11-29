@@ -63,7 +63,6 @@ var PortalProxy = function (facade) {
         }
         for (var i = 0, iLength = _self._variables.portlets.length; i<iLength; i++ ) {
             if(nativeModules[_self._variables.portlets[i].fname]) {
-                Ti.API.info("We have a match for " + _self._variables.portlets[i].fname + ", and it is: " + JSON.stringify(nativeModules[_self._variables.portlets[i].fname]));
                 _self._variables.portlets[i] = nativeModules[_self._variables.portlets[i].fname];
                 nativeModules[_self._variables.portlets[i].fname].added = true;
             }
@@ -71,15 +70,12 @@ var PortalProxy = function (facade) {
 
         for (module in nativeModules) {
             if (nativeModules.hasOwnProperty(module)) {
-                Ti.API.info("Remaining module: " + JSON.stringify(nativeModules[module]));
+
                 if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
                     // As long as the module has a title, hasn't already been added, and doesn't 
                     // require the fname for the module to be returned in the personalized layout.
                     _self._variables.portlets.push(nativeModules[module]);
                 }
-                else {
-                    Ti.API.debug("Ignoring this prototype artifact in nativeModules: " + JSON.stringify(nativeModules[module]));
-                }                        
             }
         }
 
@@ -222,7 +218,6 @@ var PortalProxy = function (facade) {
     };
 
     this.setIsPortalReachable = function (newval) {
-        Ti.API.debug('setIsPortalReachable() in PortalProxy. val: ' + newval);
         if (typeof newval == "boolean") {
             _self._variables.isPortalReachable = newval;
         }

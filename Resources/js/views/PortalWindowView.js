@@ -108,17 +108,14 @@ var PortalWindowView = function (facade) {
         _self._activityIndicator = app.UI.createDisposableActivityIndicator();
         _self._win.add(_self._activityIndicator.view);
 
-        _self._titleBar = app.UI.createDisposableTitleBar({
-    	    title: app.localDictionary.homeTitle,
-    	    settingsButton: true,
-    	    homeButton: false,
-    	    infoButton: true
-    	});
+        _self._titleBar = require('/js/views/UI/TitleBar');
+        _self._titleBar.addSettingsButton();
+        _self._titleBar.addInfoButton();
+        _self._titleBar.updateTitle(app.localDictionary.homeTitle);
         _self._win.add(_self._titleBar.view);
     };
     
     this._updateUI = function (_isGuestLayout, _isPortalReachable) {
-        Ti.API.debug("_updateUI() in PortalWindowView");
         // this[_isGuestLayout || !_isPortalReachable ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator'](_isGuestLayout, _isPortalReachable);
         switch (_self._layoutIndicator) {
             case PortalWindowView.indicatorStates['GUEST']:
@@ -263,18 +260,11 @@ var PortalWindowView = function (facade) {
     };
     
     this._onPortalGridViewStateChange = function (e) {
-        Ti.API.debug("_onPortalGridViewStateChange in PortalWindowView");
         if (typeof app.views.portalGridView !== "undefined" 
             && typeof _self._activityIndicator !== "undefined" 
             && typeof e.state !== "undefined"
             && e.state === PortalGridView.states['COMPLETE']) {
             _self.hideActivityIndicator(PortalGridView.states['COMPLETE']);
-        }
-        else {
-            Ti.API.debug("A condition wasn't met in _onPortalGridViewStateChange");
-            Ti.API.debug("typeof app.views.portalGridView:" + typeof app.views.portalGridView);
-            Ti.API.debug("typeof _self._activityIndicator:" +  typeof _self._activityIndicator);
-            Ti.API.debug("typeof e.state" + typeof e.state);
         }
     };
     
