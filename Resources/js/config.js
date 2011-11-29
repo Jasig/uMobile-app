@@ -22,144 +22,138 @@
 * intended for use in abstracting out strings which
 * may differ between deploying institutions.
 */
+var ILocalModule;
+Titanium.App.Properties.setString('locale', 'en_US');
 
-/**
- * @constructor
- */
-var ConfigModule = function(app) {
-	var ILocalModule;
-	Titanium.App.Properties.setString('locale', 'en_US');
+//------- PORTAL LOCATION -------
 
-	//------- PORTAL LOCATION -------
+// Base url of the portal, which should be of the format
+// http[s]://server[:port][/context]. This URL is *not* expected to contain a
+// trailing slash.
+exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+exports.PORTAL_CONTEXT = '';
+exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
 
-	// Base url of the portal, which should be of the format
-	// http[s]://server[:port][/context]. This URL is *not* expected to contain a
-	// trailing slash.
-    this.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-	this.PORTAL_CONTEXT = '';
-	this.LAYOUT_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/layout.json';
+//------- AUTHENTICATION -------
 
-	//------- AUTHENTICATION -------
+//session timeout in seconds = two hours
+exports.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
 
-    //session timeout in seconds = two hours
-	this.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
-	
-	//References value of LoginProxy.loginMethods constant.
-	this.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
-	
-	this.CAS_URL = this.BASE_PORTAL_URL + '/cas';
-    this.SHIB_URL = this.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + "/Login";
-    this.SHIB_BASE_URL = "";
-	this.SHIB_POST_URL = this.SHIB_BASE_URL + "/idp/Authn/UserPassword";
-	this.ENCRYPTION_KEY = 'um0b1le';
-	this.FORGOT_PASSWORD_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/p/forgot-password';
+//References value of LoginProxy.loginMethods constant.
+exports.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
 
-	//------- MAP SERVICE -------
+exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
+exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";
+exports.SHIB_BASE_URL = "";
+exports.SHIB_POST_URL = exports.SHIB_BASE_URL + "/idp/Authn/UserPassword";
+exports.ENCRYPTION_KEY = 'um0b1le';
+exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/p/forgot-password';
 
-	this.MAP_SERVICE_URL = this.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
+//------- MAP SERVICE -------
 
-	//------- DIRECTORY SERVICE -------
+exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
 
-	this.DIRECTORY_SERVICE_URL = this.BASE_PORTAL_URL + this.PORTAL_CONTEXT + '/api/people.json';
-	this.DIRECTORY_SERVICE_SEARCH_FIELDS = ['given', 'sn'];
-	this.DIRECTORY_SERVICE_RESULT_FIELDS = {
-		fullName : 'displayName',
-		nickname : 'nickname',
-		URL : 'url',
-		homeAddress : 'postalAddress',
-		homeEmail : 'mail',
-		homePhone : 'telephoneNumber',
-		firstName : 'givenName',
-		lastName : 'sn',
-		jobTitle : 'title',
-		department : 'department',
-		organization : 'organization'
-	};
-	ILocalModule = {
-		title : "", // Req string, Shows at the top of the module window
-		fname : "", // Req String, unique ID
-		window : "", // Opt String, Key of native window associated with this module
-		doesRequireLayout : false, // Opt Bool, Indicates if portlet with matching fname must be returned from portal for this to be displayed. Implies also that the module works when portal is down/unavailable.
-		externalModule : false, // Opt Bool, Indicates if it's an external site. Requires url attribute as well.
-		url : ""        // Opt String, URL of module. Uses PortletWindowController if set.
-	};
+//------- DIRECTORY SERVICE -------
 
-	this.LOCAL_MODULES = [];
-
-	this.LOCAL_MODULES.map = {
-		title : 'map',
-		fname : 'map',
-		window : 'map'
-	};
-
-	this.LOCAL_MODULES.directory = {
-		title : 'directory',
-		fname : 'directory',
-		doesRequireLayout : true,
-		window : 'directory'
-	};
-
-	this.LOCAL_MODULES.transit = {
-		title : 'Transit',
-		fname : 'transit',
-		url : 'http://uchicago.transloc.com/m/',
-		externalModule : true
-	};
-
-	this.LOCAL_MODULES.library = {
-		title : "Library",
-		fname : "library",
-		url : 'http://mobile.lib.uchicago.edu/',
-		externalModule : true
-	};
-
-	this.getLocalModules = function() {
-		return this.LOCAL_MODULES;
-	};
-
-	this.DEFAULT_MAP_REGION = {
-		latitude : 34.052819,
-		longitude : -118.256407,
-		latitudeDelta : 0.005,
-		longitudeDelta : 0.005
-	};
-
-	this.nativeIcons = {
-	    athletics: 'athletics.png',
-		calendar : 'calendar.png',
-		courses: 'courses.png',
-		directory : 'directory.png',
-		library : 'library.png',
-		map : 'map.png',
-		news : 'feed.png',
-		presentations : 'opencast.png',
-		search: 'search.png',
-		stats : 'stats.png',
-		transit : 'transit.png',
-		twitter : 'twitter.png',
-		videos : 'youtube.png',
-		weather : 'weather.png',
-		info : 'default-icon.png'
-	};
-
-	this.directoryEmergencyContacts = [
-	    {
-		    displayName : ["OUPD"],
-		    telephoneNumber : ['(740) 593-1911'],
-		    postalAddress : ['135 Scott Quad$Athens, Ohio 45701'],
-		    url : ['http://www.ohio.edu/police/alerts/']
-	    },
-	    {
-		    displayName : ["Fire"],
-		    telephoneNumber : ['911']
-	    },
-	    {
-		    displayName : ["Counseling"],
-		    telephoneNumber : ['(740) 593-1616'],
-		    postalAddress : ['Hudson Health Center, 3rd Floor$2 Health Center Drive$Athens, Ohio 45701'],
-		    url : ['http://www.ohio.edu/counseling/index.cfm']
-	    }
-	];
-
-	this.phoneDirectoryNumber = "(740) 593-1000";
+exports.DIRECTORY_SERVICE_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/api/people.json';
+exports.DIRECTORY_SERVICE_SEARCH_FIELDS = ['given', 'sn'];
+exports.DIRECTORY_SERVICE_RESULT_FIELDS = {
+	fullName : 'displayName',
+	nickname : 'nickname',
+	URL : 'url',
+	homeAddress : 'postalAddress',
+	homeEmail : 'mail',
+	homePhone : 'telephoneNumber',
+	firstName : 'givenName',
+	lastName : 'sn',
+	jobTitle : 'title',
+	department : 'department',
+	organization : 'organization'
 };
+ILocalModule = {
+	title : "", // Req string, Shows at the top of the module window
+	fname : "", // Req String, unique ID
+	window : "", // Opt String, Key of native window associated with this module
+	doesRequireLayout : false, // Opt Bool, Indicates if portlet with matching fname must be returned from portal for this to be displayed. Implies also that the module works when portal is down/unavailable.
+	externalModule : false, // Opt Bool, Indicates if it's an external site. Requires url attribute as well.
+	url : ""        // Opt String, URL of module. Uses PortletWindowController if set.
+};
+
+exports.LOCAL_MODULES = [];
+
+exports.LOCAL_MODULES.map = {
+	title : 'map',
+	fname : 'map',
+	window : 'map'
+};
+
+exports.LOCAL_MODULES.directory = {
+	title : 'directory',
+	fname : 'directory',
+	doesRequireLayout : true,
+	window : 'directory'
+};
+
+exports.LOCAL_MODULES.transit = {
+	title : 'Transit',
+	fname : 'transit',
+	url : 'http://uchicago.transloc.com/m/',
+	externalModule : true
+};
+
+exports.LOCAL_MODULES.library = {
+	title : "Library",
+	fname : "library",
+	url : 'http://mobile.lib.uchicago.edu/',
+	externalModule : true
+};
+
+exports.getLocalModules = function() {
+	return exports.LOCAL_MODULES;
+};
+
+exports.DEFAULT_MAP_REGION = {
+	latitude : 34.052819,
+	longitude : -118.256407,
+	latitudeDelta : 0.005,
+	longitudeDelta : 0.005
+};
+
+exports.nativeIcons = {
+    athletics: 'athletics.png',
+	calendar : 'calendar.png',
+	courses: 'courses.png',
+	directory : 'directory.png',
+	library : 'library.png',
+	map : 'map.png',
+	news : 'feed.png',
+	presentations : 'opencast.png',
+	search: 'search.png',
+	stats : 'stats.png',
+	transit : 'transit.png',
+	twitter : 'twitter.png',
+	videos : 'youtube.png',
+	weather : 'weather.png',
+	info : 'default-icon.png'
+};
+
+exports.directoryEmergencyContacts = [
+    {
+	    displayName : ["OUPD"],
+	    telephoneNumber : ['(740) 593-1911'],
+	    postalAddress : ['135 Scott Quad$Athens, Ohio 45701'],
+	    url : ['http://www.ohio.edu/police/alerts/']
+    },
+    {
+	    displayName : ["Fire"],
+	    telephoneNumber : ['911']
+    },
+    {
+	    displayName : ["Counseling"],
+	    telephoneNumber : ['(740) 593-1616'],
+	    postalAddress : ['Hudson Health Center, 3rd Floor$2 Health Center Drive$Athens, Ohio 45701'],
+	    url : ['http://www.ohio.edu/counseling/index.cfm']
+    }
+];
+
+exports.phoneDirectoryNumber = "(740) 593-1000";
