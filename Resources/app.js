@@ -26,8 +26,6 @@ startup = function (e) {
     Titanium.include('js/UI.js');
     Titanium.include('js/gibberishAES.js');
 
-    Titanium.include('js/models/DeviceProxy.js');
-    Titanium.include('js/models/ResourceProxy.js');
     Titanium.include('js/models/LoginProxy.js');
     Titanium.include('js/models/login/LocalLogin.js');
     Titanium.include('js/models/login/CASLogin.js');
@@ -60,7 +58,7 @@ startup = function (e) {
     app.registerMember('config', require('/js/config')); //Global config object
     app.registerMember('localDictionary', require('/js/localization')[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerModel('deviceProxy', require('/js/models/DeviceProxy'));
-    app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
+    app.registerModel('resourceProxy', require('/js/models/ResourceProxy')); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
     app.registerMember('UI', new UI(app));
