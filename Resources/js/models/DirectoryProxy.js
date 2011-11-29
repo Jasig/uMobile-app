@@ -91,7 +91,7 @@ var DirectoryProxy = function (facade,opts) {
     
     onXhrSearchLoad = function (e) {
         //When the search is complete, reset the main people array
-        Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: Login.sessionTimeContexts.NETWORK});
+        Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: Login.sessionTimeContexts.NETWORK});
 
         people = [];
         (function() {

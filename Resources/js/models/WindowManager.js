@@ -23,9 +23,9 @@ var WindowManager = function (facade) {
 
     init = function () {
         LocalDictionary = app.localDictionary;
-        Ti.App.addEventListener(ApplicationFacade.events['SHOW_WINDOW'], onShowWindow);
-        Ti.App.addEventListener(ApplicationFacade.events['SHOW_PORTLET'], onShowPortlet);
-        Ti.App.addEventListener(ApplicationFacade.events['NETWORK_ERROR'], onNetworkConnectionError);
+        Ti.App.addEventListener(app.events['SHOW_WINDOW'], onShowWindow);
+        Ti.App.addEventListener(app.events['SHOW_PORTLET'], onShowPortlet);
+        Ti.App.addEventListener(app.events['NETWORK_ERROR'], onNetworkConnectionError);
     };
     
     this.addWindow = function (windowParams) {
@@ -84,7 +84,7 @@ var WindowManager = function (facade) {
             }
             Ti.App.fireEvent(WindowManager.events['WINDOW_OPENED'], {key: windowKey});
             if (_self.getPreviousWindow()) {
-                Ti.App.fireEvent(ApplicationFacade.events['LAYOUT_CLEANUP'], {win: _self.getPreviousWindow()});
+                Ti.App.fireEvent(app.events['LAYOUT_CLEANUP'], {win: _self.getPreviousWindow()});
             }
         }
         else {

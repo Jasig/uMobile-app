@@ -58,11 +58,11 @@ var DirectoryDetailView = function (facade) {
             attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
             _view.add(attributeTable);
 
-            Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
+            Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
                 Styles = app.styles;
             });
 
-            Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], onDimensionChanges);
+            Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], onDimensionChanges);
         }
         return _view;
     };

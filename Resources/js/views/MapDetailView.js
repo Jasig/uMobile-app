@@ -32,7 +32,7 @@ var MapDetailView = function (facade) {
         LocalDictionary = app.localDictionary;
         UI = app.UI;
         
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
+        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };

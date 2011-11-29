@@ -53,7 +53,7 @@ var MapWindowController = function(facade) {
         _self._mapWindowView = require('/js/views/MapWindowView');
         _self._mapDetailView = new MapDetailView(app);
         
-        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
+        Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _self._onOrientationChange);
 
         _self._win = Titanium.UI.createWindow({
             url: 'js/views/WindowContext.js',
@@ -98,7 +98,7 @@ var MapWindowController = function(facade) {
     this.close = function (options) {
         _self._mapWindowView.searchBlur();
         
-        Ti.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onOrientationChange);
+        Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], _self._onOrientationChange);
         Ti.App.removeEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
         Ti.App.removeEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
         Ti.App.removeEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);

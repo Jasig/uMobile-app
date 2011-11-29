@@ -130,7 +130,7 @@ var LoginProxy = function (facade) {
     };
     
     this.onNetworkError = function (e) {
-        Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
+        Ti.App.fireEvent(app.events['NETWORK_ERROR']);
     };
     
     this.onSessionExpire = function (e) {

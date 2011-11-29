@@ -161,7 +161,7 @@ var MapProxy = function (facade) {
             request.send();
         }
         else {
-            Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
+            Ti.App.fireEvent(app.events['NETWORK_ERROR']);
         }
 
     };
@@ -290,7 +290,7 @@ var MapProxy = function (facade) {
         Ti.API.info("newPointsLoaded() in MapProxy");
         // Customize the response and add it to the cached mapPoints array in the MapProxy object.
         
-        Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: _self._app.models.loginProxy.sessionTimeContexts.NETWORK});
+        Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: _self._app.models.loginProxy.sessionTimeContexts.NETWORK});
         
         var _response, _responseLength, _db, _categories = {};
         try {

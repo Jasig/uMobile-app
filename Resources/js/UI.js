@@ -24,7 +24,7 @@ var UI = function (facade) {
         Config = app.config;
         Styles = app.styles;
         LocalDictionary = app.localDictionary;
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
+        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };
@@ -57,7 +57,7 @@ var UI = function (facade) {
             searchBarObject.input.addEventListener('change', opts.change);
         }
         
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
             if (searchBar) { searchBar.width = Styles.searchBar.width; }
             if (searchBarInput) { searchBarInput.width = Styles.searchBarInput.width; }
         });
@@ -110,7 +110,7 @@ var UI = function (facade) {
                     settingsButtonContainer.removeEventListener('touchstart', onSettingsPressDown);
                     settingsButtonContainer.removeEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
                 }
-                Titanium.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], titleBarRotate);
+                Titanium.App.removeEventListener(app.events['DIMENSION_CHANGES'], titleBarRotate);
             };
             
             if (opts.backButton) {
@@ -165,7 +165,7 @@ var UI = function (facade) {
                 if (homeButtonContainer) { homeButtonContainer.left = Styles.titleBarHomeContainer.left; }
             };
             
-            Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], titleBarRotate);
+            Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], titleBarRotate);
         };
         
         onHomeClick = function (e) {
@@ -319,7 +319,7 @@ var UI = function (facade) {
                 settingsButtonContainer.addEventListener(Device.isAndroid() ? 'touchcancel' : 'touchend', onSettingsPressUp);
             }
             
-            Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function titleBarRotate (e) {
+            Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function titleBarRotate (e) {
             	if (titleBar) { titleBar.width = Styles.titleBar.width; }
                 if (settingsButtonContainer) { settingsButtonContainer.left = Styles.titleBarSettingsContainer.left; }
                 if (homeButtonContainer) { homeButtonContainer.left = Styles.titleBarHomeContainer.left; }
@@ -433,7 +433,7 @@ var UI = function (facade) {
         _secondaryNavBar.destroy = function () {
             Ti.API.info("Destroy secondary nav bar");
             _navBackButton.removeEventListener('click', opts.backButtonHandler);
-            Titanium.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], secondaryNavRotate);
+            Titanium.App.removeEventListener(app.events['DIMENSION_CHANGES'], secondaryNavRotate);
         };
         
         secondaryNavRotate = function (e) {
@@ -446,7 +446,7 @@ var UI = function (facade) {
             _secondaryNavBar.view.width = Styles.secondaryNavBar.width;
             _secondaryNavBar.view.visible = _visibility || true;
         };
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], secondaryNavRotate);
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], secondaryNavRotate);
         
         return _secondaryNavBar;
     };
@@ -479,7 +479,7 @@ var UI = function (facade) {
             _titleLabel.text = newTitle;
         };
         
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
             var _visibility = _secondaryNavBar.visible;
             Ti.API.debug("visibility of secondaryNavBar: " + _visibility);
             _titleLabel.width = Styles.secondaryNavBarLabel.width;
@@ -515,7 +515,7 @@ var UI = function (facade) {
         
         indicator.destroy = function () {
             Ti.API.debug("Destroy activity indicator");
-            Ti.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], resetActivityIndicator);
+            Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], resetActivityIndicator);
         };
         
         indicator.resetDimensions = function () {
@@ -528,7 +528,7 @@ var UI = function (facade) {
             indicator.resetDimensions();
         };
         
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], resetActivityIndicator);
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], resetActivityIndicator);
         
         return indicator;
     };
@@ -560,7 +560,7 @@ var UI = function (facade) {
             dialog.width = Styles.activityIndicatorDialog.width;
         };
         
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
             indicator.resetDimensions();
         });
         
@@ -570,8 +570,8 @@ var UI = function (facade) {
     this.onOrientationChange = function (e) {
         Device.setCurrentOrientation(e.orientation);
         app.styles = new Styles(app);
-        Ti.App.fireEvent(ApplicationFacade.events['STYLESHEET_UPDATED']);
-        Ti.App.fireEvent(ApplicationFacade.events['DIMENSION_CHANGES'], {orientation: e.orientation});
+        Ti.App.fireEvent(app.events['STYLESHEET_UPDATED']);
+        Ti.App.fireEvent(app.events['DIMENSION_CHANGES'], {orientation: e.orientation});
     };
     
     init();

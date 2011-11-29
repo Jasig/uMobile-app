@@ -41,7 +41,7 @@ SecondaryNav.prototype._onDeviceRotation = function (e) {
 
 SecondaryNav.prototype.init = function (facade) {
     _self._app = facade;
-    Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDeviceRotation);
+    Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], _self._onDeviceRotation);
 
     _self.view = Titanium.UI.createView(_self._app.styles.secondaryNavBar);
     

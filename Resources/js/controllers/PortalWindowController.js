@@ -57,7 +57,7 @@ var PortalWindowController = function (facade) {
         Ti.App.addEventListener(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
         
         if (!app.models.deviceProxy.checkNetwork()) {
-            Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
+            Ti.App.fireEvent(app.events['NETWORK_ERROR']);
             return;
         }
         else if (firstTimeOpened && !app.models.sessionProxy.isActive(app.models.loginProxy.sessionTimeContexts.NETWORK)) {
@@ -112,7 +112,7 @@ var PortalWindowController = function (facade) {
                 app.views.portalWindowView.updateModules(app.models.portalProxy.getPortlets(), app.models.portalProxy.getIsPortalReachable(), app.models.userProxy.isGuestUser());
             }
             else {
-                Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
+                Ti.App.fireEvent(app.events['NETWORK_ERROR']);
             }
             
         }

@@ -101,7 +101,7 @@ exports.openCategoryBrowsingView = function (categories) {
                 for (var i=0, iLength = c.length; i<iLength; i++) {
                     // Create a row with the category name
                     _categoryName = c[i]['name'];
-                    _rowStyle.title = _categoryName.toCapitalized();
+                    _rowStyle.title = _categoryName;
                     _data.push(Titanium.UI.createTableViewRow(_rowStyle));
                     
                     // Add a count to the row with number of children for category.
@@ -307,7 +307,7 @@ var _createMainView = function() {
             Ti.API.error("mapView doesn't exist to place the zoomButtonBar into.");
         }
         
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
             zoomButtonBar.top = app.styles.mapButtonBar.top;
         });
 

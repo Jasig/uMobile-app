@@ -54,7 +54,7 @@ var PortalWindowView = function (facade) {
             _self._drawUI(_isGuestLayout, _isPortalReachable);
             
             Ti.App.addEventListener(PortalGridView.events['STATE_CHANGE'], this._onPortalGridViewStateChange);
-            Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onDimensionChanges);
+            Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], this._onDimensionChanges);
             Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], this._onPortletsLoaded);
         }
         else {

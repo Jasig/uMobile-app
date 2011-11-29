@@ -31,7 +31,7 @@ var SettingsWindowController = function(facade){
     init = function () {
         _self.key = 'settings';
         _self.isModal = true;
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
+        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
     };
@@ -208,7 +208,7 @@ var SettingsWindowController = function(facade){
                 passwordInput.blur();
             }
         })*/
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], function (e) {
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
             usernameInput.width = Styles.settingsUsernameInput.width;
             passwordInput.width = Styles.settingsPasswordInput.width;
         });
@@ -238,7 +238,7 @@ var SettingsWindowController = function(facade){
             }
         }
         else {
-            Ti.App.fireEvent(ApplicationFacade.events['NETWORK_ERROR']);
+            Ti.App.fireEvent(app.events['NETWORK_ERROR']);
         }
     };
     

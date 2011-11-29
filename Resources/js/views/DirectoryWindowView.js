@@ -32,7 +32,7 @@ var DirectoryWindowView = function (facade) {
         app.registerView('PersonDetailTableView', PersonDetailTableView); // Used in Directory Window controller to show search results.
         app.registerView('DirectoryDetailView', new DirectoryDetailView(app)); // Subcontext in DirectoryWindowController to show
         
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], function (e) {
+        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
             Styles = app.styles;
         });
         

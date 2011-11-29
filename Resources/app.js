@@ -16,36 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-Object.prototype.combine = function (obj) {
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            this[key] = obj[key];
-        }
-    }
-    return this;
-};
-
-if (typeof Object.create !== 'function') {
-    Object.create = function (o) {
-        function F() {}
-        F.prototype = o;
-        return new F();
-    };
-}
-
-String.prototype.toCapitalized = function () { 
-    return this.length > 1 ? this.charAt(0).toUpperCase() + this.substr(1) : this.toUpperCase();
-};
-
-
 var app, loadingWindow, startup, onOrientationChange;
-
-
 
 startup = function (e) {
     Titanium.include('js/libs/underscore-min.js');
-    Titanium.include('js/ApplicationFacade.js');
 
     Titanium.include('js/config.js');
     Titanium.include('js/localization.js');
@@ -75,7 +49,7 @@ startup = function (e) {
     Titanium.include('js/controllers/PortletWindowController.js');
     Titanium.include('js/controllers/SettingsWindowController.js');
     
-    app = new ApplicationFacade();
+    app = require('/js/ApplicationFacade');
 
     //Adds  members to the facade singleton, so they can be accessed.
     //Only necessary members are added here, secondary members are added from controllers when opened, for performance.
@@ -129,10 +103,10 @@ startup = function (e) {
     else {
         //Android doesn't register global orientation events, only in the context of a specific activity.
         //So we'll listen for it in each activity and broadcast a global event instead.
-        Ti.App.addEventListener(ApplicationFacade.events['ANDROID_ORIENTATION_CHANGE'], onOrientationChange);
+        Ti.App.addEventListener(app.events['ANDROID_ORIENTATION_CHANGE'], onOrientationChange);
     }
     
-    Ti.App.addEventListener(ApplicationFacade.events['OPEN_EXTERNAL_URL'], function (e) {
+    Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
     	if (e.url) {
 			Ti.Platform.openURL(e.url);    		
     	}
@@ -149,8 +123,8 @@ onOrientationChange = function (e) {
     if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
         app.models.deviceProxy.setCurrentOrientation(e.orientation);
         app.styles = new Styles(app);
-        Ti.App.fireEvent(ApplicationFacade.events['STYLESHEET_UPDATED']);
-        Ti.App.fireEvent(ApplicationFacade.events['DIMENSION_CHANGES'], {orientation: e.orientation});
+        Ti.App.fireEvent(app.events['STYLESHEET_UPDATED']);
+        Ti.App.fireEvent(app.events['DIMENSION_CHANGES'], {orientation: e.orientation});
     }
     else {
         Ti.API.debug("Same orientation as before");

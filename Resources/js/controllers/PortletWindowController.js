@@ -47,7 +47,7 @@ var PortletWindowController = function (facade) {
         try {
             _self._webView.removeEventListener('load', _self._onPortletLoad);
             _self._webView.removeEventListener('beforeload', _self._onPortletBeforeLoad);
-            Titanium.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
+            Titanium.App.removeEventListener(app.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
         }
         catch (e) {
             Ti.API.error("Couldn't remove events.");
@@ -72,7 +72,7 @@ var PortletWindowController = function (facade) {
         }
         
         _self._createView(portlet);
-        Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], _self._onDimensionChanges);
         
         _self._includePortlet(_self._activePortlet);
     };
@@ -310,7 +310,7 @@ var PortletWindowController = function (facade) {
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
-            Ti.App.fireEvent(ApplicationFacade.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts['WEBVIEW']});
+            Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts['WEBVIEW']});
             //We want to be able to open any video now, so we'll clear the YouTube workaround variable
             _self._lastVideoOpened = '';
             _self._webView.externalModule = false;

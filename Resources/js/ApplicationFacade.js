@@ -16,33 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var ApplicationFacade = function () {
-    var facade = {};
-    facade.models = {};
-    facade.views = {};
-    facade.controllers = {};
 
-    facade.registerMember = function (name, member) {
-        facade[name] = member;
-    };
-    
-    //Controller passed as reference, with name as its key in facade.controllers.
-    facade.registerController = function (name, controller) {
-        facade.controllers[name] = controller;
-    };
-    
-    facade.registerModel = function (name, model) {
-        facade.models[name] = model;
-    };
-    
-    facade.registerView = function (name, view) {
-        facade.views[name] = view;
-    };
-    
-    return facade;
+var models = {}, views = {}, controllers = {};
+
+exports.models = models;
+exports.views = views;
+exports.controllers = controllers;
+
+exports.registerMember = function (name, member) {
+    exports[name] = member;
 };
+
+//Controller passed as reference, with name as its key in facade.controllers.
+exports.registerController = function (name, controller) {
+    controllers[name] = controller;
+};
+
+exports.registerModel = function (name, model) {
+    models[name] = model;
+};
+
+exports.registerView = function (name, view) {
+    views[name] = view;
+};
+    
 //Global Events, static variables to access without facade instance.
-ApplicationFacade.events = {
+exports.events = {
     SESSION_ACTIVITY            : 'SessionActivity',
     NETWORK_ERROR               : 'networkConnectionError',
     SHOW_WINDOW                 : 'showWindow',

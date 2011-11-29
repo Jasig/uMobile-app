@@ -41,9 +41,9 @@ var PortalGridView = function (facade) {
         _self._numColumns = Math.floor(app.models.deviceProxy.getWidth() / _self._completeWidth);
         _self._leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_self._completeWidth * _self._numColumns))) / 2);
         
-        Ti.App.addEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], this._onRotation);
-        Ti.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onOrientationChange);
-        Ti.App.addEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
+        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], this._onRotation);
+        Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], this._onOrientationChange);
+        Ti.App.addEventListener(app.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
         
         _self._gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
         
@@ -222,9 +222,9 @@ var PortalGridView = function (facade) {
     };
     
     this.destroy = function () {
-        Ti.App.removeEventListener(ApplicationFacade.events['STYLESHEET_UPDATED'], this._onRotation);
-        Ti.App.removeEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], this._onOrientationChange);
-        Ti.App.removeEventListener(ApplicationFacade.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
+        Ti.App.removeEventListener(app.events['STYLESHEET_UPDATED'], this._onRotation);
+        Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], this._onOrientationChange);
+        Ti.App.removeEventListener(app.events['LAYOUT_CLEANUP'], this._onLayoutCleanup);
         
         for (var _gridItem in _self._gridItems) {
             if (_self._gridItems.hasOwnProperty(_gridItems)) {
