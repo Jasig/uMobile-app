@@ -190,7 +190,8 @@ var DirectoryWindowView = function (facade) {
             Ti.API.debug("Adding searchBar in DirectoryWindowController");
 
             //Create and add a search bar at the top of the table to search for contacts
-            searchBar = UI.createSearchBar({
+            searchBar = require('/js/views/UI/SearchBar');
+            searchBar.createSearchBar({
                 cancel: onSearchCancel,
                 submit: onSearchSubmit,
                 change: onSearchChange

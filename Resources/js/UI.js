@@ -29,42 +29,6 @@ var UI = function (facade) {
         });
     };
     
-    this.createSearchBar = function (opts) {
-        var searchBar, searchBarObject = {}, searchBarInput;
-        if (!opts) {
-            opts = {};
-        }
-        if (Device.isIOS()) {
-            searchBar = Titanium.UI.createSearchBar(Styles.searchBar);
-            searchBarObject.container = searchBar;
-            searchBarObject.input = searchBar;
-        }
-        else {
-            searchBar = Titanium.UI.createView(Styles.searchBar);
-            searchBarInput = Titanium.UI.createTextField(Styles.searchBarInput);
-            searchBar.add(searchBarInput);
-            searchBarObject.container = searchBar;
-            searchBarObject.input = searchBarInput;
-        }
-        
-        if (opts.cancel) {
-            searchBarObject.input.addEventListener('cancel', opts.cancel);
-        }
-        if (opts.submit) {
-            searchBarObject.input.addEventListener('return', opts.submit);
-        }
-        if (opts.change) {
-            searchBarObject.input.addEventListener('change', opts.change);
-        }
-        
-        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
-            if (searchBar) { searchBar.width = Styles.searchBar.width; }
-            if (searchBarInput) { searchBarInput.width = Styles.searchBarInput.width; }
-        });
-        
-        return searchBarObject;
-    };
-    
     this.createDisposableTitleBar = function (opts) {
         // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
         //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)

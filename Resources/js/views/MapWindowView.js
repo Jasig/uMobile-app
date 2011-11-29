@@ -260,7 +260,8 @@ var _createMainView = function() {
     view.add(activityIndicator);
     activityIndicator.hide();
 
-    searchBar = app.UI.createSearchBar();
+    searchBar = require('/js/views/UI/SearchBar');
+    searchBar.createSearchBar();
     view.add(searchBar.container);
     searchBar.input.addEventListener('return', _searchSubmit);
     searchBar.input.addEventListener('cancel', exports.searchBlur);
@@ -388,12 +389,9 @@ exports.events = {
     CATEGORY_LIST_ITEM_CLICK    : "MapViewCategoryListItemClick"
 };
 
-if (typeof localDictionary === "undefined") Ti.include('/js/localization.js');
-var _locale = Titanium.App.Properties.getString('locale');
-
 exports.navButtonValues = [
-    localDictionary[_locale]['search'],
-    localDictionary[_locale]['browse']
+    app.localDictionary['search'],
+    app.localDictionary['browse']
 ];
 
 exports.views = {

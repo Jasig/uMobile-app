@@ -19,12 +19,13 @@
 var app, loadingWindow, startup, onOrientationChange;
 
 startup = function (e) {
+    //Libraries
     Titanium.include('js/libs/underscore-min.js');
+    Titanium.include('js/gibberishAES.js');
 
     Titanium.include('js/localization.js');
     Titanium.include('js/style.js');
     Titanium.include('js/UI.js');
-    Titanium.include('js/gibberishAES.js');
 
     Titanium.include('js/models/LoginProxy.js');
     Titanium.include('js/models/login/LocalLogin.js');

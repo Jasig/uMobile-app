@@ -58,7 +58,7 @@ exports.render = function (viewModel) {
     }));
     
     var viewOnMapButton, viewOnMapButtonOptions, viewOnMapRow;
-    viewOnMapButtonOptions = app.styles.contentButton.clone();
+    viewOnMapButtonOptions = _.clone(app.styles.contentButton);
     viewOnMapButtonOptions.width = 150;
     viewOnMapButtonOptions.title = app.localDictionary.viewOnMap;
     
@@ -79,7 +79,7 @@ exports.render = function (viewModel) {
     });
     
     if(viewModel.address) {
-        directionsButtonOptions = app.styles.contentButton.clone();
+        directionsButtonOptions = _.clone(app.styles.contentButton);
         directionsButtonOptions.width = 150;
         directionsButtonOptions.title = app.localDictionary.getDirections;
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);

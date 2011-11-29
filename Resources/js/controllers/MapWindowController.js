@@ -116,7 +116,7 @@ var MapWindowController = function() {
         _self._mapWindowView.showActivityIndicator();
         _self._mapWindowView.searchBlur();
 
-        _self._locationDetailViewOptions = app.styles.view.clone();
+        _self._locationDetailViewOptions = _.clone(app.styles.view);
         _self._locationDetailViewOptions.data = _annotation;
         _self._locationDetailView = _self._mapDetailView.detailView;
         _self._win.add(_self._locationDetailView);
