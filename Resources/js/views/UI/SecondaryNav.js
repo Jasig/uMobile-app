@@ -6,7 +6,7 @@ var _onDeviceRotation = function (e) {
     try {
         titleLabel.width = app.styles.secondaryNavLabel.width;
         leftButton.left = app.styles.secondaryNavButton.left;
-        rightButton.right = app.styles.secondaryNavButton.left;
+        rightButton.left = app.models.deviceProxy.getWidth() - rightButton.width - app.styles.secondaryNavButton.left; //Had to do it this way so Android wouldn't stretch the button
 
         view.width = app.styles.secondaryNavBar.width;
         view.visible = _visibility || true;
@@ -26,8 +26,7 @@ leftButton.title = app.localDictionary.back;
 view.add(leftButton);
 
 rightButton = Titanium.UI.createButton(app.styles.secondaryNavButton);
-rightButton.left = 'auto';
-rightButton.right = 10;
+rightButton.left = app.models.deviceProxy.getWidth() - rightButton.width - app.styles.secondaryNavButton.left; //Had to do it this way so Android wouldn't stretch the button
 view.add(rightButton);
 
 titleLabel = Titanium.UI.createLabel(app.styles.secondaryNavLabel);

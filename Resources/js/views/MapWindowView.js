@@ -99,18 +99,31 @@ exports.openCategoryBrowsingView = function (categories) {
                 for (var i=0, iLength = c.length; i<iLength; i++) {
                     // Create a row with the category name
                     _categoryName = c[i]['name'];
-                    _rowStyle.title = _categoryName.toCapitalized();
+                    // _rowStyle.title = _categoryName.toCapitalized();
+                    // _rowStyle.title = "CATEGORY";
                     _data.push(Titanium.UI.createTableViewRow(_rowStyle));
                     
                     // Add a count to the row with number of children for category.
                     _labelStyle.text = c[i]['numChildren'];
                     _data[i].add(Ti.UI.createLabel(_labelStyle));
                     
+                    // Add the label for the row
+                    var _categoryLabel = Ti.UI.createLabel({
+                        text: _categoryName.toCapitalized(),
+                        left: 10,
+                        color: "#000"
+                    });
+                    _data[i].add(_categoryLabel);
+                    
                     // Add a listener to the row to let the controller 
                     // know the user wants to explore the category
-                    _data[i].addEventListener('click', function (e) {
-                        Ti.App.fireEvent(exports.events['CATEGORY_ROW_CLICK'], { category : e.row.title.toLowerCase() });
-                    });
+
+                    function setClickEvent (sourceObject, categoryTitle) {
+                        sourceObject.addEventListener('click', function (e) {
+                            Ti.App.fireEvent("MapViewCategoryRowClick", { category : categoryTitle });
+                        });
+                    }
+                    setClickEvent(_data[i], _categoryName);
                 }
                 
                 return _data;

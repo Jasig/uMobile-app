@@ -482,7 +482,7 @@ var Styles = function (facade) {
     	},
     	mapCategoryCount: {
     	    backgroundColor:'#ccc',
-            width: 30, 
+            width: Ti.Platform.osname === 'iphone' ? 30 : 50, 
             height:30, 
             right: 15, 
             borderRadius: 5, 
