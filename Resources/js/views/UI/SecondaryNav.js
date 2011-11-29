@@ -16,7 +16,7 @@ var _onDeviceRotation = function (e) {
     }
 };
 
-Titanium.App.addEventListener(ApplicationFacade.events['DIMENSION_CHANGES'], _onDeviceRotation);
+Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], _onDeviceRotation);
 
 view = Titanium.UI.createView(app.styles.secondaryNavBar);
 

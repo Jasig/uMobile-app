@@ -38,12 +38,11 @@ exports.render = function (viewModel) {
         Ti.API.debug("mapDetailTableView not defined.");
     }
     
-    locationDetailTitleBar = app.UI.createSecondaryNavBar({ 
-        backButtonHandler: onBackBtnClick,
-        title: viewModel.title,
-        btnFloatLeft: true
-    });
-    exports.detailView.add(locationDetailTitleBar);
+    locationDetailTitleBar = require('/js/views/UI/SecondaryNav');
+    locationDetailTitleBar.titleLabel.text = viewModel.title;
+    locationDetailTitleBar.leftButton.addEventListener('click', onBackBtnClick);
+    locationDetailTitleBar.rightButton.hide();
+    exports.detailView.add(locationDetailTitleBar.view);
     
     mapGroupAddress = Ti.UI.createTableViewSection({
         headerTitle: app.localDictionary.locationDetails

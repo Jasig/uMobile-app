@@ -91,11 +91,9 @@ var PortletWindowController = function (facade) {
         _self._titleBar.addSettingsButton();
         
         // initialize navigation bar for URLs outside the portal
-        _self._navBar = _self._app.UI.createDisposableSecondaryNavBar({
-            backButton: true,
-            backButtonHandler: _self._onBackBtnPress,
-            btnFloatLeft: true
-        });
+        _self._navBar = require('/js/views/UI/SecondaryNav');
+        _self._navBar.leftButton.addEventListener('click', _self._onBackBtnPress);
+        _self._navBar.rightButton.hide();
         _self._navBar.view.top = 40;
         _self._navBar.view.visible = false;
 
@@ -128,7 +126,7 @@ var PortletWindowController = function (facade) {
         
     };
     this._destroyView = function () {
-        _self._navBar.destroy();
+        _self._navBar.leftButton.removeEventListener('click', _self._onBackBtnPress);
         _self._navBar = null;
         _self._activityIndicator.destroy();
         _self._activityIndicator = null;

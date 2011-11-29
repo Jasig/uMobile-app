@@ -48,12 +48,11 @@ var DirectoryDetailView = function (facade) {
     this.getDetailView = function () {
         if (!_view) {
             _view = Titanium.UI.createView(app.styles.contactDetailView);
-            secondaryNavBar = UI.createSecondaryNavBar({
-                backButtonHandler: onBackBtnClick,
-                title: ' ',
-                btnFloatLeft: true
-            });
-            _view.add(secondaryNavBar);
+
+            secondaryNavBar = require('/js/views/UI/SecondaryNav');
+            secondaryNavBar.rightButton.hide();
+            secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
+            _view.add(secondaryNavBar.view);
 
             attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
             _view.add(attributeTable);
@@ -69,7 +68,7 @@ var DirectoryDetailView = function (facade) {
     
     this.render = function (viewModel) {
         var person = DirectoryPerson.constructVO(viewModel);
-        secondaryNavBar.updateTitle(person.fullName);
+        secondaryNavBar.titleLabel.text = person.fullName;
         attributeTable.update(person);
         _view.show();
     };
