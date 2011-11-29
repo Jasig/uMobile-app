@@ -482,7 +482,7 @@ var Styles = function (facade) {
     	},
     	mapCategoryCount: {
     	    backgroundColor:'#ccc',
-            width: 30, 
+            width: Ti.Platform.osname === 'iphone' ? 30 : 50, 
             height:30, 
             right: 15, 
             borderRadius: 5, 
@@ -501,8 +501,8 @@ var Styles = function (facade) {
     	mapButtonBar: {
             color: '#fff',
             backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
-            style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-            height: 35
+            style: Ti.Platform.osname === "iphone" ? Titanium.UI.iPhone.SystemButtonStyle.BAR : "",
+            height: Ti.Platform.osname === "iphone" ? 35 : 50
     	},
     	mapDetailTopView: {
     	    top: defaults.TITLEBAR_HEIGHT,

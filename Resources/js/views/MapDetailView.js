@@ -16,123 +16,119 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/* 
-* @constructor
-* @implements {IDetailView} 
-*/
-var MapDetailView = function (facade) {   
-    var app = facade, _self = this, Device, Styles, LocalDictionary, UI, mapDetailTableView,
-        _detailView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,
-        onBackBtnClick;
-        
-    init = function () {        
-        //Declare pointers to facade modules
-        Device = app.models.deviceProxy;
-        Styles = app.styles;
-        LocalDictionary = app.localDictionary;
-        UI = app.UI;
-        
-        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
-            Styles = app.styles;
-        });
-    };
-    
-    this.getDetailView = function () {
-        if (!_detailView) {
-            _detailView = Titanium.UI.createView(app.styles.view);
-        }
-        return _detailView;
-    };
-    
-    this.render = function (viewModel) {
-        var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage,
-        _tableViewData = [], directionsButtonOptions;
-        Ti.API.debug("render() in MapDetailViewController");
-        if (mapDetailTableView) {
-            Ti.API.debug("mapDetailTableView defined, clearing it.");
-            mapDetailTableView.setData([]);
-            try {
-                _detailView.remove(mapDetailTableView);
-            }
-            catch (e) {
-                Ti.API.error("Couldn't remove mapDetailTableView from _detailView");
-            }
-        }
-        else {
-            Ti.API.debug("mapDetailTableView not defined.");
-        }
-        
-        locationDetailTitleBar = UI.createSecondaryNavBar({ 
-            backButtonHandler: onBackBtnClick,
-            title: viewModel.title,
-            btnFloatLeft: true
-        });
-        _detailView.add(locationDetailTitleBar);
-        
-        mapGroupAddress = Ti.UI.createTableViewSection({
-            headerTitle: LocalDictionary.locationDetails
-        });
-        
-        mapGroupAddress.add(Ti.UI.createTableViewRow({
-            title: viewModel.title || LocalDictionary.titleNotAvailable
-        }));
-        
-        mapGroupAddress.add(Ti.UI.createTableViewRow({
-            title: viewModel.address || LocalDictionary.noAddressAvailable
-        }));
-        
-        if(viewModel.address) {
-            directionsButtonOptions = _.clone(Styles.contentButton);
-            directionsButtonOptions.width = 150;
-            directionsButtonOptions.title = LocalDictionary.getDirections;
-            directionsButton = Titanium.UI.createButton(directionsButtonOptions);
-            // directionsButton.width = 'auto';
-            directionsButtonRow = Ti.UI.createTableViewRow();
-            directionsButtonRow.add(directionsButton);
-            mapGroupAddress.add(directionsButtonRow);
-            
-            directionsButton.addEventListener("click", function (e) {
-                Ti.Platform.openURL('http://maps.google.com/maps?daddr='+ viewModel.address +','+ viewModel.zip +'&ie=UTF8&t=h&z=16');
-            });
-            directionsButton.addEventListener('touchstart', function (e) {
-                directionsButton.backgroundGradient = Styles.contentButton.backgroundGradientPress;
-            });
-            directionsButton.addEventListener('touchend', function (e) {
-                directionsButton.backgroundGradient = Styles.contentButton.backgroundGradient;
-            });
-        }
-        
-        _tableViewData.push(mapGroupAddress);
-        
-        if (viewModel.img) {
-            mapImageGroup = Ti.UI.createTableViewSection({
-                headerTitle: LocalDictionary.locationImage
-            });
-            detailImageRow = Ti.UI.createTableViewRow(app.styles.mapDetailImageRow);
-            detailImage = Titanium.UI.createImageView({
-                height: 200,
-                image: viewModel.img.replace(/\/thumbnail\//,'/photo/')
-            });
-            detailImageRow.add(detailImage);
-            mapImageGroup.add(detailImageRow);
-            _tableViewData.push(mapImageGroup);
-        }
 
-        mapDetailTableView = Ti.UI.createTableView(Styles.mapDetailTableView);
-        _detailView.add(mapDetailTableView);
-        mapDetailTableView.setData(_tableViewData);
-        
-    };
-    
-    this.hide = function () {
-        if (_detailView) {
-            _detailView.hide();
+var mapDetailTableView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,onBackBtnClick;
+
+exports.detailView = Titanium.UI.createView(app.styles.view);
+
+exports.render = function (viewModel) {
+    var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage,
+    _tableViewData = [], directionsButtonOptions;
+    Ti.API.debug("render() in MapDetailView");
+    if (mapDetailTableView) {
+        mapDetailTableView.setData([]);
+        try {
+            exports.detailView.remove(mapDetailTableView);
         }
-    };
+        catch (e) {
+            Ti.API.error("Couldn't remove mapDetailTableView from detailView");
+        }
+    }
+    else {
+        Ti.API.debug("mapDetailTableView not defined.");
+    }
     
-    onBackBtnClick = function (e) {
-        _detailView.hide();
-    };
+    locationDetailTitleBar = app.UI.createSecondaryNavBar({ 
+        backButtonHandler: onBackBtnClick,
+        title: viewModel.title,
+        btnFloatLeft: true
+    });
+    exports.detailView.add(locationDetailTitleBar);
     
-    init();
+    mapGroupAddress = Ti.UI.createTableViewSection({
+        headerTitle: app.localDictionary.locationDetails
+    });
+    
+    mapGroupAddress.add(Ti.UI.createTableViewRow({
+        title: viewModel.title || app.localDictionary.titleNotAvailable
+    }));
+    
+    mapGroupAddress.add(Ti.UI.createTableViewRow({
+        title: viewModel.address || app.localDictionary.noAddressAvailable
+    }));
+    
+    var viewOnMapButton, viewOnMapButtonOptions, viewOnMapRow;
+    viewOnMapButtonOptions = app.styles.contentButton.clone();
+    viewOnMapButtonOptions.width = 150;
+    viewOnMapButtonOptions.title = app.localDictionary.viewOnMap;
+    
+    viewOnMapButton = Ti.UI.createButton(viewOnMapButtonOptions);
+    
+    viewOnMapRow = Ti.UI.createTableViewRow();
+    viewOnMapRow.add(viewOnMapButton);
+    mapGroupAddress.add(viewOnMapRow);
+    viewOnMapButton.addEventListener("click", function (e) {
+        Ti.API.debug('click viewOnMapButton');
+        Ti.App.fireEvent(exports.events["VIEW_ON_MAP_CLICK"], {title: viewModel.title});
+    });
+    viewOnMapButton.addEventListener('touchstart', function (e) {
+        viewOnMapButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+    });
+    viewOnMapButton.addEventListener('touchend', function (e) {
+        viewOnMapButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+    });
+    
+    if(viewModel.address) {
+        directionsButtonOptions = app.styles.contentButton.clone();
+        directionsButtonOptions.width = 150;
+        directionsButtonOptions.title = app.localDictionary.getDirections;
+        directionsButton = Titanium.UI.createButton(directionsButtonOptions);
+        // directionsButton.width = 'auto';
+        directionsButtonRow = Ti.UI.createTableViewRow();
+        directionsButtonRow.add(directionsButton);
+        mapGroupAddress.add(directionsButtonRow);
+
+        directionsButton.addEventListener("click", function (e) {
+            Ti.Platform.openURL('http://maps.google.com/maps?daddr='+ viewModel.address +','+ viewModel.zip +'&ie=UTF8&t=h&z=16');
+        });
+        directionsButton.addEventListener('touchstart', function (e) {
+            directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+        });
+
+        directionsButton.addEventListener('touchend', function (e) {
+            directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+        });
+    }
+    
+    _tableViewData.push(mapGroupAddress);
+    
+    if (viewModel.img) {
+        mapImageGroup = Ti.UI.createTableViewSection({
+            headerTitle: app.localDictionary.locationImage
+        });
+        detailImageRow = Ti.UI.createTableViewRow(app.styles.mapDetailImageRow);
+        detailImage = Titanium.UI.createImageView({
+            height: 200,
+            image: viewModel.img.replace(/\/thumbnail\//,'/photo/')
+        });
+        detailImageRow.add(detailImage);
+        mapImageGroup.add(detailImageRow);
+        _tableViewData.push(mapImageGroup);
+    }
+
+    mapDetailTableView = Ti.UI.createTableView(app.styles.mapDetailTableView);
+    exports.detailView.add(mapDetailTableView);
+    mapDetailTableView.setData(_tableViewData);
+    
+};
+exports.events = {
+    VIEW_ON_MAP_CLICK   : "MapDetailViewViewOnMapClick"
+};
+
+exports.hide = function () {
+    exports.detailView.hide();
+};
+
+onBackBtnClick = function (e) {
+    exports.detailView.hide();
 };

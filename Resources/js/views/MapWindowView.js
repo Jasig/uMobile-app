@@ -46,6 +46,7 @@ exports.plotPoints = function (points) {
         mapView.addAnnotation(_annotation);
     }
     
+    // Center the map around the active points
     mapView.setLocation(app.models.mapProxy.getMapCenter());
     activityIndicator.hide();
 };
@@ -68,7 +69,6 @@ exports.resetDimensions = function (e) {
 };
 
 exports.resetMapLocation = function () {
-    Ti.API.debug("resetMapLocation() in MapWindowView");
     if (mapView && app.models.mapProxy) {
         mapView.setLocation(app.models.mapProxy.getMapCenter(true));
     }
@@ -79,7 +79,6 @@ exports.searchBlur = function (e) {
 };
 
 exports.openCategoryBrowsingView = function (categories) {
-    Ti.API.debug("openCategoryBrowsingView() in MapWindowView. searchBar: " + searchBar);
     _hideAllViews();
     
     // If there isn't a categoryNavBar yet, go ahead and create one.
@@ -88,11 +87,10 @@ exports.openCategoryBrowsingView = function (categories) {
     categoryNavBar.view.show();
     categoryNavBar.leftButton.hide();
     categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
-    categoryNavBar.rightButton.title = app.localDictionary.map;
+    categoryNavBar.rightButton.hide();
     
     if (!categoryBrowsingView) {
         // Create the view to hold tableviews listing categories and locations.
-        Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(categories));
         categoryBrowsingView = Ti.UI.createTableView({
             data: (function(c) {
                 var _data = [], _labelStyle = _.clone(app.styles.mapCategoryCount), _rowStyle = _.clone(app.styles.mapCategoryRow), _categoryName;
@@ -108,11 +106,23 @@ exports.openCategoryBrowsingView = function (categories) {
                     _labelStyle.text = c[i]['numChildren'];
                     _data[i].add(Ti.UI.createLabel(_labelStyle));
                     
+                    // Add the label for the row
+                    var _categoryLabel = Ti.UI.createLabel({
+                        text: _categoryName.toCapitalized(),
+                        left: 10,
+                        color: "#000"
+                    });
+                    _data[i].add(_categoryLabel);
+                    
                     // Add a listener to the row to let the controller 
                     // know the user wants to explore the category
-                    _data[i].addEventListener('click', function (e) {
-                        Ti.App.fireEvent(exports.events['CATEGORY_ROW_CLICK'], { category : e.row.title.toLowerCase() });
-                    });
+
+                    function setClickEvent (sourceObject, categoryTitle) {
+                        sourceObject.addEventListener('click', function (e) {
+                            Ti.App.fireEvent("MapViewCategoryRowClick", { category : categoryTitle });
+                        });
+                    }
+                    setClickEvent(_data[i], _categoryName);
                 }
                 
                 return _data;
@@ -128,7 +138,6 @@ exports.openCategoryBrowsingView = function (categories) {
 };
 
 exports.openCategoryLocationsListView = function (viewModel) {
-    Ti.API.debug("openCategoryLocationsListView() in MapWindowView");
     _hideAllViews();
     
     if (!categoryLocationsListView) {
@@ -145,13 +154,16 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryNavBar.leftButton.show();
     categoryNavBar.titleLabel.text = viewModel.categoryName;
     categoryNavBar.rightButton.title = app.localDictionary.map;
+    categoryNavBar.rightButton.show();
     
     categoryLocationsListView.setData(viewModel.locations);
+    
+    categoryLocationsListView.addEventListener('click', function (e) {
+        Ti.App.fireEvent(exports.events['CATEGORY_LIST_ITEM_CLICK'], {title:e.rowData.title});
+    });
 };
 
 exports.openCategoryLocationsMapView = function (viewModel) {
-    Ti.API.debug("openCategoryLocationsMapView() in MapWindowView");
-    
     _hideAllViews();
     
     // If there isn't a categoryNavBar yet, go ahead and create one.
@@ -162,14 +174,12 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 
     categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
     categoryNavBar.rightButton.title = app.localDictionary.list;
+    categoryNavBar.rightButton.show();
     
-    /*
-        TODO Actually plot the points on the map.
-    */
+    exports.plotPoints(viewModel.locations);
 };
 
 exports.openSearchView = function () {
-    Ti.API.debug("openSearchView() in MapWindowView");
     _hideAllViews();
     if (searchBar) searchBar.input.show();
     if (mapView) {
@@ -181,12 +191,12 @@ exports.openSearchView = function () {
 };
 
 exports.openFavoritesBrowsingView = function () {
-    Ti.API.debug("openFavoritesBrowsingView() in MapWindowView");
+    //TODO: Implement this view
     _hideAllViews();
 };
 
 exports.openFavoritesMapView = function () {
-    Ti.API.debug("openFavoritesMapView() in MapWindowView");
+    // TODO: Implement this view
     _hideAllViews();
 };
 
@@ -259,7 +269,6 @@ var _createMainView = function() {
         // create the map view
         mapViewOpts = _.clone(app.styles.mapView);
         if (app.config.DEFAULT_MAP_REGION) {
-            Ti.API.info("Temporarily disabled default region in map.");
             mapViewOpts.region = app.config.DEFAULT_MAP_REGION;
         }
 
@@ -270,7 +279,7 @@ var _createMainView = function() {
         mapView.addEventListener("click", _onMapViewClick);
         mapView.addEventListener('regionChanged', exports.searchBlur);
 
-        Ti.API.info("Map added with dimensions of: " + JSON.stringify(mapView.size) );
+        
     }
     else {
         view.add(mapView);
@@ -278,13 +287,22 @@ var _createMainView = function() {
 
     bottomNavView = Ti.UI.createView(app.styles.mapNavView);
     view.add(bottomNavView);
-
-    bottomNavButtons = Titanium.UI.createTabbedBar(app.styles.mapButtonBar);
-    bottomNavButtons.labels = exports.navButtonValues;
-    bottomNavButtons.width = 225;
-    bottomNavView.add(bottomNavButtons);
+    if (app.models.deviceProxy.isIOS()) {
+        bottomNavButtons = Titanium.UI.createTabbedBar(app.styles.mapButtonBar);
+        bottomNavButtons.labels = exports.navButtonValues;
+        bottomNavButtons.width = 225;
+        bottomNavButtons.index = 0;        
+    }
+    else {
+        bottomNavButtons = require('/js/views/UI/TabbedBar');
+        bottomNavButtons.doSetWidth(app.models.deviceProxy.getWidth());
+        bottomNavButtons.doSetLabels(exports.navButtonValues);
+        bottomNavButtons.doSetIndex(0);
+    }
+    bottomNavView.add(app.models.deviceProxy.isAndroid() ? bottomNavButtons.view : bottomNavButtons);
     
     bottomNavButtons.addEventListener('click', function (e) {
+        Ti.API.debug("Click event with index: "+e.index);
         Ti.App.fireEvent(exports.events['NAV_BUTTON_CLICK'], {
             buttonName: exports.navButtonValues[e.index] || ''
         });
@@ -303,9 +321,6 @@ var _createMainView = function() {
         if (mapView) {
             bottomNavView.add(zoomButtonBar);
         }
-        else {
-            Ti.API.error("mapView doesn't exist to place the zoomButtonBar into.");
-        }
         
         Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
             zoomButtonBar.top = app.styles.mapButtonBar.top;
@@ -320,10 +335,10 @@ var _createMainView = function() {
             }
         });
     }
+    _activeView = exports.views['SEARCH'];
 };
 
 var _searchSubmit = function (e) {
-    Ti.API.debug('searchSubmit() in MapWindowController');
     exports.searchBlur();
     Ti.App.fireEvent(exports.events['SEARCH_SUBMIT'],{
         value: searchBar.input.value
@@ -350,14 +365,13 @@ var _hideAllViews = function () {
 };
 
 var _createAndAddCategoryNav = function () {
-    Ti.API.debug("_createAndAddCategoryNav() in MapWindowView");
-    Ti.include('/js/views/SecondaryNav.js');
-    categoryNavBar = new SecondaryNav();
-    categoryNavBar.init(app);
-    categoryNavBar.leftButton.text = app.localDictionary.back;
+    categoryNavBar = require('/js/views/UI/SecondaryNav');
     view.add(categoryNavBar.view);
     categoryNavBar.view.top = app.styles.titleBar.height;
     
+    categoryNavBar.leftButton.addEventListener('click', function (e) {
+        Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);
+    });
     categoryNavBar.rightButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_RIGHT_BTN_CLICK']);
     });
@@ -369,7 +383,9 @@ exports.events = {
     NAV_BUTTON_CLICK            : "MapNavButtonClick",
     DETAIL_CLICK                : "MapViewDetailClick",
     CATEGORY_ROW_CLICK          : "MapViewCategoryRowClick",
-    CATEGORY_RIGHT_BTN_CLICK    : "MapViewCategoryRightButtonClick"
+    CATEGORY_RIGHT_BTN_CLICK    : "MapViewCategoryRightButtonClick",
+    CATEGORY_LEFT_BTN_CLICK     : "MapViewCategoryLeftButtonClick",
+    CATEGORY_LIST_ITEM_CLICK    : "MapViewCategoryListItemClick"
 };
 
 if (typeof localDictionary === "undefined") Ti.include('/js/localization.js');
@@ -377,8 +393,7 @@ var _locale = Titanium.App.Properties.getString('locale');
 
 exports.navButtonValues = [
     localDictionary[_locale]['search'],
-    localDictionary[_locale]['browse'],
-    localDictionary[_locale]['favorites']
+    localDictionary[_locale]['browse']
 ];
 
 exports.views = {
