@@ -58,8 +58,8 @@ startup = function (e) {
     //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
 
     app.registerMember('config', require('/js/config')); //Global config object
-    app.registerMember('localDictionary', localDictionary[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
-    app.registerModel('deviceProxy', new DeviceProxy(app));
+    app.registerMember('localDictionary', require('/js/localization')[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
+    app.registerModel('deviceProxy', require('/js/models/DeviceProxy'));
     app.registerModel('resourceProxy', new ResourceProxy(app)); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.

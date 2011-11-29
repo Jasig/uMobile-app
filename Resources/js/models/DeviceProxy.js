@@ -16,67 +16,59 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var DeviceProxy = function (facade) {
-    var app = facade, _self = this, LocalDictionary, _orientation = false;
+
     
-    init = function () {
-        LocalDictionary = app.localDictionary;
-    };
-    
-    this.checkNetwork = function() {
-        if (!Ti.Network.online) {
-            Ti.API.debug("Network is offline");
-            return false;
-        } else {
-            return true;
-        }
-    };
-    
-    this.isIOS = function () {
-        if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    
-    this.isIPad = function () {
-        return Ti.Platform.osname === 'ipad' ? true : false;
-    };
-    
-    this.isIPhone = function () {
-        return Ti.Platform.osname === 'iphone' ? true : false;
-    };
-    
-    this.isAndroid = function () {
-        if (Ti.Platform.osname === 'android') {
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-    
-    this.isBlackBerry = function () {
+exports.checkNetwork = function() {
+    if (!Ti.Network.online) {
+        Ti.API.debug("Network is offline");
         return false;
-    };
-    
-    this.getWidth = function () {
-        return Ti.Platform.displayCaps.platformWidth;
-    };
-    
-    this.getHeight = function () {
-        return Ti.Platform.displayCaps.platformHeight;
-    };
-    
-    this.setCurrentOrientation = function (orientation) {
-        _orientation = orientation;
-    };
-    
-    this.getCurrentOrientation = function () {
-        return _orientation;
-    };
-    
-    init();
+    } else {
+        return true;
+    }
+};
+
+exports.isIOS = function () {
+    if (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad') {
+        return true;
+    }
+    else {
+        return false;
+    }
+};
+
+exports.isIPad = function () {
+    return Ti.Platform.osname === 'ipad' ? true : false;
+};
+
+exports.isIPhone = function () {
+    return Ti.Platform.osname === 'iphone' ? true : false;
+};
+
+exports.isAndroid = function () {
+    if (Ti.Platform.osname === 'android') {
+        return true;
+    }
+    else {
+        return false;
+    }
+};
+
+exports.isBlackBerry = function () {
+    return false;
+};
+
+exports.getWidth = function () {
+    return Ti.Platform.displayCaps.platformWidth;
+};
+
+exports.getHeight = function () {
+    return Ti.Platform.displayCaps.platformHeight;
+};
+
+exports.setCurrentOrientation = function (orientation) {
+    _orientation = orientation;
+};
+
+exports.getCurrentOrientation = function () {
+    return _orientation;
 };
