@@ -100,7 +100,7 @@ var PersonDetailTableView = function (facade) {
         var _row, _rowOptions, _label, _value, _valueOpts;
         //The only required param in the attributes object is value. "label" is optional but preferred.
         //The layout will change to expand the value text if there's no label with it.
-        _rowOptions = Styles.directoryDetailRow.clone();
+        _rowOptions = _.clone(Styles.directoryDetailRow);
         
         if (!attributes.label) {
             _rowOptions.className = 'personDataNoLabel';
@@ -116,10 +116,10 @@ var PersonDetailTableView = function (facade) {
         _row = Titanium.UI.createTableViewRow(_rowOptions);        
         if (attributes.label) { 
             _row.add(_label);
-            _valueOpts = Styles.directoryDetailRowValue.clone();
+            _valueOpts = _.clone(Styles.directoryDetailRowValue);
         }
         else {
-            _valueOpts = Styles.directoryDetailValueNoLabel.clone();
+            _valueOpts = _.clone(Styles.directoryDetailValueNoLabel);
         }
         
         _valueOpts.text = attributes.value;

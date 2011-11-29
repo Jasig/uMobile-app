@@ -82,7 +82,7 @@ var MapDetailView = function (facade) {
         }));
         
         if(viewModel.address) {
-            directionsButtonOptions = Styles.contentButton.clone();
+            directionsButtonOptions = _.clone(Styles.contentButton);
             directionsButtonOptions.width = 150;
             directionsButtonOptions.title = LocalDictionary.getDirections;
             directionsButton = Titanium.UI.createButton(directionsButtonOptions);

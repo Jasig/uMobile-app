@@ -108,13 +108,13 @@ var SettingsWindowController = function(facade){
     };
 
     createCredentialsForm = function () {
-        var usernameLabelOpts = Styles.settingsUsernameLabel.clone(),
-            usernameInputOpts = Styles.settingsUsernameInput.clone(),
-            passwordLabelOpts = Styles.settingsPasswordLabel.clone(),
-            passwordInputOpts = Styles.settingsPasswordInput.clone(),
-            saveButtonOpts = Styles.contentButton.clone(),
-            resetPasswordOpts = Styles.settingsResetPasswordLabel.clone(),
-            logOutButtonOpts = Styles.contentButton.clone();
+        var usernameLabelOpts = _.clone(Styles.settingsUsernameLabel),
+            usernameInputOpts = _.clone(Styles.settingsUsernameInput),
+            passwordLabelOpts = _.clone(Styles.settingsPasswordLabel),
+            passwordInputOpts = _.clone(Styles.settingsPasswordInput),
+            saveButtonOpts = _.clone(Styles.contentButton),
+            resetPasswordOpts = _.clone(Styles.settingsResetPasswordLabel),
+            logOutButtonOpts = _.clone(Styles.contentButton);
 
         var credentialsGroup = Ti.UI.createTableViewSection({
             headerTitle: LocalDictionary.accountSettings

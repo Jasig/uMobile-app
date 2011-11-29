@@ -408,7 +408,7 @@ var UI = function (facade) {
         _secondaryNavBar = {view: Titanium.UI.createView(Styles.secondaryNavBar)};
         if (!opts) { opts = {}; }
         if(opts.backButtonHandler) {
-            _backBtnOptions = Styles.secondaryNavBarButton.clone();
+            _backBtnOptions = _.clone(Styles.secondaryNavBarButton);
             _backBtnOptions.title = opts.backBtnText || LocalDictionary.back;
 
             _navBackButton = Titanium.UI.createButton(_backBtnOptions);
@@ -458,7 +458,7 @@ var UI = function (facade) {
         _secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
         if (!opts) { opts = {}; }
         if(opts.backButtonHandler) {
-            _backBtnOptions = Styles.secondaryNavBarButton.clone();
+            _backBtnOptions = _.clone(Styles.secondaryNavBarButton);
             _backBtnOptions.title = opts.backBtnText || LocalDictionary.back;
 
             _navBackButton = Titanium.UI.createButton(_backBtnOptions);

@@ -16,20 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-Object.prototype.clone = function() {
-    var newObj = (this instanceof Array) ? [] : {}, i;
-    for (i in this) {
-        if (this.hasOwnProperty(i)) {
-            if (this[i] && typeof this[i] == "object") {
-                newObj[i] = this[i].clone();
-            } 
-            else {
-                newObj[i] = this[i];
-            }            
-        }
-    }
-    return newObj;
-};
 
 Object.prototype.combine = function (obj) {
     for (key in obj) {
@@ -58,6 +44,7 @@ var app, loadingWindow, startup, onOrientationChange;
 
 
 startup = function (e) {
+    Titanium.include('js/libs/underscore-min.js');
     Titanium.include('js/ApplicationFacade.js');
 
     Titanium.include('js/config.js');

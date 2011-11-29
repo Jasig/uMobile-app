@@ -128,7 +128,7 @@ var MapWindowController = function(facade) {
 
         
         // if (!_self._locationDetailView || _self._app.models.deviceProxy.isIOS()) {
-            _self._locationDetailViewOptions = _self._app.styles.view.clone();
+            _self._locationDetailViewOptions = _.clone(_self._app.styles.view);
             _self._locationDetailViewOptions.data = _annotation;
             _self._locationDetailView = _self._mapDetailView.getDetailView();
             _self._win.add(_self._locationDetailView);

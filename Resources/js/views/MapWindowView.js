@@ -95,7 +95,7 @@ exports.openCategoryBrowsingView = function (categories) {
         Ti.API.debug("Creating categoryBrowsingView in MapWindowView with categories: " + JSON.stringify(categories));
         categoryBrowsingView = Ti.UI.createTableView({
             data: (function(c) {
-                var _data = [], _labelStyle = app.styles.mapCategoryCount.clone(), _rowStyle = app.styles.mapCategoryRow.clone(), _categoryName;
+                var _data = [], _labelStyle = _.clone(app.styles.mapCategoryCount), _rowStyle = _.clone(app.styles.mapCategoryRow), _categoryName;
                 
                 // Iterate through array of categories and create table view rows for user to select.
                 for (var i=0, iLength = c.length; i<iLength; i++) {
@@ -257,7 +257,7 @@ var _createMainView = function() {
 
     if ((app.models.deviceProxy.isAndroid() && !mapView) || app.models.deviceProxy.isIOS()) {
         // create the map view
-        mapViewOpts = app.styles.mapView.clone();
+        mapViewOpts = _.clone(app.styles.mapView);
         if (app.config.DEFAULT_MAP_REGION) {
             Ti.API.info("Temporarily disabled default region in map.");
             mapViewOpts.region = app.config.DEFAULT_MAP_REGION;
