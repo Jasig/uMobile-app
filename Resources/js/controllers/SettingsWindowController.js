@@ -25,7 +25,7 @@ var SettingsWindowController = function(facade){
     var win, app = facade, _self = this, Device, User, UI, LocalDictionary, Styles, UPM, Login,
         credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
         usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar, settingsTable, credentialsGroup,
-        init, createTitleBar, createCredentialsForm,
+        init, createCredentialsForm,
         onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
 
     init = function () {
@@ -81,13 +81,11 @@ var SettingsWindowController = function(facade){
         }*/
         win.open();
         
-        titleBar = UI.createTitleBar({
-            title: LocalDictionary.settings,
-            settingsButton: false,
-            homeButton: true
-        });
+        titleBar = require('/js/views/UI/TitleBar');
+        titleBar.addHomeButton();
+        titleBar.updateTitle(LocalDictionary.settings)
         
-        win.add(titleBar);
+        win.add(titleBar.view);
         if (Device.isAndroid()) {
         	// titleBar.top += 24;
         }
@@ -198,7 +196,7 @@ var SettingsWindowController = function(facade){
         settingsTable = Ti.UI.createTableView(Styles.settingsTable);
         settingsTable.setData([credentialsGroup]);
         if (Device.isAndroid()) {
-        	settingsTable.top = titleBar.top + titleBar.height;
+        	settingsTable.top = titleBar.view.top + titleBar.view.height;
         }
         win.add(settingsTable);
         /*settingsTable.addEventListener('click', function (e) {

@@ -132,6 +132,8 @@ var PortletWindowController = function (facade) {
         _self._navBar = null;
         _self._activityIndicator.destroy();
         _self._activityIndicator = null;
+        _self._titleBar.destroy();
+        _self._titleBar = null;
     };
     
     this._includePortlet = function (portlet) {

@@ -165,12 +165,11 @@ var DirectoryWindowView = function (facade) {
     drawDefaultView = function () {
         Ti.API.debug("Adding titleBar in DirectoryWindowController");
         if (win) {
-            titleBar = UI.createTitleBar({
-                title: LocalDictionary.directory,
-                homeButton: true,
-                settingsButton: false
-            });
-            win.add(titleBar);
+            titleBar = require('/js/views/UI/TitleBar');
+            titleBar.updateTitle(LocalDictionary.directory);
+            titleBar.addHomeButton();
+            
+            win.add(titleBar.view);
 
             createDefaultGroups();
 

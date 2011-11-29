@@ -248,13 +248,12 @@ exports.doSetView = function (newView, viewModel) {
 //Private methods
 var _createMainView = function() {
     var mapViewOpts;
+    
+    titleBar = require('/js/views/UI/TitleBar');
+    titleBar.updateTitle(app.localDictionary.map);
+    titleBar.addHomeButton();
 
-    titleBar = app.UI.createTitleBar({
-        homeButton: true,
-        settingsButton: false,
-        title: app.localDictionary.map
-    });
-    view.add(titleBar);
+    view.add(titleBar.view);
 
     activityIndicator = app.UI.createActivityIndicator();
     view.add(activityIndicator);
@@ -368,7 +367,7 @@ var _hideAllViews = function () {
 var _createAndAddCategoryNav = function () {
     categoryNavBar = require('/js/views/UI/SecondaryNav');
     view.add(categoryNavBar.view);
-    categoryNavBar.view.top = app.styles.titleBar.height;
+    categoryNavBar.view.top = app.styles.titleBar.view.height;
     
     categoryNavBar.leftButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);

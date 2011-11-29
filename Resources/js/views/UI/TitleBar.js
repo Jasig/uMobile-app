@@ -3,8 +3,7 @@
     //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
 var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer,
     titleBar = {view:Titanium.UI.createView(app.styles.titleBar)},
-    labelStyle = app.styles.titleBarLabel,
-    onSettingsClick, onSettingsPressDown, onSettingsPressUp, onHomeClick, onHomePressUp, onHomePressDown, onInfoClick, onInfoPressUp, onInfoPressDown, titleBarRotate;
+    labelStyle = app.styles.titleBarLabel;
 
 exports.view = titleBar.view;
 
@@ -66,7 +65,7 @@ exports.destroy = function () {
     homeButtonContainer = null;
 };
 
-titleBarRotate = function (e) {
+function titleBarRotate (e) {
     if (titleBar) { titleBar.view.width = app.styles.titleBar.width; }
     if (settingsButtonContainer) { settingsButtonContainer.left = app.styles.titleBarSettingsContainer.left; }
     if (homeButtonContainer) { homeButtonContainer.left = app.styles.titleBarHomeContainer.left; }
@@ -74,11 +73,11 @@ titleBarRotate = function (e) {
 
 Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], titleBarRotate);
 
-onHomeClick = function (e) {
+function onHomeClick (e) {
     app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
 };
 
-onInfoClick = function (e) {
+function onInfoClick (e) {
     app.models.windowManager.openWindow(app.controllers.portletWindowController.key, {
         fname: 'info',
         externalModule: true,
@@ -87,6 +86,6 @@ onInfoClick = function (e) {
     });
 };
 
-onSettingsClick = function (e) {
+function onSettingsClick (e) {
     app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
 };
