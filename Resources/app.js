@@ -28,7 +28,6 @@ startup = function (e) {
     Titanium.include('/js/models/MapProxy.js');
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
-    Titanium.include('js/models/UserProxy.js');
     Titanium.include('js/models/WindowManager.js');
     
     Titanium.include('js/views/PortalGridView.js');
@@ -58,7 +57,7 @@ startup = function (e) {
     
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
-    app.registerModel('userProxy', new UserProxy(app));
+    app.registerModel('userProxy', require('/js/models/UserProxy'));
     app.registerModel('loginProxy', require('/js/models/LoginProxy')); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
     app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
     
