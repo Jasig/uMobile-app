@@ -54,7 +54,7 @@ var LocalLogin = function (facade) {
         }
         catch (e) {
             _parsedResponse = {
-                user: LoginProxy.userTypes['NO_USER'],
+                user: app.models.loginProxy.userTypes['NO_USER'],
                 layout: []
             };
         }
@@ -62,19 +62,19 @@ var LocalLogin = function (facade) {
         app.models.userProxy.setLayoutUserName(_parsedResponse.user);
         app.models.portalProxy.setPortlets(_parsedResponse.layout);
         
-        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
-            app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+        if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
+            app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
             app.models.portalProxy.setIsPortalReachable(true);
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
         }
         else {
             app.models.portalProxy.setIsPortalReachable(false);
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
         }
     };
     
     onLoginError = function (e) {
-        app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+        app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
     };
 };

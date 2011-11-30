@@ -22,7 +22,7 @@ var SessionProxy = function (facade) {
     onSessionExpire, onTimeout;
     
     /* 
-    The SessionProxy acts as a sub-proxy for LoginProxy to maintain a local
+    The SessionProxy acts as a sub-proxy for app.models.loginProxy to maintain a local
     representation of session time for the mobile application session. The current
     Android implementation of Titanium maintains separate sessions for Network requests
     and WebViews, so we need to manage multiple "contexts" for Android. iPhone uses the same
@@ -50,19 +50,19 @@ var SessionProxy = function (facade) {
         if (!Device.isAndroid()) {
             // In iPhone we only maintain one timer since cookies are shared
             // between network requests and webviews.
-            if(timers[LoginProxy.sessionTimeContexts.NETWORK].counter) {
+            if(timers[app.models.loginProxy.sessionTimeContexts.NETWORK].counter) {
                 Ti.API.debug("counter variable defined, clearing timeout");
                 try {
-                    clearTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK].counter);
+                    clearTimeout(timers[app.models.loginProxy.sessionTimeContexts.NETWORK].counter);
                 }
                 catch (e) {
                     Ti.API.error("Couldn't clear timer in SessionProxy");
                 }
             }
-            timers[LoginProxy.sessionTimeContexts.NETWORK].counter = setTimeout(function() {
-                onTimeout(timers[LoginProxy.sessionTimeContexts.NETWORK]);
+            timers[app.models.loginProxy.sessionTimeContexts.NETWORK].counter = setTimeout(function() {
+                onTimeout(timers[app.models.loginProxy.sessionTimeContexts.NETWORK]);
             }, parseInt(sessionLifeTimeMilli, 10));
-            timers[LoginProxy.sessionTimeContexts.NETWORK].isActive = true;
+            timers[app.models.loginProxy.sessionTimeContexts.NETWORK].isActive = true;
             Ti.App.Properties.setString('timer_' + context, String(new Date().getTime()));
             
             Ti.API.debug("Network timer updated");
@@ -93,8 +93,8 @@ var SessionProxy = function (facade) {
     this.isActive = function (context) {
         if (Device.isIOS()) {
             //If it's iphone, we only need to check that one context has an active session.
-            if(timers[LoginProxy.sessionTimeContexts.NETWORK]) {
-                return timers[LoginProxy.sessionTimeContexts.NETWORK].isActive;
+            if(timers[app.models.loginProxy.sessionTimeContexts.NETWORK]) {
+                return timers[app.models.loginProxy.sessionTimeContexts.NETWORK].isActive;
             }
             else {
                 return false;
@@ -122,7 +122,7 @@ var SessionProxy = function (facade) {
     
     this.createSessionTimer = function (context) {
         var session = {};
-        if (Device.isAndroid() || (context === LoginProxy.sessionTimeContexts.NETWORK && !timers[context])) {
+        if (Device.isAndroid() || (context === app.models.loginProxy.sessionTimeContexts.NETWORK && !timers[context])) {
             session.context = context;
             session.isActive = false;
             timers[context] = session;
@@ -158,7 +158,7 @@ var SessionProxy = function (facade) {
         if (Device.isIOS()) {
             Ti.API.info("Device.isIOS() in validateSessions()");
             //Because we only maintain one timer in iOS, we'll make Webview equal network
-            _sessions[LoginProxy.sessionTimeContexts.WEBVIEW] = _sessions[LoginProxy.sessionTimeContexts.NETWORK];
+            _sessions[app.models.loginProxy.sessionTimeContexts.WEBVIEW] = _sessions[app.models.loginProxy.sessionTimeContexts.NETWORK];
         }
         
         return _sessions;

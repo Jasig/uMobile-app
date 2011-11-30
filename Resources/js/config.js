@@ -40,7 +40,7 @@ exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout
 exports.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
 
 //References value of LoginProxy.loginMethods constant.
-exports.LOGIN_METHOD = LoginProxy.loginMethods.LOCAL_LOGIN;
+exports.LOGIN_METHOD = "LocalLogin";
 
 exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
 exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";

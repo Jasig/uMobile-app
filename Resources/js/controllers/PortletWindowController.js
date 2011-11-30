@@ -311,7 +311,7 @@ var PortletWindowController = function (facade) {
         
         if (portalIndex >= 0) {
             Ti.API.debug("Visiting a portal link");
-            Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: LoginProxy.sessionTimeContexts['WEBVIEW']});
+            Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: app.models.loginProxy.sessionTimeContexts['WEBVIEW']});
             //We want to be able to open any video now, so we'll clear the YouTube workaround variable
             _self._lastVideoOpened = '';
             _self._webView.externalModule = false;

@@ -51,9 +51,9 @@ var PortalWindowController = function (facade) {
         Ti.App.addEventListener(PortalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
         // Ti.App.addEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
         // Ti.App.addEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
-        Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
+        Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
         Ti.App.addEventListener(PortalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
-        Ti.App.addEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
+        Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
         Ti.App.addEventListener(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
         
         if (!app.models.deviceProxy.checkNetwork()) {
@@ -77,9 +77,9 @@ var PortalWindowController = function (facade) {
             Ti.App.removeEventListener(PortalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
             // Ti.App.removeEventListener(WindowManager.events['WINDOW_OPENING'], onAppWindowOpening);
             // Ti.App.removeEventListener(WindowManager.events['WINDOW_OPENED'], onAppWindowOpened);
-            Ti.App.removeEventListener(LoginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
+            Ti.App.removeEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
             Ti.App.removeEventListener(PortalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
-            Ti.App.removeEventListener(LoginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
+            Ti.App.removeEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
             Ti.App.removeEventListener(PortalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
             
         /*}
@@ -102,7 +102,7 @@ var PortalWindowController = function (facade) {
     
     onNetworkSessionFailure = function(e) {
         Ti.API.debug("onNetworkSessionFailure() in PortalWindowController");
-        if (!e.user || e.user == LoginProxy.userTypes['NO_USER']) {
+        if (!e.user || e.user == app.models.loginProxy.userTypes['NO_USER']) {
             Ti.API.debug("Checking network and opening portalwindowview. isPortalReachable?" + app.models.portalProxy.getIsPortalReachable());
             if (app.models.deviceProxy.checkNetwork()) {
                 if (_newNetworkDowntime) {

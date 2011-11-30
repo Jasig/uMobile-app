@@ -25,7 +25,6 @@ startup = function (e) {
 
     Titanium.include('js/style.js');
 
-    Titanium.include('js/models/LoginProxy.js');
     Titanium.include('js/models/login/LocalLogin.js');
     Titanium.include('js/models/login/CASLogin.js');
     Titanium.include('js/models/login/Shibboleth2Login.js');
@@ -67,7 +66,7 @@ startup = function (e) {
     app.registerModel('CASLogin', new CASLogin(app));
     app.registerModel('Shibboleth2Login', new Shibboleth2Login(app));
     app.registerModel('userProxy', new UserProxy(app));
-    app.registerModel('loginProxy', new LoginProxy(app)); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
+    app.registerModel('loginProxy', require('/js/models/LoginProxy')); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
     app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
     
     //Window controllers

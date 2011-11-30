@@ -245,11 +245,11 @@ var PortalWindowView = function (facade) {
     this._onPortletsLoaded = function (e) {
         Ti.API.debug("_onPortletsLoaded() in PortalWindowView. State:" + e.state || 'none');
         switch (app.models.userProxy.getLayoutUserName()) {
-            case LoginProxy.userTypes['GUEST']:
+            case app.models.loginProxy.userTypes['GUEST']:
                 _self._addSpecialLayoutIndicator(true);
                 _self._layoutIndicator = PortalWindowView.indicatorStates['GUEST'];
                 break;
-            case LoginProxy.userTypes['NO_USER']:
+            case app.models.loginProxy.userTypes['NO_USER']:
                 _self._addSpecialLayoutIndicator(false);
                 _self._layoutIndicator = PortalWindowView.indicatorStates['NO_PORTAL'];
                 break;

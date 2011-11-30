@@ -37,8 +37,8 @@ var CASLogin = function (facade) {
     this.login = function (credentials, opts) {
         _self._credentials = credentials;
         if (_self._credentials.username === '') {
-            /*_self._credentials.username = LoginProxy.userTypes['GUEST'];
-            _self._credentials.password = LoginProxy.userTypes['GUEST'];
+            /*_self._credentials.username = app.models.loginProxy.userTypes['GUEST'];
+            _self._credentials.password = app.models.loginProxy.userTypes['GUEST'];
             _self.logout();*/
             _self._client = Titanium.Network.createHTTPClient({
                 onload: _self._onLoginComplete,
@@ -141,18 +141,18 @@ var CASLogin = function (facade) {
             webView.removeEventListener('load', _firstLoad);
             
             if (_checkForCASForm()) {
-                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_RESPONSE']);
+                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_RESPONSE']);
                 webView.addEventListener('load', _secondLoad);
                 _populateAndSubmitForm();
             }
             else if (e.url.indexOf(url) == 0 || _self._app.controllers.portletWindowController.getFNameFromURL(e.url) === _self._app.controllers.portletWindowController.getHomeFName()) {
                 Ti.API.debug("");
-                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
+                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
             }
             else {
                 Ti.API.debug("Couldn't get form, and urls don't match. e.url: " + e.url + " & webView.url: " + webView.url + " & url:" + url);  
                 Ti.API.debug("Fname in URL: " + _self._app.controllers.portletWindowController.getFNameFromURL(e.url) + " & homeFName: " + _self._app.controllers.portletWindowController.getHomeFName());
-                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_FAILURE']);
+                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_FAILURE']);
             }
         }
         
@@ -165,10 +165,10 @@ var CASLogin = function (facade) {
             webView.removeEventListener('load', _secondLoad);
             
             if (!_isPageStillCAS()) {
-                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
+                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
             }
             else {
-                Ti.App.fireEvent(LoginProxy.events['WEBVIEW_LOGIN_FAILURE']);
+                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_FAILURE']);
             }
         }
         
@@ -205,8 +205,8 @@ var CASLogin = function (facade) {
         
         _failureRegex = new RegExp(/body id="cas"/);
         if (_failureRegex.exec(_self._client.responseText)) {
-            _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+            _self._app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
         } 
         else {
             _self._processResponse(_self._client.responseText);
@@ -221,7 +221,7 @@ var CASLogin = function (facade) {
         }
         catch (e) {
             _parsedResponse = {
-                user: LoginProxy.userTypes['NO_USER'],
+                user: app.models.loginProxy.userTypes['NO_USER'],
                 layout: []
             };
         }   
@@ -229,36 +229,36 @@ var CASLogin = function (facade) {
         _self._app.models.userProxy.setLayoutUserName(_parsedResponse.user);
         _self._app.models.portalProxy.setPortlets(_parsedResponse.layout);
 
-        if (_self._app.models.userProxy.getLayoutUserName() === _self._credentials.username || _self._app.models.userProxy.getLayoutUserName() === LoginProxy.userTypes['GUEST']) {
+        if (_self._app.models.userProxy.getLayoutUserName() === _self._credentials.username || _self._app.models.userProxy.getLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
             Ti.API.info("_layoutUser matches _self._credentials.username");
-            Ti.API.info("_self._app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
-            _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
+            Ti.API.info("_self._app.models.loginProxy.sessionTimeContexts.NETWORK: " + app.models.loginProxy.sessionTimeContexts.NETWORK);
+            _self._app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
             
             if (_self._app.models.deviceProxy.osIsAndroid()) {
-                _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
+                _self._app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
             }
             
             _self._app.models.portalProxy.setIsPortalReachable(true);
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_SUCCESS'], {user: _self._app.models.userProxy.getLayoutUserName()});
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: _self._app.models.userProxy.getLayoutUserName()});
             Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
         }
         else {
             Ti.API.error("Network session failed");
             _self._app.models.portalProxy.setIsPortalReachable(false);
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
         }
     };
     
     this._onLoginError = function (e) {
         Ti.API.error("_self._onLoginError() in CASLogin" + e.responseText);
-        _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+        _self._app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
     };
     
     this._onInitialError = function (e) {
         Ti.API.error("_self._onInitialError() in CASLogin");
-        _self._app.models.sessionProxy.stopTimer(LoginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+        _self._app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
     };
     
     this._onInitialResponse = function (e) {
@@ -307,7 +307,7 @@ var CASLogin = function (facade) {
             }
             catch (e) {
                 Ti.API.error("Couldn't get flowID from response");
-                Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+                Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
             }
 
 

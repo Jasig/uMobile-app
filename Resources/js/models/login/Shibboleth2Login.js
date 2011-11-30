@@ -91,12 +91,12 @@ var Shibboleth2Login = function (facade) {
         }
         catch (e) {
             Ti.API.error("Couldn't log in with Shibboleth");
-            Ti.App.fireEvent(LoginProxy.events['NETWORK_SESSION_FAILURE']);
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
         }
     };
     
     this._onInitialError = function (e) {
-        Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
+        Ti.App.fireEvent(app.models.loginProxy.events["NETWORK_SESSION_FAILURE"]);
     };
     
     this._getRedirectURL = function (responseText) {
@@ -130,13 +130,13 @@ var Shibboleth2Login = function (facade) {
         */
         _self._client = Ti.Network.createHTTPClient({
             onload: function (e) {
-                Ti.App.fireEvent(LoginProxy.events['LOGIN_METHOD_RESPONSE'], {
+                Ti.App.fireEvent(app.models.loginProxy.events['LOGIN_METHOD_RESPONSE'], {
                     responseText:_self._client.responseText
                     , credentials: _self._credentials
                 });
             },
             onerror: function (e) {
-                Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
+                Ti.App.fireEvent(app.models.loginProxy.events["NETWORK_SESSION_FAILURE"]);
             }
         });
 
@@ -157,7 +157,7 @@ var Shibboleth2Login = function (facade) {
     };
     
     this._onPortalSessionEstablishedError = function (e) {
-        Ti.App.fireEvent(LoginProxy.events["NETWORK_SESSION_FAILURE"]);
+        Ti.App.fireEvent(app.models.loginProxy.events["NETWORK_SESSION_FAILURE"]);
     };
     
     this._isLoginSuccess = function (responseText) {

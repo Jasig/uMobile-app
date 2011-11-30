@@ -131,7 +131,7 @@ var WindowManager = function (facade) {
         
         Ti.API.debug("_lastWindow= " + _lastWindow + " & _lastPortlet=" + _lastPortlet);
         
-        if (app.models.sessionProxy.validateSessions()[LoginProxy.sessionTimeContexts.NETWORK]) {
+        if (app.models.sessionProxy.validateSessions()[app.models.loginProxy.sessionTimeContexts.NETWORK]) {
             if (_lastWindow === PortletWindow.key && _lastPortlet) {
                 Ti.App.debug("_lastWindow is portlet, and the _lastPortlet property was defined.");
                 app.models.windowManager.openWindow(_lastWindow, JSON.parse(_lastPortlet));
