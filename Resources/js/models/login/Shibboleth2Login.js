@@ -45,7 +45,7 @@ var Shibboleth2Login = function (facade) {
                 _self._client.clearCookies(_self._app.config.SHIB_BASE_URL);
                 _self._client.clearCookies(_self._app.config.SHIB_BASE_URL + "/idp");
             }
-            if (_self._app.models.deviceProxy.isAndroid()) {
+            if (_self._app.models.deviceProxy.osIsAndroid()) {
                 _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             }
             _self._client.send();
@@ -79,7 +79,7 @@ var Shibboleth2Login = function (facade) {
             });
 
             _self._client.open('POST', _self._postURL, true);
-            if (_self._app.models.deviceProxy.isAndroid()) {
+            if (_self._app.models.deviceProxy.osIsAndroid()) {
                 _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             }
             
@@ -150,7 +150,7 @@ var Shibboleth2Login = function (facade) {
         }
         _self._client.open("GET", _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");
         
-        if (_self._app.models.deviceProxy.isAndroid()) {
+        if (_self._app.models.deviceProxy.osIsAndroid()) {
             _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         }
         _self._client.send({autoRedirect:true});

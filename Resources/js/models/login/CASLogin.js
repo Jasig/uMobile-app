@@ -47,11 +47,11 @@ var CASLogin = function (facade) {
             });
             
             _self._client.open('GET', _self._serviceUrl, true);
-            if (_self._app.models.deviceProxy.isAndroid()) {
+            if (_self._app.models.deviceProxy.osIsAndroid()) {
                 if(_self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
                 _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             }
-            else if (_self._app.models.deviceProxy.isIOS()) {
+            else if (_self._app.models.deviceProxy.osIsIOS()) {
             	if (_self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
             }
             _self._client.send();
@@ -67,7 +67,7 @@ var CASLogin = function (facade) {
             });
             
             _self._client.open('GET', _self._url, true);
-            if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            if (_self._app.models.deviceProxy.osIsAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             _self._client.send();            
         }
     };
@@ -83,7 +83,7 @@ var CASLogin = function (facade) {
         _self._client.send();
         
         // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
-        if (_self._app.models.deviceProxy.isAndroid() && _self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
+        if (_self._app.models.deviceProxy.osIsAndroid() && _self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
     };
     
     this.createWebViewSession = function (credentials, webView, url) {
@@ -187,7 +187,7 @@ var CASLogin = function (facade) {
             onerror: _self._onInitialError
         });
         _self._client.open('GET', _self._serviceUrl, true);
-        if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        if (_self._app.models.deviceProxy.osIsAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         _self._client.send();
     };
     
@@ -234,7 +234,7 @@ var CASLogin = function (facade) {
             Ti.API.info("_self._app.models.loginProxy.sessionTimeContexts.NETWORK: " + LoginProxy.sessionTimeContexts.NETWORK);
             _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.NETWORK);
             
-            if (_self._app.models.deviceProxy.isAndroid()) {
+            if (_self._app.models.deviceProxy.osIsAndroid()) {
                 _self._app.models.sessionProxy.resetTimer(LoginProxy.sessionTimeContexts.WEBVIEW);
             }
             
@@ -289,7 +289,7 @@ var CASLogin = function (facade) {
                 Ti.API.debug("Getting ready to open URL: " + _self._url);
 
                 _self._client.open('POST', _self._url, true);
-                if (_self._app.models.deviceProxy.isAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+                if (_self._app.models.deviceProxy.osIsAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
                 
                 Ti.API.debug("Getting ready to populate data object");
                 Ti.API.debug(_self._credentials.username);

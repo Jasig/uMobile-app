@@ -23,7 +23,6 @@ startup = function (e) {
     Titanium.include('js/libs/underscore-min.js');
     Titanium.include('js/gibberishAES.js');
 
-    Titanium.include('js/localization.js');
     Titanium.include('js/style.js');
 
     Titanium.include('js/models/LoginProxy.js');
@@ -31,7 +30,6 @@ startup = function (e) {
     Titanium.include('js/models/login/CASLogin.js');
     Titanium.include('js/models/login/Shibboleth2Login.js');
     Titanium.include('/js/models/MapProxy.js');
-    
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
     Titanium.include('js/models/UserProxy.js');
