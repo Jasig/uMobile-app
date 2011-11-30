@@ -16,303 +16,182 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var CASLogin = function (facade) {
-    var _self = this;
-    
-    // Pseudo private variables
-    this._app = facade;
-    this._url;
-    this._credentials;
-    this._refUrl = _self._app.config.PORTAL_CONTEXT + '/layout.json';
-    this._serviceUrl = _self._app.config.BASE_PORTAL_URL + _self._app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _self._refUrl;
-    this._logoutUrl = _self._app.config.CAS_URL + '/logout';
-    
-    // XHR client
-    this._client;
-    
-    this._init = function () {
-        // Nothing to init
-    };
-    
-    this.login = function (credentials, opts) {
-        _self._credentials = credentials;
-        if (_self._credentials.username === '') {
-            /*_self._credentials.username = app.models.loginProxy.userTypes['GUEST'];
-            _self._credentials.password = app.models.loginProxy.userTypes['GUEST'];
-            _self.logout();*/
-            _self._client = Titanium.Network.createHTTPClient({
-                onload: _self._onLoginComplete,
-                onerror: _self._onLoginError,
-                validatesSecureCertificate: false
-            });
-            
-            _self._client.open('GET', _self._serviceUrl, true);
-            if (_self._app.models.deviceProxy.osIsAndroid()) {
-                if(_self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
-                _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-            }
-            else if (_self._app.models.deviceProxy.osIsIOS()) {
-            	if (_self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
-            }
-            _self._client.send();
-        }
-        else {
-            _self._url = _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_self._serviceUrl);
-            
-            // Send an initial response to the CAS login page
-            _self._client = Titanium.Network.createHTTPClient({
-                onload: _self._onInitialResponse,
-                onerror: _self._onInitialError,
-                validatesSecureCertificate: false
-            });
-            
-            _self._client.open('GET', _self._url, true);
-            if (_self._app.models.deviceProxy.osIsAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-            _self._client.send();            
-        }
-    };
-    
-    this.logout = function () {
-        // Log out the network session, which also clears the webView session in iPhone
-        _self._client = Titanium.Network.createHTTPClient({
-            onload: _self._onLogoutComplete,
-            onerror: _self._onInitialError
-        });
-        _self._client.open('GET', _self._logoutUrl, true);
 
-        _self._client.send();
-        
-        // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
-        if (_self._app.models.deviceProxy.osIsAndroid() && _self._client.clearCookies) _self._client.clearCookies(_self._app.config.BASE_PORTAL_URL);
-    };
+
     
-    this.createWebViewSession = function (credentials, webView, url) {
-        /*
-            Login process for webViews in Android.
-            Step 1: Load login form, send event to notify controller
-            Step 2: Populate form with username and password, then submit
-            Step 3: Determine if response was successful, broadcast success
-            or failure event
-        */
-        Ti.API.debug("createWebViewSession in CASLogin.");
-        
-        function _checkForCASForm () {
-            Ti.API.debug('_checkForCASForm() in CASLogin');
-            var _casForm = webView.evalJS('document.getElementById("fm1")');
-            Ti.API.debug("_casForm is: " + _casForm);
-            if (_casForm !== 'null') {
-                Ti.API.debug("_casForm is true");
-                return true;
-            }
-            Ti.API.debug("_casForm is not true");
-            return false;
-        }
-        
-        function _populateAndSubmitForm () {
-            /*
-                Injecting Javascript into the webView, and then manually
-                setting username and password values in the HTML form, then
-                submitting the form. 
-            */
-            Ti.API.debug("_populateAndSubmitForm() in CASLogin");
-        }
-        
-        function _isPageStillCAS () {
-            /*
-                Instead of verifying that the current page IS what it should
-                be, we want to make sure that it ISN'T CAS. We don't want to
-                make assumptions about the page that's supposed to be rendered.
-            */
-            Ti.API.debug("_isPageStillCAS() In CASLogin");
-            var _bodyId = webView.evalJS('document.getElementsByTagName("body")[0].id');
-            if (_bodyId === 'cas') {
-                return true;
-            }
-            return false;
-        }
-        
-        function _firstLoad (e) {
-            /*
-                When the webview first loads, we want to check that it contains
-                the form we're looking for. Then we'll populate it with login
-                credentials, and submit it
-            */
-            Ti.API.debug("_firstLoad() in CASLogin" + webView.url);
-            webView.removeEventListener('load', _firstLoad);
-            
-            if (_checkForCASForm()) {
-                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_RESPONSE']);
-                webView.addEventListener('load', _secondLoad);
-                _populateAndSubmitForm();
-            }
-            else if (e.url.indexOf(url) == 0 || _self._app.controllers.portletWindowController.getFNameFromURL(e.url) === _self._app.controllers.portletWindowController.getHomeFName()) {
-                Ti.API.debug("");
-                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
-            }
-            else {
-                Ti.API.debug("Couldn't get form, and urls don't match. e.url: " + e.url + " & webView.url: " + webView.url + " & url:" + url);  
-                Ti.API.debug("Fname in URL: " + _self._app.controllers.portletWindowController.getFNameFromURL(e.url) + " & homeFName: " + _self._app.controllers.portletWindowController.getHomeFName());
-                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_FAILURE']);
-            }
-        }
-        
-        function _secondLoad (e) {
-            /*
-                We just need to check that the login was successful, and 
-                broadcast the outcome. Nothing else to do after that.
-            */
-            Ti.API.debug("_secondLoad() in CASLogin" + webView.url);
-            webView.removeEventListener('load', _secondLoad);
-            
-            if (!_isPageStillCAS()) {
-                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_SUCCESS']);
-            }
-            else {
-                Ti.App.fireEvent(app.models.loginProxy.events['WEBVIEW_LOGIN_FAILURE']);
-            }
-        }
-        
-        webView.addEventListener('load', _firstLoad);
-        if (url.indexOf('/') == 0) url = _self._app.config.BASE_PORTAL_URL + url;
-        webView.url = _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url);
-        webView.show();
-    };
-    
-    this._onLogoutComplete = function (e) {
-        Ti.API.debug("_onLogoutComplete() in CASLogin");
-        _self._client = Titanium.Network.createHTTPClient({
-            onload: function (e) {
-                _self._processResponse(_self._client.responseText);
-            },
-            onerror: _self._onInitialError
+
+
+var _url, _credentials, 
+_refUrl = app.config.PORTAL_CONTEXT + '/layout.json',
+_serviceUrl = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _refUrl,
+_logoutUrl = app.config.CAS_URL + '/logout';
+
+// XHR client
+var _client;
+
+
+exports.login = function (credentials, opts) {
+    _credentials = credentials;
+    if (_credentials.username === '') {
+        /*_credentials.username = app.models.loginProxy.userTypes['GUEST'];
+        _credentials.password = app.models.loginProxy.userTypes['GUEST'];
+        exports.logout();*/
+        _client = Titanium.Network.createHTTPClient({
+            onload: _onLoginComplete,
+            onerror: _onLoginError,
+            validatesSecureCertificate: false
         });
-        _self._client.open('GET', _self._serviceUrl, true);
-        if (_self._app.models.deviceProxy.osIsAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-        _self._client.send();
-    };
-    
-    this.getLoginURL = function (url) {
-        var separator = url.indexOf('?') >= 0 ? '&' : '?';
-        return _self._app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(url + separator + 'isNativeDevice=true');
-    };
-    
-    this._onLoginComplete = function (e) {
-        Ti.API.debug("_self._onLoginComplete() in CASLogin " + _self._client.location);
-        // Examine the response to determine if authentication was successful.  If
-        // we get back a CAS page, assume that the credentials were invalid.
         
-        var _failureRegex;
-        
-        _failureRegex = new RegExp(/body id="cas"/);
-        if (_failureRegex.exec(_self._client.responseText)) {
-            _self._app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
-        } 
-        else {
-            _self._processResponse(_self._client.responseText);
+        _client.open('GET', _serviceUrl, true);
+        if (app.models.deviceProxy.isAndroid()) {
+            if(_client.clearCookies) _client.clearCookies(app.config.BASE_PORTAL_URL);
+            _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         }
-    };
+        else if (app.models.deviceProxy.isIOS()) {
+        	if (_client.clearCookies) _client.clearCookies(app.config.BASE_PORTAL_URL);
+        }
+        _client.send();
+    }
+    else {
+        _url = app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_serviceUrl);
+        
+        // Send an initial response to the CAS login page
+        _client = Titanium.Network.createHTTPClient({
+            onload: _onInitialResponse,
+            onerror: _onInitialError,
+            validatesSecureCertificate: false
+        });
+        
+        _client.open('GET', _url, true);
+        if (app.models.deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        _client.send();            
+    }
+};
+
+exports.logout = function () {
+    // Log out the network session, which also clears the webView session in iPhone
+    _client = Titanium.Network.createHTTPClient({
+        onload: _onLogoutComplete,
+        onerror: _onInitialError
+    });
+    _client.open('GET', _logoutUrl, true);
+
+    _client.send();
     
-    this._processResponse = function (responseText) {
-        Ti.API.debug("_processResponse() in CASLogin");
-        var _parsedResponse;
+    // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
+    if (app.models.deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(app.config.BASE_PORTAL_URL);
+};
+
+function _onLogoutComplete (e) {
+    _client = Titanium.Network.createHTTPClient({
+        onload: function (e) {
+            _processResponse(_client.responseText);
+        },
+        onerror: _onInitialError
+    });
+    _client.open('GET', _serviceUrl, true);
+    if (app.models.deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+    _client.send();
+};
+
+function _onLoginComplete (e) {
+    // Examine the response to determine if authentication was successful.  If
+    // we get back a CAS page, assume that the credentials were invalid.
+    
+    var _failureRegex;
+    
+    _failureRegex = new RegExp(/body id="cas"/);
+    if (_failureRegex.exec(_client.responseText)) {
+        app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+    } 
+    else {
+        _processResponse(_client.responseText);
+    }
+};
+
+function _processResponse (responseText) {
+    var _parsedResponse;
+    try {
+        _parsedResponse = JSON.parse(responseText);
+    }
+    catch (e) {
+        _parsedResponse = {
+            user: app.models.loginProxy.userTypes['NO_USER'],
+            layout: []
+        };
+    }   
+
+    app.models.userProxy.setLayoutUserName(_parsedResponse.user);
+    app.models.portalProxy.setPortlets(_parsedResponse.layout);
+
+    if (app.models.userProxy.getLayoutUserName() === _credentials.username || app.models.userProxy.getLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
+        app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+        
+        if (app.models.deviceProxy.isAndroid()) {
+            app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
+        }
+        
+        app.models.portalProxy.setIsPortalReachable(true);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
+    }
+    else {
+        app.models.portalProxy.setIsPortalReachable(false);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+    }
+};
+
+function _onLoginError (e) {
+    app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+    Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+};
+
+function _onInitialError (e) {
+    app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+    Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+};
+
+function _onInitialResponse (e) {
+    var flowRegex, flowId, initialResponse, data, _parsedResponse;
+    
+    // CAS will redirect to layout.json if the user has already logged in, so we want 
+    // to check if the base URL is what should only be returned after login
+    if (_client.responseText.indexOf('"layout": [') > -1) {
+        _processResponse(_client.responseText);
+    }
+    else {
+        // Parse the returned page, looking for the Spring Webflow ID.  We'll need
+        // to post this token along with our credentials.
+        initialResponse = _client.responseText;
+
+        flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
+
         try {
-            _parsedResponse = JSON.parse(responseText);
+            flowId = flowRegex.exec(initialResponse)[1];
+            Ti.API.debug("flowId: " + flowId);
+            // Post the user credentials and other required webflow parameters to the 
+            // CAS login page.  This step should accomplish authentication and redirect
+            // to the portal if the user is successfully authenticated.
+            _client = Titanium.Network.createHTTPClient({
+                onload: _onLoginComplete,
+                onerror: _onLoginError
+            });
+
+            _client.open('POST', _url, true);
+            if (app.models.deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            
+            data = { 
+                username: _credentials.username, 
+                password: _credentials.password, 
+                lt: flowId, 
+                _eventId: 'submit', 
+                submit: 'LOGIN' 
+            };
+            _client.send(data);
         }
         catch (e) {
-            _parsedResponse = {
-                user: app.models.loginProxy.userTypes['NO_USER'],
-                layout: []
-            };
-        }   
-
-        _self._app.models.userProxy.setLayoutUserName(_parsedResponse.user);
-        _self._app.models.portalProxy.setPortlets(_parsedResponse.layout);
-
-        if (_self._app.models.userProxy.getLayoutUserName() === _self._credentials.username || _self._app.models.userProxy.getLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
-            Ti.API.info("_layoutUser matches _self._credentials.username");
-            Ti.API.info("_self._app.models.loginProxy.sessionTimeContexts.NETWORK: " + app.models.loginProxy.sessionTimeContexts.NETWORK);
-            _self._app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-            
-            if (_self._app.models.deviceProxy.osIsAndroid()) {
-                _self._app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
-            }
-            
-            _self._app.models.portalProxy.setIsPortalReachable(true);
-            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: _self._app.models.userProxy.getLayoutUserName()});
-            Ti.API.info("Should've fired EstablishNetworkSessionSuccess event");
+            Ti.API.error("Couldn't get flowID from response");
+            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
         }
-        else {
-            Ti.API.error("Network session failed");
-            _self._app.models.portalProxy.setIsPortalReachable(false);
-            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
-        }
-    };
-    
-    this._onLoginError = function (e) {
-        Ti.API.error("_self._onLoginError() in CASLogin" + e.responseText);
-        _self._app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
-    };
-    
-    this._onInitialError = function (e) {
-        Ti.API.error("_self._onInitialError() in CASLogin");
-        _self._app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
-    };
-    
-    this._onInitialResponse = function (e) {
-        var flowRegex, flowId, initialResponse, data, _parsedResponse;
-        
-        // CAS will redirect to layout.json if the user has already logged in, so we want 
-        // to check if the base URL is what should only be returned after login
-        if (_self._client.responseText.indexOf('"layout": [') > -1) {
-            _self._processResponse(_self._client.responseText);
-        }
-        else {
-            // Parse the returned page, looking for the Spring Webflow ID.  We'll need
-            // to post this token along with our credentials.
-            initialResponse = _self._client.responseText;
-            Ti.API.debug("initialResponse: " + initialResponse);
-            flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
-
-            try {
-                flowId = flowRegex.exec(initialResponse)[1];
-                Ti.API.debug("flowId: " + flowId);
-                // Post the user credentials and other required webflow parameters to the 
-                // CAS login page.  This step should accomplish authentication and redirect
-                // to the portal if the user is successfully authenticated.
-                _self._client = Titanium.Network.createHTTPClient({
-                    onload: _self._onLoginComplete,
-                    onerror: _self._onLoginError
-                });
-                Ti.API.debug("Getting ready to open URL: " + _self._url);
-
-                _self._client.open('POST', _self._url, true);
-                if (_self._app.models.deviceProxy.osIsAndroid()) _self._client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-                
-                Ti.API.debug("Getting ready to populate data object");
-                Ti.API.debug(_self._credentials.username);
-
-
-                data = { 
-                    username: _self._credentials.username, 
-                    password: _self._credentials.password, 
-                    lt: flowId, 
-                    _eventId: 'submit', 
-                    submit: 'LOGIN' 
-                };
-                _self._client.send(data);
-                Ti.API.debug("_self._client.send() with data: " + JSON.stringify(data));
-            }
-            catch (e) {
-                Ti.API.error("Couldn't get flowID from response");
-                Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
-            }
-
-
-        }
-    };
-    
-    _self._init();
+    }
 };

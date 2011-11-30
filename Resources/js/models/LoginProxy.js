@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-exports._loginMethod = {};
+var _loginMethod = {};
 exports.events = {
     NETWORK_SESSION_FAILURE : "EstablishNetworkSessionFailure",
     NETWORK_SESSION_SUCCESS : "EstablishNetworkSessionSuccess",
@@ -44,17 +44,15 @@ exports.userTypes = {
 };
 
 exports.init = function () {
-    CASLogin = app.models.CASLogin;
-    
     switch (app.config.LOGIN_METHOD) {
         case exports.loginMethods.CAS:
-            exports._loginMethod = app.models.CASLogin;
+            _loginMethod = require('/js/models/login/CASLogin');;
             break;
         case exports.loginMethods.LOCAL_LOGIN:
-            exports._loginMethod = app.models.localLogin;
+            _loginMethod = require('/js/models/login/LocalLogin');
             break;
         case exports.loginMethods.SHIBBOLETH2:
-            exports._loginMethod = app.models.Shibboleth2Login;
+            _loginMethod = require('/js/models/login/Shibboleth2Login');
             break;
         default:
             Ti.API.error("Login method not recognized in exports.exports.init()");
@@ -103,11 +101,11 @@ exports.establishNetworkSession = function(options) {
     var credentials, url;
 
     credentials = app.models.userProxy.getCredentials();
-    exports._loginMethod.login(credentials, options);
+    _loginMethod.login(credentials, options);
 };
 
 exports.clearSession = function () {
-    exports._loginMethod.logout();
+    _loginMethod.logout();
 };
 
 exports.getLoginURL = function (url) {
@@ -115,7 +113,7 @@ exports.getLoginURL = function (url) {
         Method created specifically for use in the Portlet Window 
         Controller, for use with 
     */
-    exports._loginMethod.getLoginURL(url);
+    _loginMethod.getLoginURL(url);
     
     /* Old method, deprecated 9/30/2011 by Jeff Cross
     switch (app.config.LOGIN_METHOD) {
@@ -130,16 +128,6 @@ exports.getLoginURL = function (url) {
             return false;                
     }
     */
-};
-
-exports.createWebViewSession = function (credentials, webView, returnURL) {
-    /*
-        This creates a new webview and logs it in to automatically store
-        cookies. Credentials contain decrypted username and password.
-        
-    */
-    Ti.API.debug("createWebViewSession() in exports.");
-    exports._loginMethod.createWebViewSession(credentials, webView, returnURL);
 };
 
 exports.onNetworkError = function (e) {

@@ -25,9 +25,6 @@ startup = function (e) {
 
     Titanium.include('js/style.js');
 
-    Titanium.include('js/models/login/LocalLogin.js');
-    Titanium.include('js/models/login/CASLogin.js');
-    Titanium.include('js/models/login/Shibboleth2Login.js');
     Titanium.include('/js/models/MapProxy.js');
     Titanium.include('js/models/PortalProxy.js');
     Titanium.include('js/models/SessionProxy.js');
@@ -58,13 +55,9 @@ startup = function (e) {
     app.registerModel('resourceProxy', require('/js/models/ResourceProxy')); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
-    app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
     
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
-    app.registerModel('localLogin', new LocalLogin(app));
-    app.registerModel('CASLogin', new CASLogin(app));
-    app.registerModel('Shibboleth2Login', new Shibboleth2Login(app));
     app.registerModel('userProxy', new UserProxy(app));
     app.registerModel('loginProxy', require('/js/models/LoginProxy')); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
     app.registerModel('mapProxy', new MapProxy(app)); //Manages retrieval, storage, and search of map points. Gets all data from map portlet on uPortal, but stores locally.
