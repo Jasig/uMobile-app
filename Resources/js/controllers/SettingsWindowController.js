@@ -42,7 +42,7 @@ var SettingsWindowController = function(facade){
         if (!initialized) {
             Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
             Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
-            Ti.App.addEventListener(PortalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
+            Ti.App.addEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
 
             Device = app.models.deviceProxy;
             User = app.models.userProxy;
