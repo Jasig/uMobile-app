@@ -94,10 +94,11 @@ var PortletWindowController = function (facade) {
         _self._navBar = require('/js/views/UI/SecondaryNav');
         _self._navBar.leftButton.addEventListener('click', _self._onBackBtnPress);
         _self._navBar.rightButton.hide();
+        _self._navBar.rightButton.visible = false;
         _self._navBar.view.top = 40;
         _self._navBar.view.visible = false;
 
-        _self._activityIndicator = _self._app.UI.createDisposableActivityIndicator();
+        _self._activityIndicator = require('/js/views/UI/ActivityIndicator');
         _self._activityIndicator.view.hide();
 
         _self._win.add(_self._titleBar.view);

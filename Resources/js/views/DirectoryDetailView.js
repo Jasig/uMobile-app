@@ -51,6 +51,7 @@ var DirectoryDetailView = function (facade) {
 
             secondaryNavBar = require('/js/views/UI/SecondaryNav');
             secondaryNavBar.rightButton.hide();
+            secondaryNavBar.rightButton.visible = false;
             secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
             _view.add(secondaryNavBar.view);
 

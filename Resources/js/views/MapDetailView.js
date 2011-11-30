@@ -42,6 +42,7 @@ exports.render = function (viewModel) {
     locationDetailTitleBar.titleLabel.text = viewModel.title;
     locationDetailTitleBar.leftButton.addEventListener('click', onBackBtnClick);
     locationDetailTitleBar.rightButton.hide();
+    locationDetailTitleBar.rightButton.visible = false;
     exports.detailView.add(locationDetailTitleBar.view);
     
     mapGroupAddress = Ti.UI.createTableViewSection({

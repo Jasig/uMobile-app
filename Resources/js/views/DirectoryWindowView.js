@@ -87,7 +87,7 @@ var DirectoryWindowView = function (facade) {
         if (searchBar) { searchBar.input.value = ''; }
         DirectoryDetail.hide();
         if (peopleListTable) { peopleListTable.setData(_viewModel.emergencyContacts || defaultTableData); }
-        if (activityIndicator) { activityIndicator.hide(); }
+        if (activityIndicator) { activityIndicator.view.hide(); }
     };
     
     this.showDetail = function (person) {
@@ -102,7 +102,7 @@ var DirectoryWindowView = function (facade) {
                     message: attributes.message,
                     buttonNames: [LocalDictionary.OK]
                 });
-                activityIndicator.hide();
+                activityIndicator.view.hide();
                 alertDialog.show();
             }
             catch (e) {
@@ -113,7 +113,7 @@ var DirectoryWindowView = function (facade) {
     
     this.showActivityIndicator = function (message) {
         if (message) { activityIndicator.setLoadingMessage(message); }
-        activityIndicator.show();
+        activityIndicator.view.show();
     };
     
     this.updateTable = function (newTableData) {
@@ -124,7 +124,7 @@ var DirectoryWindowView = function (facade) {
     this.displaySearchResults = function (results) {
         var _peopleTableData = [], _people, alertDialog;
 
-        activityIndicator.hide();
+        activityIndicator.view.hide();
         
         //Get array of people from search results from proxy
         _people = results;
@@ -199,10 +199,10 @@ var DirectoryWindowView = function (facade) {
 
             win.add(DirectoryDetail.getDetailView());
 
-            activityIndicator = UI.createActivityIndicator();
+            activityIndicator = require('/js/views/UI/ActivityIndicator');
             activityIndicator.resetDimensions();
-            win.add(activityIndicator);
-            activityIndicator.hide();
+            win.add(activityIndicator.view);
+            activityIndicator.view.hide();
         }
         else {
             Ti.API.error("No win in drawDefaultView() in DirectoryWindowController");

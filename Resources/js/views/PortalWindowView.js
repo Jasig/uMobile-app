@@ -105,7 +105,7 @@ var PortalWindowView = function (facade) {
         }
 
             
-        _self._activityIndicator = app.UI.createDisposableActivityIndicator();
+        _self._activityIndicator = require('/js/views/UI/ActivityIndicator');
         _self._win.add(_self._activityIndicator.view);
 
         _self._titleBar = require('/js/views/UI/TitleBar');

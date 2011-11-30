@@ -91,11 +91,10 @@ var SettingsWindowController = function(facade){
         }
         createCredentialsForm();
         
-        activityIndicator = UI.createActivityIndicator();
+        activityIndicator = require('/js/views/UI/ActivityIndicator');
         activityIndicator.resetDimensions();
-        activityIndicator.hide();
-        win.add(activityIndicator);
-        activityIndicator.hide();
+        win.add(activityIndicator.view);
+        activityIndicator.view.hide();
     };
     
     this.close = function (options) {
@@ -227,7 +226,7 @@ var SettingsWindowController = function(facade){
             else {
                 wasFormSubmitted = true;
                 activityIndicator.setLoadingMessage(LocalDictionary.loggingIn);
-                activityIndicator.show();
+                activityIndicator.view.show();
                 User.saveCredentials({
                     username: usernameInput.value, 
                     password: passwordInput.value 
@@ -261,7 +260,7 @@ var SettingsWindowController = function(facade){
         passwordInput.value = '';
         Login.clearSession();
         wasLogOutClicked = true;
-        activityIndicator.show();
+        activityIndicator.view.show();
     };
     
     onLogOutButtonPress = function (e) {
@@ -279,19 +278,14 @@ var SettingsWindowController = function(facade){
         Ti.API.debug("onWindowBlur in SettingsWindowController");
         if (win) {
             passwordInput.blur();
-            // usernameInput.blur();
-            if(activityIndicator.visible) {
-                activityIndicator.hide();
-            }            
+            activityIndicator.view.hide();
         }
     };
     
     //LoginProxy events
     onSessionSuccess = function (e) {
         var _toast;
-        if (activityIndicator) {
-            activityIndicator.hide();
-        }
+        activityIndicator.view.hide();
         Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
         if(app.models.windowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
             if (e.user === usernameInput.value) {
@@ -371,9 +365,8 @@ var SettingsWindowController = function(facade){
     
     onSessionError = function (e) {
         Ti.API.debug("onSessionError() in SettingsWindowController");
-        if (activityIndicator) {
-            activityIndicator.hide();
-        }
+
+        activityIndicator.view.hide();
         
         //If we at least received a user layout back from the service
         if (e.user && e.user != User.getCredentials().username && wasFormSubmitted) {

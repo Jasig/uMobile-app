@@ -48,15 +48,15 @@ exports.plotPoints = function (points) {
     
     // Center the map around the active points
     mapView.setLocation(app.models.mapProxy.getMapCenter());
-    activityIndicator.hide();
+    activityIndicator.view.hide();
 };
 
 exports.hideActivityIndicator = function () {
-    activityIndicator.hide();
+    activityIndicator.view.hide();
 };
 
 exports.showActivityIndicator = function () {
-    activityIndicator.show();
+    activityIndicator.view.show();
 };
 
 exports.setActivityIndicatorMessage = function (message) {
@@ -88,6 +88,7 @@ exports.openCategoryBrowsingView = function (categories) {
     categoryNavBar.leftButton.hide();
     categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
     categoryNavBar.rightButton.hide();
+    categoryNavBar.rightButton.visible = false;
     
     if (!categoryBrowsingView) {
         // Create the view to hold tableviews listing categories and locations.
@@ -254,10 +255,10 @@ var _createMainView = function() {
     titleBar.addHomeButton();
 
     view.add(titleBar.view);
-
-    activityIndicator = app.UI.createActivityIndicator();
-    view.add(activityIndicator);
-    activityIndicator.hide();
+    
+    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    view.add(activityIndicator.view);
+    activityIndicator.view.hide();
 
     searchBar = require('/js/views/UI/SearchBar');
     searchBar.createSearchBar();

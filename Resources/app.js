@@ -25,7 +25,6 @@ startup = function (e) {
 
     Titanium.include('js/localization.js');
     Titanium.include('js/style.js');
-    Titanium.include('js/UI.js');
 
     Titanium.include('js/models/LoginProxy.js');
     Titanium.include('js/models/login/LocalLogin.js');
@@ -62,7 +61,6 @@ startup = function (e) {
     app.registerModel('resourceProxy', require('/js/models/ResourceProxy')); //Manages retrieval of local files between different OS's
     app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
-    app.registerMember('UI', new UI(app));
     app.registerMember('GibberishAES', GibberishAES); //Used to encrypt user credentials to store in sqlite db, and decrypt for automatic login.
     
     app.registerModel('portalProxy', new PortalProxy(app)); //Manages the home screen view which displays a grid of icons representing portlets.

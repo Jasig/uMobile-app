@@ -29,48 +29,6 @@ var UI = function (facade) {
         });
     };
     
-    this.createSecondaryNavBar = function (opts) {
-        var _secondaryNavBar, _backBtnOptions, _navBackButton, _titleLabel;
-        // Possible parameters: backBtnText:String, btnFloatLeft:Bool, title:String, backButtonHandler:Function
-        // A partial view used in some views to place a nav bar just below the titleBar
-        _secondaryNavBar = Titanium.UI.createView(Styles.secondaryNavBar);
-        if (!opts) { opts = {}; }
-        if(opts.backButtonHandler) {
-            _backBtnOptions = _.clone(Styles.secondaryNavBarButton);
-            _backBtnOptions.title = opts.backBtnText || LocalDictionary.back;
-
-            _navBackButton = Titanium.UI.createButton(_backBtnOptions);
-            _navBackButton.addEventListener('click', opts.backButtonHandler);
-            _secondaryNavBar.add(_navBackButton);
-            if (opts.btnFloatLeft) {
-                _navBackButton.left = Styles.secondaryNavBarButton.leftFloat;
-            }
-        }
-        
-        _titleLabel = Titanium.UI.createLabel(Styles.secondaryNavBarLabel);
-        _titleLabel.text = opts.title ? opts.title : ' ';
-        if (opts.btnFloatLeft) {
-            _titleLabel.left = Styles.secondaryNavBarLabel.buttonLeftFloat;
-        }
-        _secondaryNavBar.add(_titleLabel);
-        _secondaryNavBar.updateTitle = function (newTitle) {
-            _titleLabel.text = newTitle;
-        };
-        
-        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
-            var _visibility = _secondaryNavBar.visible;
-            Ti.API.debug("visibility of secondaryNavBar: " + _visibility);
-            _titleLabel.width = Styles.secondaryNavBarLabel.width;
-            if (_navBackButton && !opts.btnFloatLeft) {
-                _navBackButton.left = Styles.secondaryNavBarButton.left;
-            }
-            _secondaryNavBar.width = Styles.secondaryNavBar.width;
-            _secondaryNavBar.visible = _visibility || true;
-        });
-        
-        return _secondaryNavBar;
-    };
-    
     this.createDisposableActivityIndicator = function () {
         var messageLabel, resetActivityIndicator,
             indicator = {view: Ti.UI.createView(Styles.globalActivityIndicator)},
