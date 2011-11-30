@@ -42,6 +42,7 @@ var MapWindowController = function() {
     this.open = function () {
         _self._mapWindowView = require('/js/views/MapWindowView');
         _self._mapDetailView = require('/js/views/MapDetailView');
+        if (!app.models.mapProxy) app.registerModel('mapProxy', require('/js/models/MapProxy'));
         
         Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _self._onOrientationChange);
 
@@ -60,12 +61,12 @@ var MapWindowController = function() {
         _self._win.open();
         
         Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _self._onOrientationChange);
-        Ti.App.addEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
-        Ti.App.addEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
-        Ti.App.addEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
-        Ti.App.addEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
-        Ti.App.addEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
-        Ti.App.addEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
+        Ti.App.addEventListener(app.models.mapProxy.events['SEARCHING'], _self._onProxySearching);
+        Ti.App.addEventListener(app.models.mapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
+        Ti.App.addEventListener(app.models.mapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
+        Ti.App.addEventListener(app.models.mapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
+        Ti.App.addEventListener(app.models.mapProxy.events['LOADING'], _self._onProxyLoading);
+        Ti.App.addEventListener(app.models.mapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
         Ti.App.addEventListener(_self._mapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
         Ti.App.addEventListener(_self._mapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
         Ti.App.addEventListener(_self._mapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
@@ -87,12 +88,12 @@ var MapWindowController = function() {
         _self._mapWindowView.searchBlur();
         
         Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], _self._onOrientationChange);
-        Ti.App.removeEventListener(MapProxy.events['SEARCHING'], _self._onProxySearching);
-        Ti.App.removeEventListener(MapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
-        Ti.App.removeEventListener(MapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
-        Ti.App.removeEventListener(MapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
-        Ti.App.removeEventListener(MapProxy.events['LOADING'], _self._onProxyLoading);
-        Ti.App.removeEventListener(MapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
+        Ti.App.removeEventListener(app.models.mapProxy.events['SEARCHING'], _self._onProxySearching);
+        Ti.App.removeEventListener(app.models.mapProxy.events['SEARCH_COMPLETE'], _self._onProxySearchComplete);
+        Ti.App.removeEventListener(app.models.mapProxy.events['EMPTY_SEARCH'], _self._onProxyEmptySearch);
+        Ti.App.removeEventListener(app.models.mapProxy.events['LOAD_ERROR'], _self._onProxyLoadError);
+        Ti.App.removeEventListener(app.models.mapProxy.events['LOADING'], _self._onProxyLoading);
+        Ti.App.removeEventListener(app.models.mapProxy.events['POINTS_LOADED'], _self._onProxyLoaded);
         Ti.App.removeEventListener(_self._mapWindowView.events['SEARCH_SUBMIT'], _self._onMapSearch);
         Ti.App.removeEventListener(_self._mapWindowView.events['MAPVIEW_CLICK'], _self._onMapViewClick);
         Ti.App.removeEventListener(_self._mapWindowView.events['DETAIL_CLICK'], _self._loadDetail);
@@ -274,7 +275,7 @@ var MapWindowController = function() {
         if (_self._win.visible || app.models.deviceProxy.isIOS()) {
             try {
                 switch (e.errorCode) {
-                    case MapProxy.requestErrors.NETWORK_UNAVAILABLE:
+                    case app.models.mapProxy.requestErrors.NETWORK_UNAVAILABLE:
                         alertDialog = Titanium.UI.createAlertDialog({
                             title: app.localDictionary.error,
                             message: app.localDictionary.map_NETWORK_UNAVAILABLE,
@@ -282,7 +283,7 @@ var MapWindowController = function() {
                         });
                         alertDialog.show();
                         break;
-                    case MapProxy.requestErrors.REQUEST_TIMEOUT:
+                    case app.models.mapProxy.requestErrors.REQUEST_TIMEOUT:
                         alertDialog = Titanium.UI.createAlertDialog({
                             title: app.localDictionary.error,
                             message: app.localDictionary.map_REQUEST_TIMEOUT,
@@ -290,7 +291,7 @@ var MapWindowController = function() {
                         });
                         alertDialog.show();
                         break;
-                    case MapProxy.requestErrors.SERVER_ERROR:
+                    case app.models.mapProxy.requestErrors.SERVER_ERROR:
                         alertDialog = Titanium.UI.createAlertDialog({
                             title: app.localDictionary.error,
                             message: app.localDictionary.map_SERVER_ERROR,
@@ -298,7 +299,7 @@ var MapWindowController = function() {
                         });
                         alertDialog.show();
                         break;
-                    case MapProxy.requestErrors.NO_DATA_RETURNED:
+                    case app.models.mapProxy.requestErrors.NO_DATA_RETURNED:
                         alertDialog = Titanium.UI.createAlertDialog({
                             title: app.localDictionary.error,
                             message: app.localDictionary.map_NO_DATA_RETURNED,
@@ -306,7 +307,7 @@ var MapWindowController = function() {
                         });
                         alertDialog.show();
                         break;
-                    case MapProxy.requestErrors.INVALID_DATA_RETURNED: 
+                    case app.models.mapProxy.requestErrors.INVALID_DATA_RETURNED: 
                         alertDialog = Titanium.UI.createAlertDialog({
                             title: app.localDictionary.error,
                             message: app.localDictionary.map_INVALID_DATA_RETURNED,
