@@ -42,7 +42,7 @@ var MapWindowController = function() {
     this.open = function () {
         _self._mapWindowView = require('/js/views/MapWindowView');
         _self._mapDetailView = require('/js/views/MapDetailView');
-        if (!app.models.mapProxy) app.registerModel('mapProxy', require('/js/models/MapProxy'));
+        if (!app.models.mapProxy) app.models['mapProxy'] = require('/js/models/MapProxy');
         
         Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _self._onOrientationChange);
 

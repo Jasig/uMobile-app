@@ -31,9 +31,6 @@ var SettingsWindowController = function(facade){
     init = function () {
         _self.key = 'settings';
         _self.isModal = true;
-        Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
-            Styles = app.styles;
-        });
     };
     
     this.open = function () {

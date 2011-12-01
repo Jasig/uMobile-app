@@ -38,7 +38,6 @@ function _init () {
     _numColumns = Math.floor(app.models.deviceProxy.getWidth() / _completeWidth);
     _leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_completeWidth * _numColumns))) / 2);
     
-    Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], _onRotation);
     Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
     Ti.App.addEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
     
@@ -219,7 +218,6 @@ function _rearrangeGrid (e) {
 };
 
 exports.destroy = function () {
-    Ti.App.removeEventListener(app.events['STYLESHEET_UPDATED'], _onRotation);
     Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
     Ti.App.removeEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
     
@@ -250,12 +248,6 @@ exports.resizeGrid = function (_isSpecialLayout) {
     }
 };
 
-function _onRotation (e) {
-    _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _numColumns = Math.floor(app.models.deviceProxy.getWidth() / _completeWidth);
-    _leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_completeWidth * _numColumns))) / 2);
-};
 
 function _onLayoutCleanup (e) {
     Ti.API.debug("onLayoutCleanup() in PortalGridView");
@@ -271,6 +263,11 @@ function _onLayoutCleanup (e) {
 
 function _onOrientationChange (e) {
     if (app.models.windowManager.getCurrentWindow() === app.config.HOME_KEY || app.models.deviceProxy.isAndroid()) {
+        _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+        _numColumns = Math.floor(app.models.deviceProxy.getWidth() / _completeWidth);
+        _leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_completeWidth * _numColumns))) / 2);
+        
         //If the device is Android, we always want to rearrange the grid to 
         //account for the back button circumventing the windowManager
         _rearrangeGrid();

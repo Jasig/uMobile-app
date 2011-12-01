@@ -23,24 +23,32 @@ startup = function (e) {
     Titanium.include('js/libs/underscore-min.js');
     Titanium.include('js/gibberishAES.js');
     
-    app = require('/js/ApplicationFacade');
+    app = {
+        models: {}
+    };
+    app.events = {
+        SESSION_ACTIVITY            : 'SessionActivity',
+        NETWORK_ERROR               : 'networkConnectionError',
+        SHOW_WINDOW                 : 'showWindow',
+        SHOW_PORTLET                : 'showPortlet',
+        //Layout-related events
+        LAYOUT_CLEANUP              : 'layoutcleanup',
+        DIMENSION_CHANGES           : 'dimensionchanges',
+        ANDROID_ORIENTATION_CHANGE  : 'androidorientationchange',
+        //Platform level events
+        OPEN_EXTERNAL_URL           : 'OpenExternalURL'
+    };
 
-    //Adds  members to the facade singleton, so they can be accessed.
-    //Only necessary members are added here, secondary members are added from controllers when opened, for performance.
-    //from any model, view, controller throughout the application
-    //The facade is always called "app" in each controller, and depending on the type of member,
-    //It can be accessed as app.memberName, app.views.viewName, app.models.modelName, or app.controllers.controllerName
-
-    app.registerMember('config', require('/js/config')); //Global config object
-    app.registerMember('localDictionary', require('/js/localization')[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
-    app.registerModel('deviceProxy', require('/js/models/DeviceProxy'));
-    app.registerModel('resourceProxy', require('/js/models/ResourceProxy')); //Manages retrieval of local files between different OS's
-    app.registerMember('styles', require('/js/style')); //Stylesheet-like dictionary used throughout application.
-    app.registerModel('windowManager', require('/js/models/WindowManager')); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
-    app.registerModel('portalProxy', require('/js/models/PortalProxy')); //Manages the home screen view which displays a grid of icons representing portlets.
-    app.registerModel('sessionProxy', require('/js/models/SessionProxy')); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
-    app.registerModel('userProxy', require('/js/models/UserProxy'));
-    app.registerModel('loginProxy', require('/js/models/LoginProxy')); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
+    app['config'] = require('/js/config'); //Global config object
+    app['localDictionary'] = require('/js/localization')[Titanium.App.Properties.getString('locale')]; // Dictionary contains all UI strings for the application for easy localization.
+    app.models['deviceProxy'] = require('/js/models/DeviceProxy');
+    app.models['resourceProxy'] = require('/js/models/ResourceProxy'); //Manages retrieval of local files between different OS's
+    app['styles'] = require('/js/style'); //Stylesheet-like dictionary used throughout application.
+    app.models['windowManager'] = require('/js/models/WindowManager'); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
+    app.models['portalProxy'] = require('/js/models/PortalProxy'); //Manages the home screen view which displays a grid of icons representing portlets.
+    app.models['sessionProxy'] = require('/js/models/SessionProxy'); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
+    app.models['userProxy'] = require('/js/models/UserProxy');
+    app.models['loginProxy'] = require('/js/models/LoginProxy'); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
         
     app.models.windowManager.openWindow(app.config.HOME_KEY);
 
@@ -60,17 +68,12 @@ startup = function (e) {
     	else {
     		Ti.API.error("No url was attached to the event: " + JSON.stringify(e));
     	}
-    	
     });
-    
 };
 
 onOrientationChange = function (e) {
-    Ti.API.info('orientationchange' + JSON.stringify(e) + " & current is " + app.models.deviceProxy.getCurrentOrientation());
     if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
         app.models.deviceProxy.setCurrentOrientation(e.orientation);
-        app.styles = new Styles(app);
-        Ti.App.fireEvent(app.events['STYLESHEET_UPDATED']);
         Ti.App.fireEvent(app.events['DIMENSION_CHANGES'], {orientation: e.orientation});
     }
     else {

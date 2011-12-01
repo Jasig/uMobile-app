@@ -26,6 +26,13 @@ To apply styles to elements
 
 var defaults, OS = Ti.Platform.osname;
 
+function getPlatformWidth () {
+    return Ti.Platform.displayCaps.platformWidth;
+}
+
+function getPlatformHeight () {
+    return Ti.Platform.displayCaps.platformHeight;
+}
 
 defaults = {
     TITLEBAR_HEIGHT: 40,
@@ -62,7 +69,7 @@ exports.view = {
 };
 exports.portletView= {
     top: defaults.TITLEBAR_HEIGHT,
-    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT
+    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT
 };
 exports.portletWindow= {
     url: 'js/views/WindowContext.js',
@@ -97,7 +104,7 @@ exports.settingsPasswordInput= {
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
     passwordMask: true,
     left: 100,
-    width: Ti.Platform.displayCaps.platformWidth - 100 - 30,
+    width: getPlatformWidth() - 100 - 30,
     autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
     autocorrect: false
 };
@@ -111,7 +118,7 @@ exports.settingsUsernameInput= {
     height: OS === 'iphone' ? 35 : 45,
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
     left: 100,
-    width: Ti.Platform.displayCaps.platformWidth - 100 - 30,
+    width: getPlatformWidth() - 100 - 30,
     autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
     autocorrect: false
 };
@@ -148,10 +155,10 @@ exports.searchBar= {
     barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
     showCancel: OS === 'android' ? false : true,
-    width: Ti.Platform.displayCaps.platformWidth
+    width: getPlatformWidth()
 };
 exports.searchBarInput= {
-    width: Ti.Platform.displayCaps.platformWidth - 5 - 5,
+    width: getPlatformWidth() - 5 - 5,
     height: defaults.SEARCHBAR_HEIGHT - 7,
     top: 5,
     borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -229,7 +236,7 @@ exports.titleBarSettingsContainer= {
     borderRadius: 5,
     backgroundColor: 'transparent',
     backgroundColorPressed: "#999",
-    left: Ti.Platform.displayCaps.platformWidth - 40 - 5
+    left: getPlatformWidth() - 40 - 5
 };
 exports.titleBarSettingsButton= {
     height: 18,
@@ -246,7 +253,7 @@ exports.secondaryNavBar= {
 };
 
 exports.secondaryNavBarLabel= {
-    width: Ti.Platform.displayCaps.platformWidth - 70 * 2 - 10 * 4,
+    width: getPlatformWidth() - 70 * 2 - 10 * 4,
     left: 10,
     buttonLeftFloat: 70 + 10 * 2,
     height: defaults.TITLEBAR_HEIGHT,
@@ -262,7 +269,7 @@ exports.secondaryNavBarLabel= {
 };
 // Styles for new prototype in v1.1, views/SecondaryNav.js
 exports.secondaryNavLabel= {
-    width: Ti.Platform.displayCaps.platformWidth - 70 * 2 - 10 * 4,
+    width: getPlatformWidth() - 70 * 2 - 10 * 4,
     left: 70 + 10 * 2,
     height: defaults.TITLEBAR_HEIGHT,
     color: defaults.SECONDARY_BAR_COLOR,
@@ -277,14 +284,14 @@ exports.secondaryNavLabel= {
 };
 /*secondaryBar= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: Ti.Platform.displayCaps.platformWidth,
+    width: getPlatformWidth(),
     height: defaults.TITLEBAR_HEIGHT,
     barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
 };*/
 exports.secondaryNavBarButton= {
     style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-    left: Ti.Platform.displayCaps.platformWidth - 50 - 10,
+    left: getPlatformWidth() - 50 - 10,
     leftFloat: 10,
     width: 50,
     height: 30,
@@ -335,13 +342,13 @@ exports.portalWindow= {
 };
 exports.portalContentLayer= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: OS === 'android' ? 'auto' : Ti.Platform.displayCaps.platformWidth,
-    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - 20,
+    width: OS === 'android' ? 'auto' : getPlatformWidth(),
+    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT - 20,
     backgroundColor: "#2A4F95"
 };
 exports.homeGrid= {
     top: 0,
-    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT - OS === 'iphone' || OS === 'ipad' ? 20 : 0,
+    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT - OS === 'iphone' || OS === 'ipad' ? 20 : 0,
     color: "#fff",
     contentHeight:'auto',
     zIndex: 1
@@ -410,14 +417,14 @@ exports.contactDetailView= {
     backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
     visible: false,
     top: defaults.TITLEBAR_HEIGHT,
-    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
-    width: OS === 'android' ? Ti.Platform.displayCaps.platformWidth : 'auto',
+    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT,
+    width: OS === 'android' ? getPlatformWidth() : 'auto',
     modal: true
 };
 
 exports.directoryDetailAttributeTable= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: Ti.Platform.displayCaps.platformWidth
+    width: getPlatformWidth()
 };
 exports.directoryDetailRow= {
     backgroundColor: "#fff",
@@ -448,7 +455,7 @@ exports.directoryDetailRowValue= {
         fontSize: 14
     },
     left: 75 + 10 + 10,
-    width: Ti.Platform.displayCaps.platformWidth - 100 - 10 - 10 - 10
+    width: getPlatformWidth() - 100 - 10 - 10 - 10
 };
 exports.directoryDetailValueNoLabel= {
     font: {
@@ -458,12 +465,12 @@ exports.directoryDetailValueNoLabel= {
     color: '#333',
     textAlign: 'center',
     left: 10,
-    width: Ti.Platform.displayCaps.platformWidth - (10 * 2)
+    width: getPlatformWidth() - (10 * 2)
 };
 // MAP STYLES
 exports.mapView= {
     top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-    height: Ti.Platform.displayCaps.platformHeight - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50 /*mapNavView.height*/),
+    height: getPlatformHeight() - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50 /*mapNavView.height*/),
     mapType: Titanium.Map.STANDARD_TYPE,
     regionFit: true,
     animate: true,
@@ -492,7 +499,7 @@ exports.mapCategoryCount= {
     textAlign: 'center'
 };
 exports.mapNavView= {
-    top: Ti.Platform.displayCaps.platformHeight - 50 - defaults.STATUSBAR_HEIGHT,
+    top: getPlatformHeight() - 50 - defaults.STATUSBAR_HEIGHT,
     height              : 50,
     backgroundGradient  : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
 };
@@ -545,14 +552,14 @@ exports.mapDetailLocationPhoto= {
 // ACTIVITY INDICATOR STYLING
 exports.globalActivityIndicator= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: Ti.Platform.displayCaps.platformWidth,
-    height: Ti.Platform.displayCaps.platformHeight - defaults.TITLEBAR_HEIGHT,
+    width: getPlatformWidth(),
+    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT,
     color: '#fff',
     zIndex: 1000,
     backgroundImage: 'img/bgActivityIndicator.png'
 };
 exports.activityIndicatorDialog= {
-    width: Ti.Platform.displayCaps.platformWidth > 480 ? 360 : Math.round(Ti.Platform.displayCaps.platformWidth * 0.75),
+    width: getPlatformWidth() > 480 ? 360 : Math.round(getPlatformWidth() * 0.75),
     height: 75,
     borderRadius: 10,
     borderWidth: 1,
