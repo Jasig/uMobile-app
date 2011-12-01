@@ -17,106 +17,71 @@
  * under the License.
  */
 
-/**
- * settings_window.js contains setup information for the
- * user settings tab.
- */
+var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowView;
 
- /**
-  * @constructor
-  */
-var DirectoryWindowController = function (facade) {
-    var app = facade, _self = this, Directory, LocalDictionary, Config, init, DirectoryWindow,
-        // Data and variables
-        initialized, peopleResult = [], defaultTableData = [], 
-        //Methods
-        resetHome, searchSubmit,
-        //Event Handlers
-        onNewWindowOpened, onProxySearching, onProxySearchComplete, onProxySearchError, onDirectoryWindowSearchChange, onSearchSubmit;
+exports.open = function () {
+    //Listen for events, mostly fired from models.DirectoryProxy
+    directoryProxy = require('/js/models/DirectoryProxy');
+    directoryWindowView = require('/js/views/DirectoryWindowView');
     
-    init = function () {
-        _self.key = 'directory';        
-    };
+    Titanium.App.addEventListener(directoryProxy.events['SEARCHING'], onProxySearching);
+    Titanium.App.addEventListener(directoryProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
+    Titanium.App.addEventListener(directoryProxy.events['SEARCH_ERROR'], onProxySearchError);
+    Titanium.App.addEventListener(directoryWindowView.events['SEARCH_CHANGE'], onDirectoryWindowSearchChange);
+    Titanium.App.addEventListener(directoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
     
-    this.open = function () {
-        Ti.API.debug("open() in DirectoryWindowController");
-        if (!initialized) {
-            Titanium.include('js/models/DirectoryProxy.js');
-            Titanium.include('js/views/DirectoryWindowView.js');
-            
-            app.registerView('directoryWindowView', new DirectoryWindowView(app));
-            app.registerModel('directoryProxy', new DirectoryProxy(app)); //Manages real-time searching the uPortal service for directory entries, used primarily by DirectoryWindowController.
-            
-            //Listen for events, mostly fired from models.DirectoryProxy
-            Titanium.App.addEventListener(DirectoryProxy.events['SEARCHING'], onProxySearching);
-            Titanium.App.addEventListener(DirectoryProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
-            Titanium.App.addEventListener(DirectoryProxy.events['SEARCH_ERROR'], onProxySearchError);
-            Titanium.App.addEventListener(DirectoryWindowView.events['SEARCH_CHANGE'], onDirectoryWindowSearchChange);
-            Titanium.App.addEventListener(DirectoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
+    directoryWindowView.open({
+        defaultNumber: app.config.phoneDirectoryNumber,
+        emergencyContacts: directoryProxy.getEmergencyContacts()
+    });
+};
 
-            //Set pointers to necessary members of facade
-            Directory = app.models.directoryProxy;
-            DirectoryWindow = app.views.directoryWindowView;
-            LocalDictionary = app.localDictionary;
-            Config = app.config;
-            
-            initialized = true;
-        }
-        
-        DirectoryWindow.open({
-            defaultNumber: Config.phoneDirectoryNumber,
-            emergencyContacts: Directory.getEmergencyContacts()
-        });
-    };
+exports.close = function (options) {
+    Titanium.App.removeEventListener(directoryProxy.events['SEARCHING'], onProxySearching);
+    Titanium.App.removeEventListener(directoryProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
+    Titanium.App.removeEventListener(directoryProxy.events['SEARCH_ERROR'], onProxySearchError);
+    Titanium.App.removeEventListener(directoryWindowView.events['SEARCH_CHANGE'], onDirectoryWindowSearchChange);
+    Titanium.App.removeEventListener(directoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
     
-    this.close = function (options) {
-        DirectoryWindow.close();
-    };
-    
-    resetHome = function () {
-        Ti.API.debug("resetHome() in DirectoryWindowController");
-        Directory.clear();
-        DirectoryWindow.reset();
-    };
-    
-    // Window Events
-    onDirectoryWindowSearchChange = function (e) {
-        Directory.clear();
-    };
-    onSearchSubmit = function(e) {
-        Ti.API.debug('onSearchSubmit() in DirectoryWindowController');
-        Directory.search(e.value);
-    };
-    
-    //Proxy events
+    directoryProxy = null;
+    directoryWindowView.close();
+    directoryWindowView = null;
+};
 
-    onProxySearching = function (e) {
-        Ti.API.info("Searching...");
-        DirectoryWindow.showActivityIndicator(LocalDictionary.searching);
-    };
-    
-    onProxySearchComplete = function (e) {
-        Ti.API.info("Directory Search Complete");
-        if (!e.error) {
-            DirectoryWindow.displaySearchResults(Directory.getPeople());
-        }
-        else {
-            DirectoryWindow.alert({
-                title: LocalDictionary.error,
-                message: e.error
-            });
-        }
-    };
-    
-    onProxySearchError = function (e) {
-        Ti.API.error("Directory Proxy Search Error");
-        DirectoryWindow.alert({
-            title: LocalDictionary.errorPerformingSearch,
-            message: LocalDictionary.noSearchResults
-        });
-    };
-    
-    if(!initialized) {
-        init();
+resetHome = function () {
+    directoryProxy.clear();
+    directoryWindowView.reset();
+};
+
+// Window Events
+onDirectoryWindowSearchChange = function (e) {
+    directoryProxy.clear();
+};
+onSearchSubmit = function(e) {
+    directoryProxy.search(e.value);
+};
+
+//Proxy events
+
+onProxySearching = function (e) {
+    directoryWindowView.showActivityIndicator(app.localDictionary.searching);
+};
+
+onProxySearchComplete = function (e) {
+    if (!e.error) {
+        directoryWindowView.displaySearchResults(directoryProxy.getPeople());
     }
+    else {
+        directoryWindowView.alert({
+            title: app.localDictionary.error,
+            message: e.error
+        });
+    }
+};
+
+onProxySearchError = function (e) {
+    directoryWindowView.alert({
+        title: app.localDictionary.errorPerformingSearch,
+        message: app.localDictionary.noSearchResults
+    });
 };

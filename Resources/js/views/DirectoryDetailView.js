@@ -16,129 +16,92 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/* 
-* @constructor
-* @implements {IDetailView}
-*/
-var DirectoryDetailView = function (facade) {
-    var app = facade, init, _self = this, _view,
-        Device, Styles, LocalDictionary, PersonDetailTable, Config, UI,
-        //UI Components
-        titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
-        //Methods
-        updateValues, constructPerson, getAttribute,
-        //Controller Event Handlers
-        onDimensionChanges, onBackBtnClick;
+
+var _view, personDetailTable, titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
+directoryPerson = require('/js/models/VOs/DirectoryPersonVO');
+
+exports.getDetailView = function () {
+    if (!_view) {
+        _view = Titanium.UI.createView(app.styles.contactDetailView);
+
+        secondaryNavBar = require('/js/views/UI/SecondaryNav');
+        secondaryNavBar.rightButton.hide();
+        secondaryNavBar.rightButton.visible = false;
+        secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
+        _view.add(secondaryNavBar.view);
+
+        attributeTable = require('/js/views/PersonDetailTableView');
+        _view.add(attributeTable.table);
+
+        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], onDimensionChanges);
+    }
+    return _view;
+};
+
+exports.render = function (viewModel) {
+    var person = directoryPerson.constructVO(viewModel);
+    secondaryNavBar.titleLabel.text = person.fullName;
+    attributeTable.update(person);
+    _view.show();
+};
+
+exports.hide = function () {
+    _view.hide();
+};
+
+function constructPerson (attributes) {
+    Ti.API.info('creating person');
+    var person = {};
+    person.address = {};
+    person.email = {};
+    person.phone = {};
+    person.URL = {};
     
-    init = function () {
-        Ti.API.debug('DirectoryDetailController constructed');
-        if (!app.models.directoryPersonVO) {
-            Ti.include('js/models/VOs/DirectoryPersonVO.js');
-            app.registerModel('directoryPersonVO', new DirectoryPersonVO(app));
+    //A person has the following attributes:
+    //Required: name
+    //Optional: email (array of email addresses), username, userLoginId, displayName, phone
+
+    person.address.home = getAttribute('homeAddress', attributes);
+    person.email.home = getAttribute('homeEmail', attributes);
+    person.phone.home = getAttribute('homePhone', attributes);
+    person.URL.home = getAttribute('URL', attributes);
+    
+    person.organization = getAttribute('organization', attributes);
+    person.department = getAttribute('department', attributes);
+    person.firstName = getAttribute('firstName', attributes);
+    person.fullName = getAttribute('fullName', attributes);
+    person.jobTitle = getAttribute('jobTitle', attributes);
+    person.lastName = getAttribute('lastName', attributes);        
+    Ti.API.info(person);
+
+    return person;
+};
+
+function getAttribute (tiAttrName, attributes) {
+    var portalAttrName = app.config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
+    if (portalAttrName) {
+        var values = attributes[portalAttrName];
+        Ti.API.info(values);
+        if (values && values.length > 0) {
+            return values[0].replace('$', '\n');
         }
-        DirectoryPerson = app.models.directoryPersonVO;
-        Device = app.models.deviceProxy;
-        Styles = app.styles;
-        LocalDictionary = app.localDictionary;
-        PersonDetailTable = app.views.PersonDetailTableView;
-        Config = app.config;
-        UI = app.UI;
-    };
-    
-    this.getDetailView = function () {
-        if (!_view) {
-            _view = Titanium.UI.createView(app.styles.contactDetailView);
+    }
+    return null;
+};
 
-            secondaryNavBar = require('/js/views/UI/SecondaryNav');
-            secondaryNavBar.rightButton.hide();
-            secondaryNavBar.rightButton.visible = false;
-            secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
-            _view.add(secondaryNavBar.view);
+function onDimensionChanges (e) {
+    if (_view) {
+        _view.width = app.styles.contactDetailView.width;
+        _view.height = app.styles.contactDetailView.height;
+    }
+    if (attributeTable) {
+        attributeTable.table.width = app.styles.directoryDetailAttributeTable.width;
+    }
+    else {
+        Ti.API.error("attributeTable is undefined in DirectoryDetailController");
+    }
+};
 
-            attributeTable = new PersonDetailTable(app, Styles.directoryDetailAttributeTable);
-            _view.add(attributeTable);
-
-            Ti.App.addEventListener(app.events['STYLESHEET_UPDATED'], function (e) {
-                Styles = app.styles;
-            });
-
-            Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], onDimensionChanges);
-        }
-        return _view;
-    };
-    
-    this.render = function (viewModel) {
-        var person = DirectoryPerson.constructVO(viewModel);
-        secondaryNavBar.titleLabel.text = person.fullName;
-        attributeTable.update(person);
-        _view.show();
-    };
-    
-    this.hide = function () {
-        _view.hide();
-    };
-    
-    constructPerson = function (attributes) {
-        Ti.API.info('creating person');
-        var person = {};
-        person.address = {};
-        person.email = {};
-        person.phone = {};
-        person.URL = {};
-        Ti.API.info('created person');
-        Ti.API.info(person.address);
-        
-        //A person has the following attributes:
-        //Required: name
-        //Optional: email (array of email addresses), username, userLoginId, displayName, phone
-
-        person.address.home = getAttribute('homeAddress', attributes);
-        person.email.home = getAttribute('homeEmail', attributes);
-        person.phone.home = getAttribute('homePhone', attributes);
-        person.URL.home = getAttribute('URL', attributes);
-        
-        person.organization = getAttribute('organization', attributes);
-        person.department = getAttribute('department', attributes);
-        person.firstName = getAttribute('firstName', attributes);
-        person.fullName = getAttribute('fullName', attributes);
-        person.jobTitle = getAttribute('jobTitle', attributes);
-        person.lastName = getAttribute('lastName', attributes);        
-        Ti.API.info(person);
-
-        return person;
-    };
-
-    getAttribute = function (tiAttrName, attributes) {
-        Ti.API.info("getting attribute " + tiAttrName);
-        var portalAttrName = Config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
-        if (portalAttrName) {
-            var values = attributes[portalAttrName];
-            Ti.API.info(values);
-            if (values && values.length > 0) {
-                return values[0].replace('$', '\n');
-            }
-        }
-        return null;
-    };
-    
-    onDimensionChanges = function (e) {
-        Ti.API.debug("onDimensionChanges() in DirectoryDetailController");
-        if (_view) {
-            _view.width = app.styles.contactDetailView.width;
-            _view.height = app.styles.contactDetailView.height;
-        }
-        if (attributeTable) {
-            attributeTable.width = Styles.directoryDetailAttributeTable.width;
-        }
-        else {
-            Ti.API.error("attributeTable is undefined in DirectoryDetailController");
-        }
-    };
-    
-    onBackBtnClick = function () {
-        Ti.API.debug("onBackBtnClick() in DirectoryDetailController");
-        _view.hide();
-    };
-
-    init();
+function onBackBtnClick () {
+    _view.hide();
 };
