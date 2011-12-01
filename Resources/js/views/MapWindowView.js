@@ -17,11 +17,12 @@
 * under the License.
 */
 
-var view, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar;
+var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar;
 
 
 // Public methods
-exports.createView = function () {
+exports.createView = function (dataProxy) {
+    mapProxy = dataProxy;
     view = Ti.UI.createView();
     _createMainView();
     exports.resetMapLocation();
@@ -47,7 +48,7 @@ exports.plotPoints = function (points) {
     }
     
     // Center the map around the active points
-    mapView.setLocation(app.models.mapProxy.getMapCenter());
+    mapView.setLocation(mapProxy.getMapCenter());
     activityIndicator.view.hide();
 };
 
@@ -69,8 +70,8 @@ exports.resetDimensions = function (e) {
 };
 
 exports.resetMapLocation = function () {
-    if (mapView && app.models.mapProxy) {
-        mapView.setLocation(app.models.mapProxy.getMapCenter(true));
+    if (mapView && mapProxy) {
+        mapView.setLocation(mapProxy.getMapCenter(true));
     }
 };
 
