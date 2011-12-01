@@ -44,7 +44,7 @@ exports.getShowPortletFunc = function (portlet) {
     //when an icon is clicked in the home screen grid.
     return function () {
         if (portlet.url) {
-            app.models.windowManager.openWindow(app.controllers.portletWindowController.key, portlet);
+            app.models.windowManager.openWindow(app.config.PORTLET_KEY, portlet);
         } 
         else {
             app.models.windowManager.openWindow(portlet.window);

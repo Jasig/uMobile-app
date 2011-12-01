@@ -52,7 +52,7 @@ exports.openWindow = function (windowKey, portlet) {
             if ((app.models.deviceProxy.isIOS() && !applicationWindows[windowKey].isModal) || app.models.deviceProxy.isAndroid()) {
                 //If the new window is a modal, it would look bad for the previous window to be black
                 //when the modal is in opening/closing transitions
-                currentController.close.close();
+                currentController.close();
                 currentController = null;
             }
         }

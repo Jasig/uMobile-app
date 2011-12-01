@@ -78,7 +78,7 @@ function onHomeClick (e) {
 };
 
 function onInfoClick (e) {
-    app.models.windowManager.openWindow(app.controllers.portletWindowController.key, {
+    app.models.windowManager.openWindow(app.config.PORTLET_KEY, {
         fname: 'info',
         externalModule: true,
         title: app.localDictionary.info,
