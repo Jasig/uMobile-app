@@ -50,9 +50,7 @@ exports.init = function () {
 };
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
-    if (typeof _win === "undefined") {
-        _win = Ti.UI.createWindow(app.styles.portalWindow);
-    }
+    _win = Ti.UI.createWindow(app.styles.portalWindow);
 
     if (exports.getState() === exports.states['INITIALIZED']) {
         _win.open();
@@ -143,7 +141,7 @@ exports.getState = function () {
 };
 
 exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
-    if (typeof portalGridView !== "undefined") {
+    if (portalGridView) {
         portalGridView.updateGrid(_modules);
     }
     
@@ -187,7 +185,7 @@ exports.alert = function (title, message) {
 };
 
 function _removeSpecialLayoutIndicator (_isGuestLayout, _isPortalReachable) {
-    if (typeof _guestNotificationView !== "undefined") {
+    if (_guestNotificationView) {
         _guestNotificationView.removeEventListener('click', _specialLayoutIndicatorClick);
         _contentLayer.remove(_guestNotificationView);
     }
@@ -201,14 +199,14 @@ function _specialLayoutIndicatorClick (e) {
 
 function _addSpecialLayoutIndicator (_isPortalReachable) {
     var guestNotificationLabel, _timeout;
-    if (typeof _guestNotificationView !== "undefined") {
+    if (_guestNotificationView) {
         Ti.API.debug("_guestNotificationView.show(). _layoutIndicator: " + _layoutIndicator);
         
         _contentLayer.add(_guestNotificationView);
     }
     else {
         Ti.API.debug("create _guestNotificationView. _layoutIndicator: " + _layoutIndicator);
-        if (typeof _contentLayer !== "undefined") {
+        if (_contentLayer) {
             _guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
             _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
 
@@ -265,10 +263,7 @@ function _onPortletsLoaded (e) {
 };
 
 function _onPortalGridViewStateChange (e) {
-    if (typeof portalGridView !== "undefined" 
-        && typeof _activityIndicator !== "undefined" 
-        && typeof e.state !== "undefined"
-        && e.state === portalGridView.states['COMPLETE']) {
+    if (portalGridView && _activityIndicator && e.state && e.state === portalGridView.states['COMPLETE']) {
         exports.hideActivityIndicator(portalGridView.states['COMPLETE']);
     }
 };

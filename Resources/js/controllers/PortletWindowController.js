@@ -85,7 +85,7 @@ function _createView (portlet) {
     _win.add(_titleBar.view);
     _win.add(_navBar.view);
     
-    if (app.models.deviceProxy.isIOS() && typeof _webView === "undefined") {
+    if (app.models.deviceProxy.isIOS() && _webView) {
         _webView = Titanium.UI.createWebView(app.styles.portletView);
         _win.add(_webView);
         _webView.addEventListener('load', _onPortletLoad);

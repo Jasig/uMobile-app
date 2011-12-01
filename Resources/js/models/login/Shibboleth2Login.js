@@ -134,12 +134,12 @@ _onPortalSessionEstablished = function (e) {
         }
     });
 
-    if (_credentials.username === '' && typeof _client.clearCookies !== "undefined") {
+    if (_credentials.username === '' && _client.clearCookies) {
         _client.clearCookies(app.config.BASE_PORTAL_URL);
         _client.clearCookies(app.config.SHIB_BASE_URL);
         _client.clearCookies(app.config.SHIB_BASE_URL + "/idp");
     }
-    else if (typeof _client.clearCookies === "undefined") {
+    else if (_client.clearCookies) {
         Ti.API.error("client.clearCookies() isn't defined.");
     }
     _client.open("GET", app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");

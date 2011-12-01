@@ -25,9 +25,7 @@ exports.events = {
 var hidePreviousWindow, 
 applicationWindows = app.config.WINDOW_CONTROLLERS,
 activityStack = [],
-currentController,
-homeKey = 'home',
-portletKey = 'portlet';
+currentController;
 
 Ti.App.addEventListener(app.events['SHOW_WINDOW'], onShowWindow);
 Ti.App.addEventListener(app.events['SHOW_PORTLET'], onShowPortlet);
@@ -41,9 +39,7 @@ exports.openWindow = function (windowKey, portlet) {
         var _newWindowEvent = {
             key: windowKey
         };
-        if (portlet) {
-            _newWindowEvent.portlet = portlet;
-        }
+        if (portlet) _newWindowEvent.portlet = portlet;
         Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
 
@@ -108,7 +104,7 @@ function onAndroidBack (e) {
 };
 
 function onNetworkConnectionError (e) {
-    exports.openWindow(portletKey, {
+    exports.openWindow(app.config.PORTLET_KEY, {
         title: app.localDictionary.noNetworkTitle,
         fname: 'nonetwork',
         url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/no-network-en_US.html').nativePath
@@ -120,6 +116,6 @@ function onShowWindow (e) {
 };
 
 function onShowPortlet (portlet) {
-    exports.openWindow(portletKey, portlet);
+    exports.openWindow(app.config.PORTLET_KEY, portlet);
 };
 
