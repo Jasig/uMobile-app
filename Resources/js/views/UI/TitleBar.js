@@ -87,5 +87,5 @@ function onInfoClick (e) {
 };
 
 function onSettingsClick (e) {
-    app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+    app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
 };

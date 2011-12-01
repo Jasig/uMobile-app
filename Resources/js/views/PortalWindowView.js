@@ -196,7 +196,7 @@ function _removeSpecialLayoutIndicator (_isGuestLayout, _isPortalReachable) {
 };
 
 function _specialLayoutIndicatorClick (e) {
-    app.models.windowManager.openWindow(app.controllers.settingsWindowController.key);
+    app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
 };
 
 function _addSpecialLayoutIndicator (_isPortalReachable) {

@@ -128,6 +128,7 @@ exports.WINDOW_CONTROLLERS = {
 };
 exports.HOME_KEY = 'home';
 exports.PORTLET_KEY = 'portlet';
+exports.SETTINGS_KEY = 'settings'
 
 exports.nativeIcons = {
     athletics: 'athletics.png',

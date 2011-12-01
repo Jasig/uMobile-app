@@ -18,385 +18,342 @@
  */
 
 /**
- * settings_window.js contains setup information for the
+ * SettingsWindowController contains setup information for the
  * user settings tab.
  */
-var SettingsWindowController = function(facade){
-    var win, app = facade, _self = this, Device, User, UI, LocalDictionary, Styles, UPM, Login,
-        credentials, initialized, wasFormSubmitted = false, wasLogOutClicked = false,
-        usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar, settingsTable, credentialsGroup,
-        init, createCredentialsForm,
-        onUpdateCredentials, onSaveButtonPress, onSaveButtonUp, onWindowBlur, onSessionSuccess, onSessionError, onPortalProxyPortletsLoaded, onLogOutButtonClick, onLogOutButtonPress, onLogOutButtonUp;
 
-    init = function () {
-        _self.key = 'settings';
-        _self.isModal = true;
-    };
+var win, credentials, usernameLabel, usernameInput, passwordLabel, passwordInput, saveButton, logOutButton, activityIndicator, titlebar, settingsTable, credentialsGroup,
+wasFormSubmitted = false, 
+wasLogOutClicked = false;
+
+exports.isModal = true;
+
+exports.open = function () {
+    Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
+    Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
+    Ti.App.addEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
+
+    credentials = app.models.userProxy.getCredentials();
     
-    this.open = function () {
-        Ti.API.debug("this.open() in SettingsWindowController");
+    win = Titanium.UI.createWindow({
+        url: 'js/views/WindowContext.js',
+        exitOnClose: false, 
+        backgroundColor: app.styles.backgroundColor,
+        modal: true,
+        navBarHidden: true,
+        orientationModes: [
+        	Titanium.UI.PORTRAIT,
+        	Titanium.UI.UPSIDE_PORTRAIT,
+        	Titanium.UI.LANDSCAPE_LEFT,
+        	Titanium.UI.LANDSCAPE_RIGHT,
+        	Titanium.UI.FACE_UP,
+        	Titanium.UI.FACE_DOWN
+        ]
+    });
 
-        if (!initialized) {
-            Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
-            Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
-            Ti.App.addEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
-
-            Device = app.models.deviceProxy;
-            User = app.models.userProxy;
-            UI = app.UI;
-            LocalDictionary = app.localDictionary;
-            Styles = app.styles;
-            UPM = app.config;
-            Login = app.models.loginProxy;
-
-            credentials = User.getCredentials();
-
-            initialized = true;
-        }
-        
-        credentials = User.getCredentials();
-        
-        win = Titanium.UI.createWindow({
-            url: 'js/views/WindowContext.js',
-            exitOnClose: false, 
-            backgroundColor: Styles.backgroundColor,
-            modal: true,
-            navBarHidden: true,
-            orientationModes: [
-            	Titanium.UI.PORTRAIT,
-            	Titanium.UI.UPSIDE_PORTRAIT,
-            	Titanium.UI.LANDSCAPE_LEFT,
-            	Titanium.UI.LANDSCAPE_RIGHT,
-            	Titanium.UI.FACE_UP,
-            	Titanium.UI.FACE_DOWN
-            ]
-        });
-        /*if (Device.isIOS()) {
-            win.modal = true;
-            win.navBarHidden = true;
-        }*/
-        win.open();
-        
-        titleBar = require('/js/views/UI/TitleBar');
-        titleBar.addHomeButton();
-        titleBar.updateTitle(LocalDictionary.settings);
-        
-        win.add(titleBar.view);
-        if (Device.isAndroid()) {
-        	// titleBar.top += 24;
-        }
-        createCredentialsForm();
-        
-        activityIndicator = require('/js/views/UI/ActivityIndicator');
-        activityIndicator.resetDimensions();
-        win.add(activityIndicator.view);
-        activityIndicator.view.hide();
-    };
+    win.open();
     
-    this.close = function (options) {
-        if (win) {
-            win.close();
-        }
-        onWindowBlur();
-    };
+    titleBar = require('/js/views/UI/TitleBar');
+    titleBar.addHomeButton();
+    titleBar.updateTitle(app.localDictionary.settings);
+    
+    win.add(titleBar.view);
 
-    createCredentialsForm = function () {
-        var usernameLabelOpts = _.clone(Styles.settingsUsernameLabel),
-            usernameInputOpts = _.clone(Styles.settingsUsernameInput),
-            passwordLabelOpts = _.clone(Styles.settingsPasswordLabel),
-            passwordInputOpts = _.clone(Styles.settingsPasswordInput),
-            saveButtonOpts = _.clone(Styles.contentButton),
-            resetPasswordOpts = _.clone(Styles.settingsResetPasswordLabel),
-            logOutButtonOpts = _.clone(Styles.contentButton);
+    createCredentialsForm();
+    
+    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    activityIndicator.resetDimensions();
+    win.add(activityIndicator.view);
+    activityIndicator.view.hide();
+};
 
-        var credentialsGroup = Ti.UI.createTableViewSection({
-            headerTitle: LocalDictionary.accountSettings
-        });
-        
-        var usernameRow = Ti.UI.createTableViewRow({
-            className: "inputRow"
-        });
-        
-        // create the username label and input field
-        usernameLabelOpts.text = LocalDictionary.username;
-        usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
-        usernameRow.add(usernameLabel);
+exports.close = function (options) {
+    Ti.App.removeEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
+    Ti.App.removeEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
+    Ti.App.removeEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
+    
+    logOutButton.removeEventListener('click', onLogOutButtonClick);
+    saveButton.removeEventListener('click', onUpdateCredentials);
+    passwordInput.removeEventListener('return', onUpdateCredentials);
+    usernameInput.removeEventListener('return', onUpdateCredentials);
+    resetPassword.removeEventListener('click', onResetPassword);
+    Titanium.App.removeEventListener(app.events['DIMENSION_CHANGES'], resetFormOrientation);
+    
+    win.close();
+    onWindowBlur();
+    win = null;
+};
 
-        usernameInputOpts.value = credentials.username;
-        usernameInput = Titanium.UI.createTextField(usernameInputOpts);
-        usernameRow.add(usernameInput);
-        
-        credentialsGroup.add(usernameRow);
+function createCredentialsForm () {
+    var usernameLabelOpts = _.clone(app.styles.settingsUsernameLabel),
+        usernameInputOpts = _.clone(app.styles.settingsUsernameInput),
+        passwordLabelOpts = _.clone(app.styles.settingsPasswordLabel),
+        passwordInputOpts = _.clone(app.styles.settingsPasswordInput),
+        saveButtonOpts = _.clone(app.styles.contentButton),
+        resetPasswordOpts = _.clone(app.styles.settingsResetPasswordLabel),
+        logOutButtonOpts = _.clone(app.styles.contentButton);
 
-        // create the password label and input field
-        
-        var passwordRow = Ti.UI.createTableViewRow({
-            className: "inputRow"
-        });
-        
-        passwordLabelOpts.text = LocalDictionary.password;
-        passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
-        passwordRow.add(passwordLabel);
+    var credentialsGroup = Ti.UI.createTableViewSection({
+        headerTitle: app.localDictionary.accountSettings
+    });
+    
+    var usernameRow = Ti.UI.createTableViewRow({
+        className: "inputRow"
+    });
+    
+    // create the username label and input field
+    usernameLabelOpts.text = app.localDictionary.username;
+    usernameLabel = Titanium.UI.createLabel(usernameLabelOpts);
+    usernameRow.add(usernameLabel);
 
-        passwordInputOpts.value = credentials.password;
-        
-        passwordInput = Titanium.UI.createTextField(passwordInputOpts);
-        passwordRow.add(passwordInput);
-        
-        credentialsGroup.add(passwordRow);
-        
-        
-        var buttonRow = Ti.UI.createTableViewRow();
-        // create the save button and configure it to persist
-        // the new credentials when pressed
-        saveButtonOpts.title = LocalDictionary.update;
-        saveButtonOpts.left = 10;
-        saveButton = Titanium.UI.createButton(saveButtonOpts);
+    usernameInputOpts.value = credentials.username;
+    usernameInput = Titanium.UI.createTextField(usernameInputOpts);
+    usernameRow.add(usernameInput);
+    
+    credentialsGroup.add(usernameRow);
 
-        buttonRow.add(saveButton);
-        
-        logOutButtonOpts.left = 100 + 10*2;
-        logOutButtonOpts.title = LocalDictionary.logOut;
-        logOutButton = Ti.UI.createButton(logOutButtonOpts);
-        
-        buttonRow.add(logOutButton);
-        
-        credentialsGroup.add(buttonRow);
-        
-        var resetPasswordRow = Ti.UI.createTableViewRow();
-        
-        resetPassword = Ti.UI.createLabel(resetPasswordOpts);
-        resetPassword.text = LocalDictionary.resetPasswordLink + UPM.FORGOT_PASSWORD_URL;
-        resetPasswordRow.add(resetPassword);
-        
-        credentialsGroup.add(resetPasswordRow);
-        
-        logOutButton.addEventListener('click', onLogOutButtonClick);
-        if(Device.isIOS()) {
-            logOutButton.addEventListener('touchstart', onLogOutButtonPress);
-            logOutButton.addEventListener('touchend', onLogOutButtonUp);
-        }
-        saveButton.addEventListener('click', onUpdateCredentials);
-        if(Device.isIOS()) {
-            saveButton.addEventListener('touchstart', onSaveButtonPress);
-            saveButton.addEventListener('touchend', onSaveButtonUp);
-        }
-        passwordInput.addEventListener('return', onUpdateCredentials);
-        usernameInput.addEventListener('return', onUpdateCredentials);
-        
-        resetPassword.addEventListener('click', function (e){
-            Ti.Platform.openURL(UPM.FORGOT_PASSWORD_URL);
-        });
-        
-        settingsTable = Ti.UI.createTableView(Styles.settingsTable);
-        settingsTable.setData([credentialsGroup]);
-        if (Device.isAndroid()) {
-        	settingsTable.top = titleBar.view.top + titleBar.view.height;
-        }
-        win.add(settingsTable);
-        /*settingsTable.addEventListener('click', function (e) {
-            Ti.API.info("Settings table click, source is " + e.source);
-            if (Device.isIOS() && e.source !== usernameInput && e.source !==passwordInput) {
-                usernameInput.blur();
-                passwordInput.blur();
-            }
-        })*/
-        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
-            usernameInput.width = Styles.settingsUsernameInput.width;
-            passwordInput.width = Styles.settingsPasswordInput.width;
-        });
-    };
+    // create the password label and input field
+    
+    var passwordRow = Ti.UI.createTableViewRow({
+        className: "inputRow"
+    });
+    
+    passwordLabelOpts.text = app.localDictionary.password;
+    passwordLabel = Titanium.UI.createLabel(passwordLabelOpts);
+    passwordRow.add(passwordLabel);
 
-    onUpdateCredentials = function (e) {
-        Ti.API.debug("onUpdateCredentials() in SettingsWindowController");
-        if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { usernameInput.blur(); }
-        if (Device.checkNetwork()) {
-            if (usernameInput.value === '') {
-                if (win.visible || app.models.deviceProxy.isIOS()) {
-                    Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                        message: LocalDictionary.enterAUserName, buttonNames: [LocalDictionary.OK]
-                        }).show();
-                }
-            }
-            else {
-                wasFormSubmitted = true;
-                activityIndicator.setLoadingMessage(LocalDictionary.loggingIn);
-                activityIndicator.view.show();
-                User.saveCredentials({
-                    username: usernameInput.value, 
-                    password: passwordInput.value 
-                });
-                Login.establishNetworkSession();
+    passwordInputOpts.value = credentials.password;
+    
+    passwordInput = Titanium.UI.createTextField(passwordInputOpts);
+    passwordRow.add(passwordInput);
+    
+    credentialsGroup.add(passwordRow);
+    
+    
+    var buttonRow = Ti.UI.createTableViewRow();
+    // create the save button and configure it to persist
+    // the new credentials when pressed
+    saveButtonOpts.title = app.localDictionary.update;
+    saveButtonOpts.left = 10;
+    saveButton = Titanium.UI.createButton(saveButtonOpts);
+
+    buttonRow.add(saveButton);
+    
+    logOutButtonOpts.left = 100 + 10*2;
+    logOutButtonOpts.title = app.localDictionary.logOut;
+    logOutButton = Ti.UI.createButton(logOutButtonOpts);
+    
+    buttonRow.add(logOutButton);
+    
+    credentialsGroup.add(buttonRow);
+    
+    var resetPasswordRow = Ti.UI.createTableViewRow();
+    
+    resetPassword = Ti.UI.createLabel(resetPasswordOpts);
+    resetPassword.text = app.localDictionary.resetPasswordLink + app.config.FORGOT_PASSWORD_URL;
+    resetPasswordRow.add(resetPassword);
+    
+    credentialsGroup.add(resetPasswordRow);
+    
+    logOutButton.addEventListener('click', onLogOutButtonClick);
+    if(app.models.deviceProxy.isIOS()) {
+        logOutButton.addEventListener('touchstart', onLogOutButtonPress);
+        logOutButton.addEventListener('touchend', onLogOutButtonUp);
+    }
+    saveButton.addEventListener('click', onUpdateCredentials);
+    if(app.models.deviceProxy.isIOS()) {
+        saveButton.addEventListener('touchstart', onSaveButtonPress);
+        saveButton.addEventListener('touchend', onSaveButtonUp);
+    }
+    passwordInput.addEventListener('return', onUpdateCredentials);
+    usernameInput.addEventListener('return', onUpdateCredentials);
+    
+    resetPassword.addEventListener('click', onResetPassword);
+    
+    settingsTable = Ti.UI.createTableView(app.styles.settingsTable);
+    settingsTable.setData([credentialsGroup]);
+    if (app.models.deviceProxy.isAndroid()) {
+    	settingsTable.top = titleBar.view.top + titleBar.view.height;
+    }
+    win.add(settingsTable);
+
+    Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], resetFormOrientation);
+};
+
+function resetFormOrientation (e) {
+    if (usernameInput) usernameInput.width = app.styles.settingsUsernameInput.width;
+    if (passwordInput) passwordInput.width = app.styles.settingsPasswordInput.width;
+}
+
+function onResetPassword (e) {
+    Ti.Platform.openURL(app.config.FORGOT_PASSWORD_URL);
+}
+
+function onUpdateCredentials (e) {
+    if (passwordInput) { passwordInput.blur(); }
+    if (usernameInput) { usernameInput.blur(); }
+    if (app.models.deviceProxy.checkNetwork()) {
+        if (usernameInput.value === '') {
+            if (win.visible || app.models.deviceProxy.isIOS()) {
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                    message: app.localDictionary.enterAUserName, buttonNames: [app.localDictionary.OK]
+                    }).show();
             }
         }
         else {
-            Ti.App.fireEvent(app.events['NETWORK_ERROR']);
+            wasFormSubmitted = true;
+            activityIndicator.setLoadingMessage(app.localDictionary.loggingIn);
+            activityIndicator.view.show();
+            app.models.userProxy.saveCredentials({
+                username: usernameInput.value, 
+                password: passwordInput.value 
+            });
+            app.models.loginProxy.establishNetworkSession();
         }
-    };
-    
-    onSaveButtonPress = function(e) {
-        Ti.API.debug("onSaveButtonPress() in SettingsWindowController");
-        saveButton.backgroundGradient = Styles.contentButton.backgroundGradientPress;
-    };
-    
-    onSaveButtonUp = function (e) {
-        Ti.API.debug("onSaveButtonUp() in SettingsWindowController");
-        if (saveButton) { saveButton.backgroundGradient = Styles.contentButton.backgroundGradient; }
-    };
-    
-    onLogOutButtonClick = function (e) {
-        if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { /*usernameInput.blur();*/ }
-        User.saveCredentials({
-            username: '', 
-            password: ''
-        });
-        usernameInput.value = '';
-        passwordInput.value = '';
-        Login.clearSession();
-        wasLogOutClicked = true;
-        activityIndicator.view.show();
-    };
-    
-    onLogOutButtonPress = function (e) {
-        logOutButton.backgroundGradient = Styles.contentButton.backgroundGradientPress;
-    };
-    
-    onLogOutButtonUp = function (e) {
-        Ti.API.debug("onLogOutButtonUp in SettingsWindowController");
-        if (passwordInput) { passwordInput.blur(); }
-        if (usernameInput) { /*usernameInput.blur();*/ }
-        if (logOutButton) { logOutButton.backgroundGradient = Styles.contentButton.backgroundGradient; }
-    };
-    
-    onWindowBlur = function (e) {
-        Ti.API.debug("onWindowBlur in SettingsWindowController");
-        if (win) {
-            passwordInput.blur();
-            activityIndicator.view.hide();
-        }
-    };
-    
-    //LoginProxy events
-    onSessionSuccess = function (e) {
-        var _toast;
-        activityIndicator.view.hide();
-        Ti.API.debug("onSessionSuccess() in SettingsWindowController. Current Window: " + app.models.windowManager.getCurrentWindow());
-        if(app.models.windowManager.getCurrentWindow() === _self.key && (wasFormSubmitted || wasLogOutClicked)) {
-            if (e.user === usernameInput.value) {
-                logOutButton.show();
-                if (Device.isAndroid()) {
-                    _toast = Titanium.UI.createNotification({
-                        duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
-                        message: LocalDictionary.authenticationSuccessful
-                    });
-                    _toast.show();
-                }
-                else {
-                    try {
-                        Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
-                            message: LocalDictionary.authenticationSuccessful, buttonNames: [LocalDictionary.OK]
-                            }).show();
-                    }
-                    catch (e) {
-                        Ti.API.error("Couldn't fire alert. Window is probably closed.");
-                    }
-                }
+    }
+    else {
+        Ti.App.fireEvent(app.events['NETWORK_ERROR']);
+    }
+}
+
+function onSaveButtonPress (e) {
+    saveButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+}
+
+function onSaveButtonUp (e) {
+    if (saveButton) { saveButton.backgroundGradient = app.styles.contentButton.backgroundGradient; }
+}
+
+function onLogOutButtonClick (e) {
+    if (passwordInput) { passwordInput.blur(); }
+    if (usernameInput) { /*usernameInput.blur();*/ }
+    app.models.userProxy.saveCredentials({
+        username: '', 
+        password: ''
+    });
+    usernameInput.value = '';
+    passwordInput.value = '';
+    app.models.loginProxy.clearSession();
+    wasLogOutClicked = true;
+    activityIndicator.view.show();
+}
+
+function onLogOutButtonPress (e) {
+    logOutButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+}
+
+function onLogOutButtonUp (e) {
+    if (passwordInput) { passwordInput.blur(); }
+    if (usernameInput) { /*usernameInput.blur();*/ }
+    if (logOutButton) { logOutButton.backgroundGradient = app.styles.contentButton.backgroundGradient; }
+}
+
+function onWindowBlur (e) {
+    passwordInput.blur();
+}
+
+//LoginProxy events
+function onSessionSuccess (e) {
+    var _toast;
+    activityIndicator.view.hide();
+
+    if(app.models.windowManager.getCurrentWindow() === app.config.SETTINGS_KEY && (wasFormSubmitted || wasLogOutClicked)) {
+        if (e.user === usernameInput.value) {
+            logOutButton.show();
+            if (app.models.deviceProxy.isAndroid()) {
+                _toast = Titanium.UI.createNotification({
+                    duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+                    message: app.localDictionary.authenticationSuccessful
+                });
+                _toast.show();
             }
-            else if (e.user === 'guest' && wasLogOutClicked) {
-                if (Device.isAndroid()) {
-                    _toast = Titanium.UI.createNotification({
-                        duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
-                        message: LocalDictionary.logOutSuccessful
-                    });
-                    _toast.show();
-                }
-                else {
-                    try {                     
-                        Titanium.UI.createAlertDialog({ title: LocalDictionary.success,
-                            message: LocalDictionary.logOutSuccessful, buttonNames: [LocalDictionary.OK]
-                            }).show();
-                            logOutButton.hide();
-                    }
-                    catch (e) {
-                        Ti.API.error("Couldn't fire alert. Window is probably closed.");
-                    }
-                }
-            }
-            else if (e.user === 'guest') {
-                wasFormSubmitted = false;
-                logOutButton.hide();
+            else {
                 try {
-                    Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                        message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
+                    Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
+                        message: app.localDictionary.authenticationSuccessful, buttonNames: [app.localDictionary.OK]
                         }).show();
                 }
                 catch (e) {
                     Ti.API.error("Couldn't fire alert. Window is probably closed.");
                 }
             }
+        }
+        else if (e.user === 'guest' && wasLogOutClicked) {
+            if (app.models.deviceProxy.isAndroid()) {
+                _toast = Titanium.UI.createNotification({
+                    duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+                    message: app.localDictionary.logOutSuccessful
+                });
+                _toast.show();
+            }
             else {
-                Ti.API.error("Logout must not've worked, user: " + e.user);
+                try {                     
+                    Titanium.UI.createAlertDialog({ title: app.localDictionary.success,
+                        message: app.localDictionary.logOutSuccessful, buttonNames: [app.localDictionary.OK]
+                        }).show();
+                        logOutButton.hide();
+                }
+                catch (e) {
+                    Ti.API.error("Couldn't fire alert. Window is probably closed.");
+                }
             }
         }
-        else {
-            Ti.API.debug("SettingsWindow isn't visible apparently...");
-        }
-        wasLogOutClicked = false;
-    };
-    
-    onPortalProxyPortletsLoaded = function (e) {
-        Ti.API.debug("onPortalProxyPortletsLoaded in SettingsWindowController");
-        if (wasFormSubmitted && e.user === credentials.username) {
-            app.models.windowManager.openWindow(app.config.HOME_KEY);
+        else if (e.user === 'guest') {
             wasFormSubmitted = false;
-            wasLogOutClicked = false;
+            logOutButton.hide();
+            try {
+                Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                    message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+                    }).show();
+            }
+            catch (e) {
+                Ti.API.error("Couldn't fire alert. Window is probably closed.");
+            }
         }
         else {
-            Ti.API.debug("The portlets loaded are for " + e.user + " and not for " + credentials.username);
-	        onSessionError(e);
+            Ti.API.error("Logout must not've worked, user: " + e.user);
         }
-    };
-    
-    onSessionError = function (e) {
-        Ti.API.debug("onSessionError() in SettingsWindowController");
+    }
+    wasLogOutClicked = false;
+}
 
-        activityIndicator.view.hide();
-        
-        //If we at least received a user layout back from the service
-        if (e.user && e.user != User.getCredentials().username && wasFormSubmitted) {
-            Ti.API.debug("Condition 1 passes in onSessionError() in Settings Window Controller");
-            try {
-                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                    message: LocalDictionary.authenticationFailed, buttonNames: [LocalDictionary.OK]
-                    }).show();
-            }
-            catch (e) {
-                Ti.API.error("Couldn't fire alert. Window is probably closed.");
-            }
-        }
-        else if (wasFormSubmitted) {
-            Ti.API.debug("Condition 2 passes in onSessionError() in Settings Window Controller");
-            try {
-                Titanium.UI.createAlertDialog({ title: LocalDictionary.error,
-                    message: LocalDictionary.couldNotLoginToPortal, buttonNames: [LocalDictionary.OK]
-                    }).show();
-            }
-            catch (e) {
-                Ti.API.error("Couldn't fire alert. Window is probably closed.");
-            }
-        }
-        else {
-            Ti.API.debug("Settings form wasn't submitted");
-        }
-        
+function onPortalProxyPortletsLoaded (e) {
+    if (wasFormSubmitted && e.user === credentials.username) {
+        app.models.windowManager.openWindow(app.config.HOME_KEY);
         wasFormSubmitted = false;
         wasLogOutClicked = false;
-    };
-    
-
-    if (!initialized) {
-        init();
     }
-};
+    else {
+        Ti.API.debug("The portlets loaded are for " + e.user + " and not for " + credentials.username);
+        onSessionError(e);
+    }
+}
+
+function onSessionError (e) {
+    activityIndicator.view.hide();
+    
+    //If we at least received a user layout back from the service
+    if (e.user && e.user != app.models.userProxy.getCredentials().username && wasFormSubmitted) {
+        try {
+            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]
+                }).show();
+        }
+        catch (e) {
+            Ti.API.error("Couldn't fire alert. Window is probably closed.");
+        }
+    }
+    else if (wasFormSubmitted) {
+        try {
+            Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
+                message: app.localDictionary.couldNotLoginToPortal, buttonNames: [app.localDictionary.OK]
+                }).show();
+        }
+        catch (e) {
+            Ti.API.error("Couldn't fire alert. Window is probably closed.");
+        }
+    }
+    
+    wasFormSubmitted = false;
+    wasLogOutClicked = false;
+}
