@@ -61,7 +61,7 @@ exports.init = function () {
     app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.NETWORK);
     app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.WEBVIEW);
     
-    Ti.App.addEventListener(SessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
+    Ti.App.addEventListener(app.models.sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
     Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], exports._processLoginResponse);
 };
 

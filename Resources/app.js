@@ -23,9 +23,6 @@ startup = function (e) {
     Titanium.include('js/libs/underscore-min.js');
     Titanium.include('js/gibberishAES.js');
 
-    Titanium.include('js/style.js');
-
-    Titanium.include('js/models/SessionProxy.js');
     Titanium.include('js/models/WindowManager.js');
     
     Titanium.include('js/controllers/DirectoryWindowController.js');
@@ -46,10 +43,10 @@ startup = function (e) {
     app.registerMember('localDictionary', require('/js/localization')[Titanium.App.Properties.getString('locale')]); // Dictionary contains all UI strings for the application for easy localization.
     app.registerModel('deviceProxy', require('/js/models/DeviceProxy'));
     app.registerModel('resourceProxy', require('/js/models/ResourceProxy')); //Manages retrieval of local files between different OS's
-    app.registerMember('styles', new Styles(app)); //Stylesheet-like dictionary used throughout application.
+    app.registerMember('styles', require('/js/style')); //Stylesheet-like dictionary used throughout application.
     app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
     app.registerModel('portalProxy', require('/js/models/PortalProxy')); //Manages the home screen view which displays a grid of icons representing portlets.
-    app.registerModel('sessionProxy', new SessionProxy(app)); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
+    app.registerModel('sessionProxy', require('/js/models/SessionProxy')); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('userProxy', require('/js/models/UserProxy'));
     app.registerModel('loginProxy', require('/js/models/LoginProxy')); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
     
