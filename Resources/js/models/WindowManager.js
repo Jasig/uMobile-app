@@ -25,7 +25,8 @@ exports.events = {
 var hidePreviousWindow, 
 applicationWindows = app.config.WINDOW_CONTROLLERS,
 activityStack = [],
-currentController;
+currentController,
+homeController;
 
 Ti.App.addEventListener(app.events['SHOW_WINDOW'], onShowWindow);
 Ti.App.addEventListener(app.events['SHOW_PORTLET'], onShowPortlet);
@@ -42,27 +43,31 @@ exports.openWindow = function (windowKey, portlet) {
         if (portlet) _newWindowEvent.portlet = portlet;
         Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
-
         if (activityStack.length > 0) {
-            Ti.API.debug("Passes condition: activityStack.length > 0");
-            if ((app.models.deviceProxy.isIOS() && !applicationWindows[windowKey].isModal) || app.models.deviceProxy.isAndroid()) {
-                //If the new window is a modal, it would look bad for the previous window to be black
-                //when the modal is in opening/closing transitions
-                currentController.close();
-                currentController = null;
-            }
+            currentController.close();
+            if (exports.getCurrentWindow() !== app.config.HOME_KEY) currentController = null;
         }
         
-        if ((app.models.deviceProxy.isIOS() && !exports.getCurrentWindow().isModal) || app.models.deviceProxy.isAndroid()) {
-            currentController = require('/js/controllers/'+applicationWindows[windowKey]);
-            currentController.open(portlet ? portlet : null);
+        if (app.models.deviceProxy.isIOS() || app.models.deviceProxy.isAndroid()) {
+            //If it's the first window, we assume it's home, and so define the currentController AND homeController
+            //Or if it's the home key, assign homeController to currentController
+            //Otherwise, just require() the appropriate controller.
+            if (activityStack.length === 0) {
+                currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
+                currentController.open(portlet ? portlet : null);
+            }
+            else if (windowKey === app.config.HOME_KEY){
+                currentController = homeController;
+            }
+            else {
+                currentController = require('/js/controllers/' + applicationWindows[windowKey]);
+                currentController.open(portlet ? portlet : null);
+            }
         }
         activityStack.push(windowKey);
         Ti.App.Properties.setString('lastWindow', windowKey);
         
-        if (portlet) {
-            Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
-        }
+        if (portlet) Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
         Ti.App.fireEvent(exports.events['WINDOW_OPENED'], {key: windowKey});
     }
     else {

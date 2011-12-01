@@ -50,7 +50,7 @@ exports.init = function () {
 };
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
-    _win = Ti.UI.createWindow(app.styles.portalWindow);
+    if (!_win) _win = Ti.UI.createWindow(app.styles.portalWindow);
 
     if (exports.getState() === exports.states['INITIALIZED']) {
         _win.open();

@@ -26,8 +26,6 @@ var win, credentials, usernameLabel, usernameInput, passwordLabel, passwordInput
 wasFormSubmitted = false, 
 wasLogOutClicked = false;
 
-exports.isModal = true;
-
 exports.open = function () {
     Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
     Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
@@ -39,8 +37,6 @@ exports.open = function () {
         url: 'js/views/WindowContext.js',
         exitOnClose: false, 
         backgroundColor: app.styles.backgroundColor,
-        modal: true,
-        navBarHidden: true,
         orientationModes: [
         	Titanium.UI.PORTRAIT,
         	Titanium.UI.UPSIDE_PORTRAIT,

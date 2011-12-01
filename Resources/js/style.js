@@ -330,8 +330,8 @@ exports.secondaryNavButton= {
 //PORTAL VIEW STYLES
 exports.portalWindow= {
     url: 'js/views/WindowContext.js',
-    exitOnClose: true,
     navBarHidden: true,
+    exitOnClose: true,
     fullScreen: false,
     orientationModes: [
     	Titanium.UI.PORTRAIT,
