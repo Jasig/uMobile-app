@@ -22,14 +22,6 @@ startup = function (e) {
     //Libraries
     Titanium.include('js/libs/underscore-min.js');
     Titanium.include('js/gibberishAES.js');
-
-    Titanium.include('js/models/WindowManager.js');
-    
-    Titanium.include('js/controllers/DirectoryWindowController.js');
-    Titanium.include('js/controllers/MapWindowController.js');
-    Titanium.include('js/controllers/PortalWindowController.js');
-    Titanium.include('js/controllers/PortletWindowController.js');
-    Titanium.include('js/controllers/SettingsWindowController.js');
     
     app = require('/js/ApplicationFacade');
 
@@ -44,31 +36,13 @@ startup = function (e) {
     app.registerModel('deviceProxy', require('/js/models/DeviceProxy'));
     app.registerModel('resourceProxy', require('/js/models/ResourceProxy')); //Manages retrieval of local files between different OS's
     app.registerMember('styles', require('/js/style')); //Stylesheet-like dictionary used throughout application.
-    app.registerModel('windowManager', new WindowManager(app)); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
+    app.registerModel('windowManager', require('/js/models/WindowManager')); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
     app.registerModel('portalProxy', require('/js/models/PortalProxy')); //Manages the home screen view which displays a grid of icons representing portlets.
     app.registerModel('sessionProxy', require('/js/models/SessionProxy')); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
     app.registerModel('userProxy', require('/js/models/UserProxy'));
     app.registerModel('loginProxy', require('/js/models/LoginProxy')); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
-    
-    //Window controllers
-    app.registerController('portalWindowController', new PortalWindowController(app));
-    app.registerController('directoryWindowController', new DirectoryWindowController(app)); // Controls the native Directory portlet window
-    app.registerController('mapWindowController', new MapWindowController(app)); // Controls the native Map portlet window
-    app.registerController('portletWindowController', new PortletWindowController(app)); // Controls the webview for all portlets that aren't native (essentially an iframe for the portal)
-    app.registerController('settingsWindowController', new SettingsWindowController(app)); // Controls the settings window (currently manages username/password)
-    
-    // Add window controllers to the window manager,
-    // which manages the stack of window activities, and manages opening and closing
-    // of windows so that controllers don't have to be concerned with details,
-    // they just tell the window manager what to open, and it handles the rest.
-
-    app.models.windowManager.addWindow(app.controllers.portalWindowController); //Home controller
-    app.models.windowManager.addWindow(app.controllers.portletWindowController);
-    app.models.windowManager.addWindow(app.controllers.directoryWindowController);
-    app.models.windowManager.addWindow(app.controllers.mapWindowController);
-    app.models.windowManager.addWindow(app.controllers.settingsWindowController);
-    
-    app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+        
+    app.models.windowManager.openWindow(app.config.HOME_KEY);
 
     if (app.models.deviceProxy.isIOS()) {
         Titanium.Gesture.addEventListener('orientationchange', onOrientationChange);

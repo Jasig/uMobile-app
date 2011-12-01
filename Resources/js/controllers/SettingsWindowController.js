@@ -51,7 +51,6 @@ var SettingsWindowController = function(facade){
             Styles = app.styles;
             UPM = app.config;
             Login = app.models.loginProxy;
-            PortalWindow = app.controllers.portalWindowController;
 
             credentials = User.getCredentials();
 
@@ -83,7 +82,7 @@ var SettingsWindowController = function(facade){
         
         titleBar = require('/js/views/UI/TitleBar');
         titleBar.addHomeButton();
-        titleBar.updateTitle(LocalDictionary.settings)
+        titleBar.updateTitle(LocalDictionary.settings);
         
         win.add(titleBar.view);
         if (Device.isAndroid()) {
@@ -353,7 +352,7 @@ var SettingsWindowController = function(facade){
     onPortalProxyPortletsLoaded = function (e) {
         Ti.API.debug("onPortalProxyPortletsLoaded in SettingsWindowController");
         if (wasFormSubmitted && e.user === credentials.username) {
-            app.models.windowManager.openWindow(PortalWindow.key);
+            app.models.windowManager.openWindow(app.config.HOME_KEY);
             wasFormSubmitted = false;
             wasLogOutClicked = false;
         }

@@ -119,6 +119,15 @@ exports.DEFAULT_MAP_REGION = {
 	longitudeDelta : 0.005
 };
 
+exports.WINDOW_CONTROLLERS = {
+    portlet: 'PortletWindowController',
+    home: 'PortalWindowController',
+    map: 'MapWindowController',
+    directory: 'DirectoryWindowController',
+    settings: 'SettingsWindowController'
+};
+exports.HOME_KEY = 'home';
+
 exports.nativeIcons = {
     athletics: 'athletics.png',
 	calendar : 'calendar.png',
@@ -136,6 +145,8 @@ exports.nativeIcons = {
 	weather : 'weather.png',
 	info : 'default-icon.png'
 };
+
+
 
 exports.directoryEmergencyContacts = [
     {

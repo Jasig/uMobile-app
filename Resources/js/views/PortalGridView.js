@@ -259,18 +259,18 @@ function _onRotation (e) {
 
 function _onLayoutCleanup (e) {
     Ti.API.debug("onLayoutCleanup() in PortalGridView");
-    if (e.win === app.controllers.portalWindowController.key) {
-        Ti.API.debug("current window is " + app.controllers.portalWindowController.key);
+    if (e.win === app.config.HOME_KEY) {
+        Ti.API.debug("current window is " + app.config.HOME_KEY);
         _didLayoutCleanup = true;
         exports.setState(exports.states.HIDDEN);
     }
     else {
-        Ti.API.debug("current window is NOT " + app.controllers.portalWindowController.key + ', it\'s ' + e.win);
+        Ti.API.debug("current window is NOT " + app.config.HOME_KEY + ', it\'s ' + e.win);
     }
 };
 
 function _onOrientationChange (e) {
-    if (app.models.windowManager.getCurrentWindow() === app.controllers.portalWindowController.key || app.models.deviceProxy.isAndroid()) {
+    if (app.models.windowManager.getCurrentWindow() === app.config.HOME_KEY || app.models.deviceProxy.isAndroid()) {
         //If the device is Android, we always want to rearrange the grid to 
         //account for the back button circumventing the windowManager
         _rearrangeGrid();

@@ -74,7 +74,7 @@ function titleBarRotate (e) {
 Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], titleBarRotate);
 
 function onHomeClick (e) {
-    app.models.windowManager.openWindow(app.controllers.portalWindowController.key);
+    app.models.windowManager.openWindow(app.config.HOME_KEY);
 };
 
 function onInfoClick (e) {

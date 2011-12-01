@@ -55,24 +55,7 @@ var WindowControllerBase = function () {
     this.getWindow = function () {
         return _window;
     };
-    
-    this.setApp = function (a) {
-        if (typeof a === "ApplicationFacade") {
-            _app = a;
-            _self.Styles = _app.styles;
-            _self.Device = _app.models.deviceProxy;
-            _self.Portal = _app.models.portalProxy;
-            _self.PortalWindow = _app.controllers.portalWindowController;
-            _self.User = _app.models.userProxy;
-            _self.Windows = _app.models.windowManager;
-            return _self;
-        }
-        else {
-            Ti.API.error("The provided app isn't the proper type: " + typeof a);
-        }
-        return false;
-    };
-    
+        
     this.getApp = function () {
         return _app || false;
     };

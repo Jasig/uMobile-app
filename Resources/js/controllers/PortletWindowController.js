@@ -67,7 +67,7 @@ var PortletWindowController = function (facade) {
             _self._activePortlet = portlet;
         }
         else {
-            _self._app.models.windowManager.openWindow(_self._app.controllers.portalWindowController.key);
+            _self._app.models.windowManager.openWindow(app.config.HOME_KEY);
             return;
         }
         
