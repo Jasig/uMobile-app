@@ -369,7 +369,7 @@ var _hideAllViews = function () {
 var _createAndAddCategoryNav = function () {
     categoryNavBar = require('/js/views/UI/SecondaryNav');
     view.add(categoryNavBar.view);
-    categoryNavBar.view.top = app.styles.titleBar.view.height;
+    categoryNavBar.view.top = app.styles.titleBar.height;
     
     categoryNavBar.leftButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);
