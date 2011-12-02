@@ -54,7 +54,7 @@ exports.open = function () {
     
     //Open the portal window
     //portlets, isGuestLayout, isPortalReachable, isFirstOpen
-    portalWindowView.open(app.models.portalProxy.getPortlets(), app.models.userProxy.isGuestUser(), app.models.portalProxy.getIsPortalReachable(), firstTimeOpened);
+    portalWindowView.open(app.models.portalProxy.retrievePortlets(), app.models.userProxy.isGuestUser(), app.models.portalProxy.retrieveIsPortalReachable(), firstTimeOpened);
     firstTimeOpened = false;        
 };
 
@@ -69,8 +69,8 @@ exports.close = function () {
 };
 
 function onAndroidSearchClick (e) {
-	var _searchPortlet = app.models.portalProxy.getPortletByFName('search'); 
-	if (_searchPortlet) app.models.portalProxy.getShowPortletFunc(_searchPortlet)();
+	var _searchPortlet = app.models.portalProxy.retrievePortletByFName('search'); 
+	if (_searchPortlet) app.models.portalProxy.retrieveShowPortletFunc(_searchPortlet)();
 };
 
 function onNetworkSessionSuccess (e) {
@@ -84,7 +84,7 @@ function onNetworkSessionFailure (e) {
                 portalWindowView.alert(app.localDictionary.error, app.localDictionary.failedToLoadPortlets);
                 _newNetworkDowntime = false;
             }
-            portalWindowView.updateModules(app.models.portalProxy.getPortlets(), app.models.portalProxy.getIsPortalReachable(), app.models.userProxy.isGuestUser());
+            portalWindowView.updateModules(app.models.portalProxy.retrievePortlets(), app.models.portalProxy.retrieveIsPortalReachable(), app.models.userProxy.isGuestUser());
         }
         else {
             Ti.App.fireEvent(app.events['NETWORK_ERROR']);
@@ -100,7 +100,7 @@ function onGettingPortlets (e) {
 };
 
 function onPortletsLoaded (e) {
-    portalWindowView.updateModules(app.models.portalProxy.getPortlets(), app.models.portalProxy.getIsPortalReachable(), app.models.userProxy.isGuestUser());
+    portalWindowView.updateModules(app.models.portalProxy.retrievePortlets(), app.models.portalProxy.retrieveIsPortalReachable(), app.models.userProxy.isGuestUser());
 };
 
 function onPortalProxyNetworkError (e) {

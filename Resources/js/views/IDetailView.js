@@ -21,6 +21,6 @@
  * @interface
  */
 function IDetailView() {};
-IDetailView.prototype.getDetailView = function () {};
+IDetailView.prototype.retrieveDetailView = function () {};
 IDetailView.prototype.render = function (viewModel) {};
 IDetailView.prototype.hide = function () {};

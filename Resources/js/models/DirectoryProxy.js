@@ -45,12 +45,12 @@ exports.clear = function () {
     xhrSearchClient.abort();
 };
 
-exports.getPeople = function (index) {
+exports.retrievePeople = function (index) {
     //If no index is provided, return all people. Otherwise, provide one Person.
     return !index ? people : people[index];
 };
 
-exports.getEmergencyContacts = function () {
+exports.retrieveEmergencyContacts = function () {
     return app.config.directoryEmergencyContacts || false;
 };
 

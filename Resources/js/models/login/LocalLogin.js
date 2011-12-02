@@ -21,6 +21,7 @@ var init,
 client, url, credentials, onLoginComplete, onLoginError;
 
 exports.login = function (creds, options) {
+    Ti.API.debug('login() in LocalLogin. creds?' + creds);
     credentials = creds;
     url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + app.config.PORTAL_CONTEXT + '/layout.json';
     // url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password;
@@ -37,14 +38,14 @@ exports.login = function (creds, options) {
 
 exports.logout = function () {
     exports.login({username: '', password: ''});
-    if (exports._client.clearCookies) {
-        exports._client.clearCookies(app.config.BASE_PORTAL_URL);
+    if (client.clearCookies) {
+        client.clearCookies(app.config.BASE_PORTAL_URL);
     }
 };
 
-exports.getLoginURL = function (url) {
+exports.retrieveLoginURL = function (url) {
     // This method returns a URL suitable to automatically login a user in a webview.
-    credentials = app.models.userProxy.getCredentials();
+    credentials = app.models.userProxy.retrieveCredentials();
     return app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
 };
 
@@ -59,16 +60,16 @@ onLoginComplete = function (e) {
         };
     }
     
-    app.models.userProxy.setLayoutUserName(_parsedResponse.user);
-    app.models.portalProxy.setPortlets(_parsedResponse.layout);
+    app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
+    app.models.portalProxy.savePortlets(_parsedResponse.layout);
     
-    if (app.models.userProxy.getLayoutUserName() === credentials.username || app.models.userProxy.getLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
+    if (app.models.userProxy.retrieveLayoutUserName() === credentials.username || app.models.userProxy.retrieveLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
         app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-        app.models.portalProxy.setIsPortalReachable(true);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
+        app.models.portalProxy.saveIsPortalReachable(true);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
     }
     else {
-        app.models.portalProxy.setIsPortalReachable(false);
+        app.models.portalProxy.saveIsPortalReachable(false);
         Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
 };

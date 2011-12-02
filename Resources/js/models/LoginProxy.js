@@ -43,27 +43,26 @@ exports.userTypes = {
     NO_USER : "NoUser"
 };
 
-exports.init = function () {
-    switch (app.config.LOGIN_METHOD) {
-        case exports.loginMethods.CAS:
-            _loginMethod = require('/js/models/login/CASLogin');;
-            break;
-        case exports.loginMethods.LOCAL_LOGIN:
-            _loginMethod = require('/js/models/login/LocalLogin');
-            break;
-        case exports.loginMethods.SHIBBOLETH2:
-            _loginMethod = require('/js/models/login/Shibboleth2Login');
-            break;
-        default:
-            Ti.API.error("Login method not recognized in exports.exports.init()");
-    }
-    
-    app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.NETWORK);
-    app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.WEBVIEW);
-    
-    Ti.App.addEventListener(app.models.sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
-    Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], exports._processLoginResponse);
-};
+
+switch (app.config.LOGIN_METHOD) {
+    case exports.loginMethods.CAS:
+        _loginMethod = require('/js/models/login/CASLogin');;
+        break;
+    case exports.loginMethods.LOCAL_LOGIN:
+        _loginMethod = require('/js/models/login/LocalLogin');
+        break;
+    case exports.loginMethods.SHIBBOLETH2:
+        _loginMethod = require('/js/models/login/Shibboleth2Login');
+        break;
+    default:
+        Ti.API.error("Login method not recognized in exports.exports.initialize()");
+}
+
+app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.NETWORK);
+app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.WEBVIEW);
+
+Ti.App.addEventListener(app.models.sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
+Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], exports._processLoginResponse);
 
 exports.updateSessionTimeout = function(context) {
     /* If Android, this method will reset the timer for either the network session or 
@@ -99,8 +98,7 @@ exports.establishNetworkSession = function(options) {
         and when the local network session timer expires.
     */
     var credentials, url;
-
-    credentials = app.models.userProxy.getCredentials();
+    credentials = app.models.userProxy.retrieveCredentials();
     _loginMethod.login(credentials, options);
 };
 
@@ -108,26 +106,13 @@ exports.clearSession = function () {
     _loginMethod.logout();
 };
 
-exports.getLoginURL = function (url) {
+exports.retrieveLoginURL = function (url) {
     /*
         Method created specifically for use in the Portlet Window 
-        Controller, for use with 
+        Controller
     */
-    _loginMethod.getLoginURL(url);
     
-    /* Old method, deprecated 9/30/2011 by Jeff Cross
-    switch (app.config.LOGIN_METHOD) {
-        case exports.loginMethods.LOCAL_LOGIN:
-            return app.models.localLogin.getLoginURL(url);
-        case exports.loginMethods.CAS:
-            return app.models.CASLogin.getLoginURL(url);
-        case exports.loginMethods.SHIBBOLETH2:
-            return app.models.Shibboleth2Login.getLoginURL(url);
-        default:
-            Ti.API.error("No login method matches " + app.config.LOGIN_METHOD);
-            return false;                
-    }
-    */
+    _loginMethod.retrieveLoginURL(url);
 };
 
 exports.onNetworkError = function (e) {
@@ -171,28 +156,25 @@ exports._processLoginResponse = function (e) {
             layout: []
         };
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE']);
-        app.models.userProxy.setLayoutUserName(_parsedResponse.user);
+        app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
         return;
     }
     
     Ti.API.debug("Parsed response: " + JSON.stringify(_parsedResponse));
     
-    app.models.userProxy.setLayoutUserName(_parsedResponse.user);
-    app.models.portalProxy.setPortlets(_parsedResponse.layout);
+    app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
+    app.models.portalProxy.savePortlets(_parsedResponse.layout);
     
-    if (app.models.userProxy.getLayoutUserName() === _credentials.username) {
+    if (app.models.userProxy.retrieveLayoutUserName() === _credentials.username) {
         Ti.API.info("_layoutUser matches credentials.username");
 
         app.models.sessionProxy.resetTimer(exports.sessionTimeContexts.NETWORK);
-        app.models.portalProxy.setIsPortalReachable(true);
-        Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
+        app.models.portalProxy.saveIsPortalReachable(true);
+        Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
     }
     else {
         Ti.API.error("Network session failed");
-        app.models.portalProxy.setIsPortalReachable(false);
+        app.models.portalProxy.saveIsPortalReachable(false);
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
 };
-
-exports.init();
-

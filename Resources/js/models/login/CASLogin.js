@@ -122,21 +122,21 @@ function _processResponse (responseText) {
         };
     }   
 
-    app.models.userProxy.setLayoutUserName(_parsedResponse.user);
-    app.models.portalProxy.setPortlets(_parsedResponse.layout);
+    app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
+    app.models.portalProxy.savePortlets(_parsedResponse.layout);
 
-    if (app.models.userProxy.getLayoutUserName() === _credentials.username || app.models.userProxy.getLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
+    if (app.models.userProxy.retrieveLayoutUserName() === _credentials.username || app.models.userProxy.retrieveLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
         app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
         
         if (app.models.deviceProxy.isAndroid()) {
             app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
         }
         
-        app.models.portalProxy.setIsPortalReachable(true);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.getLayoutUserName()});
+        app.models.portalProxy.saveIsPortalReachable(true);
+        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
     }
     else {
-        app.models.portalProxy.setIsPortalReachable(false);
+        app.models.portalProxy.saveIsPortalReachable(false);
         Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
 };

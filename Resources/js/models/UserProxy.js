@@ -50,7 +50,8 @@ exports.saveCredentials = function (credentials) {
  * If no credentials have yet been created, the username and password values
  * will each be null;
  */
-exports.getCredentials = function () {
+exports.retrieveCredentials = function () {
+    Ti.API.debug('retrieveCredentials() in UserProxy');
     var db, rows, credentials;
 
     // make sure the database has been initialized
@@ -87,11 +88,11 @@ exports.getCredentials = function () {
     return credentials;
 };
 
-exports.setLayoutUserName = function (name) {
+exports.saveLayoutUserName = function (name) {
     _layoutUserName = name;
 };
 
-exports.getLayoutUserName = function () {
+exports.retrieveLayoutUserName = function () {
     return _layoutUserName;
 };
 

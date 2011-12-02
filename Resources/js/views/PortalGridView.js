@@ -35,29 +35,29 @@ var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanu
 function _init () {
     _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _numColumns = Math.floor(app.models.deviceProxy.getWidth() / _completeWidth);
-    _leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_completeWidth * _numColumns))) / 2);
+    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth() / _completeWidth);
+    _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth() - (_completeWidth * _numColumns))) / 2);
     
     Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
     Ti.App.addEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
     
     _gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
     
-    exports.setState(exports.states.INITIALIZED);
+    exports.saveState(exports.states.INITIALIZED);
 };
 
-exports.getState = function () {
+exports.retrieveState = function () {
     return _state;
 };
 
-exports.setState = function (newState) {
-    Ti.API.debug("setState() in PortalGridView: " + newState);
+exports.saveState = function (newState) {
+    Ti.API.debug("saveState() in PortalGridView: " + newState);
     _state = newState;
     Ti.App.fireEvent(exports.events['STATE_CHANGE'], {state: _state});
     
 };
 
-exports.getGridView = function () {
+exports.retrieveGridView = function () {
     if (_didLayoutCleanup || !_gridView) {
         _gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
     }
@@ -140,7 +140,7 @@ function _createGridItem (portlet, sortOrder) {
 
         //Add an icon to the grid item
         gridItemIconDefaults = app.styles.gridIcon;
-        gridItemIconDefaults.image = app.models.portalProxy.getIconUrl(portlet);
+        gridItemIconDefaults.image = app.models.portalProxy.retrieveIconUrl(portlet);
         gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
         gridItemIcon.portlet = portlet;
         gridItem.view.add(gridItemIcon);
@@ -204,7 +204,7 @@ function _createGridItem (portlet, sortOrder) {
 function _rearrangeGrid (e) {
     var _gridItem;
     
-    exports.resizeGrid((app.models.userProxy.isGuestUser() || !app.models.portalProxy.getIsPortalReachable()) ? true : false);
+    exports.resizeGrid((app.models.userProxy.isGuestUser() || !app.models.portalProxy.retrieveIsPortalReachable()) ? true : false);
     
     for (_gridItem in _gridItems) {
         if (_gridItems.hasOwnProperty(_gridItem)) {
@@ -214,7 +214,7 @@ function _rearrangeGrid (e) {
         }
     }
     
-    exports.setState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
+    exports.saveState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
 };
 
 exports.destroy = function () {
@@ -254,7 +254,7 @@ function _onLayoutCleanup (e) {
     if (e.win === app.config.HOME_KEY) {
         Ti.API.debug("current window is " + app.config.HOME_KEY);
         _didLayoutCleanup = true;
-        exports.setState(exports.states.HIDDEN);
+        exports.saveState(exports.states.HIDDEN);
     }
     else {
         Ti.API.debug("current window is NOT " + app.config.HOME_KEY + ', it\'s ' + e.win);
@@ -262,11 +262,11 @@ function _onLayoutCleanup (e) {
 };
 
 function _onOrientationChange (e) {
-    if (app.models.windowManager.getCurrentWindow() === app.config.HOME_KEY || app.models.deviceProxy.isAndroid()) {
+    if (app.models.windowManager.retrieveCurrentWindow() === app.config.HOME_KEY || app.models.deviceProxy.isAndroid()) {
         _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
         _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-        _numColumns = Math.floor(app.models.deviceProxy.getWidth() / _completeWidth);
-        _leftPadding = Math.floor(((app.models.deviceProxy.getWidth() - (_completeWidth * _numColumns))) / 2);
+        _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth() / _completeWidth);
+        _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth() - (_completeWidth * _numColumns))) / 2);
         
         //If the device is Android, we always want to rearrange the grid to 
         //account for the back button circumventing the windowManager
@@ -277,7 +277,7 @@ function _onOrientationChange (e) {
 function _onGridItemClick (e) {
     var func;
     if (e.source.portlet) {
-        func = app.models.portalProxy.getShowPortletFunc(e.source.portlet);
+        func = app.models.portalProxy.retrieveShowPortletFunc(e.source.portlet);
         func();
     }
     else {

@@ -59,7 +59,7 @@ exports.logout = function () {
     _client.send();
 };
 
-exports.getLoginURL = function (url) {
+exports.retrieveLoginURL = function (url) {
     return _loginURL;
 };
 

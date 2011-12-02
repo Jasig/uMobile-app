@@ -31,10 +31,10 @@ exports.open = function () {
     Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onSessionError);
     Ti.App.addEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
 
-    credentials = app.models.userProxy.getCredentials();
+    credentials = app.models.userProxy.retrieveCredentials();
     
     win = Titanium.UI.createWindow({
-        url: 'js/views/WindowContext.js',
+        // url: 'js/views/WindowContext.js',
         exitOnClose: false, 
         backgroundColor: app.styles.backgroundColor,
         orientationModes: [
@@ -198,7 +198,7 @@ function onUpdateCredentials (e) {
         }
         else {
             wasFormSubmitted = true;
-            activityIndicator.setLoadingMessage(app.localDictionary.loggingIn);
+            activityIndicator.saveLoadingMessage(app.localDictionary.loggingIn);
             activityIndicator.view.show();
             app.models.userProxy.saveCredentials({
                 username: usernameInput.value, 
@@ -253,7 +253,7 @@ function onSessionSuccess (e) {
     var _toast;
     activityIndicator.view.hide();
 
-    if(app.models.windowManager.getCurrentWindow() === app.config.SETTINGS_KEY && (wasFormSubmitted || wasLogOutClicked)) {
+    if(app.models.windowManager.retrieveCurrentWindow() === app.config.SETTINGS_KEY && (wasFormSubmitted || wasLogOutClicked)) {
         if (e.user === usernameInput.value) {
             logOutButton.show();
             if (app.models.deviceProxy.isAndroid()) {
@@ -329,7 +329,7 @@ function onSessionError (e) {
     activityIndicator.view.hide();
     
     //If we at least received a user layout back from the service
-    if (e.user && e.user != app.models.userProxy.getCredentials().username && wasFormSubmitted) {
+    if (e.user && e.user != app.models.userProxy.retrieveCredentials().username && wasFormSubmitted) {
         try {
             Titanium.UI.createAlertDialog({ title: app.localDictionary.error,
                 message: app.localDictionary.authenticationFailed, buttonNames: [app.localDictionary.OK]

@@ -20,7 +20,7 @@
 var _view, personDetailTable, titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
 directoryPerson = require('/js/models/VOs/DirectoryPersonVO');
 
-exports.getDetailView = function () {
+exports.retrieveDetailView = function () {
     if (!_view) {
         _view = Titanium.UI.createView(app.styles.contactDetailView);
 

@@ -29,7 +29,7 @@ exports.open = function (viewModel) {
     _viewModel = viewModel;
     directoryDetailView = require('/js/views/DirectoryDetailView');
     win = Titanium.UI.createWindow({
-        url: 'js/views/WindowContext.js',
+        // url: 'js/views/WindowContext.js',
         backgroundColor: app.styles.backgroundColor,
         exitOnClose: false,
         navBarHidden: true,
@@ -88,7 +88,7 @@ exports.alert = function (attributes) {
 };
 
 exports.showActivityIndicator = function (message) {
-    if (message) { activityIndicator.setLoadingMessage(message); }
+    if (message) { activityIndicator.saveLoadingMessage(message); }
     activityIndicator.view.show();
 };
 
@@ -168,7 +168,7 @@ function drawDefaultView () {
         });
         win.add(searchBar.container);
 
-        win.add(directoryDetailView.getDetailView());
+        win.add(directoryDetailView.retrieveDetailView());
 
         activityIndicator = require('/js/views/UI/ActivityIndicator');
         activityIndicator.resetDimensions();

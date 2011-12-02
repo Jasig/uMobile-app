@@ -10,7 +10,7 @@ messageLabel = Ti.UI.createLabel(app.styles.activityIndicatorMessage);
 messageLabel.text = app.localDictionary.loading;
 dialog.add(messageLabel);
 
-exports.setLoadingMessage = function (m) {
+exports.saveLoadingMessage = function (m) {
     if (typeof m == 'string') {
         messageLabel.text = m;
     }

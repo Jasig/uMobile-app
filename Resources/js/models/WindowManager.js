@@ -35,7 +35,7 @@ Ti.App.addEventListener(app.events['NETWORK_ERROR'], onNetworkConnectionError);
 exports.openWindow = function (windowKey, portlet) {
     var callback;
     
-    if (applicationWindows[windowKey] && exports.getCurrentWindow() !== windowKey) {
+    if (applicationWindows[windowKey] && exports.retrieveCurrentWindow() !== windowKey) {
         //Make sure the requested window exists, and that it isn't the current window.
         var _newWindowEvent = {
             key: windowKey
@@ -45,25 +45,24 @@ exports.openWindow = function (windowKey, portlet) {
 
         if (activityStack.length > 0) {
             currentController.close();
-            if (exports.getCurrentWindow() !== app.config.HOME_KEY) currentController = null;
+            if (exports.retrieveCurrentWindow() !== app.config.HOME_KEY) currentController = null;
         }
         
-        if (app.models.deviceProxy.isIOS() || app.models.deviceProxy.isAndroid()) {
-            //If it's the first window, we assume it's home, and so define the currentController AND homeController
-            //Or if it's the home key, assign homeController to currentController
-            //Otherwise, just require() the appropriate controller.
-            if (activityStack.length === 0) {
-                currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
-                currentController.open(portlet ? portlet : null);
-            }
-            else if (windowKey === app.config.HOME_KEY){
-                currentController = homeController;
-            }
-            else {
-                currentController = require('/js/controllers/' + applicationWindows[windowKey]);
-                currentController.open(portlet ? portlet : null);
-            }
+        //If it's the first window, we assume it's home, and so define the currentController AND homeController
+        //Or if it's the home key, assign homeController to currentController
+        //Otherwise, just require() the appropriate controller.
+        if (activityStack.length === 0) {
+            currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
+            currentController.open(portlet ? portlet : null);
         }
+        else if (windowKey === app.config.HOME_KEY){
+            currentController = homeController;
+        }
+        else {
+            currentController = require('/js/controllers/' + applicationWindows[windowKey]);
+            currentController.open(portlet ? portlet : null);
+        }
+
         activityStack.push(windowKey);
         Ti.App.Properties.setString('lastWindow', windowKey);
         
@@ -73,7 +72,8 @@ exports.openWindow = function (windowKey, portlet) {
     else {
         Ti.API.error("Error opening window.");
         Ti.API.error(" applicationWindows[windowKey]" + applicationWindows[windowKey]);
-        Ti.API.error("windowKey= " + windowKey + " & exports.getCurrentWindow() = " + exports.getCurrentWindow());
+        Ti.API.error("windowKey= " + windowKey + " & exports.retrieveCurrentWindow() = " + exports.retrieveCurrentWindow());
+        Ti.API.debug(JSON.stringify(activityStack));
     }
 };
 
@@ -85,19 +85,19 @@ exports.goBack = function () {
     }
 };
 
-exports.getCurrentWindow = function (offset) {
+exports.retrieveCurrentWindow = function (offset) {
 	// Returns key (string) of currently opened window, if possible
     return activityStack.length > 0 ? activityStack[activityStack.length - 1] : false;
 };
 
-exports.getPreviousWindow = function () {
+exports.retrievePreviousWindow = function () {
     return activityStack.length > 1 ? activityStack[activityStack.length - 2] : false;
 };
 
-exports.getCurrentPortlet = function () {
+exports.retrieveCurrentPortlet = function () {
     // var _currentPortlet = (activityStack.length > 0 && activityStack[activityStack.length -1].portlet) ? activityStack[activityStack.length - 1].portlet : false;
     var _currentPortlet = activityStack[activityStack.length -1].portlet;
-    Ti.API.info("getCurrentPortlet() in WindowManager: " + JSON.stringify(_currentPortlet));
+    Ti.API.info("retrieveCurrentPortlet() in WindowManager: " + JSON.stringify(_currentPortlet));
     return _currentPortlet;
 };
 

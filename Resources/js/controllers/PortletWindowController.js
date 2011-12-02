@@ -124,16 +124,16 @@ function _includePortlet (portlet) {
     var _isValidSession;
     
     Ti.API.debug("includePortlet() in PortletWindowController. Portlet: " + JSON.stringify(portlet));
-    _activityIndicator.setLoadingMessage(app.localDictionary.loading);
+    _activityIndicator.saveLoadingMessage(app.localDictionary.loading);
     _activityIndicator.view.show();
     
     _homeURL = _webView.url = _currentURL = _getAbsoluteURL(portlet.url);
-    _homeFName = exports.getFNameFromURL(portlet.url);
+    _homeFName = exports.parseFNameFromURL(portlet.url);
     
     _titleBar.updateTitle(portlet.title);
 };
 
-exports.getFNameFromURL = function (url) {
+exports.parseFNameFromURL = function (url) {
 	if (url.indexOf('/' === 0 || url.indexOf(app.config.BASE_PORTAL_URL))) {
 		var _urlParts = url.split('/');
 		for (var i = 0, iLength = _urlParts.length; i<iLength; i++) {
@@ -242,7 +242,7 @@ function _onPortletBeforeLoad (e) {
     	    Ti.API.debug("The WebView isn't youtube: " + e.url);
     	}
     }
-    _activityIndicator.setLoadingMessage(app.localDictionary.loading);
+    _activityIndicator.saveLoadingMessage(app.localDictionary.loading);
     _activityIndicator.view.show();
 };
 
@@ -346,7 +346,7 @@ function _isHome () {
         otherwise we'll check the URL for a match
     */
             
-	if ((_homeFName && exports.getFNameFromURL(_newURL) === _homeFName) || (!_homeFName && _newURL === _homeURL)) {
+	if ((_homeFName && exports.parseFNameFromURL(_newURL) === _homeFName) || (!_homeFName && _newURL === _homeURL)) {
 		return true;
 	}
 	return false;

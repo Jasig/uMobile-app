@@ -32,7 +32,7 @@ exports.open = function () {
     
     directoryWindowView.open({
         defaultNumber: app.config.phoneDirectoryNumber,
-        emergencyContacts: directoryProxy.getEmergencyContacts()
+        emergencyContacts: directoryProxy.retrieveEmergencyContacts()
     });
 };
 
@@ -69,7 +69,7 @@ onProxySearching = function (e) {
 
 onProxySearchComplete = function (e) {
     if (!e.error) {
-        directoryWindowView.displaySearchResults(directoryProxy.getPeople());
+        directoryWindowView.displaySearchResults(directoryProxy.retrievePeople());
     }
     else {
         directoryWindowView.alert({

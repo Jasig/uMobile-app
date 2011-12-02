@@ -57,18 +57,18 @@ exports.isBlackBerry = function () {
     return false;
 };
 
-exports.getWidth = function () {
+exports.retrieveWidth = function () {
     return Ti.Platform.displayCaps.platformWidth;
 };
 
-exports.getHeight = function () {
+exports.retrieveHeight = function () {
     return Ti.Platform.displayCaps.platformHeight;
 };
 
-exports.setCurrentOrientation = function (orientation) {
+exports.saveCurrentOrientation = function (orientation) {
     _orientation = orientation;
 };
 
-exports.getCurrentOrientation = function () {
+exports.retrieveCurrentOrientation = function () {
     return _orientation;
 };

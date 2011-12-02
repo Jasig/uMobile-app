@@ -44,15 +44,15 @@ var _state,
 _layoutIndicator = exports.indicatorStates['NONE'],
 _win, _contentLayer, _titleBar, _activityIndicator, _guestNotificationView, portalGridView;
 
-exports.init = function () {
+exports.initialize = function () {
     portalGridView = require('/js/views/PortalGridView');
-    exports.setState(exports.states['INITIALIZED']);
+    exports.saveState(exports.states['INITIALIZED']);
 };
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
     if (!_win) _win = Ti.UI.createWindow(app.styles.portalWindow);
 
-    if (exports.getState() === exports.states['INITIALIZED']) {
+    if (exports.retrieveState() === exports.states['INITIALIZED']) {
         _win.open();
         _drawUI(_isGuestLayout, _isPortalReachable);
         
@@ -72,7 +72,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     // portalGridView.updateGrid(_modules);
             
     // _onDimensionChanges();
-    exports.setState(exports.states.OPENED);
+    exports.saveState(exports.states.OPENED);
 };
 
 exports.close = function () {
@@ -80,7 +80,7 @@ exports.close = function () {
     // _win.removeEventListener('android:search', _onAndroidSearch);
     if (app.models.deviceProxy.isIOS()) _win.visible = false;
     
-    exports.setState(exports.states.HIDDEN);
+    exports.saveState(exports.states.HIDDEN);
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
@@ -89,13 +89,17 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     if (_contentLayer) {
         _win.remove(_contentLayer);
     }
-    
+    Ti.API.debug('about to create _contentLayer');
     _contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
     
     _win.add(_contentLayer);
     
-    _contentLayer.add(portalGridView.getGridView());
+    Ti.API.debug('about to add gridView to portalGridView');
+    Ti.API.debug(_contentLayer);
+    Ti.API.debug(portalGridView);
+    _contentLayer.add(portalGridView.retrieveGridView());
     
+    Ti.API.debug('about to add layout indicator.');
     switch (_layoutIndicator) {
         case exports.indicatorStates['GUEST']:
             _addSpecialLayoutIndicator(true, true);
@@ -107,15 +111,17 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
             _removeSpecialLayoutIndicator(false, true);
     }
 
-        
+    Ti.API.debug('About to create the activityIndicator');
     _activityIndicator = require('/js/views/UI/ActivityIndicator');
     _win.add(_activityIndicator.view);
 
+    Ti.API.debug('About to create the titleBar');
     _titleBar = require('/js/views/UI/TitleBar');
     _titleBar.addSettingsButton();
     _titleBar.addInfoButton();
     _titleBar.updateTitle(app.localDictionary.homeTitle);
     _win.add(_titleBar.view);
+    Ti.API.debug('finished drawUI without crashing');
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
@@ -132,11 +138,11 @@ function _updateUI (_isGuestLayout, _isPortalReachable) {
     }
 };
 
-exports.setState = function (newState) {
+exports.saveState = function (newState) {
     _state = newState;
 };
 
-exports.getState = function () {
+exports.retrieveState = function () {
     return _state;
 };
 
@@ -150,7 +156,7 @@ exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) 
 
 exports.showActivityIndicator = function (message) {
     // try {
-        _activityIndicator.setLoadingMessage(message || app.localDictionary.loading);
+        _activityIndicator.saveLoadingMessage(message || app.localDictionary.loading);
         _activityIndicator.view.show();
     // }
     // catch (e) {
@@ -194,18 +200,16 @@ function _removeSpecialLayoutIndicator (_isGuestLayout, _isPortalReachable) {
 };
 
 function _specialLayoutIndicatorClick (e) {
+    Ti.API.info('_specialLayoutIndicatorClick() in PortalWindowView');
     app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
 };
 
 function _addSpecialLayoutIndicator (_isPortalReachable) {
     var guestNotificationLabel, _timeout;
     if (_guestNotificationView) {
-        Ti.API.debug("_guestNotificationView.show(). _layoutIndicator: " + _layoutIndicator);
-        
         _contentLayer.add(_guestNotificationView);
     }
     else {
-        Ti.API.debug("create _guestNotificationView. _layoutIndicator: " + _layoutIndicator);
         if (_contentLayer) {
             _guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
             _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
@@ -247,7 +251,7 @@ function _onDimensionChanges (e) {
 };
 
 function _onPortletsLoaded (e) {
-    switch (app.models.userProxy.getLayoutUserName()) {
+    switch (app.models.userProxy.retrieveLayoutUserName()) {
         case app.models.loginProxy.userTypes['GUEST']:
             _addSpecialLayoutIndicator(true);
             _layoutIndicator = exports.indicatorStates['GUEST'];
@@ -268,5 +272,5 @@ function _onPortalGridViewStateChange (e) {
     }
 };
 
-exports.init();
+exports.initialize();
 

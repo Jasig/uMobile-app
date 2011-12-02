@@ -36,7 +36,7 @@ exports.open = function () {
     Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
 
     _win = Titanium.UI.createWindow({
-        url: 'js/views/WindowContext.js',
+        // url: 'js/views/WindowContext.js',
         backgroundColor: app.styles.backgroundColor,
         exitOnClose: false,
         navBarHidden: true,
@@ -67,7 +67,7 @@ exports.open = function () {
     Ti.App.addEventListener(_mapDetailView.events['VIEW_ON_MAP_CLICK'], _onViewDetailOnMap);
     _win.addEventListener('android:search', _onAndroidSearch);
     
-    _mapProxy.init();
+    _mapProxy.initialize();
     
     _win.add(_mapWindowView.createView(_mapProxy));
     _mapWindowView.hideActivityIndicator();    
@@ -103,7 +103,7 @@ exports.close = function (options) {
 
 function _loadDetail (_annotation) {
     //Create and open the view for the map detail
-    _mapWindowView.setActivityIndicatorMessage(app.localDictionary.loading);
+    _mapWindowView.saveActivityIndicatorMessage(app.localDictionary.loading);
     _mapWindowView.showActivityIndicator();
     _mapWindowView.searchBlur();
 
@@ -128,7 +128,7 @@ function _onMapViewClick (e) {
     var _annotation;
     if (e.clicksource === 'title' && e.title) {
         // _mapWindowView.searchBlur(); //Search should already be blurred...
-        _annotation = _mapProxy.getAnnotationByTitle(e.title);
+        _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
         _loadDetail(_annotation);
     }
 }
@@ -139,7 +139,7 @@ function _onNavButtonClick (e) {
             _mapWindowView.doSetView(_mapWindowView.views['SEARCH']);
             break;
         case _mapWindowView.navButtonValues[1]:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.getCategoryList());
+            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.retrieveCategoryList());
             break;
         default:
             Ti.API.error("No case matched in _handleNavButtonClick");
@@ -151,13 +151,13 @@ function _onCategoryRowClick (e) {
     // Tell the map window view to open the locations list, and pass 
     // collection of locations for that category
     _activeCategory = e.category;
-    _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _mapProxy.getLocationsByCategory(e.category, _categoryResultsPerPage));
+    _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _mapProxy.retrieveLocationsByCategory(e.category, _categoryResultsPerPage));
 }
 
 function _onCategoryListItemClick (e) {
     //Called when the user clicks a specific location in a category 
     //list view, such as "10 W Amistad". Opens detail view
-    var _annotation = _mapProxy.getAnnotationByTitle(e.title);
+    var _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
     _loadDetail(_annotation);
 }
 
@@ -169,10 +169,10 @@ function _onCategoryRightBtnClick (e) {
     // Should be shown.
     switch (_mapWindowView.doGetView()) {
         case _mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_MAP'], _mapProxy.getLocationsByCategory(_activeCategory || '', _categoryResultsPerPage));
+            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_MAP'], _mapProxy.retrieveLocationsByCategory(_activeCategory || '', _categoryResultsPerPage));
             break;
         case _mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _mapProxy.getLocationsByCategory(_activeCategory, _categoryResultsPerPage));
+            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _mapProxy.retrieveLocationsByCategory(_activeCategory, _categoryResultsPerPage));
             break;
         default:
             return;
@@ -187,10 +187,10 @@ function _onCategoryLeftBtnClick (e) {
     // Should be shown. Presumably, it should go back one step.
     switch (_mapWindowView.doGetView()) {
         case _mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.getLocationsByCategory(_activeCategory || '', _categoryResultsPerPage));
+            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.retrieveLocationsByCategory(_activeCategory || '', _categoryResultsPerPage));
             break;
         case _mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.getLocationsByCategory(_activeCategory, _categoryResultsPerPage));
+            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.retrieveLocationsByCategory(_activeCategory, _categoryResultsPerPage));
             break;
         default:
             return;
@@ -198,18 +198,18 @@ function _onCategoryLeftBtnClick (e) {
 }
 
 function _onViewDetailOnMap (e) {
-    _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_MAP'], {locations: [_mapProxy.getAnnotationByTitle(e.title, true)]});
+    _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_MAP'], {locations: [_mapProxy.retrieveAnnotationByTitle(e.title, true)]});
     _mapDetailView.hide();
 }
 
 //Proxy Events
 function _onProxySearching (e) {
-    _mapWindowView.setActivityIndicatorMessage(app.localDictionary.searching);
+    _mapWindowView.saveActivityIndicatorMessage(app.localDictionary.searching);
     _mapWindowView.showActivityIndicator();
 }
 
 function _onProxyLoading (e) {
-    _mapWindowView.setActivityIndicatorMessage(app.localDictionary.mapLoadingLocations);
+    _mapWindowView.saveActivityIndicatorMessage(app.localDictionary.mapLoadingLocations);
     _mapWindowView.showActivityIndicator();
 }
 

@@ -37,7 +37,7 @@ var _defaultMapCenter = {
     longitudeDelta  : 0.005
 };
     
-exports.init = function () {
+exports.initialize = function () {
     var _db;
     _db = Titanium.Database.open('umobile');
 
@@ -124,7 +124,7 @@ exports.search = function (query, opts) {
         _onEmptySearch();
     }
 };
-exports.getAnnotationByTitle = function(t, shouldRecenter) {
+exports.retrieveAnnotationByTitle = function(t, shouldRecenter) {
     var result = {}, resultSet, db;
     db = Titanium.Database.open('umobile');
     resultSet = db.execute("SELECT * FROM map_locations WHERE title IS ? LIMIT 1", t);
@@ -181,7 +181,7 @@ exports.loadMapPoints = function () {
 
 };
 
-exports.getCategoryList = function () {
+exports.retrieveCategoryList = function () {
     /*
         In this method, we'll 
         1. load the available categories from the db.
@@ -230,7 +230,7 @@ exports.getCategoryList = function () {
     return result;
 };
 
-exports.getLocationsByCategory = function (_catName, _numResults, _pageNum) {
+exports.retrieveLocationsByCategory = function (_catName, _numResults, _pageNum) {
     /*
         _catName arg is a string for the category name to query for
         _numResults (optional) is the number of results to return. All by default.
@@ -300,7 +300,7 @@ exports.getLocationsByCategory = function (_catName, _numResults, _pageNum) {
             });
         }
         catch (e) {
-            Ti.API.error("Couldn't add object to getLocationsByCategory response. Title: " + _resultSet.fieldByName('title'));
+            Ti.API.error("Couldn't add object to retrieveLocationsByCategory response. Title: " + _resultSet.fieldByName('title'));
         }
         _isFirstResult = false;
         _resultSet.next();
@@ -392,7 +392,7 @@ exports._newPointsLoaded = function (e) {
     }
 };
 
-exports.getMapCenter = function (isDefault) {
+exports.retrieveMapCenter = function (isDefault) {
     var _longDelta, _latDelta;
     if(isDefault) {
         //Wants the default map location returned from the service, 
@@ -405,7 +405,7 @@ exports.getMapCenter = function (isDefault) {
         _mapCenter.latitudeDelta = (_mapCenter.latHigh - _mapCenter.latLow) > 0.005 ? _mapCenter.latHigh - _mapCenter.latLow : 0.005;
         _mapCenter.longitudeDelta = (_mapCenter.longHigh - _mapCenter.longLow) > 0.005 ? _mapCenter.longHigh - _mapCenter.longLow : 0.005;
         
-        Ti.API.debug("mapProxy.getMapCenter result: " + JSON.stringify(_mapCenter));
+        Ti.API.debug("mapProxy.retrieveMapCenter result: " + JSON.stringify(_mapCenter));
         return _mapCenter;
     }
 };

@@ -72,7 +72,7 @@ exports.portletView= {
     height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT
 };
 exports.portletWindow= {
-    url: 'js/views/WindowContext.js',
+    // url: 'js/views/WindowContext.js',
     key: 'portlet',
     backgroundColor: "#fff",
     exitOnClose: false,
@@ -329,7 +329,7 @@ exports.secondaryNavButton= {
 };
 //PORTAL VIEW STYLES
 exports.portalWindow= {
-    url: 'js/views/WindowContext.js',
+    // url: 'js/views/WindowContext.js',
     navBarHidden: true,
     exitOnClose: true,
     fullScreen: false,

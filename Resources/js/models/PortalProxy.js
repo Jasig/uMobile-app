@@ -39,7 +39,7 @@ isPortalReachable = false,
 portlets = [],
 pathToRoot = '../../';
 
-exports.getShowPortletFunc = function (portlet) {
+exports.retrieveShowPortletFunc = function (portlet) {
     //Returns a function to the PortalWindowController to open the appropriate window 
     //when an icon is clicked in the home screen grid.
     return function () {
@@ -52,12 +52,12 @@ exports.getShowPortletFunc = function (portlet) {
     };
 };
 
-exports.getPortlets = function () {
+exports.retrievePortlets = function () {
     return portlets;
 };
 
-exports.setPortlets = function (_portlets) {
-    var nativeModules = app.config.getLocalModules(), module;
+exports.savePortlets = function (_portlets) {
+    var nativeModules = app.config.retrieveLocalModules(), module;
     portlets = _portlets;
 
     for (module in nativeModules) {
@@ -86,11 +86,11 @@ exports.setPortlets = function (_portlets) {
     portlets.sort(exports._sortPortlets);
     
     //Set the state of the portal proxy. Assume local portlets only if _portlets.length < 1
-    exports.setState(exports.states[_portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
-    Ti.App.fireEvent(exports.events['PORTLETS_LOADED'],{state: exports.getState()});
+    exports.saveState(exports.states[_portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
+    Ti.App.fireEvent(exports.events['PORTLETS_LOADED'],{state: exports.retrieveState()});
 };
 
-exports.getPortletByFName = function (fname) {
+exports.retrievePortletByFName = function (fname) {
 	for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
 		if (portlets[i].fname === fname) {
 			return pathToRoot[i];
@@ -123,11 +123,11 @@ exports._sortPortlets = function(a, b) {
 
 };
 
-exports.getIconUrl = function (p) {
+exports.retrieveIconUrl = function (p) {
     var _iconUrl;
 
-    if (app.models.resourceProxy.getPortletIcon(p.fname)) {
-        _iconUrl = app.models.resourceProxy.getPortletIcon(p.fname);
+    if (app.models.resourceProxy.retrievePortletIcon(p.fname)) {
+        _iconUrl = app.models.resourceProxy.retrievePortletIcon(p.fname);
     }
     else if (p.iconUrl && p.iconUrl.indexOf('/') == 0) {
         _iconUrl = app.config.BASE_PORTAL_URL + p.iconUrl;
@@ -142,11 +142,11 @@ exports.getIconUrl = function (p) {
     return _iconUrl;
 };
 
-exports.getIsPortalReachable = function () {
+exports.retrieveIsPortalReachable = function () {
     return isPortalReachable;
 };
 
-exports.setIsPortalReachable = function (newval) {
+exports.saveIsPortalReachable = function (newval) {
     if (typeof newval == "boolean") {
         isPortalReachable = newval;
     }
@@ -155,7 +155,7 @@ exports.setIsPortalReachable = function (newval) {
     }
 };
 
-exports.setState = function (_state) {
+exports.saveState = function (_state) {
     for (var state in exports.states) {
         if (exports.states.hasOwnProperty(state)) {
             if (exports.states[state] === _state) {
@@ -165,6 +165,6 @@ exports.setState = function (_state) {
     }
 };
 
-exports.getState = function () {
+exports.retrieveState = function () {
     return currentState;
 };

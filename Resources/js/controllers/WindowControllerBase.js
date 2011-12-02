@@ -75,7 +75,7 @@ var WindowControllerBase = function () {
         return _key || false;
     };
     
-    this.setState = function (stateKey) {
+    this.saveState = function (stateKey) {
         if (_states[stateKey]) {
             _state = _states[stateKey];
             return _state;
@@ -86,7 +86,7 @@ var WindowControllerBase = function () {
         return false;
     };
     
-    this.getState = function () {
+    this.retrieveState = function () {
         return _state || false;
     };
 };

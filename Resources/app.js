@@ -18,8 +18,8 @@
  */
 var app = { models: {} };
 function onOrientationChange (e) {
-    if (!app.models.deviceProxy.getCurrentOrientation() || app.models.deviceProxy.getCurrentOrientation() !== e.orientation) {
-        app.models.deviceProxy.setCurrentOrientation(e.orientation);
+    if (!app.models.deviceProxy.retrieveCurrentOrientation() || app.models.deviceProxy.retrieveCurrentOrientation() !== e.orientation) {
+        app.models.deviceProxy.saveCurrentOrientation(e.orientation);
         Ti.App.fireEvent(app.events['DIMENSION_CHANGES'], {orientation: e.orientation});
     }
     else {
@@ -49,11 +49,11 @@ app['localDictionary'] = require('/js/localization')[Titanium.App.Properties.get
 app.models['deviceProxy'] = require('/js/models/DeviceProxy');
 app.models['resourceProxy'] = require('/js/models/ResourceProxy'); //Manages retrieval of local files between different OS's
 app['styles'] = require('/js/style'); //Stylesheet-like dictionary used throughout application.
-app.models['windowManager'] = require('/js/models/WindowManager'); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
 app.models['portalProxy'] = require('/js/models/PortalProxy'); //Manages the home screen view which displays a grid of icons representing portlets.
-app.models['sessionProxy'] = require('/js/models/SessionProxy'); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
 app.models['userProxy'] = require('/js/models/UserProxy');
+app.models['sessionProxy'] = require('/js/models/SessionProxy'); //Manages 1 or more timers (depending on OS) to know when a session has expired on the server.
 app.models['loginProxy'] = require('/js/models/LoginProxy'); //Works primarily with the settingsWindowController to manage the login process (Local or CAS) and broadcast success/fail events.
+app.models['windowManager'] = require('/js/models/WindowManager'); //Manages opening/closing of windows, state of current window, as well as going back in the activity stack.
     
 app.models.windowManager.openWindow(app.config.HOME_KEY);
 

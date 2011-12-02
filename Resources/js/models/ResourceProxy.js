@@ -22,7 +22,7 @@
 
 var resolutionMatrix;
 
-exports.getPortletIcon = function (fname) {
+exports.retrievePortletIcon = function (fname) {
     if (!app.config.nativeIcons[fname]) {
         Ti.API.error("Couldn't find icon for " + fname);
         return false;
@@ -37,7 +37,7 @@ exports.getPortletIcon = function (fname) {
         return '/images/' + app.config.nativeIcons[fname];
     }
     else {
-        Ti.API.error("This device type could not be determined in getPortletIcon() in ResourceProxy");
+        Ti.API.error("This device type could not be determined in retrievePortletIcon() in ResourceProxy");
         return false;
     }
 };

@@ -113,7 +113,7 @@ exports.stopTimer = function (context) {
 
 exports.createSessionTimer = function (context) {
     var session = {};
-    if (app.models.deviceProxy.isAndroid() || (context === app.models.loginProxy.sessionTimeContexts.NETWORK && !timers[context])) {
+    if (app.models.deviceProxy.isAndroid() || (context === "Network" && !timers[context])) {
         session.context = context;
         session.isActive = false;
         timers[context] = session;

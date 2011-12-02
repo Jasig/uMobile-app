@@ -48,7 +48,7 @@ exports.plotPoints = function (points) {
     }
     
     // Center the map around the active points
-    mapView.setLocation(mapProxy.getMapCenter());
+    mapView.setLocation(mapProxy.retrieveMapCenter());
     activityIndicator.view.hide();
 };
 
@@ -60,8 +60,8 @@ exports.showActivityIndicator = function () {
     activityIndicator.view.show();
 };
 
-exports.setActivityIndicatorMessage = function (message) {
-    activityIndicator.setLoadingMessage(message);
+exports.saveActivityIndicatorMessage = function (message) {
+    activityIndicator.saveLoadingMessage(message);
 };
 
 exports.resetDimensions = function (e) {
@@ -71,7 +71,7 @@ exports.resetDimensions = function (e) {
 
 exports.resetMapLocation = function () {
     if (mapView && mapProxy) {
-        mapView.setLocation(mapProxy.getMapCenter(true));
+        mapView.setLocation(mapProxy.retrieveMapCenter(true));
     }
 };
 
@@ -297,7 +297,7 @@ var _createMainView = function() {
     }
     else {
         bottomNavButtons = require('/js/views/UI/TabbedBar');
-        bottomNavButtons.doSetWidth(app.models.deviceProxy.getWidth());
+        bottomNavButtons.doSetWidth(app.models.deviceProxy.retrieveWidth());
         bottomNavButtons.doSetLabels(exports.navButtonValues);
         bottomNavButtons.doSetIndex(0);
     }
