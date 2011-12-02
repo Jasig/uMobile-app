@@ -68,6 +68,10 @@ exports.close = function () {
     Ti.App.removeEventListener(portalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
 };
 
+exports.rotate = function (orientation) {
+    portalWindowView.rotateView(orientation);
+};
+
 function onAndroidSearchClick (e) {
 	var _searchPortlet = app.models.portalProxy.retrievePortletByFName('search'); 
 	if (_searchPortlet) app.models.portalProxy.retrieveShowPortletFunc(_searchPortlet)();

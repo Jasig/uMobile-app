@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+ 
+var _orientation;
     
 exports.checkNetwork = function() {
     if (!Ti.Network.online) {
@@ -70,5 +71,5 @@ exports.saveCurrentOrientation = function (orientation) {
 };
 
 exports.retrieveCurrentOrientation = function () {
-    return _orientation;
+    return _orientation || false;
 };

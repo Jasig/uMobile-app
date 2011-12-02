@@ -32,6 +32,15 @@ Ti.App.addEventListener(app.events['SHOW_WINDOW'], onShowWindow);
 Ti.App.addEventListener(app.events['SHOW_PORTLET'], onShowPortlet);
 Ti.App.addEventListener(app.events['NETWORK_ERROR'], onNetworkConnectionError);
 
+exports.rotateWindow = function (orientation) {
+    if (currentController && currentController.rotate) {
+        currentController.rotate(orientation);
+    }
+    else {
+        Ti.API.debug('hmm, some condition was not met to rotate the window.');
+    }
+};
+
 exports.openWindow = function (windowKey, portlet) {
     var callback;
     

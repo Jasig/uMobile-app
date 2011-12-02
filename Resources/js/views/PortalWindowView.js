@@ -82,23 +82,26 @@ exports.close = function () {
     exports.saveState(exports.states.HIDDEN);
 };
 
+exports.rotateView = function (orientation) {
+    if (_contentLayer) {
+        _contentLayer.width = app.styles.portalContentLayer.width;
+        _contentLayer.height = app.styles.portalContentLayer.height;            
+    }
+    if (_guestNotificationView) _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+    if (portalGridView) portalGridView.rotate(orientation);
+    if (_activityIndicator) _activityIndicator.rotate();
+    if (_titleBar) _titleBar.rotate();
+};
+
 function _drawUI (_isGuestLayout, _isPortalReachable) {
-    Ti.API.debug("_drawUI() in PortalWindowView");
     // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
     if (_contentLayer) {
         _win.remove(_contentLayer);
     }
-    Ti.API.debug('about to create _contentLayer');
     _contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
-    
     _win.add(_contentLayer);
-    
-    Ti.API.debug('about to add gridView to portalGridView');
-    Ti.API.debug(_contentLayer);
-    Ti.API.debug(portalGridView);
     _contentLayer.add(portalGridView.retrieveGridView());
     
-    Ti.API.debug('about to add layout indicator.');
     switch (_layoutIndicator) {
         case exports.indicatorStates['GUEST']:
             _addSpecialLayoutIndicator(true, true);
@@ -110,17 +113,14 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
             _removeSpecialLayoutIndicator(false, true);
     }
 
-    Ti.API.debug('About to create the activityIndicator');
     _activityIndicator = require('/js/views/UI/ActivityIndicator');
     _win.add(_activityIndicator.view);
 
-    Ti.API.debug('About to create the titleBar');
     _titleBar = require('/js/views/UI/TitleBar');
     _titleBar.addSettingsButton();
     _titleBar.addInfoButton();
     _titleBar.updateTitle(app.localDictionary.homeTitle);
     _win.add(_titleBar.view);
-    Ti.API.debug('finished drawUI without crashing');
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {

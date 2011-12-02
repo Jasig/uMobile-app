@@ -65,13 +65,11 @@ exports.clear = function () {
     homeButtonContainer = null;
 };
 
-function titleBarRotate (e) {
+exports.rotate = function (orientation) {
     if (titleBar) { titleBar.view.width = app.styles.titleBar.width; }
     if (settingsButtonContainer) { settingsButtonContainer.left = app.styles.titleBarSettingsContainer.left; }
     if (homeButtonContainer) { homeButtonContainer.left = app.styles.titleBarHomeContainer.left; }
 };
-
-Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], titleBarRotate);
 
 function onHomeClick (e) {
     app.models.windowManager.openWindow(app.config.HOME_KEY);

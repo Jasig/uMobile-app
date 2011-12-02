@@ -20,7 +20,13 @@ exports.saveLoadingMessage = function (m) {
 };
 
 exports.clear = function () {
-    Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], resetActivityIndicator);
+    indicator.view = null;
+    dialog = null;
+    indicator = null;
+};
+
+exports.rotate = function (orientation) {
+    exports.resetDimensions();
 };
 
 exports.resetDimensions = function () {
@@ -30,7 +36,3 @@ exports.resetDimensions = function () {
     dialog.width = app.styles.activityIndicatorDialog.width;
 };
 
-function resetActivityIndicator (e) {
-    indicator.resetDimensions();
-}
-Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], resetActivityIndicator);

@@ -115,6 +115,14 @@ exports.updateGrid = function (portlets) {
     _didLayoutCleanup = false;
 };
 
+exports.rotate = function (orientation) {
+    Ti.API.debug('rotate() in PortalGridView');
+    _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+    _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
+    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth() / _completeWidth);
+    _rearrangeGrid();
+};
+
 function _createGridItem (portlet, sortOrder) {
     // Create the container for the grid item
     var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,

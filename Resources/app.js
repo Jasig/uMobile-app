@@ -20,7 +20,9 @@ var app = { models: {} };
 function onOrientationChange (e) {
     if (!app.models.deviceProxy.retrieveCurrentOrientation() || app.models.deviceProxy.retrieveCurrentOrientation() !== e.orientation) {
         app.models.deviceProxy.saveCurrentOrientation(e.orientation);
-        Ti.App.fireEvent(app.events['DIMENSION_CHANGES'], {orientation: e.orientation});
+        // Ti.App.fireEvent(app.events['DIMENSION_CHANGES'], {orientation: e.orientation});
+        app.styles = require('/js/style');
+        app.models.windowManager.rotateWindow(e.orientation);
     }
     else {
         Ti.API.debug("Same orientation as before");
