@@ -56,7 +56,7 @@ exports.addSettingsButton = function () {
     settingsButtonContainer.show();
 };
 
-exports.destroy = function () {
+exports.clear = function () {
     if (settingsButtonContainer) settingsButtonContainer.removeEventListener('singletap', onSettingsClick);
     settingsButtonContainer = null;
     if (infoButtonContainer) infoButtonContainer.removeEventListener('singletap', onInfoClick);

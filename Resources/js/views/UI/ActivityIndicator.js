@@ -19,7 +19,7 @@ exports.saveLoadingMessage = function (m) {
     }
 };
 
-exports.destroy = function () {
+exports.clear = function () {
     Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], resetActivityIndicator);
 };
 

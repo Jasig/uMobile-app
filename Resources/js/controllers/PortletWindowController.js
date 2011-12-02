@@ -106,12 +106,15 @@ function _createView (portlet) {
     
 };
 function _destroyView () {
+    
     _navBar.leftButton.removeEventListener('click', _onBackBtnPress);
-    _navBar = null;
-    _activityIndicator.destroy();
+    _navBar = null;        
+    _activityIndicator.clear();
     _activityIndicator = null;
-    _titleBar.destroy();
-    _titleBar = null;
+    if (_titleBar) {
+        _titleBar.clear();
+        _titleBar = null;        
+    }
 };
 
 function _includePortlet (portlet) {

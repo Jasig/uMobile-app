@@ -44,8 +44,10 @@ exports.openWindow = function (windowKey, portlet) {
         Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
         if (activityStack.length > 0) {
-            currentController.close();
-            if (exports.retrieveCurrentWindow() !== app.config.HOME_KEY) currentController = null;
+            if (exports.retrieveCurrentWindow() !== app.config.HOME_KEY) {
+                currentController.close();
+                currentController = null;
+            }
         }
         
         //If it's the first window, we assume it's home, and so define the currentController AND homeController
@@ -54,16 +56,18 @@ exports.openWindow = function (windowKey, portlet) {
         if (activityStack.length === 0) {
             currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
             currentController.open(portlet ? portlet : null);
+            activityStack.push(windowKey);
         }
         else if (windowKey === app.config.HOME_KEY){
             currentController = homeController;
+            activityStack.push(windowKey);
         }
         else {
             currentController = require('/js/controllers/' + applicationWindows[windowKey]);
             currentController.open(portlet ? portlet : null);
+            activityStack.push(windowKey);
         }
-
-        activityStack.push(windowKey);
+        
         Ti.App.Properties.setString('lastWindow', windowKey);
         
         if (portlet) Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
@@ -73,7 +77,6 @@ exports.openWindow = function (windowKey, portlet) {
         Ti.API.error("Error opening window.");
         Ti.API.error(" applicationWindows[windowKey]" + applicationWindows[windowKey]);
         Ti.API.error("windowKey= " + windowKey + " & exports.retrieveCurrentWindow() = " + exports.retrieveCurrentWindow());
-        Ti.API.debug(JSON.stringify(activityStack));
     }
 };
 
@@ -100,8 +103,6 @@ exports.retrieveCurrentPortlet = function () {
     Ti.API.info("retrieveCurrentPortlet() in WindowManager: " + JSON.stringify(_currentPortlet));
     return _currentPortlet;
 };
-
-
 
 //Event Handlers
 function onAndroidBack (e) {

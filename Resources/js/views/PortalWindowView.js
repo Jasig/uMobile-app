@@ -71,14 +71,13 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     // exports.showActivityIndicator(app.localDictionary.gettingPortlets);
     // portalGridView.updateGrid(_modules);
             
-    // _onDimensionChanges();
     exports.saveState(exports.states.OPENED);
 };
 
 exports.close = function () {
     _win.hide();
     // _win.removeEventListener('android:search', _onAndroidSearch);
-    if (app.models.deviceProxy.isIOS()) _win.visible = false;
+    // if (app.models.deviceProxy.isIOS()) _win.visible = false;
     
     exports.saveState(exports.states.HIDDEN);
 };

@@ -217,7 +217,7 @@ function _rearrangeGrid (e) {
     exports.saveState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
 };
 
-exports.destroy = function () {
+exports.clear = function () {
     Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
     Ti.App.removeEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
     
