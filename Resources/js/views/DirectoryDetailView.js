@@ -32,8 +32,6 @@ exports.retrieveDetailView = function () {
 
         attributeTable = require('/js/views/PersonDetailTableView');
         _view.add(attributeTable.table);
-
-        Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], onDimensionChanges);
     }
     return _view;
 };
@@ -47,6 +45,15 @@ exports.render = function (viewModel) {
 
 exports.hide = function () {
     _view.hide();
+};
+
+exports.rotate = function (orientation) {
+    if (_view) {
+        _view.width = app.styles.contactDetailView.width;
+        _view.height = app.styles.contactDetailView.height;
+    }
+    if (secondaryNavBar) secondaryNavBar.rotate(orientation);
+    if (attributeTable) attributeTable.table.width = app.styles.directoryDetailAttributeTable.width;
 };
 
 function constructPerson (attributes) {
@@ -87,19 +94,6 @@ function getAttribute (tiAttrName, attributes) {
         }
     }
     return null;
-};
-
-function onDimensionChanges (e) {
-    if (_view) {
-        _view.width = app.styles.contactDetailView.width;
-        _view.height = app.styles.contactDetailView.height;
-    }
-    if (attributeTable) {
-        attributeTable.table.width = app.styles.directoryDetailAttributeTable.width;
-    }
-    else {
-        Ti.API.error("attributeTable is undefined in DirectoryDetailController");
-    }
 };
 
 function onBackBtnClick () {

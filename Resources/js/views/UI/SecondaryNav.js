@@ -1,22 +1,14 @@
 var leftButton, rightButton, view, titleLabel;
 
-var _onDeviceRotation = function (e) {
+exports.rotate = function (orientation) {
     var _visibility = view.visible;
-    
-    try {
-        titleLabel.width = app.styles.secondaryNavLabel.width;
-        leftButton.left = app.styles.secondaryNavButton.left;
-        rightButton.left = app.models.deviceProxy.retrieveWidth() - rightButton.width - app.styles.secondaryNavButton.left; //Had to do it this way so Android wouldn't stretch the button
+    titleLabel.width = app.styles.secondaryNavLabel.width;
+    leftButton.left = app.styles.secondaryNavButton.left;
+    rightButton.left = app.models.deviceProxy.retrieveWidth() - rightButton.width - app.styles.secondaryNavButton.left; //Had to do it this way so Android wouldn't stretch the button
 
-        view.width = app.styles.secondaryNavBar.width;
-        view.visible = _visibility || true;
-    }
-    catch (e) {
-        Ti.API.error("Couldn't change views in SecondaryNavBar");
-    }
+    view.width = app.styles.secondaryNavBar.width;
+    view.visible = _visibility || true;
 };
-
-Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], _onDeviceRotation);
 
 view = Titanium.UI.createView(app.styles.secondaryNavBar);
 

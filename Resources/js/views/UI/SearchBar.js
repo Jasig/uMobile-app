@@ -29,9 +29,9 @@ exports.createSearchBar = function (opts) {
     if (opts.change) {
         searchBarObject.input.addEventListener('change', opts.change);
     }
-    
-    Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
-        if (searchBar) { searchBar.width = app.styles.searchBar.width; }
-        if (searchBarInput) { searchBarInput.width = app.styles.searchBarInput.width; }
-    });
+};
+
+exports.rotate = function (orientation) {
+    if (searchBar) { searchBar.width = app.styles.searchBar.width; }
+    if (searchBarInput) { searchBarInput.width = app.styles.searchBarInput.width; }
 };

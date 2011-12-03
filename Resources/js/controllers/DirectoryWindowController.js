@@ -48,6 +48,10 @@ exports.close = function (options) {
     directoryWindowView = null;
 };
 
+exports.rotate = function (orientation) {
+    if (directoryWindowView) directoryWindowView.rotate(orientation);
+};
+
 resetHome = function () {
     directoryProxy.clear();
     directoryWindowView.reset();

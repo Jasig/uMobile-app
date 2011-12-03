@@ -53,6 +53,11 @@ exports.close = function () {
     blurSearch();
     directoryDetailView = null;
     
+    if (peopleListTable) {
+        peopleListTable.addEventListener('touchstart', blurSearch);
+        peopleListTable.addEventListener('move', blurSearch);
+    }
+    
     if (win && app.models.deviceProxy.isAndroid()) win.removeEventListener('android:search', onAndroidSearch);
     
     win.close();
@@ -64,6 +69,12 @@ exports.reset = function () {
     directoryDetailView.hide();
     if (peopleListTable) { peopleListTable.setData(_viewModel.emergencyContacts || defaultTableData); }
     if (activityIndicator) { activityIndicator.view.hide(); }
+};
+
+exports.rotate = function (orientation) {
+    if (titleBar) titleBar.rotate(orientation);
+    if (searchBar) searchBar.rotate(orientation);
+    if (directoryDetailView) directoryDetailView.rotate(orientation);
 };
 
 exports.showDetail = function (person) {

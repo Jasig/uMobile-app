@@ -69,6 +69,7 @@ exports.openWindow = function (windowKey, portlet) {
         }
         else if (windowKey === app.config.HOME_KEY){
             currentController = homeController;
+            currentController.rotate(app.models.deviceProxy.retrieveCurrentOrientation());
             activityStack.push(windowKey);
         }
         else {
