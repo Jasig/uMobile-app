@@ -32,8 +32,6 @@ exports.open = function () {
     _mapWindowView = require('/js/views/MapWindowView');
     _mapDetailView = require('/js/views/MapDetailView');
     _mapProxy = require('/js/models/MapProxy');
-    
-    Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
 
     _win = Titanium.UI.createWindow({
         // url: 'js/views/WindowContext.js',
@@ -48,8 +46,7 @@ exports.open = function () {
         ]
     });
     _win.open();
-    
-    Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
+
     Ti.App.addEventListener(_mapProxy.events['SEARCHING'], _onProxySearching);
     Ti.App.addEventListener(_mapProxy.events['SEARCH_COMPLETE'], _onProxySearchComplete);
     Ti.App.addEventListener(_mapProxy.events['EMPTY_SEARCH'], _onProxyEmptySearch);
@@ -76,7 +73,6 @@ exports.open = function () {
 exports.close = function (options) {
     _mapWindowView.searchBlur();
     
-    Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
     Ti.App.removeEventListener(_mapProxy.events['SEARCHING'], _onProxySearching);
     Ti.App.removeEventListener(_mapProxy.events['SEARCH_COMPLETE'], _onProxySearchComplete);
     Ti.App.removeEventListener(_mapProxy.events['EMPTY_SEARCH'], _onProxyEmptySearch);
@@ -99,6 +95,10 @@ exports.close = function (options) {
     _mapProxy = null;
     
     _win.close();
+};
+
+exports.rotate = function (orientation) {
+    _mapWindowView.rotate(orientation);
 };
 
 function _loadDetail (_annotation) {
@@ -318,10 +318,3 @@ function _onProxyLoadError (e) {
         }
     }
 }
-
-function _onOrientationChange (e) {
-    if (app.models.deviceProxy.isIOS() || _win && _win.visible) {
-        _mapWindowView.resetDimensions();
-    }
-};
-

@@ -64,9 +64,12 @@ exports.saveActivityIndicatorMessage = function (message) {
     activityIndicator.saveLoadingMessage(message);
 };
 
-exports.resetDimensions = function (e) {
+exports.rotate = function (orientation) {
     if (mapView) mapView.height = app.styles.mapView.height;
     if (bottomNavView) bottomNavView.top = app.styles.mapNavView.top;
+    if (titleBar) titleBar.rotate(orientation);
+    if (searchBar) searchBar.rotate(orientation);
+    if (categoryNavBar) categoryNavBar.rotate(orientation);
 };
 
 exports.resetMapLocation = function () {
@@ -110,7 +113,7 @@ exports.openCategoryBrowsingView = function (categories) {
                     
                     // Add the label for the row
                     var _categoryLabel = Ti.UI.createLabel({
-                        text: _categoryName.toCapitalized(),
+                        text: _categoryName,
                         left: 10,
                         color: "#000"
                     });
