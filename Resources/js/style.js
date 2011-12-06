@@ -36,8 +36,8 @@ function getPlatformHeight () {
 
 defaults = {
     TITLEBAR_HEIGHT: 40,
-    STATUSBAR_HEIGHT: OS === 'android' ? 25 : 20,
-    SEARCHBAR_HEIGHT: OS === 'android' ? 48 : 40,
+    STATUSBAR_HEIGHT: OS === 'android' ? '25dp' : 20,
+    SEARCHBAR_HEIGHT: OS === 'android' ? '48dp' : 40,
     DETAIL_TOP_TITLE_COLOR: '#333',
     DETAIL_TOP_BACKGROUND_COLOR: '#eee',
     PRIMARY_BAR_BACKGROUND_COLOR: "#000",
@@ -60,8 +60,8 @@ defaults = {
     },
     SECONDARY_BAR_COLOR: "#fff"
 };
-    
-    
+
+
 exports.backgroundColor = '#fff';
 exports.view = {
     backgroundColor: '#fff',
@@ -84,13 +84,13 @@ exports.portletWindow= {
     	Titanium.UI.LANDSCAPE_RIGHT
     ]
 };
-exports.textField= {
-    height: OS === 'iphone' ? 35 : 45,
-	width: 150,
+exports.textField = {
+    height: OS === 'iphone' ? '35' : '45dp',
+	width: '150dp',
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
 };
 exports.textFieldLabel= {
-    height:35,
+    height: '35dp',
     width:'auto',
     color: '#000'
 };
@@ -100,50 +100,50 @@ exports.settingsTable= {
 };
 //Settings Properties
 exports.settingsPasswordInput= {
-    height: OS === 'iphone' ? 35 : 45,
+  height: OS === 'iphone' ? '35' : '45dp',
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
     passwordMask: true,
-    left: 100,
-    width: getPlatformWidth() - 100 - 30,
+    left: '100dp',
+    width: OS === 'iphone' ? getPlatformWidth() - 100 - 30 : '190dp',
     autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
     autocorrect: false
 };
 exports.settingsPasswordLabel= {
-    height:35,
+    height:'35dp',
     width:'auto',
     color: '#000',
-    left: 10
+    left: '10dp'
 };
 exports.settingsUsernameInput= {
-    height: OS === 'iphone' ? 35 : 45,
+    height: OS === 'iphone' ? 35 : '45dp',
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-    left: 100,
-    width: getPlatformWidth() - 100 - 30,
+    left: '100dp',
+    width: OS === 'iphone' ? getPlatformWidth() - 100 - 30 : '190dp',
     autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
     autocorrect: false
 };
 exports.settingsUsernameLabel= {
-    height:35,
+    height:'35dp',
     width:'auto',
     color: '#000',
-    left: 10
+    left: '10dp'
 };
 exports.settingsResetPasswordLabel= {
     font: {
-        fontSize: 12
+        fontSize: '12dp'
     },
-    left: 10,
-    height: 40,
+    left: '10dp',
+    height: '40dp',
     color: "#036",
     textDecoration: 'underline'
 };
 exports.contentButton= {
     font: {
-        fontSize: 14,
+        fontSize: '14dp',
         fontWeight: 'bold'
     },
-    height: 40,
-    width: 100,
+    height: '40dp',
+    width: '100dp',
     backgroundGradient: {},
     backgroundGradientPress: {}
 };
@@ -158,9 +158,9 @@ exports.searchBar= {
     width: getPlatformWidth()
 };
 exports.searchBarInput= {
-    width: getPlatformWidth() - 5 - 5,
-    height: defaults.SEARCHBAR_HEIGHT - 7,
-    top: 5,
+    width: OS === 'iphone' ? getPlatformWidth() - 5 - 5 : '310dp',
+    height: defaults.SEARCHBAR_HEIGHT - 7 + 'dp',
+    top: '5dp',
     borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
     softKeyboardOnFocus: Titanium.Platform.osname === 'android' ? Titanium.UI.Android.SOFT_KEYBOARD_DEFAULT_ON_FOCUS : false
 };

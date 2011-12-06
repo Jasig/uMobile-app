@@ -130,12 +130,12 @@ function createCredentialsForm () {
     // create the save button and configure it to persist
     // the new credentials when pressed
     saveButtonOpts.title = app.localDictionary.update;
-    saveButtonOpts.left = 10;
+    saveButtonOpts.left = 10 + 'dp';
     saveButton = Titanium.UI.createButton(saveButtonOpts);
 
     buttonRow.add(saveButton);
     
-    logOutButtonOpts.left = 100 + 10*2;
+    logOutButtonOpts.left = 100 + 10*2 + 'dp';
     logOutButtonOpts.title = app.localDictionary.logOut;
     logOutButton = Ti.UI.createButton(logOutButtonOpts);
     
