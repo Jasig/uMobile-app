@@ -85,7 +85,7 @@ exports.close = function () {
 exports.rotateView = function (orientation) {
     if (_contentLayer) {
         _contentLayer.width = app.styles.portalContentLayer.width;
-        _contentLayer.height = app.styles.portalContentLayer.height;            
+        _contentLayer.height = app.styles.portalContentLayer.height;
     }
     if (_guestNotificationView) _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
     if (portalGridView) portalGridView.rotate(orientation);
@@ -98,6 +98,7 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     if (_contentLayer) {
         _win.remove(_contentLayer);
     }
+
     _contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
     _win.add(_contentLayer);
     _contentLayer.add(portalGridView.retrieveGridView());

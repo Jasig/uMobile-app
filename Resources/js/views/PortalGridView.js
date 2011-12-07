@@ -35,8 +35,8 @@ var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanu
 function _init () {
     _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth() / _completeWidth);
-    _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth() - (_completeWidth * _numColumns))) / 2);
+    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
+    _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
     
     Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
     Ti.App.addEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
@@ -119,14 +119,19 @@ exports.rotate = function (orientation) {
     Ti.API.debug('rotate() in PortalGridView');
     _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth() / _completeWidth);
+    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
     _rearrangeGrid();
 };
 
 function _createGridItem (portlet, sortOrder) {
     // Create the container for the grid item
     var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
-    gridItemDefaults = app.styles.gridItem, gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
+    gridItemDefaults = _.clone(app.styles.gridItem), 
+    gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
+    gridItemDefaults.width = gridItemDefaults.width + 'dp';
+    gridItemDefaults.height = gridItemDefaults.height + 'dp';
+    gridItemDefaults.padding = gridItemDefaults.padding + 'dp';
+    
     if ('fName'+portlet.fname in _gridItems) {
         _gridItems['fName'+portlet.fname].view.show();
         _gridItems['fName'+portlet.fname].sortOrder = sortOrder;
@@ -140,14 +145,17 @@ function _createGridItem (portlet, sortOrder) {
 
         //Add a label to the grid item
         if (portlet.title) {
-            var gridItemLabelDefaults = app.styles.gridItemLabel;
+            var gridItemLabelDefaults = _.clone(app.styles.gridItemLabel);
+            gridItemLabelDefaults.top += 'dp';
             gridItemLabelDefaults.text =  portlet.title.toLowerCase();
             gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
             gridItem.view.add(gridItemLabel);
         }
 
         //Add an icon to the grid item
-        gridItemIconDefaults = app.styles.gridIcon;
+        gridItemIconDefaults = _.clone(app.styles.gridIcon);
+        
+        gridItemIconDefaults.top += 'dp';
         gridItemIconDefaults.image = app.models.portalProxy.retrieveIconUrl(portlet);
         gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
         gridItemIcon.portlet = portlet;
@@ -156,7 +164,7 @@ function _createGridItem (portlet, sortOrder) {
         // if the module has a new item count of more than zero (no new items)
         // add a badge number to the home screen icon
         if (portlet.newItemCount > 0) {
-            gridBadgeBackgroundDefaults = app.styles.gridBadgeBackground;
+            
             gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
             gridItem.view.add(gridBadgeBackground);
 
@@ -216,8 +224,8 @@ function _rearrangeGrid (e) {
     
     for (_gridItem in _gridItems) {
         if (_gridItems.hasOwnProperty(_gridItem)) {
-            _gridItems[_gridItem].view.top = app.styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / _numColumns) * _completeHeight;
-            _gridItems[_gridItem].view.left = _leftPadding + app.styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % _numColumns) * _completeWidth;
+            _gridItems[_gridItem].view.top = (app.styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / _numColumns) * _completeHeight) + 'dp';
+            _gridItems[_gridItem].view.left = (_leftPadding + app.styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % _numColumns) * _completeWidth) + 'dp';
             _gridItems[_gridItem].view.show();
         }
     }

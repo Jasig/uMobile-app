@@ -58,12 +58,50 @@ exports.isBlackBerry = function () {
     return false;
 };
 
-exports.retrieveWidth = function () {
-    return Ti.Platform.displayCaps.platformWidth;
+exports.retrieveWidth = function (dip) {
+    var _screenWidth = Ti.Platform.displayCaps.platformWidth;
+    
+    if (dip && exports.isAndroid()) {
+        var _dipFactor;
+        switch (Ti.Platform.displayCaps.density) {
+            case 'high':
+                _dipFactor = 1.5;
+                break;
+            case 'normal':
+                _dipFactor = 1;
+                break;
+            case 'low':
+                _dipFactor = 0.75;
+                break;
+            default:
+                _dipFactor = 1;
+        }
+        _screenWidth = _screenWidth / _dipFactor;
+    }
+    return _screenWidth;
 };
 
-exports.retrieveHeight = function () {
-    return Ti.Platform.displayCaps.platformHeight;
+exports.retrieveHeight = function (dip) {
+    var _screenHeight = Ti.Platform.displayCaps.platformHeight;
+    
+    if (dip && exports.isAndroid()) {
+        var _dipFactor;
+        switch (Ti.Platform.displayCaps.density) {
+            case 'high':
+                _dipFactor = 1.5;
+                break;
+            case 'normal':
+                _dipFactor = 1;
+                break;
+            case 'low':
+                _dipFactor = 0.75;
+                break;
+            default:
+                _dipFactor = 1;
+        }
+        _screenHeight = _screenHeight / _dipFactor;
+    }
+    return _screenHeight;
 };
 
 exports.saveCurrentOrientation = function (orientation) {

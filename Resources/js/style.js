@@ -24,15 +24,7 @@ To apply styles to elements
 */
 
 
-var defaults, OS = Ti.Platform.osname;
-
-function getPlatformWidth () {
-    return Ti.Platform.displayCaps.platformWidth;
-}
-
-function getPlatformHeight () {
-    return Ti.Platform.displayCaps.platformHeight;
-}
+var defaults, OS = Ti.Platform.osname, deviceProxy = require('/js/models/DeviceProxy');
 
 defaults = {
     TITLEBAR_HEIGHT: 40,
@@ -69,7 +61,7 @@ exports.view = {
 };
 exports.portletView= {
     top: defaults.TITLEBAR_HEIGHT,
-    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT
+    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT
 };
 exports.portletWindow= {
     // url: 'js/views/WindowContext.js',
@@ -104,7 +96,7 @@ exports.settingsPasswordInput= {
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
     passwordMask: true,
     left: '100dp',
-    width: OS === 'iphone' ? getPlatformWidth() - 100 - 30 : '190dp',
+    width: OS === 'iphone' ? deviceProxy.retrieveWidth() - 100 - 30 : '190dp',
     autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
     autocorrect: false
 };
@@ -118,7 +110,7 @@ exports.settingsUsernameInput= {
     height: OS === 'iphone' ? 35 : '45dp',
 	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
     left: '100dp',
-    width: OS === 'iphone' ? getPlatformWidth() - 100 - 30 : '190dp',
+    width: OS === 'iphone' ? deviceProxy.retrieveWidth() - 100 - 30 : '190dp',
     autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
     autocorrect: false
 };
@@ -155,10 +147,10 @@ exports.searchBar= {
     barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
     showCancel: OS === 'android' ? false : true,
-    width: getPlatformWidth()
+    width: deviceProxy.retrieveWidth()
 };
 exports.searchBarInput= {
-    width: OS === 'iphone' ? getPlatformWidth() - 5 - 5 : '310dp',
+    width: OS === 'iphone' ? deviceProxy.retrieveWidth() - 5 - 5 : '310dp',
     height: defaults.SEARCHBAR_HEIGHT - 7 + 'dp',
     top: '5dp',
     borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -176,16 +168,16 @@ exports.titleBar= {
 //Titanium.UI.Button implemented in the GenericTitleBar
 exports.titleBarButton= {
     style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-    left: 10,
-    width: 50,
-    height: 30,
+    left: '10dp',
+    width: '50dp',
+    height: '30dp',
 	backgroundImage: 'none',
 	color: '#fff',
-    borderWidth: 1,
-    borderRadius: 10,
+    borderWidth: '1dp',
+    borderRadius: '10dp',
     borderColor: '#000',
 	font: {
-	    fontSize: 14
+	    fontSize: '14dp'
 	},
 	backgroundGradient: {
 	    backFillStart: false,
@@ -199,48 +191,48 @@ exports.titleBarLabel= {
     color: '#fff',
     font: {
         fontWeight: "bold",
-        fontSize: 18
+        fontSize: '18dp'
     }
 };
 exports.titleBarHomeContainer= {
-    width: 40,
-    height: 30,
+    width: '40dp',
+    height: '30dp',
     borderRadius: 5,
     backgroundColor: 'transparent',
     backgroundColorPressed: "#999",
-    left: 5
+    left: '5dp'
 };
 exports.titleBarInfoContainer= {
-    width: 40,
-    height: 30,
+    width: '40dp',
+    height: '30dp',
     borderRadius: 5,
     backgroundColor: 'transparent',
     backgroundColorPressed: '#999',
-    left: 5
+    left: '5dp'
 };
 exports.titleBarInfoButton= {
     image: "images/tab-info.png",
-    width: 20,
-    height: 20
+    width: '20dp',
+    height: '20dp'
 };
 //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
 exports.titleBarHomeButton= {
     image: "images/tab-home.png",
-    width: 18,
-    height: 18
+    width: '18dp',
+    height: '18dp'
 };
 //Titanium.UI.View with settings icon implemented in GenericTitleBar on right-hand side
 exports.titleBarSettingsContainer= {
-    width: 40,
-    height: 30,
+    width: '40dp',
+    height: '30dp',
     borderRadius: 5,
     backgroundColor: 'transparent',
     backgroundColorPressed: "#999",
-    left: getPlatformWidth() - 40 - 5
+    left: deviceProxy.retrieveWidth(true) - 40 - 5 + 'dp'
 };
 exports.titleBarSettingsButton= {
-    height: 18,
-    width: 18,
+    height: '18dp',
+    width: '18dp',
     image: "images/tab-settings.png"
 };
 exports.secondaryNavBar= {
@@ -253,7 +245,7 @@ exports.secondaryNavBar= {
 };
 
 exports.secondaryNavBarLabel= {
-    width: getPlatformWidth() - 70 * 2 - 10 * 4,
+    width: deviceProxy.retrieveWidth() - 70 * 2 - 10 * 4,
     left: 10,
     buttonLeftFloat: 70 + 10 * 2,
     height: defaults.TITLEBAR_HEIGHT,
@@ -269,7 +261,7 @@ exports.secondaryNavBarLabel= {
 };
 // Styles for new prototype in v1.1, views/SecondaryNav.js
 exports.secondaryNavLabel= {
-    width: getPlatformWidth() - 70 * 2 - 10 * 4,
+    width: deviceProxy.retrieveWidth() - 70 * 2 - 10 * 4,
     left: 70 + 10 * 2,
     height: defaults.TITLEBAR_HEIGHT,
     color: defaults.SECONDARY_BAR_COLOR,
@@ -284,14 +276,14 @@ exports.secondaryNavLabel= {
 };
 /*secondaryBar= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: getPlatformWidth(),
+    width: deviceProxy.retrieveWidth(),
     height: defaults.TITLEBAR_HEIGHT,
     barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
 };*/
 exports.secondaryNavBarButton= {
     style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-    left: getPlatformWidth() - 50 - 10,
+    left: deviceProxy.retrieveWidth() - 50 - 10,
     leftFloat: 10,
     width: 50,
     height: 30,
@@ -341,14 +333,14 @@ exports.portalWindow= {
     ]
 };
 exports.portalContentLayer= {
-    top: defaults.TITLEBAR_HEIGHT,
-    width: OS === 'android' ? 'auto' : getPlatformWidth(),
-    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT - 20,
+    top: defaults.TITLEBAR_HEIGHT + 'dp',
+    width: OS === 'android' ? 'auto' : deviceProxy.retrieveWidth(),
+    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT - 20 + 'dp',
     backgroundColor: "#2A4F95"
 };
 exports.homeGrid= {
     top: 0,
-    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT - OS === 'iphone' || OS === 'ipad' ? 20 : 0,
+    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - (OS === 'iphone' || OS === 'ipad' ? 20 : 0) +'dp',
     color: "#fff",
     contentHeight:'auto',
     zIndex: 1
@@ -367,13 +359,13 @@ exports.homeGuestNoteLabel= {
 exports.gridIcon= {
     top: 0,
     canScale: false,
-    width: OS === 'ipad' ? 72 : 57,
-    height: OS === 'ipad' ? 72 : 57,
+    width: OS === 'ipad' ? 72 : 'auto',
+    height: OS === 'ipad' ? 72 : 'auto',
     type: 'gridIcon'
 };
 exports.gridItem= {
-    width: OS === 'ipad' ? 768 / 4 - 50 : 80,
-    height: OS === 'ipad' ? 72 + 20 : 57 + 20,
+    width: OS === 'ipad' ? (768 / 4 - 50) : 80,
+    height: OS === 'ipad' ? (72 + 20) : (57 + 20),
     padding: 10,
     pressOpacity: 0.5,
     type: 'gridItem'
@@ -383,7 +375,7 @@ exports.gridItemLabel= {
     shadowColor: "#000",
     shadowOffset: { x:0 , y:1 },
     font: { 
-        size: 10,
+        fontSize: '14dp',
         family: 'HelveticaNeue-Light,Helvetica Neue Light,Helvetica Neue,sans-serif'
     },
     top: OS === 'ipad' ? 72 : 57,
@@ -417,14 +409,14 @@ exports.contactDetailView= {
     backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
     visible: false,
     top: defaults.TITLEBAR_HEIGHT,
-    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT,
-    width: OS === 'android' ? getPlatformWidth() : 'auto',
+    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT,
+    width: OS === 'android' ? deviceProxy.retrieveWidth() : 'auto',
     modal: true
 };
 
 exports.directoryDetailAttributeTable= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: getPlatformWidth()
+    width: deviceProxy.retrieveWidth()
 };
 exports.directoryDetailRow= {
     backgroundColor: "#fff",
@@ -455,7 +447,7 @@ exports.directoryDetailRowValue= {
         fontSize: 14
     },
     left: 75 + 10 + 10,
-    width: getPlatformWidth() - 100 - 10 - 10 - 10
+    width: deviceProxy.retrieveWidth() - 100 - 10 - 10 - 10
 };
 exports.directoryDetailValueNoLabel= {
     font: {
@@ -465,12 +457,12 @@ exports.directoryDetailValueNoLabel= {
     color: '#333',
     textAlign: 'center',
     left: 10,
-    width: getPlatformWidth() - (10 * 2)
+    width: deviceProxy.retrieveWidth() - (10 * 2)
 };
 // MAP STYLES
 exports.mapView= {
     top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-    height: getPlatformHeight() - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50 /*mapNavView.height*/),
+    height: deviceProxy.retrieveHeight() - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50 /*mapNavView.height*/),
     mapType: Titanium.Map.STANDARD_TYPE,
     regionFit: true,
     animate: true,
@@ -499,7 +491,7 @@ exports.mapCategoryCount= {
     textAlign: 'center'
 };
 exports.mapNavView= {
-    top: getPlatformHeight() - 50 - defaults.STATUSBAR_HEIGHT,
+    top: deviceProxy.retrieveHeight() - 50 - defaults.STATUSBAR_HEIGHT,
     height              : 50,
     backgroundGradient  : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
 };
@@ -552,14 +544,14 @@ exports.mapDetailLocationPhoto= {
 // ACTIVITY INDICATOR STYLING
 exports.globalActivityIndicator= {
     top: defaults.TITLEBAR_HEIGHT,
-    width: getPlatformWidth(),
-    height: getPlatformHeight() - defaults.TITLEBAR_HEIGHT,
+    width: deviceProxy.retrieveWidth(),
+    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT,
     color: '#fff',
     zIndex: 1000,
     backgroundImage: 'img/bgActivityIndicator.png'
 };
 exports.activityIndicatorDialog= {
-    width: getPlatformWidth() > 480 ? 360 : Math.round(getPlatformWidth() * 0.75),
+    width: deviceProxy.retrieveWidth() > 480 ? 360 : Math.round(deviceProxy.retrieveWidth() * 0.75),
     height: 75,
     borderRadius: 10,
     borderWidth: 1,

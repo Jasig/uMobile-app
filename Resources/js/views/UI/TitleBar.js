@@ -1,10 +1,13 @@
 
     // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
     //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
-var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer,
-    titleBar = {view:Titanium.UI.createView(app.styles.titleBar)},
+var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer, titleBar, titleBarDefaults,
     labelStyle = app.styles.titleBarLabel;
 
+titleBarDefaults = _.clone(app.styles.titleBar);
+titleBarDefaults.left += 'dp';
+titleBarDefaults.height += 'dp';
+titleBar = {view:Titanium.UI.createView(titleBarDefaults)};
 exports.view = titleBar.view;
 
 title = Titanium.UI.createLabel(labelStyle);
@@ -13,7 +16,8 @@ exports.updateTitle = function (t) {
     title.text = t;
 };
 
-exports.addHomeButton = function(){    
+exports.addHomeButton = function(){  
+    Ti.API.debug('addHomeButton()');
     if (infoButtonContainer) infoButtonContainer.hide();
     if (settingsButtonContainer) settingsButtonContainer.hide();
     if (!homeButtonContainer) {
@@ -29,6 +33,7 @@ exports.addHomeButton = function(){
 };
 
 exports.addInfoButton = function () {
+    Ti.API.debug('addInfoButton()');
     if (homeButtonContainer) homeButtonContainer.hide();
     if (!infoButtonContainer) {
         infoButtonContainer = Titanium.UI.createView(app.styles.titleBarInfoContainer);
@@ -43,6 +48,7 @@ exports.addInfoButton = function () {
 };
 
 exports.addSettingsButton = function () {
+    Ti.API.debug('addSettingsButton()');
     if (!settingsButtonContainer) {
         settingsButtonContainer = Titanium.UI.createView(app.styles.titleBarSettingsContainer);
         titleBar.view.add(settingsButtonContainer);
