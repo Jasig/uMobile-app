@@ -543,16 +543,16 @@ exports.mapDetailLocationPhoto= {
 };
 // ACTIVITY INDICATOR STYLING
 exports.globalActivityIndicator= {
-    top: defaults.TITLEBAR_HEIGHT,
-    width: deviceProxy.retrieveWidth(),
-    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT,
+    top: defaults.TITLEBAR_HEIGHT +'dp',
+    width: deviceProxy.retrieveWidth(true) +'dp',
+    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT +'dp',
     color: '#fff',
-    zIndex: 1000,
+    zIndex: 10,
     backgroundImage: 'img/bgActivityIndicator.png'
 };
 exports.activityIndicatorDialog= {
-    width: deviceProxy.retrieveWidth() > 480 ? 360 : Math.round(deviceProxy.retrieveWidth() * 0.75),
-    height: 75,
+    width: (deviceProxy.retrieveWidth(true) > 480 ? 360 : Math.round(deviceProxy.retrieveWidth(true) * 0.75)) + 'dp',
+    height: '75dp',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#fff",
@@ -560,9 +560,9 @@ exports.activityIndicatorDialog= {
 };
 exports.activityIndicatorMessage= {
     textAlign: 'center',
-    fontSize: 18,
     color: "#fff",
     font: {
+        fontSize: '14dp',
         fontWeight: 'bold'
     }
 };

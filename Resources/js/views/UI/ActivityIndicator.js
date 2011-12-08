@@ -1,9 +1,9 @@
-var messageLabel,
-    indicator = {view: Ti.UI.createView(app.styles.globalActivityIndicator)},
-    dialog = Ti.UI.createView(app.styles.activityIndicatorDialog);
+var messageLabel, indicator, dialog;
 
+indicator = {view: Ti.UI.createView(app.styles.globalActivityIndicator)};
 exports.view = indicator.view;
 
+dialog = Ti.UI.createView(app.styles.activityIndicatorDialog);
 indicator.view.add(dialog);
 
 messageLabel = Ti.UI.createLabel(app.styles.activityIndicatorMessage);
