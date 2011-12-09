@@ -60,8 +60,8 @@ exports.view = {
     top: defaults.TITLEBAR_HEIGHT + 'dp'
 };
 exports.portletView= {
-    top: defaults.TITLEBAR_HEIGHT,
-    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT
+    top: defaults.TITLEBAR_HEIGHT + 'dp',
+    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT + 'dp'
 };
 exports.portletWindow= {
     // url: 'js/views/WindowContext.js',
@@ -239,6 +239,7 @@ exports.titleBarSettingsButton= {
 exports.secondaryNavBar= {
 	left: 0,
 	height: defaults.TITLEBAR_HEIGHT + 'dp',
+	getHeight: defaults.TITLEBAR_HEIGHT,
 	backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
 	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
 	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth

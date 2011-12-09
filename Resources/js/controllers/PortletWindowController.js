@@ -76,7 +76,7 @@ function _createView (portlet) {
     _navBar.leftButton.addEventListener('click', _onBackBtnPress);
     _navBar.rightButton.hide();
     _navBar.rightButton.visible = false;
-    _navBar.view.top = 40;
+    _navBar.view.top = '40dp';
     _navBar.view.visible = false;
 
     _activityIndicator = require('/js/views/UI/ActivityIndicator');
@@ -190,7 +190,7 @@ function _getAbsoluteURL (url) {
     if (url.indexOf('/') == 0) {
         _url = _getLocalUrl(url);
         _webView.externalModule = false;
-        _webView.top = _titleBar.view.height;
+        _webView.top = app.styles.titleBar.height + 'dp';
     }
     else {
         _url = url;
@@ -254,13 +254,13 @@ function _onDimensionChanges (e) {
     if (_isHome()) {
         Ti.API.info("Webview is home, can't go back");
         _navBar.view.visible = false;
-        _webView.top = _titleBar.view.height;
-        _webView.height = _win.height - _titleBar.view.height;
+        _webView.top = app.styles.titleBar.height + 'dp';
+        _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height + 'dp';
     }
     else {
         _navBar.view.visible = true;
-        _webView.top = _titleBar.view.height + _navBar.view.height;
-        _webView.height = _win.height - _titleBar.view.height - _navBar.view.height;
+        _webView.top = app.styles.titleBar.height + app.styles.secondaryNavBar.getHeight;
+        _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height - app.styles.secondaryNavBar.getHeight + 'dp';
     }
 };
 
@@ -294,8 +294,8 @@ function _onPortletLoad (e) {
         _lastVideoOpened = '';
         _webView.externalModule = false;
         _navBar.view.visible = false;
-        _webView.top = _titleBar.view.height;
-        _webView.height = _win.height - _titleBar.view.height;
+        _webView.top = app.styles.titleBar.height + 'dp';
+        _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height + 'dp';
         if (_isHome()) {
             _removeAndroidBackListener();
         }
@@ -305,14 +305,14 @@ function _onPortletLoad (e) {
         _webView.externalModule = true;
         if (!_isHome()) {
             _navBar.view.visible = true;
-            _webView.top = _titleBar.view.height + _navBar.view.height;
-            _webView.height = _win.height - _titleBar.view.height - _navBar.view.height;
+            _webView.top = app.styles.titleBar.height + app.styles.secondaryNavBar.getHeight + 'dp';
+            _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height - app.styles.secondaryNavBar.getHeight + 'dp';
             _addAndroidBackListener();
         }
         else {
             Ti.API.info("Webview can't go back");
-            _webView.top = _titleBar.view.height;
-            _webView.height = _win.height - _titleBar.view.height;
+            _webView.top = app.styles.titleBar.height + 'dp';
+            _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height + 'dp';
             _removeAndroidBackListener();
         }
     }
