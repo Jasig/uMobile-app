@@ -57,7 +57,7 @@ defaults = {
 exports.backgroundColor = '#fff';
 exports.view = {
     backgroundColor: '#fff',
-    top: defaults.TITLEBAR_HEIGHT
+    top: defaults.TITLEBAR_HEIGHT + 'dp'
 };
 exports.portletView= {
     top: defaults.TITLEBAR_HEIGHT,

@@ -263,8 +263,6 @@ var _createMainView = function() {
         //This is how we have to listen for when a user clicks an annotation title, because Android is quirky with events on annotations.
         mapView.addEventListener("click", _onMapViewClick);
         mapView.addEventListener('regionChanged', exports.searchBlur);
-
-        
     }
     else {
         view.add(mapView);

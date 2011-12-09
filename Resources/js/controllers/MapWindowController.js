@@ -107,8 +107,8 @@ function _loadDetail (_annotation) {
     _mapWindowView.showActivityIndicator();
     _mapWindowView.searchBlur();
 
-    _locationDetailViewOptions = _.clone(app.styles.view);
-    _locationDetailViewOptions.data = _annotation;
+    /*_locationDetailViewOptions = _.clone(app.styles.view);
+    _locationDetailViewOptions.data = _annotation;*/
     exports._locationDetailView = _mapDetailView.detailView;
     _win.add(exports._locationDetailView);
 

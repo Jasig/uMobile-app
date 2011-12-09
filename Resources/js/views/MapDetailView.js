@@ -39,6 +39,7 @@ exports.render = function (viewModel) {
     }
     
     locationDetailTitleBar = require('/js/views/UI/SecondaryNav');
+    locationDetailTitleBar.view.top = 0;
     locationDetailTitleBar.titleLabel.text = viewModel.title;
     locationDetailTitleBar.leftButton.addEventListener('click', onBackBtnClick);
     locationDetailTitleBar.rightButton.hide();
@@ -59,7 +60,7 @@ exports.render = function (viewModel) {
     
     var viewOnMapButton, viewOnMapButtonOptions, viewOnMapRow;
     viewOnMapButtonOptions = _.clone(app.styles.contentButton);
-    viewOnMapButtonOptions.width = 150;
+    viewOnMapButtonOptions.width = '150dp';
     viewOnMapButtonOptions.title = app.localDictionary.viewOnMap;
     
     viewOnMapButton = Ti.UI.createButton(viewOnMapButtonOptions);
@@ -80,7 +81,7 @@ exports.render = function (viewModel) {
     
     if(viewModel.address) {
         directionsButtonOptions = _.clone(app.styles.contentButton);
-        directionsButtonOptions.width = 150;
+        directionsButtonOptions.width = '150dp';
         directionsButtonOptions.title = app.localDictionary.getDirections;
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);
         // directionsButton.width = 'auto';
@@ -108,7 +109,7 @@ exports.render = function (viewModel) {
         });
         detailImageRow = Ti.UI.createTableViewRow(app.styles.mapDetailImageRow);
         detailImage = Titanium.UI.createImageView({
-            height: 200,
+            height: '200dp', 
             image: viewModel.img.replace(/\/thumbnail\//,'/photo/')
         });
         detailImageRow.add(detailImage);
