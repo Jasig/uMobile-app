@@ -143,6 +143,7 @@ exports.contentButton= {
 exports.searchBar= {
     top: defaults.TITLEBAR_HEIGHT +'dp',
     height: defaults.SEARCHBAR_HEIGHT + 'dp',
+    getHeight: defaults.SEARCHBAR_HEIGHT,
     backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
@@ -369,35 +370,35 @@ exports.gridBadgeNumber= {
 exports.contactDetailView= {
     backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
     visible: false,
-    top: defaults.TITLEBAR_HEIGHT,
-    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT,
-    width: OS === 'android' ? deviceProxy.retrieveWidth() : 'auto',
+    top: defaults.TITLEBAR_HEIGHT + 'dp',
+    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT + 'dp',
+    width: OS === 'android' ? deviceProxy.retrieveWidth(true) + 'dp' : 'auto',
     modal: true
 };
 
 exports.directoryDetailAttributeTable= {
-    top: defaults.TITLEBAR_HEIGHT,
-    width: deviceProxy.retrieveWidth()
+    top: defaults.TITLEBAR_HEIGHT + 'dp',
+    width: deviceProxy.retrieveWidth(true) + 'dp'
 };
 exports.directoryDetailRow= {
     backgroundColor: "#fff",
     color: '#333',
     fontColor: "#333",
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: '14dp',
     fontWeight: 'bold'
 };
 exports.directoryDetailRowLabel= {
     font: {
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: '14dp',
         color: "#333",
         fontColor: "#333"
     },
     textAlign: 'right',
     color: '#333',
-    left: 10,
-    width: 75
+    left: '10dp',
+    width: '75dp'
 };
 exports.directoryLinkLabel= {
     color: "#4365af"
@@ -405,20 +406,20 @@ exports.directoryLinkLabel= {
 exports.directoryDetailRowValue= {
     color: '#000',
     font: {
-        fontSize: 14
+        fontSize: '14dp'
     },
-    left: 75 + 10 + 10,
-    width: deviceProxy.retrieveWidth() - 100 - 10 - 10 - 10
+    left: 75 + 10 + 10 + 'dp',
+    width: deviceProxy.retrieveWidth(true) - 100 - 10 - 10 - 10 + 'dp'
 };
 exports.directoryDetailValueNoLabel= {
     font: {
-        fontSize: 14,
+        fontSize: '14dp',
         fontWeight: 'normal'
     },
     color: '#333',
     textAlign: 'center',
-    left: 10,
-    width: deviceProxy.retrieveWidth() - (10 * 2)
+    left: '10dp',
+    width: deviceProxy.retrieveWidth(true) - (10 * 2) + 'dp'
 };
 // MAP STYLES
 exports.mapView= {

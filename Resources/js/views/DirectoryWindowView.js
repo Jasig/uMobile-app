@@ -27,7 +27,7 @@ win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRo
 
 exports.open = function (viewModel) {
     _viewModel = viewModel;
-    directoryDetailView = require('/js/views/DirectoryDetailView');
+    
     win = Titanium.UI.createWindow({
         // url: 'js/views/WindowContext.js',
         backgroundColor: app.styles.backgroundColor,
@@ -78,7 +78,9 @@ exports.rotate = function (orientation) {
 };
 
 exports.showDetail = function (person) {
-    directoryDetailView.render(person);
+    directoryDetailView = require('/js/views/DirectoryDetailView');
+    win.add(directoryDetailView.retrieveDetailView());
+    directoryDetailView.render(person, win);
 };
 
 exports.alert = function (attributes) {
@@ -161,7 +163,7 @@ function drawDefaultView () {
         //Create the main table
         peopleListTable = Titanium.UI.createTableView({
             data: defaultTableData,
-            top: app.styles.titleBar.height + app.styles.searchBar.height
+            top: app.styles.titleBar.height + app.styles.searchBar.getHeight + 'dp'
         });
 
         peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
@@ -179,7 +181,7 @@ function drawDefaultView () {
         });
         win.add(searchBar.container);
 
-        win.add(directoryDetailView.retrieveDetailView());
+        
 
         activityIndicator = require('/js/views/UI/ActivityIndicator');
         activityIndicator.resetDimensions();

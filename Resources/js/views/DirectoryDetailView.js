@@ -25,6 +25,7 @@ exports.retrieveDetailView = function () {
         _view = Titanium.UI.createView(app.styles.contactDetailView);
 
         secondaryNavBar = require('/js/views/UI/SecondaryNav');
+        secondaryNavBar.view.top = 0;
         secondaryNavBar.rightButton.hide();
         secondaryNavBar.rightButton.visible = false;
         secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
@@ -45,6 +46,7 @@ exports.render = function (viewModel) {
 
 exports.hide = function () {
     _view.hide();
+    _view = null;
 };
 
 exports.rotate = function (orientation) {
