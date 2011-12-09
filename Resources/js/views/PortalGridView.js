@@ -164,7 +164,6 @@ function _createGridItem (portlet, sortOrder) {
         // if the module has a new item count of more than zero (no new items)
         // add a badge number to the home screen icon
         if (portlet.newItemCount > 0) {
-            
             gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
             gridItem.view.add(gridBadgeBackground);
 

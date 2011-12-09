@@ -15,6 +15,12 @@ else {
 
 exports.container = searchBarObject.container;
 exports.input = searchBarObject.input;
+exports.hide = function () {
+    searchBarObject.container.hide();
+};
+exports.show = function () {
+    searchBarObject.container.show();
+};
 exports.createSearchBar = function (opts) {
     if (!opts) {
         opts = {};

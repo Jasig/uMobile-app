@@ -28,8 +28,8 @@ var defaults, OS = Ti.Platform.osname, deviceProxy = require('/js/models/DeviceP
 
 defaults = {
     TITLEBAR_HEIGHT: 40,
-    STATUSBAR_HEIGHT: OS === 'android' ? '25dp' : 20,
-    SEARCHBAR_HEIGHT: OS === 'android' ? '48dp' : 40,
+    STATUSBAR_HEIGHT: OS === 'android' ? 25 : 20,
+    SEARCHBAR_HEIGHT: OS === 'android' ? 48 : 40,
     DETAIL_TOP_TITLE_COLOR: '#333',
     DETAIL_TOP_BACKGROUND_COLOR: '#eee',
     PRIMARY_BAR_BACKGROUND_COLOR: "#000",
@@ -141,13 +141,13 @@ exports.contentButton= {
 };
 //Global search bar properties
 exports.searchBar= {
-    top: defaults.TITLEBAR_HEIGHT,
-    height: defaults.SEARCHBAR_HEIGHT,
+    top: defaults.TITLEBAR_HEIGHT +'dp',
+    height: defaults.SEARCHBAR_HEIGHT + 'dp',
     backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
     showCancel: OS === 'android' ? false : true,
-    width: deviceProxy.retrieveWidth()
+    width: deviceProxy.retrieveWidth(true) + 'dp'
 };
 exports.searchBarInput= {
     width: OS === 'iphone' ? deviceProxy.retrieveWidth() - 5 - 5 : '310dp',
@@ -236,76 +236,37 @@ exports.titleBarSettingsButton= {
     image: "images/tab-settings.png"
 };
 exports.secondaryNavBar= {
-    top: 0,
 	left: 0,
-	height: defaults.TITLEBAR_HEIGHT,
+	height: defaults.TITLEBAR_HEIGHT + 'dp',
 	backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
 	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
 	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
 };
 
-exports.secondaryNavBarLabel= {
-    width: deviceProxy.retrieveWidth() - 70 * 2 - 10 * 4,
-    left: 10,
-    buttonLeftFloat: 70 + 10 * 2,
-    height: defaults.TITLEBAR_HEIGHT,
-    color: defaults.SECONDARY_BAR_COLOR,
-    textAlign: "center",
-    ellipsize: true,
-    wordWrap: false,
-    minimumFontSize: 14,
-    font: {
-        fontSize: 14,
-        fontWeight: 'bold'
-    }
-};
 // Styles for new prototype in v1.1, views/SecondaryNav.js
 exports.secondaryNavLabel= {
-    width: deviceProxy.retrieveWidth() - 70 * 2 - 10 * 4,
-    left: 70 + 10 * 2,
-    height: defaults.TITLEBAR_HEIGHT,
+    width: deviceProxy.retrieveWidth(true) - 70 * 2 - 10 * 4 + 'dp',
+    left: 70 + 10 * 2 + 'dp',
+    height: defaults.TITLEBAR_HEIGHT + 'dp',
     color: defaults.SECONDARY_BAR_COLOR,
     textAlign: "center",
     ellipsize: true,
     wordWrap: false,
-    minimumFontSize: 14,
+    minimumFontSize: '14dp',
     font: {
-        fontSize: 14,
+        fontSize: '14dp',
         fontWeight: 'bold'
     }
 };
-/*secondaryBar= {
-    top: defaults.TITLEBAR_HEIGHT,
-    width: deviceProxy.retrieveWidth(),
-    height: defaults.TITLEBAR_HEIGHT,
-    barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
-    backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
-};*/
-exports.secondaryNavBarButton= {
-    style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-    left: deviceProxy.retrieveWidth() - 50 - 10,
-    leftFloat: 10,
-    width: 50,
-    height: 30,
-    optionalImage: 'img/back-icon.png',
-	backgroundImage: 'img/secondarybarbtnbg.png',
-	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
-	color: '#fff',
-	selectedColor: "#fff",
-    borderRadius: 10,
-    borderColor: '#294D6B',
-    borderWidth: 1,
-	font: {
-	    fontSize: 12,
-	    fontWeight: "bold"
-	}
-};
-// Styles for new prototype for v1.1, views/SecondaryNav.js
+
 exports.secondaryNavButton= {
-    style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
-    left: 10,
-    width: 50,
-    height: 30,
+    style: OS === 'iphone' ? Titanium.UI.iPhone.SystemButtonStyle.PLAIN : 0,
+    left: '10dp',
+    getLeft: 10,
+    width: '50dp',
+    getWidth: 50,
+    height: '30dp',
+    getHeight: 30,
     optionalImage: 'img/back-icon.png',
 	backgroundImage: 'img/secondarybarbtnbg.png',
 	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
@@ -315,7 +276,7 @@ exports.secondaryNavButton= {
     borderColor: '#294D6B',
     borderWidth: 1,
 	font: {
-	    fontSize: 12,
+	    fontSize: '12dp',
 	    fontWeight: "bold"
 	}
 };
@@ -461,8 +422,8 @@ exports.directoryDetailValueNoLabel= {
 };
 // MAP STYLES
 exports.mapView= {
-    top: defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT,
-    height: deviceProxy.retrieveHeight() - (defaults.TITLEBAR_HEIGHT + defaults.SEARCHBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50 /*mapNavView.height*/),
+    top: defaults.TITLEBAR_HEIGHT * 2 + 'dp',
+    height: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2 + defaults.STATUSBAR_HEIGHT + 50) + 'dp',
     mapType: Titanium.Map.STANDARD_TYPE,
     regionFit: true,
     animate: true,
@@ -471,66 +432,73 @@ exports.mapView= {
 exports.mapAnnotation= {
     
 };
+exports.mapTableView = {
+    top: defaults.TITLEBAR_HEIGHT * 2 + 'dp',
+    height: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT + defaults.TITLEBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50) + 'dp'
+};
 exports.mapCategoryRow= {
     font: {
-        fontSize: 12
+        fontSize: '12dp'
     },
     hasChild: true
 };
 exports.mapCategoryCount= {
     backgroundColor:'#ccc',
-    width: OS === 'iphone' ? 30 : 50, 
-    height:30, 
-    right: 15, 
+    width: OS === 'iphone' ? 30 : '50dp', 
+    height: '30dp', 
+    right: '15dp', 
     borderRadius: 5, 
     fontWeight: 'bold',
     font: {
-        fontSize: 12,
+        fontSize: '12dp',
         fontWeight: 'bold'
     },
     textAlign: 'center'
 };
 exports.mapNavView= {
-    top: deviceProxy.retrieveHeight() - 50 - defaults.STATUSBAR_HEIGHT,
-    height              : 50,
-    backgroundGradient  : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+    top: deviceProxy.retrieveHeight(true) - 50 - defaults.STATUSBAR_HEIGHT + 'dp',
+    height : '50dp',
+    backgroundGradient : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
 };
 exports.mapButtonBar= {
     color: '#fff',
     backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     style: OS === "iphone" ? Titanium.UI.iPhone.SystemButtonStyle.BAR : "",
-    height: OS === "iphone" ? 35 : 50
+    height: OS === "iphone" ? 35 : '50dp',
+    getHeight: OS === "iphone" ? 35 : 50,
+    width: deviceProxy.retrieveWidth(true) - 20 + 'dp',
+    getWidth: deviceProxy.retrieveWidth(true) - 20
 };
 exports.mapDetailTopView= {
-    top: defaults.TITLEBAR_HEIGHT,
+    top: defaults.TITLEBAR_HEIGHT+'dp',
     left: 0,
     backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
-    height: 206
+    height: '206dp'
 };
 exports.mapDetailTableView= {
-    top: defaults.TITLEBAR_HEIGHT,
+    top: defaults.TITLEBAR_HEIGHT + 'dp',
     style: Titanium.UI.iPhone.TableViewStyle.GROUPED
 };
 exports.mapDetailImageRow= {
-    height: 220
+    height: '220dp'
 };
 exports.mapDetailLocationTitle= {
-    left: 10,
-    top: 10,
-    height: 72,
+    left: '10dp',
+    top: '10dp',
+    height: '72dp',
     font: {
-        fontSize: 24,
+        fontSize: '24dp',
         fontWeight: 'bold'
     },
     color: "#000",
     textAlign: "left"
 };
 exports.mapDetailLocationAddress= {
-    left: 10,
-    top: 82,
-    height: 74,
+    left: '10dp',
+    top: '82dp',
+    height: '74dp',
     font: {
-        fontSize: 18,
+        fontSize: '18dp',
         fontWeight: 'bold'
     },
     color: "#333",
@@ -538,8 +506,8 @@ exports.mapDetailLocationAddress= {
 };
 exports.mapDetailLocationPhoto= {
     width: Titanium.Platform.displayCaps.platformWidth,
-    top: defaults.TITLEBAR_HEIGHT + 206,
-    height: 241
+    top: defaults.TITLEBAR_HEIGHT + 206 + 'dp',
+    height: '241dp'
 };
 // ACTIVITY INDICATOR STYLING
 exports.globalActivityIndicator= {
@@ -600,10 +568,10 @@ if (OS === 'iphone' || OS === 'ipad') {
 }
 
 if(OS === 'android') {
-    exports.titleBar.backgroundImage = '/img/titlebarbg.png';
-    exports.searchBar.backgroundImage = '/img/secondarybarbg.png';
-    exports.mapNavView.backgroundImage = '/img/secondarybarbg.png';
-    exports.secondaryNavBar.backgroundImage = '/img/secondarybarbg.png';
-    exports.homeGuestNote.backgroundImage = '/img/secondarybarbg.png';
-    exports.mapAnnotation.image = '/img/mapPin.png';
+    exports.titleBar.backgroundImage = '/images/titlebarbg.png';
+    exports.searchBar.backgroundImage = '/images/secondarybarbg.png';
+    exports.mapNavView.backgroundImage = '/images/secondarybarbg.png';
+    exports.secondaryNavBar.backgroundImage = '/images/secondarybarbg.png';
+    exports.homeGuestNote.backgroundImage = '/images/secondarybarbg.png';
+    exports.mapAnnotation.image = '/images/mapPin.png';
 }

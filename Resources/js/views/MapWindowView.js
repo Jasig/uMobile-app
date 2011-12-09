@@ -114,7 +114,7 @@ exports.openCategoryBrowsingView = function (categories) {
                     // Add the label for the row
                     var _categoryLabel = Ti.UI.createLabel({
                         text: _categoryName,
-                        left: 10,
+                        left: '10dp',
                         color: "#000"
                     });
                     _data[i].add(_categoryLabel);
@@ -132,8 +132,8 @@ exports.openCategoryBrowsingView = function (categories) {
                 
                 return _data;
             })(categories),
-            height: app.styles.mapView.height,
-            top: app.styles.mapView.top
+            height: app.styles.mapTableView.height,
+            top: app.styles.mapTableView.top
         });
         view.add(categoryBrowsingView);
     }
@@ -146,10 +146,7 @@ exports.openCategoryLocationsListView = function (viewModel) {
     _hideAllViews();
     
     if (!categoryLocationsListView) {
-        categoryLocationsListView = Ti.UI.createTableView({
-            top: app.styles.mapView.top,
-            height: app.styles.mapView.height
-        });
+        categoryLocationsListView = Ti.UI.createTableView(app.styles.mapTableView);
         view.add(categoryLocationsListView);
     }
     
@@ -186,13 +183,8 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 
 exports.openSearchView = function () {
     _hideAllViews();
-    if (searchBar) searchBar.input.show();
-    if (mapView) {
-        mapView.show();
-    }
-    else {
-        // TODO Create a mapview, although it should already exist
-    }
+    if (searchBar) searchBar.show();
+    if (mapView) mapView.show();
 };
 
 exports.openFavoritesBrowsingView = function () {
@@ -258,18 +250,6 @@ var _createMainView = function() {
     titleBar.updateTitle(app.localDictionary.map);
     titleBar.addHomeButton();
 
-    view.add(titleBar.view);
-    
-    activityIndicator = require('/js/views/UI/ActivityIndicator');
-    view.add(activityIndicator.view);
-    activityIndicator.view.hide();
-
-    searchBar = require('/js/views/UI/SearchBar');
-    searchBar.createSearchBar();
-    view.add(searchBar.container);
-    searchBar.input.addEventListener('return', _searchSubmit);
-    searchBar.input.addEventListener('cancel', exports.searchBlur);
-
     if ((app.models.deviceProxy.isAndroid() && !mapView) || app.models.deviceProxy.isIOS()) {
         // create the map view
         mapViewOpts = _.clone(app.styles.mapView);
@@ -290,6 +270,18 @@ var _createMainView = function() {
         view.add(mapView);
     }
 
+    view.add(titleBar.view);
+    
+    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    view.add(activityIndicator.view);
+    activityIndicator.view.hide();
+
+    searchBar = require('/js/views/UI/SearchBar');
+    searchBar.createSearchBar();
+    view.add(searchBar.container);
+    searchBar.input.addEventListener('return', _searchSubmit);
+    searchBar.input.addEventListener('cancel', exports.searchBlur);
+
     bottomNavView = Ti.UI.createView(app.styles.mapNavView);
     view.add(bottomNavView);
     if (app.models.deviceProxy.isIOS()) {
@@ -300,7 +292,7 @@ var _createMainView = function() {
     }
     else {
         bottomNavButtons = require('/js/views/UI/TabbedBar');
-        bottomNavButtons.doSetWidth(app.models.deviceProxy.retrieveWidth());
+        bottomNavButtons.doSetWidth(app.models.deviceProxy.retrieveWidth(true));
         bottomNavButtons.doSetLabels(exports.navButtonValues);
         bottomNavButtons.doSetIndex(0);
     }
@@ -361,10 +353,10 @@ var _onMapViewClick = function (e) {
 var _hideAllViews = function () {
     // This method hides all of the different views within this context,
     // so that the different methods don't have to worry about what views to close
-    if (searchBar) searchBar.input.hide();
+    if (searchBar) searchBar.hide();
     if (mapView) mapView.hide();
     if (favoritesBar) favoritesBar.hide();
-    if (categoryNavBar) categoryNavBar.view.hide();
+    if (categoryNavBar) categoryNavBar.hide();
     if (categoryBrowsingView) categoryBrowsingView.hide();
     if (categoryLocationsListView) categoryLocationsListView.hide();
 };
@@ -372,7 +364,7 @@ var _hideAllViews = function () {
 var _createAndAddCategoryNav = function () {
     categoryNavBar = require('/js/views/UI/SecondaryNav');
     view.add(categoryNavBar.view);
-    categoryNavBar.view.top = app.styles.titleBar.height;
+    categoryNavBar.view.top = app.styles.titleBar.height + 'dp';
     
     categoryNavBar.leftButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);
