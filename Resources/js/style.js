@@ -322,8 +322,8 @@ exports.homeGuestNoteLabel= {
 exports.gridIcon= {
     top: 0,
     canScale: false,
-    width: OS === 'ipad' ? 72 : 'auto',
-    height: OS === 'ipad' ? 72 : 'auto',
+    width: OS === 'ipad' ? 72 : OS === 'iphone' ? 57 :'auto',
+    height: OS === 'ipad' ? 72 : OS === 'iphone' ? 57 :'auto',
     type: 'gridIcon'
 };
 exports.gridItem= {
