@@ -565,8 +565,6 @@ if (OS === 'iphone' || OS === 'ipad') {
         selectedColor: '#333'
     };
     exports.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
-    exports.secondaryNavBarButton.image = exports.secondaryNavBarButton.optionalImage;
-    exports.secondaryNavBarButton.width = 70;
 }
 
 if(OS === 'android') {
