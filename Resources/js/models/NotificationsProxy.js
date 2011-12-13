@@ -6,39 +6,43 @@ notification: {
     unread: true
 }
 */
+exports.notificationLevels = {
+    EMERGENCY : "Emergency",
+    URGENT : "Urgent",
+    INFO : "Info",
+    MESSAGE : "Message"
+};
+exports.notificationEvents = {
+    UPDATED : "NotificationsUpdated"
+};
 function onNotificationsReceived (e) {
-    Ti.API.debug('onNotificationsReceived'+e.source.responseText);
     var db, results, newNotifications = [];
     db = Titanium.Database.open('umobile');
-    db.execute('CREATE TABLE IF NOT EXISTS "notifications" ("id" INTEGER UNIQUE, "created" DATE, "expireson" DATE, "level" TEXT, "message" TEXT, "unread" BOOLEAN, "expired" BOOLEAN)');
+    db.execute('CREATE TABLE IF NOT EXISTS "notifications" ("id" TEXT UNIQUE, "created" DATE, "expireson" DATE, "level" TEXT, "message" TEXT, "unread" BOOLEAN, "expired" BOOLEAN)');
     
     results = JSON.parse(e.source.responseText).results;
     
     _.each(results, function (note, index, list) {
-        Ti.API.debug('iteration note: '+note);
-        var isRead = 0, isExpired = note.Expired || 0, dbResult = db.execute('SELECT * FROM "notifications" WHERE "id" IS ?', parseInt(note._id, 10));
+        var isUnread = 1, isExpired = note.Expired || 0, dbResult = db.execute('SELECT * FROM "notifications" WHERE id= ?', note._id);
         if (dbResult.rowCount < 1) {
             newNotifications.push(note);
         }
         else {
-            isRead = dbResult.fieldByName('unread') === 1 ? 1 : 0;
+            isUnread = Number(dbResult.fieldByName('unread'));
         }
         dbResult.close();
-        db.execute('REPLACE INTO notifications (id, created, expireson, level, message, unread, expired) VALUES (?,?,?,?,?,?,?)', note._id, note.Created || null, note.Expires || null, note.Level, note.Message, isRead, note.Expired);
+        db.execute('INSERT OR REPLACE INTO notifications (id, created, expireson, level, message, unread, expired) VALUES (?,?,?,?,?,?,?)', note._id, note.Created ? parseInt(note.Created, 10) : null, note.Expires ? parseInt(note.Expires, 10) : null, note.Level, note.Message, isUnread, note.Expired ? Number(note.Expired) : 0);
     });
     db.close();
-    // TODO: Make this event a globally-accessible constant
-    Ti.App.fireEvent('NewNotifications', {notifications: newNotifications});
-    Ti.API.debug('retrieveNotifications');
-    Ti.API.debug(exports.retrieveNotifications());
+
+    Ti.App.fireEvent(exports.notificationEvents['UPDATED']);
 }
 
 function onNotificationsError (e) {
-    Ti.API.debug('onNotificationsError'+e.source.responseText);
+    Ti.API.error('onNotificationsError'+e.source.responseText);
 }
 exports.updateNotifications = function () {
-    // url = require('/js/config').BASE_PORTAL_URL + '/'
-    url = 'http://localhost:3000/search/Notifications';
+    url = require('/js/config').NOTIFICATIONS_SERVICE;
     var xhr = Ti.Network.createHTTPClient({
         onload: onNotificationsReceived,
         onerror: onNotificationsError
@@ -73,6 +77,10 @@ exports.retrieveNotifications = function (limit, page, unreadOnly, showExpired) 
     db.close();
     return notifications;
 };
-exports.saveViewedNote = function (id) {
-    //TODO: Update the unread attribute to be false for the given id.
+exports.updateUnreadState = function (id, state) {
+    var db, dbResults, unreadState;
+    unreadState = Number(state);
+    db = Titanium.Database.open('umobile');
+    db.execute('UPDATE notifications SET unread=? WHERE id=?', unreadState, id);
+    db.close();
 };

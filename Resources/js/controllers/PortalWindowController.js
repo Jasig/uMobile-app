@@ -44,6 +44,7 @@ exports.open = function () {
     Ti.App.addEventListener(portalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
     Ti.App.addEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
     Ti.App.addEventListener(portalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
+    Ti.App.addEventListener(notificationsProxy.events['UPDATED'], onNotificationsUpdated);
     
     if (!app.models.deviceProxy.checkNetwork()) {
         Ti.App.fireEvent(app.events['NETWORK_ERROR']);
@@ -69,10 +70,15 @@ exports.close = function () {
     Ti.App.removeEventListener(portalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
     Ti.App.removeEventListener(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
     Ti.App.removeEventListener(portalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
+    Ti.App.removeEventListener(notificationsProxy.events['UPDATED'], onNotificationsUpdated);
 };
 
 exports.rotate = function (orientation) {
     portalWindowView.rotateView(orientation);
+};
+
+function onNotificationsUpdated (e) {
+    alert(notificationsProxy.retrieveNotifications()[0].message);
 };
 
 function onAndroidSearchClick (e) {

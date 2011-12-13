@@ -54,6 +54,9 @@ exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT +
 
 exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
 
+//-------- NOTIFICATIONS SERVICE ---------
+exports.NOTIFICATIONS_SERVICE = 'http://localhost:3000/search/Notifications';
+
 //------- DIRECTORY SERVICE -------
 
 exports.DIRECTORY_SERVICE_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/api/people.json';
