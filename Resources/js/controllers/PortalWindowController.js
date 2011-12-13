@@ -23,7 +23,7 @@
  */
 
 
-var firstTimeOpened=true, portalWindowView, 
+var firstTimeOpened=true, portalWindowView, notificationsProxy,
 _newNetworkDowntime = true; //This var is to prevent multiple notifications of network downtime. Set to false as soon as downtime is encountered
 
 exports.open = function () {
@@ -32,6 +32,7 @@ exports.open = function () {
     // of establishing a session and opening the window.
     
     portalWindowView = require('/js/views/PortalWindowView');
+    notificationsProxy = require('/js/models/NotificationsProxy');
     
     if (firstTimeOpened) {
         Ti.App.addEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], onPortletsLoaded);
@@ -55,11 +56,13 @@ exports.open = function () {
     //Open the portal window
     //portlets, isGuestLayout, isPortalReachable, isFirstOpen
     portalWindowView.open(app.models.portalProxy.retrievePortlets(), app.models.userProxy.isGuestUser(), app.models.portalProxy.retrieveIsPortalReachable(), firstTimeOpened);
+    notificationsProxy.updateNotifications();
     firstTimeOpened = false;        
 };
 
 exports.close = function () {
     portalWindowView.close();
+    notificationsProxy = null;
     Ti.App.removeEventListener(app.models.portalProxy.events['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.removeEventListener(app.models.portalProxy.events['NETWORK_ERROR'], onPortalProxyNetworkError);
     Ti.App.removeEventListener(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
