@@ -41,11 +41,12 @@ exports.events = {
 };
  
 var _state, 
-_layoutIndicator = exports.indicatorStates['NONE'],
-_win, _contentLayer, _titleBar, _activityIndicator, _guestNotificationView, portalGridView;
+_layoutState = exports.indicatorStates['NONE'],
+_win, _contentLayer, _titleBar, _activityIndicator, notificationsView, portalGridView;
 
 exports.initialize = function () {
     portalGridView = require('/js/views/PortalGridView');
+    notificationsView = require('/js/views/PortalNotificationsView');
     exports.saveState(exports.states['INITIALIZED']);
 };
 
@@ -57,8 +58,8 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
         _drawUI(_isGuestLayout, _isPortalReachable);
         
         Ti.App.addEventListener(portalGridView.events['STATE_CHANGE'], _onPortalGridViewStateChange);
-        Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onDimensionChanges);
-        Ti.App.addEventListener(app.models.portalProxy.events['PORTLETS_LOADED'], _onPortletsLoaded);
+        
+        if (notificationsView.initialized) notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
     }
     else {
         _win.show();
@@ -66,7 +67,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     }
     if (app.models.deviceProxy.isIOS()) _win.visible = true;
     
-    // _win.addEventListener('android:search', _onAndroidSearch);
+    _win.addEventListener('android:search', _onAndroidSearch);
 
     // exports.showActivityIndicator(app.localDictionary.gettingPortlets);
     // portalGridView.updateGrid(_modules);
@@ -76,8 +77,8 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
 
 exports.close = function () {
     _win.hide();
-    // _win.removeEventListener('android:search', _onAndroidSearch);
-    // if (app.models.deviceProxy.isIOS()) _win.visible = false;
+    if (notificationsView.initialized) notificationsView.view().removeEventListener('click', _specialLayoutIndicatorClick);
+    _win.removeEventListener('android:search', _onAndroidSearch);
     
     exports.saveState(exports.states.HIDDEN);
 };
@@ -87,7 +88,7 @@ exports.rotateView = function (orientation) {
         _contentLayer.width = app.styles.portalContentLayer.width;
         _contentLayer.height = app.styles.portalContentLayer.height;
     }
-    if (_guestNotificationView) _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+    if (notificationsView.initialized) notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
     if (portalGridView) portalGridView.rotate(orientation);
     if (_activityIndicator) _activityIndicator.rotate();
     if (_titleBar) _titleBar.rotate();
@@ -102,17 +103,8 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     _contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
     _win.add(_contentLayer);
     _contentLayer.add(portalGridView.retrieveGridView());
-    
-    switch (_layoutIndicator) {
-        case exports.indicatorStates['GUEST']:
-            _addSpecialLayoutIndicator(true, true);
-            break;
-        case exports.indicatorStates['NO_USER']:
-            _addSpecialLayoutIndicator(false, false);
-            break;
-        default:
-            _removeSpecialLayoutIndicator(false, true);
-    }
+
+    _controlNotificationsBar();
 
     _activityIndicator = require('/js/views/UI/ActivityIndicator');
     _win.add(_activityIndicator.view);
@@ -125,17 +117,8 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
-    // this[_isGuestLayout || !_isPortalReachable ? '_addSpecialLayoutIndicator' : '_removeSpecialLayoutIndicator'](_isGuestLayout, _isPortalReachable);
-    switch (_layoutIndicator) {
-        case exports.indicatorStates['GUEST']:
-            _addSpecialLayoutIndicator(true, true);
-            break;
-        case exports.indicatorStates['NO_USER']:
-            _addSpecialLayoutIndicator(false, false);
-            break;
-        default:
-            _removeSpecialLayoutIndicator(false, true);
-    }
+    // this[_isGuestLayout || !_isPortalReachable ? '_addNotificationsBar' : '_removeNotificationsBar'](_isGuestLayout, _isPortalReachable);
+    _controlNotificationsBar(_isGuestLayout, _isPortalReachable);
 };
 
 exports.saveState = function (newState) {
@@ -147,35 +130,23 @@ exports.retrieveState = function () {
 };
 
 exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
-    if (portalGridView) {
-        portalGridView.updateGrid(_modules);
-    }
-    
+    if (portalGridView) portalGridView.updateGrid(_modules);
+    if (_isPortalReachable) _layoutState = exports.indicatorStates['NO_PORTAL'];
+    if (_isGuestLayout) _layoutState = exports.indicatorStates['GUEST'];
+    _controlNotificationsBar();
     exports.hideActivityIndicator();
 };
 
 exports.showActivityIndicator = function (message) {
-    // try {
-        _activityIndicator.saveLoadingMessage(message || app.localDictionary.loading);
-        _activityIndicator.view.show();
-    // }
-    // catch (e) {
-        // Ti.API.error("Activity Indicator isn't defined.");
-    // }
+    _activityIndicator.saveLoadingMessage(message || app.localDictionary.loading);
+    _activityIndicator.view.show();
 };
 
 exports.hideActivityIndicator = function () {
-    Ti.API.debug("hideActivityIndicator() in PortalWindowView");
-    try {
-        _activityIndicator.view.hide();
-    }
-    catch (e) {
-        Ti.API.debug("activityIndicator not defined in hideActivityIndicator.");
-    }
+    _activityIndicator.view.hide();
 };
 
 exports.alert = function (title, message) {
-    Ti.API.debug("alert() in PortalWindowView");
     exports.hideActivityIndicator();
     if (app.models.deviceProxy.isIOS() || _win.visible) {
         try {
@@ -190,46 +161,61 @@ exports.alert = function (title, message) {
     }
 };
 
-function _removeSpecialLayoutIndicator (_isGuestLayout, _isPortalReachable) {
-    if (_guestNotificationView) {
-        _guestNotificationView.removeEventListener('click', _specialLayoutIndicatorClick);
-        _contentLayer.remove(_guestNotificationView);
-    }
-    
-    portalGridView.resizeGrid(false);
+exports.updateNotificationsView = function (notifications) {
+    //Update the layout indicator with number of notifications, or emergency notification.
 };
 
 function _specialLayoutIndicatorClick (e) {
-    Ti.API.info('_specialLayoutIndicatorClick() in PortalWindowView');
-    app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+    switch (notificationsView.currentState()) {
+        case notificationsView.states['GUEST_USER']:
+            app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+            break;
+        case notificationsView.states['PORTAL_UNREACHABLE']:
+            app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+            break;
+        case notificationsView.states['NOTIFICATIONS_SUMMARY']:
+            notificationsView.showNotificationsList();
+            break;
+        case notificationsView.states['NOTIFICATIONS_EXPANDED']:
+            notificationsView.hideNotificationsList();
+            break;
+        default:
+            app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+    }
 };
 
-function _addSpecialLayoutIndicator (_isPortalReachable) {
-    var guestNotificationLabel, _timeout;
-    if (_guestNotificationView) {
-        _contentLayer.add(_guestNotificationView);
+function _controlNotificationsBar () {
+    if (_layoutState === exports.indicatorStates['GUEST'] ||
+        _layoutState === exports.indicatorStates['NO_USER'] ||
+        app.config.NOTIFICATIONS_ENABLED) {
+        _addNotificationsBar();
     }
     else {
-        if (_contentLayer) {
-            _guestNotificationView = Ti.UI.createView(app.styles.homeGuestNote);
-            _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
-
-            guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
-            guestNotificationLabel.text = _isPortalReachable ? app.localDictionary.viewingGuestLayout : app.localDictionary.portalNotReachable;
-            _guestNotificationView.add(guestNotificationLabel);
-
-            _contentLayer.add(_guestNotificationView);
-
-            _guestNotificationView.addEventListener('click', _specialLayoutIndicatorClick);
-
-        }
-        else {
-            Ti.API.debug("No contentLayer exists to add layoutIndicator");
-        }
+        _removeNotificationsBar();
     }
+}
+
+function _removeNotificationsBar () {
+    notificationsView.hide();
+    portalGridView.resizeGrid(false);
+};
+
+function _addNotificationsBar () {
+    var guestNotificationLabel, _timeout, _method;
+    if (!notificationsView.initialized) {
+        notificationsView.createView();
+        
+        notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+        _contentLayer.add(notificationsView.view());
+        
+        notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
+    }
+    notificationsView.show();
+    Ti.API.debug('_layoutState: '+_layoutState);
+    _method = _layoutState === exports.indicatorStates['NO_USER'] ? 'showPortalUnreachableNote' : _layoutState === exports.indicatorStates['GUEST'] ? 'showGuestNote' : 'showNotificationSummary';
+    notificationsView[_method]();
     
     portalGridView.resizeGrid(true);
-
 };
 
 function _onAndroidSearch (e) {
@@ -242,29 +228,15 @@ function _onDimensionChanges (e) {
     // Let's update the Styles reference again for good measure
     if (_contentLayer) {
         _contentLayer.width = app.styles.portalContentLayer.width;
-        _contentLayer.height = app.styles.portalContentLayer.height;            
+        _contentLayer.height = app.styles.portalContentLayer.height;
     }
     
-    if (_guestNotificationView) {
-        _guestNotificationView.top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+    if (notificationsView.initialized) {
+        notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
     }
 };
 
-function _onPortletsLoaded (e) {
-    switch (app.models.userProxy.retrieveLayoutUserName()) {
-        case app.models.loginProxy.userTypes['GUEST']:
-            _addSpecialLayoutIndicator(true);
-            _layoutIndicator = exports.indicatorStates['GUEST'];
-            break;
-        case app.models.loginProxy.userTypes['NO_USER']:
-            _addSpecialLayoutIndicator(false);
-            _layoutIndicator = exports.indicatorStates['NO_PORTAL'];
-            break;
-        default:
-            _removeSpecialLayoutIndicator(false, true);
-            _layoutIndicator = exports.indicatorStates['NONE'];
-    }
-};
+
 
 function _onPortalGridViewStateChange (e) {
     if (portalGridView && _activityIndicator && e.state && e.state === portalGridView.states['COMPLETE']) {

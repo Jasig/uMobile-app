@@ -47,8 +47,9 @@ exports.en_US = {
     networkConnectionRequired: "A network connection is required to use this application. Please connect to the internet and come back to this application.",
     couldNotConnectToPortal: "Sorry, your portlets could not be loaded from the portal.",
     couldNotLoginToPortal: "Sorry, the portal couldn't be reached to log you in.",
-    viewingGuestLayout: "You are viewing the guest layout. Click here to log in.",
+    viewingGuestLayout: "Log In for Personal Content",
     portalNotReachable: "Your modules couldn't be loaded. Click here to try again.",
+    notifications: "Notifications",
     
     //Map Window & Map Detail Window
     map: "Map",

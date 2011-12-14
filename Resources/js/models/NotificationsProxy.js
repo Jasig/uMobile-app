@@ -42,7 +42,10 @@ function onNotificationsError (e) {
     Ti.API.error('onNotificationsError'+e.source.responseText);
 }
 exports.updateNotifications = function () {
-    url = require('/js/config').NOTIFICATIONS_SERVICE;
+    var config = require('/js/config');
+    if (!config.NOTIFICATIONS_ENABLED) return;
+
+    url = config.NOTIFICATIONS_SERVICE;
     var xhr = Ti.Network.createHTTPClient({
         onload: onNotificationsReceived,
         onerror: onNotificationsError

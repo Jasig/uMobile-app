@@ -316,7 +316,8 @@ exports.homeGuestNoteLabel= {
     color: "#fff",
     textAlign: 'center',
     font: {
-        fontSize: 12
+        fontSize: '14dp',
+        fontWeight: 'bold'
     }
 };
 exports.gridIcon= {
