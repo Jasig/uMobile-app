@@ -58,6 +58,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
         _drawUI(_isGuestLayout, _isPortalReachable);
         
         Ti.App.addEventListener(portalGridView.events['STATE_CHANGE'], _onPortalGridViewStateChange);
+        Ti.App.addEventListener(notificationsView.events['EMERGENCY_NOTIFICATION'], _onEmergencyNotification);
         
         if (notificationsView.initialized) notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
     }
@@ -117,7 +118,6 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
-    // this[_isGuestLayout || !_isPortalReachable ? '_addNotificationsBar' : '_removeNotificationsBar'](_isGuestLayout, _isPortalReachable);
     _controlNotificationsBar(_isGuestLayout, _isPortalReachable);
 };
 
@@ -131,7 +131,7 @@ exports.retrieveState = function () {
 
 exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
     if (portalGridView) portalGridView.updateGrid(_modules);
-    if (_isPortalReachable) _layoutState = exports.indicatorStates['NO_PORTAL'];
+    if (!_isPortalReachable) _layoutState = exports.indicatorStates['NO_PORTAL'];
     if (_isGuestLayout) _layoutState = exports.indicatorStates['GUEST'];
     _controlNotificationsBar();
     exports.hideActivityIndicator();
@@ -162,8 +162,18 @@ exports.alert = function (title, message) {
 };
 
 exports.updateNotificationsView = function (notifications) {
+    Ti.API.debug('notifications in updateNotificationsView: '+JSON.stringify(notifications));
     //Update the layout indicator with number of notifications, or emergency notification.
+    // if (notificationsView.initialized) {
+        notificationsView.showNotificationSummary(notifications);
+    // }
+    portalGridView.resizeGrid(notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
+    
 };
+
+function _onEmergencyNotification (e) {
+    exports.alert(app.localDictionary.emergencyNotification, e.message);
+}
 
 function _specialLayoutIndicatorClick (e) {
     switch (notificationsView.currentState()) {
@@ -191,11 +201,13 @@ function _controlNotificationsBar () {
         _addNotificationsBar();
     }
     else {
+        Ti.API.error('Conditions not met to add notifications bar');
         _removeNotificationsBar();
     }
 }
 
 function _removeNotificationsBar () {
+    Ti.API.debug('_removeNotificationsBar()');
     notificationsView.hide();
     portalGridView.resizeGrid(false);
 };
@@ -215,7 +227,7 @@ function _addNotificationsBar () {
     _method = _layoutState === exports.indicatorStates['NO_USER'] ? 'showPortalUnreachableNote' : _layoutState === exports.indicatorStates['GUEST'] ? 'showGuestNote' : 'showNotificationSummary';
     notificationsView[_method]();
     
-    portalGridView.resizeGrid(true);
+    portalGridView.resizeGrid(notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
 };
 
 function _onAndroidSearch (e) {

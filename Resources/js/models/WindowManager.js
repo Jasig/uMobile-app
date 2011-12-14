@@ -36,9 +36,6 @@ exports.rotateWindow = function (orientation) {
     if (currentController && currentController.rotate) {
         currentController.rotate(orientation);
     }
-    else {
-        Ti.API.debug('hmm, some condition was not met to rotate the window.');
-    }
 };
 
 exports.openWindow = function (windowKey, portlet) {

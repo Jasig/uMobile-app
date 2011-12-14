@@ -50,6 +50,7 @@ exports.en_US = {
     viewingGuestLayout: "Log In for Personal Content",
     portalNotReachable: "Your modules couldn't be loaded. Click here to try again.",
     notifications: "Notifications",
+    emergencyNotification: "Emergency Notification",
     
     //Map Window & Map Detail Window
     map: "Map",

@@ -310,7 +310,11 @@ exports.homeGrid= {
 };
 exports.homeGuestNote= {
     height: 40,
-    backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+    backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
+    emergencyBackgroundGradient: {
+        type:'linear',
+        colors:['#cc0000','#aa0000']
+    }
 };
 exports.homeGuestNoteLabel= {
     color: "#fff",

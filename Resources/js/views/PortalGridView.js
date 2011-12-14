@@ -37,10 +37,7 @@ function _init () {
     _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
     _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
-    
-    Ti.App.addEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
-    Ti.App.addEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
-    
+        
     _gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
     
     exports.saveState(exports.states.INITIALIZED);
@@ -177,14 +174,6 @@ function _createGridItem (portlet, sortOrder) {
 
         gridItem.destroy = function () {
             Ti.API.info("Destroying GridItem!");
-/*            if (gridItem.view.getParent()) {
-                Ti.API.info("GridItem has a parent");
-                gridItem.view.getParent().remove(gridItem.view);
-                delete _gridItems['fName'+portlet.fname];
-            }
-            else {
-                Ti.API.error("gridItem doesn't have a parent");
-            }*/
             gridItem.view.hide();
             gridItem.view.visible = false;
             gridItem.sortOrder = -1;
@@ -213,13 +202,10 @@ function _createGridItem (portlet, sortOrder) {
 
         return gridItem;
     }
-
 };
 
-function _rearrangeGrid (e) {
+function _rearrangeGrid () {
     var _gridItem;
-    
-    exports.resizeGrid((app.models.userProxy.isGuestUser() || !app.models.portalProxy.retrieveIsPortalReachable()) ? true : false);
     
     for (_gridItem in _gridItems) {
         if (_gridItems.hasOwnProperty(_gridItem)) {
@@ -232,10 +218,7 @@ function _rearrangeGrid (e) {
     exports.saveState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
 };
 
-exports.clear = function () {
-    Ti.App.removeEventListener(app.events['DIMENSION_CHANGES'], _onOrientationChange);
-    Ti.App.removeEventListener(app.events['LAYOUT_CLEANUP'], _onLayoutCleanup);
-    
+exports.clear = function () {    
     for (var _gridItem in _gridItems) {
         if (_gridItems.hasOwnProperty(_gridItems)) {
             _gridItem.removeEventListeners();
@@ -244,7 +227,8 @@ exports.clear = function () {
 };
 
 exports.resizeGrid = function (_isSpecialLayout) {
-    //Variable tells if the special layout indicator is displayed or not
+    Ti.API.debug('resizeGrid:'+_isSpecialLayout);
+    //Variable tells if the notifications bar is displayed or not
      if (_isSpecialLayout) {
         if (app.models.deviceProxy.isAndroid()) {
             _gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - app.styles.homeGuestNote.height - 25; //20 is the height of the status bar
@@ -260,32 +244,6 @@ exports.resizeGrid = function (_isSpecialLayout) {
         else {
             _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
         }
-    }
-};
-
-
-function _onLayoutCleanup (e) {
-    Ti.API.debug("onLayoutCleanup() in PortalGridView");
-    if (e.win === app.config.HOME_KEY) {
-        Ti.API.debug("current window is " + app.config.HOME_KEY);
-        _didLayoutCleanup = true;
-        exports.saveState(exports.states.HIDDEN);
-    }
-    else {
-        Ti.API.debug("current window is NOT " + app.config.HOME_KEY + ', it\'s ' + e.win);
-    }
-};
-
-function _onOrientationChange (e) {
-    if (app.models.windowManager.retrieveCurrentWindow() === app.config.HOME_KEY || app.models.deviceProxy.isAndroid()) {
-        _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-        _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-        _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth() / _completeWidth);
-        _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth() - (_completeWidth * _numColumns))) / 2);
-        
-        //If the device is Android, we always want to rearrange the grid to 
-        //account for the back button circumventing the windowManager
-        _rearrangeGrid();
     }
 };
 

@@ -86,7 +86,9 @@ function _onPortletsLoaded (e) {
 
 
 function onNotificationsUpdated (e) {
-    portalWindowView.updateNotificationsView(notificationsProxy.retrieveNotifications());
+    var _notifications = notificationsProxy.retrieveNotifications();
+    Ti.API.debug('notifications from notificationsProxy: '+JSON.stringify(_notifications));
+    portalWindowView.updateNotificationsView(_notifications);
 };
 
 function onAndroidSearchClick (e) {
