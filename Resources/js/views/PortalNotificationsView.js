@@ -1,5 +1,8 @@
-var _view, _guestNotificationLabel, _state, _previousState, _notifications;
-exports.initialized = false;
+var _view, _guestNotificationLabel, _state, _previousState, _notifications, _initialized = false;
+
+exports.initialized = function () {
+    return _initialized;
+};
 
 exports.states = {
     GUEST_USER : "GuestUser",
@@ -23,7 +26,7 @@ exports.currentState = function () {
 
 exports.createView = function () {
     _view = Ti.UI.createView(app.styles.homeGuestNote);
-    exports.initialized = true;
+    _initialized = true;
 
     _guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
     
@@ -59,7 +62,7 @@ exports.showNotificationSummary = function (notifications) {
             _guestNotificationLabel.text = app.localDictionary.notifications;
         }
     }
-    else if (!_notifications || (_notifications && _notifications.length > 0)) {
+    else if (!_notifications || (_notifications && _notifications.length < 1)) {
         exports.hide();
         return;
     }

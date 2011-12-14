@@ -60,7 +60,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
         Ti.App.addEventListener(portalGridView.events['STATE_CHANGE'], _onPortalGridViewStateChange);
         Ti.App.addEventListener(notificationsView.events['EMERGENCY_NOTIFICATION'], _onEmergencyNotification);
         
-        if (notificationsView.initialized) notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
+        if (notificationsView.initialized()) notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
     }
     else {
         _win.show();
@@ -78,7 +78,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
 
 exports.close = function () {
     _win.hide();
-    if (notificationsView.initialized) notificationsView.view().removeEventListener('click', _specialLayoutIndicatorClick);
+    if (notificationsView.initialized()) notificationsView.view().removeEventListener('click', _specialLayoutIndicatorClick);
     _win.removeEventListener('android:search', _onAndroidSearch);
     
     exports.saveState(exports.states.HIDDEN);
@@ -89,8 +89,8 @@ exports.rotateView = function (orientation) {
         _contentLayer.width = app.styles.portalContentLayer.width;
         _contentLayer.height = app.styles.portalContentLayer.height;
     }
-    if (notificationsView.initialized) notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
-    if (portalGridView) portalGridView.rotate(orientation);
+    if (notificationsView.initialized()) notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+    if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
     if (_activityIndicator) _activityIndicator.rotate();
     if (_titleBar) _titleBar.rotate();
 };
@@ -162,13 +162,10 @@ exports.alert = function (title, message) {
 };
 
 exports.updateNotificationsView = function (notifications) {
-    Ti.API.debug('notifications in updateNotificationsView: '+JSON.stringify(notifications));
     //Update the layout indicator with number of notifications, or emergency notification.
-    // if (notificationsView.initialized) {
-        notificationsView.showNotificationSummary(notifications);
-    // }
-    portalGridView.resizeGrid(notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
+    if (notificationsView.initialized()) notificationsView.showNotificationSummary(notifications);
     
+    portalGridView.resizeGrid(notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
 };
 
 function _onEmergencyNotification (e) {
@@ -201,20 +198,18 @@ function _controlNotificationsBar () {
         _addNotificationsBar();
     }
     else {
-        Ti.API.error('Conditions not met to add notifications bar');
         _removeNotificationsBar();
     }
 }
 
 function _removeNotificationsBar () {
-    Ti.API.debug('_removeNotificationsBar()');
     notificationsView.hide();
     portalGridView.resizeGrid(false);
 };
 
 function _addNotificationsBar () {
     var guestNotificationLabel, _timeout, _method;
-    if (!notificationsView.initialized) {
+    if (!notificationsView.initialized()) {
         notificationsView.createView();
         
         notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
@@ -223,7 +218,7 @@ function _addNotificationsBar () {
         notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
     }
     notificationsView.show();
-    Ti.API.debug('_layoutState: '+_layoutState);
+
     _method = _layoutState === exports.indicatorStates['NO_USER'] ? 'showPortalUnreachableNote' : _layoutState === exports.indicatorStates['GUEST'] ? 'showGuestNote' : 'showNotificationSummary';
     notificationsView[_method]();
     
@@ -243,7 +238,7 @@ function _onDimensionChanges (e) {
         _contentLayer.height = app.styles.portalContentLayer.height;
     }
     
-    if (notificationsView.initialized) {
+    if (notificationsView.initialized()) {
         notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
     }
 };

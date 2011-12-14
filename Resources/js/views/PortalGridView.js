@@ -112,11 +112,12 @@ exports.updateGrid = function (portlets) {
     _didLayoutCleanup = false;
 };
 
-exports.rotate = function (orientation) {
+exports.rotate = function (orientation, specialLayout) {
     Ti.API.debug('rotate() in PortalGridView');
     _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
+    exports.resizeGrid(specialLayout);
     _rearrangeGrid();
 };
 
