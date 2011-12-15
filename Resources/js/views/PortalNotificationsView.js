@@ -1,8 +1,4 @@
-var _view, _guestNotificationLabel, _state, _previousState, _notifications, _initialized = false;
-
-exports.initialized = function () {
-    return _initialized;
-};
+var _view, _guestNotificationLabel, _state, _previousState, _notifications, emergencyNote;
 
 exports.states = {
     GUEST_USER : "GuestUser",
@@ -23,12 +19,15 @@ exports.view = function () {
 exports.currentState = function () {
     return _state;
 };
+exports.emergencyNote = function () {
+    return emergencyNote || false;
+};
 
 exports.createView = function () {
     _view = Ti.UI.createView(app.styles.homeGuestNote);
-    _initialized = true;
 
     _guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+    _guestNotificationLabel.touchEnabled = false;
     
     _view.add(_guestNotificationLabel);
 };
@@ -45,17 +44,16 @@ exports.showPortalUnreachableNote = function () {
 };
 
 exports.showNotificationSummary = function (notifications) {
-    var _emergencyNote;
     
     if (notifications && notifications.length > 0) {
         _notifications = notifications;
         _.each(_notifications, function (note, index, list){
-            if (note.level === 'Emergency') _emergencyNote = note;
+            if (note.level === 'Emergency') emergencyNote = note;
         });
-        if (_emergencyNote) {
-            Ti.App.fireEvent(exports.events['EMERGENCY_NOTIFICATION'], _emergencyNote);
+        if (emergencyNote) {
+            Ti.App.fireEvent(exports.events['EMERGENCY_NOTIFICATION'], emergencyNote);
             _view.backgroundGradient = app.styles.homeGuestNote.emergencyBackgroundGradient;
-            _guestNotificationLabel.text = _emergencyNote.message;
+            _guestNotificationLabel.text = emergencyNote.message;
         }
         else {
             _view.backgroundGradient = app.styles.homeGuestNote.backgroundGradient;

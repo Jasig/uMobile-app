@@ -56,7 +56,7 @@ exports.updateNotifications = function () {
 exports.retrieveNotifications = function (limit, page, unreadOnly, showExpired) {
     //TODO: Implement limit and page.
     //TODO: Implement unreadOnly
-    Ti.API.debug('retrieveNotifications()');
+
     var db, dbResults, notifications = [];
     db = Titanium.Database.open('umobile');
     dbResults = db.execute('SELECT * FROM notifications');
@@ -79,7 +79,7 @@ exports.retrieveNotifications = function (limit, page, unreadOnly, showExpired) 
     }
     dbResults.close();
     db.close();
-    Ti.API.debug('notifications:'+JSON.stringify(notifications[0]));
+
     return notifications;
 };
 exports.updateUnreadState = function (id, state) {
