@@ -334,7 +334,7 @@ exports._newPointsLoaded = function (e) {
             _mapCenter.latHigh = _response.buildings[0].latitude; 
             _mapCenter.longLow = _response.buildings[0].longitude;
             _mapCenter.longHigh = _response.buildings[0].longitude;
-            
+            _db.execute("BEGIN IMMEDIATE TRANSACTION");
             for (var i = 0; i < _responseLength; i++) {
                 var building = _response.buildings[i];
                 
@@ -342,7 +342,7 @@ exports._newPointsLoaded = function (e) {
                     building.title = building.name;
                     building.latitude = parseFloat(building.latitude);
                     building.longitude = parseFloat(building.longitude);
-
+                    
                     _db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img, categories) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                         building.name ? building.name : '',
                         building.abbreviation ? building.abbreviation : '',
@@ -356,6 +356,7 @@ exports._newPointsLoaded = function (e) {
                         building.img || '',
                         building.categories ? building.categories.toString() : null
                         );
+                    
                 }
                 else {
                     Ti.API.debug("Skipping " + building.name);
@@ -370,6 +371,7 @@ exports._newPointsLoaded = function (e) {
                 }
                 
             }
+            _db.execute("COMMIT TRANSACTION");
             
             for (var _category in _categories) {
                 if (_categories.hasOwnProperty(_category)) {
