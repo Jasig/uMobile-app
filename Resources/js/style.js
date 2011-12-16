@@ -298,22 +298,25 @@ exports.portalWindow= {
 exports.portalContentLayer= {
     top: defaults.TITLEBAR_HEIGHT + 'dp',
     width: OS === 'android' ? 'auto' : deviceProxy.retrieveWidth(),
-    height: deviceProxy.retrieveHeight() - defaults.TITLEBAR_HEIGHT - 20 + 'dp',
+    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
     backgroundColor: "#2A4F95"
 };
 exports.homeGrid= {
     top: 0,
-    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - (OS === 'iphone' || OS === 'ipad' ? 20 : 0) +'dp',
+    height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
+    heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
     color: "#fff",
     contentHeight:'auto',
     zIndex: 1
 };
-exports.homeGuestNote= {
-    height: 40,
+exports.homeGuestNote = {
+    height: '40dp',
+    rawHeight: 40,
+    top: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - 40 - defaults.STATUSBAR_HEIGHT + 'dp',
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
     emergencyBackgroundGradient: {
         type:'linear',
-        colors:['#cc0000','#aa0000']
+            colors:['#cc0000','#aa0000']
     }
 };
 exports.homeGuestNoteLabel= {

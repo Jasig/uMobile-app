@@ -88,7 +88,7 @@ exports.rotateView = function (orientation) {
         _contentLayer.width = app.styles.portalContentLayer.width;
         _contentLayer.height = app.styles.portalContentLayer.height;
     }
-    if (isNotificationsViewInitialized) notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+    if (isNotificationsViewInitialized) notificationsView.view().top = app.styles.homeGuestNote.top;
     if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
     if (_activityIndicator) _activityIndicator.rotate();
     if (_titleBar) _titleBar.rotate();
@@ -99,7 +99,7 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     if (_contentLayer) {
         _win.remove(_contentLayer);
     }
-
+    
     _contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
     _win.add(_contentLayer);
     _contentLayer.add(portalGridView.retrieveGridView());
@@ -146,18 +146,19 @@ exports.hideActivityIndicator = function () {
 };
 
 exports.alert = function (title, message) {
+    Ti.API.debug('alert() in PortalWindowView');
     exports.hideActivityIndicator();
-    if (app.models.deviceProxy.isIOS() || _win.visible) {
+    // if (app.models.deviceProxy.isIOS() || _win.visible) {
         try {
-            alert(message);
-            /*Titanium.UI.createAlertDialog({ title: title,
+            // alert(message);
+            Titanium.UI.createAlertDialog({ title: title,
                 message: message, buttonNames: [app.localDictionary.OK]
-                }).show();*/
+                }).show();
         }
         catch (e) {
             Ti.API.error("Couldn't show alert:" + e);
         }            
-    }
+    // }
 };
 
 exports.updateNotificationsView = function (notifications) {
@@ -219,11 +220,7 @@ function _addNotificationsBar () {
         
         isNotificationsViewInitialized = true;
         
-        notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
         _contentLayer.add(notificationsView.view());
-        
-        // notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
-        
     }
     notificationsView.show();
     
@@ -247,7 +244,7 @@ function _onDimensionChanges (e) {
     }
     
     if (isNotificationsViewInitialized) {
-        notificationsView.view().top = _win.height - app.styles.titleBar.height - app.styles.homeGuestNote.height;
+        notificationsView.view().top = app.styles.homeGuestNote.top;
     }
 };
 

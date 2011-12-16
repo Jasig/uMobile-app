@@ -37,7 +37,7 @@ function _init () {
     _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
     _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
     _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
-        
+    
     _gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
     
     exports.saveState(exports.states.INITIALIZED);
@@ -77,15 +77,10 @@ exports.updateGrid = function (portlets) {
         if (_gridItems.hasOwnProperty(_item)) {
             for (var j=0; j<_numGridItems; j++) {
                 if ('fName' + _portlets[j].fname === _item) {
-                    // Ti.API.debug("Not destroying: " + _item);
                     break;
                 }
                 else if (j == _numGridItems - 1) {
-                    // Ti.API.info("About to destroy" + _item + " & is destroy defined? " + _gridItems[_item].destroy);
                     _gridItems[_item].destroy();
-                }
-                else {
-                    // Ti.API.info("Didn't destroy " + _item + " because it wasn't " + _portlets[j].fname);
                 }
             }
         }
@@ -94,12 +89,10 @@ exports.updateGrid = function (portlets) {
     for (var i=0; i<_numGridItems; i++ ) {
         //Place the item in the scrollview and listen for singletaps
         if (!_gridItems['fName' + _portlets[i].fname] || app.models.deviceProxy.isIOS()) {
-            // Ti.API.debug("!_gridItems['fName' + _portlets[i].fname]");
             //Create the item, implicity add to local array, and explicitly assign sort order
             _gridView.add(_createGridItem(_portlets[i], i).view);
         }
         else {
-            // Ti.API.debug("else");
             //We just need to tell the item its new sort order
             _gridItems['fName' + _portlets[i].fname].sortOrder = i;
             _gridItems['fName' + _portlets[i].fname].view.show();
@@ -228,24 +221,8 @@ exports.clear = function () {
 };
 
 exports.resizeGrid = function (_isSpecialLayout) {
-    Ti.API.debug('resizeGrid:'+_isSpecialLayout);
     //Variable tells if the notifications bar is displayed or not
-     if (_isSpecialLayout) {
-        if (app.models.deviceProxy.isAndroid()) {
-            _gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - app.styles.homeGuestNote.height - 25; //20 is the height of the status bar
-        }
-        else {
-            _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height - app.styles.homeGuestNote.height;
-        }
-    }
-    else {
-        if (app.models.deviceProxy.isAndroid()) {
-            _gridView.height = Ti.Platform.displayCaps.platformHeight - app.styles.titleBar.height - 25;//25 is the size of the status bar.
-        }
-        else {
-            _gridView.height = (Ti.UI.currentWindow ? Ti.UI.currentWindow.height : Ti.Platform.displayCaps.platformHeight - 20) - app.styles.titleBar.height;
-        }
-    }
+    _gridView.height = _isSpecialLayout ? app.styles.homeGrid.heightWithNote : app.styles.homeGrid.height;
 };
 
 function _onGridItemClick (e) {

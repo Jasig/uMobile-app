@@ -58,8 +58,8 @@ exports.open = function () {
     //Open the portal window
     //portlets, isGuestLayout, isPortalReachable, isFirstOpen
     portalWindowView.open(app.models.portalProxy.retrievePortlets(), app.models.userProxy.isGuestUser(), app.models.portalProxy.retrieveIsPortalReachable(), firstTimeOpened);
-    notificationsProxy.updateNotifications();
-    firstTimeOpened = false;        
+    if (app.config.NOTIFICATIONS_ENABLED) notificationsProxy.updateNotifications();
+    firstTimeOpened = false;
 };
 
 exports.close = function () {
