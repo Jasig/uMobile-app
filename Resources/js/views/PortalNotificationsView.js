@@ -33,12 +33,14 @@ exports.createView = function () {
 };
 exports.showGuestNote = function () {
     _view.backgroundGradient = app.styles.homeGuestNote.backgroundGradient;
+    if (app.models.deviceProxy.isAndroid()) _view.backgroundImage = app.styles.homeGuestNote.backgroundImage;
     _guestNotificationLabel.text = app.localDictionary.viewingGuestLayout;
     _state = exports.states['GUEST_USER'];
 };
 
 exports.showPortalUnreachableNote = function () {
     _view.backgroundGradient = app.styles.homeGuestNote.backgroundGradient;
+    if (app.models.deviceProxy.isAndroid()) _view.backgroundImage = app.styles.homeGuestNote.backgroundImage;
     _guestNotificationLabel.text = app.localDictionary.portalNotReachable;
     _state = exports.states['PORTAL_UNREACHABLE'];
 };
@@ -53,6 +55,7 @@ exports.showNotificationSummary = function (notifications) {
         if (emergencyNote) {
             Ti.App.fireEvent(exports.events['EMERGENCY_NOTIFICATION'], emergencyNote);
             _view.backgroundGradient = app.styles.homeGuestNote.emergencyBackgroundGradient;
+            if (app.models.deviceProxy.isAndroid()) _view.backgroundImage = app.styles.homeGuestNote.emergencyBackgroundImage;
             _guestNotificationLabel.text = emergencyNote.message;
         }
         else {

@@ -314,6 +314,7 @@ exports.homeGuestNote = {
     rawHeight: 40,
     top: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - 40 - defaults.STATUSBAR_HEIGHT + 'dp',
     backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
+    emergencyBackgroundImage: '/images/secondarybarbg-emergency.png',
     emergencyBackgroundGradient: {
         type:'linear',
             colors:['#cc0000','#aa0000']

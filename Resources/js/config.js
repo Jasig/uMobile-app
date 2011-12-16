@@ -31,7 +31,6 @@ Titanium.App.Properties.setString('locale', 'en_US');
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a
 // trailing slash.
 exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-
 exports.PORTAL_CONTEXT = '';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
 
@@ -55,7 +54,7 @@ exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT +
 exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
 
 //-------- NOTIFICATIONS SERVICE ---------
-exports.NOTIFICATIONS_ENABLED = false;
+exports.NOTIFICATIONS_ENABLED = true;
 exports.NOTIFICATIONS_SERVICE = (Titanium.Platform.name == 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000')+'/search/Notifications';
 
 //------- DIRECTORY SERVICE -------
