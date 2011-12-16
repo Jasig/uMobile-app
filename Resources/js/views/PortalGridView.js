@@ -118,7 +118,8 @@ function _createGridItem (portlet, sortOrder) {
     // Create the container for the grid item
     var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
     gridItemDefaults = _.clone(app.styles.gridItem), 
-    gridItemIconDefaults, gridBadgeBackgroundDefaults, gridBadgeNumberDefaults;
+    gridItemIconDefaults, gridBadgeBackgroundDefaults, 
+    gridBadgeNumberDefaults;
     gridItemDefaults.width = gridItemDefaults.width + 'dp';
     gridItemDefaults.height = gridItemDefaults.height + 'dp';
     gridItemDefaults.padding = gridItemDefaults.padding + 'dp';
@@ -155,7 +156,7 @@ function _createGridItem (portlet, sortOrder) {
         // if the module has a new item count of more than zero (no new items)
         // add a badge number to the home screen icon
         if (portlet.newItemCount > 0) {
-            gridBadgeBackground = Ti.UI.createImageView(gridBadgeBackgroundDefaults);
+            gridBadgeBackground = Ti.UI.createImageView(app.styles.gridBadgeBackground);
             gridItem.view.add(gridBadgeBackground);
 
             gridBadgeNumberDefaults = app.styles.gridBadgeNumber;

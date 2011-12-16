@@ -57,6 +57,7 @@ exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + '/MapPortlet/api/locations.j
 exports.NOTIFICATIONS_ENABLED = true;
 exports.NOTIFICATIONS_SERVICE = (Titanium.Platform.name == 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000')+'/search/Notifications';
 
+
 //------- DIRECTORY SERVICE -------
 
 exports.DIRECTORY_SERVICE_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/api/people.json';

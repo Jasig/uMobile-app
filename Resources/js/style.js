@@ -357,22 +357,22 @@ exports.gridItemLabel= {
 };
 exports.gridBadgeBackground= {
     top: 0, 
-    right: 11,
-    height: 20,
-    width: 20,
+    right: '11dp',
+    height: '20dp',
+    width: '20dp',
     image: 'images/badgeBackground.png'
 };
 exports.gridBadgeNumber= {
     textAlign: "center",
     color: "#fff",
-    height: 16,
-    width: 16,
+    height: '16dp',
+    width: '16dp',
     font: { 
-        fontSize: 12,
+        fontSize: '12dp',
         fontWeight: "bold"
     },
-    top: 1, //Magic number, consider constant or another approach
-    right: 13,
+    top: '1dp',
+    right: '13dp',
     touchEnabled: false
 
 };
