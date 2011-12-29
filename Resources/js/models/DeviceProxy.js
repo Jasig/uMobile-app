@@ -21,7 +21,6 @@ var _orientation;
     
 exports.checkNetwork = function() {
     if (!Ti.Network.online) {
-        Ti.API.debug("Network is offline");
         return false;
     } else {
         return true;

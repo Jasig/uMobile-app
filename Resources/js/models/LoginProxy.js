@@ -16,7 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var _loginMethod = {};
+var _loginMethod = {},
+config = require('/js/config'),
+app = require('/js/Facade'),
+sessionProxy = require('/js/models/SessionProxy');
 exports.events = {
     NETWORK_SESSION_FAILURE : "EstablishNetworkSessionFailure",
     NETWORK_SESSION_SUCCESS : "EstablishNetworkSessionSuccess",
@@ -27,7 +30,7 @@ exports.events = {
     WEBVIEW_LOGIN_SUCCESS   : "LoginProxyWebviewLoginSuccess"
 };
 
-exports.sessionTimeContexts = {
+app.sessionTimeContexts = {
     NETWORK: "Network",
     WEBVIEW: "Webview"
 };
@@ -44,7 +47,7 @@ exports.userTypes = {
 };
 
 
-switch (app.config.LOGIN_METHOD) {
+switch (config.LOGIN_METHOD) {
     case exports.loginMethods.CAS:
         _loginMethod = require('/js/models/login/CASLogin');;
         break;
@@ -58,34 +61,13 @@ switch (app.config.LOGIN_METHOD) {
         Ti.API.error("Login method not recognized in exports.exports.initialize()");
 }
 
-app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.NETWORK);
-app.models.sessionProxy.createSessionTimer(exports.sessionTimeContexts.WEBVIEW);
+sessionProxy.createSessionTimer();
 
-Ti.App.addEventListener(app.models.sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
+Ti.App.addEventListener(sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
 Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], exports._processLoginResponse);
 
-exports.updateSessionTimeout = function(context) {
-    /* If Android, this method will reset the timer for either the network session or 
-    portlet session so we can be sure to log the user back in if necessary.
-    It's a public method so that other controllers can call it each time an
-    activity occurs that will extend a session. 
-    
-    In iPhone, we share one session between network requests and webviews, so we'll reset both timers.
-    */
-    switch (context) {
-        case exports.sessionTimeContexts.NETWORK:
-            app.models.sessionProxy.resetTimer(exports.sessionTimeContexts.NETWORK);
-            break;
-        case exports.sessionTimeContexts.WEBVIEW:
-            app.models.sessionProxy.resetTimer(exports.sessionTimeContexts.WEBVIEW);
-            break;
-        default:
-            Ti.API.debug("Context for sessionTimeout didn't match");
-    }
-};
-
-exports.isValidWebViewSession = function () {
-    return app.models.sessionProxy.isActive(exports.sessionTimeContexts.WEBVIEW);
+exports.isActiveSession = function () {
+    return sessionProxy.isActive();
 };
 
 /**
@@ -106,42 +88,16 @@ exports.clearSession = function () {
     _loginMethod.logout();
 };
 
-exports.retrieveLoginURL = function (url) {
-    /*
-        Method created specifically for use in the Portlet Window 
-        Controller
-    */
-    
-    _loginMethod.retrieveLoginURL(url);
-};
-
 exports.onNetworkError = function (e) {
     Ti.App.fireEvent(app.events['NETWORK_ERROR']);
 };
 
 exports.onSessionExpire = function (e) {
-    /*
-        If it's not Android, we can just re-establish a session for 
-        webviews and network requests behind the scenes.
-        Otherwise, we can re-establish network session behind the scenes,
-        but would need to set a flag for re-auth in the webview.
-    */
-    Ti.API.debug("exports.onSessionExpire() in LoginProxy");
-    switch (e.context) {
-        case exports.sessionTimeContexts.NETWORK:
-            exports.establishNetworkSession({isUnobtrusive: true});
-            break;
-        case exports.sessionTimeContexts.WEBVIEW:  
-            app.models.sessionProxy.stopTimer(exports.sessionTimeContexts.WEBVIEW);
-            break;
-        default:
-            Ti.API.error("Didn't recognize the context");
-    }
+    exports.establishNetworkSession({isUnobtrusive: true});
 };
 
 exports._processLoginResponse = function (e) {
     var _responseText = e.responseText, _credentials = e.credentials, _parsedResponse;
-    Ti.API.debug("_processLoginResponse() in LoginProxy: " + _responseText );
     
     if (_credentials.username === '') {
         _credentials.username = exports.userTypes['GUEST'];
@@ -160,15 +116,13 @@ exports._processLoginResponse = function (e) {
         return;
     }
     
-    Ti.API.debug("Parsed response: " + JSON.stringify(_parsedResponse));
-    
     app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
     app.models.portalProxy.savePortlets(_parsedResponse.layout);
     
     if (app.models.userProxy.retrieveLayoutUserName() === _credentials.username) {
         Ti.API.info("_layoutUser matches credentials.username");
 
-        app.models.sessionProxy.resetTimer(exports.sessionTimeContexts.NETWORK);
+        sessionProxy.resetTimer();
         app.models.portalProxy.saveIsPortalReachable(true);
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
     }

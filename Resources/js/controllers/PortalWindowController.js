@@ -51,7 +51,7 @@ exports.open = function () {
         Ti.App.fireEvent(app.events['NETWORK_ERROR']);
         return;
     }
-    else if (firstTimeOpened && !app.models.sessionProxy.isActive(app.models.loginProxy.sessionTimeContexts.NETWORK)) {
+    else if (firstTimeOpened && !app.models.loginProxy.isActiveSession()) {
         app.models.loginProxy.establishNetworkSession();
     }
     

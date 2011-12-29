@@ -22,7 +22,10 @@ exports.events = {
     SEARCH_ERROR    : 'DirectoryProxySearchError'
 };
 
-var person, people = [], xhrSearchClient;
+var person, people = [], xhrSearchClient,
+deviceProxy = require('/js/models/DeviceProxy'),
+config = require('/js/config'),
+localDictionary = require('/js/localization');
 
 //Generate the HTTP request to be used each time a search is performed
 xhrSearchClient = Titanium.Network.createHTTPClient({
@@ -31,7 +34,7 @@ xhrSearchClient = Titanium.Network.createHTTPClient({
 });
 
 exports.search = function (query) {
-    if (!app.models.deviceProxy.checkNetwork()) return;
+    if (!deviceProxy.checkNetwork()) return;
     else if (query === '') {
         people = [];
         Ti.App.fireEvent(exports.events['SEARCH_COMPLETE']);
@@ -51,21 +54,21 @@ exports.retrievePeople = function (index) {
 };
 
 exports.retrieveEmergencyContacts = function () {
-    return app.config.directoryEmergencyContacts || false;
+    return config.directoryEmergencyContacts || false;
 };
 
 function doXhrSearch (query) {
     var url, separator;
-    url = app.config.DIRECTORY_SERVICE_URL;
+    url = config.DIRECTORY_SERVICE_URL;
     separator = '?';
     
-    for (var i = 0; i < app.config.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
-        url += separator + 'searchTerms[]=' + app.config.DIRECTORY_SERVICE_SEARCH_FIELDS[i];
+    for (var i = 0; i < config.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
+        url += separator + 'searchTerms[]=' + config.DIRECTORY_SERVICE_SEARCH_FIELDS[i];
         separator = '&';
     }
     separator = '&';
-    for (i = 0; i < app.config.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
-        url += separator + app.config.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
+    for (i = 0; i < config.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
+        url += separator + config.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
         separator = '&';
     }
 
@@ -77,7 +80,7 @@ function doXhrSearch (query) {
 
 function onXhrSearchLoad (e) {
     //When the search is complete, reset the main people array
-    Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
+    Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: app.sessionTimeContexts.NETWORK});
 
     people = [];
     (function() {
@@ -89,7 +92,7 @@ function onXhrSearchLoad (e) {
             Ti.App.fireEvent(exports.events['SEARCH_COMPLETE']);
         }
         catch (err) {
-            Ti.App.fireEvent(exports.events['SEARCH_COMPLETE'], {error: app.localDictionary.directoryErrorFetching});
+            Ti.App.fireEvent(exports.events['SEARCH_COMPLETE'], {error: localDictionary.directoryErrorFetching});
         }            
     })();
 };

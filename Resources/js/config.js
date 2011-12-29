@@ -31,16 +31,15 @@ Titanium.App.Properties.setString('locale', 'en_US');
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a
 // trailing slash.
 exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+
 exports.PORTAL_CONTEXT = '';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
 
 //------- AUTHENTICATION -------
-
-//session timeout in seconds = two hours
-exports.SERVER_SESSION_TIMEOUT = 2 * 60 * 60;
+Ti.App.Properties.setInt('SERVER_SESSION_TIMEOUT', parseInt((2 * 60 * 60), 10));
 
 //References value of LoginProxy.loginMethods constant.
-exports.LOGIN_METHOD = "Cas";
+exports.LOGIN_METHOD = "LocalLogin";
 
 exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
 exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";
@@ -133,7 +132,7 @@ exports.WINDOW_CONTROLLERS = {
 };
 exports.HOME_KEY = 'home';
 exports.PORTLET_KEY = 'portlet';
-exports.SETTINGS_KEY = 'settings'
+exports.SETTINGS_KEY = 'settings';
 
 exports.nativeIcons = {
     athletics: 'athletics.png',
