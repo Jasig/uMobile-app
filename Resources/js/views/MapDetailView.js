@@ -17,7 +17,8 @@
  * under the License.
  */
 
-var mapDetailTableView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,onBackBtnClick;
+var mapDetailTableView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,onBackBtnClick,
+_ = require('/js/libs/underscore-min');
 
 exports.detailView = Titanium.UI.createView(app.styles.view);
 

@@ -25,7 +25,7 @@ exports.events = {
 var person, people = [], xhrSearchClient,
 deviceProxy = require('/js/models/DeviceProxy'),
 config = require('/js/config'),
-localDictionary = require('/js/localization');
+localDictionary = require('/js/localization')[Titanium.App.Properties.getString('locale')];
 
 //Generate the HTTP request to be used each time a search is performed
 xhrSearchClient = Titanium.Network.createHTTPClient({
@@ -80,7 +80,7 @@ function doXhrSearch (query) {
 
 function onXhrSearchLoad (e) {
     //When the search is complete, reset the main people array
-    Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: app.sessionTimeContexts.NETWORK});
+    Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
 
     people = [];
     (function() {

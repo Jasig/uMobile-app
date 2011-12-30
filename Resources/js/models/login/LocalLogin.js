@@ -18,13 +18,19 @@
  */
 
 var init,
-client, url, credentials, onLoginComplete, onLoginError;
+client, url, credentials, onLoginComplete, onLoginError, sessionProxy,
+app = require('/js/Facade'),
+config = require('/js/config'),
+userProxy = require('/js/models/UserProxy');
+
+exports.doSetSessionProxy = function (proxy) {
+    sessionProxy = proxy;
+};
 
 exports.login = function (creds, options) {
-    Ti.API.debug('login() in LocalLogin. creds?' + creds);
     credentials = creds;
-    url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + app.config.PORTAL_CONTEXT + '/layout.json';
-    // url = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password;
+    url = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + config.PORTAL_CONTEXT + '/layout.json';
+    // url = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password;
 
     client = Titanium.Network.createHTTPClient({
         onload: onLoginComplete,
@@ -39,14 +45,14 @@ exports.login = function (creds, options) {
 exports.logout = function () {
     exports.login({username: '', password: ''});
     if (client.clearCookies) {
-        client.clearCookies(app.config.BASE_PORTAL_URL);
+        client.clearCookies(config.BASE_PORTAL_URL);
     }
 };
 
 exports.retrieveLoginURL = function (url) {
     // This method returns a URL suitable to automatically login a user in a webview.
-    credentials = app.models.userProxy.retrieveCredentials();
-    return app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
+    credentials = userProxy.retrieveCredentials();
+    return config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
 };
 
 onLoginComplete = function (e) {
@@ -55,26 +61,26 @@ onLoginComplete = function (e) {
     }
     catch (e) {
         _parsedResponse = {
-            user: app.models.loginProxy.userTypes['NO_USER'],
+            user: app.userTypes['NO_USER'],
             layout: []
         };
     }
     
-    app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
-    app.models.portalProxy.savePortlets(_parsedResponse.layout);
+    userProxy.saveLayoutUserName(_parsedResponse.user);
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout });
     
-    if (app.models.userProxy.retrieveLayoutUserName() === credentials.username || app.models.userProxy.retrieveLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
-        app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-        app.models.portalProxy.saveIsPortalReachable(true);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
+    if (userProxy.retrieveLayoutUserName() === credentials.username || userProxy.retrieveLayoutUserName() === app.userTypes['GUEST']) {
+        sessionProxy.resetTimer();
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true });
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_SUCCESS'], {user: userProxy.retrieveLayoutUserName()});
     }
     else {
-        app.models.portalProxy.saveIsPortalReachable(false);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: false });
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
 };
 
 onLoginError = function (e) {
-    app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-    Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+    sessionProxy.stopTimer();
+    Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
 };

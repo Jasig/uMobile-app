@@ -40,18 +40,25 @@ exports.events = {
     NOTIFICATION_CLICKED    : 'PortalDownNotificationClicked'
 };
  
-var _state, 
+var _state, styles, deviceProxy, localDictionary, app, config,
 _layoutState = exports.indicatorStates['NONE'],
 _win, _contentLayer, _titleBar, _activityIndicator, notificationsView, isNotificationsViewInitialized, portalGridView;
 
-exports.initialize = function () {
+exports.initialize = function (portalProxy) {
     portalGridView = require('/js/views/PortalGridView');
+    portalGridView.doSetPortalProxy(portalProxy);
     notificationsView = require('/js/views/PortalNotificationsView');
     exports.saveState(exports.states['INITIALIZED']);
 };
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
-    if (!_win) _win = Ti.UI.createWindow(app.styles.portalWindow);
+    app = require('/js/Facade');
+    config = require('/js/config');
+    styles = require('/js/style');
+    deviceProxy = require('/js/models/DeviceProxy');
+    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
+    
+    if (!_win) _win = Ti.UI.createWindow(styles.portalWindow);
 
     if (exports.retrieveState() === exports.states['INITIALIZED']) {
         _win.open();
@@ -59,24 +66,27 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
         
         Ti.App.addEventListener(portalGridView.events['STATE_CHANGE'], _onPortalGridViewStateChange);
         Ti.App.addEventListener(notificationsView.events['EMERGENCY_NOTIFICATION'], _onEmergencyNotification);
-        
-
     }
     else {
         _win.show();
         _updateUI(_isGuestLayout, _isPortalReachable);
     }
-    if (app.models.deviceProxy.isIOS()) _win.visible = true;
+    if (deviceProxy.isIOS()) _win.visible = true;
     
     _win.addEventListener('android:search', _onAndroidSearch);
 
-    // exports.showActivityIndicator(app.localDictionary.gettingPortlets);
+    // exports.showActivityIndicator(localDictionary.gettingPortlets);
     // portalGridView.updateGrid(_modules);
             
     exports.saveState(exports.states.OPENED);
 };
 
 exports.close = function () {
+    app = null;
+    config = null;
+    styles = null;
+    deviceProxy = null;
+    localDictionary = null;
     _win.hide();
     _win.removeEventListener('android:search', _onAndroidSearch);
     
@@ -85,10 +95,10 @@ exports.close = function () {
 
 exports.rotateView = function (orientation) {
     if (_contentLayer) {
-        _contentLayer.width = app.styles.portalContentLayer.width;
-        _contentLayer.height = app.styles.portalContentLayer.height;
+        _contentLayer.width = styles.portalContentLayer.width;
+        _contentLayer.height = styles.portalContentLayer.height;
     }
-    if (isNotificationsViewInitialized) notificationsView.view().top = app.styles.homeGuestNote.top;
+    if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
     if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
     if (_activityIndicator) _activityIndicator.rotate();
     if (_titleBar) _titleBar.rotate();
@@ -100,7 +110,7 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
         _win.remove(_contentLayer);
     }
     
-    _contentLayer = Ti.UI.createView(app.styles.portalContentLayer);
+    _contentLayer = Ti.UI.createView(styles.portalContentLayer);
     _win.add(_contentLayer);
     _contentLayer.add(portalGridView.retrieveGridView());
 
@@ -112,7 +122,7 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     _titleBar = require('/js/views/UI/TitleBar');
     _titleBar.addSettingsButton();
     _titleBar.addInfoButton();
-    _titleBar.updateTitle(app.localDictionary.homeTitle);
+    _titleBar.updateTitle(localDictionary.homeTitle);
     _win.add(_titleBar.view);
 };
 
@@ -137,7 +147,7 @@ exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) 
 };
 
 exports.showActivityIndicator = function (message) {
-    _activityIndicator.saveLoadingMessage(message || app.localDictionary.loading);
+    _activityIndicator.saveLoadingMessage(message || localDictionary.loading);
     _activityIndicator.view.show();
 };
 
@@ -148,11 +158,11 @@ exports.hideActivityIndicator = function () {
 exports.alert = function (title, message) {
     Ti.API.debug('alert() in PortalWindowView');
     exports.hideActivityIndicator();
-    // if (app.models.deviceProxy.isIOS() || _win.visible) {
+    // if (deviceProxy.isIOS() || _win.visible) {
         try {
             // alert(message);
             Titanium.UI.createAlertDialog({ title: title,
-                message: message, buttonNames: [app.localDictionary.OK]
+                message: message, buttonNames: [localDictionary.OK]
                 }).show();
         }
         catch (e) {
@@ -169,7 +179,7 @@ exports.updateNotificationsView = function (notifications) {
 };
 
 function _onEmergencyNotification (e) {
-    exports.alert(app.localDictionary.emergencyNotification, e.message);
+    exports.alert(localDictionary.emergencyNotification, e.message);
 }
 
 function _specialLayoutIndicatorClick (e) {
@@ -177,27 +187,27 @@ function _specialLayoutIndicatorClick (e) {
     var _emergencyNote;
     switch (notificationsView.currentState()) {
         case notificationsView.states['GUEST_USER']:
-            app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+            Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.SETTINGS_KEY});
             break;
         case notificationsView.states['PORTAL_UNREACHABLE']:
-            app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+            Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.SETTINGS_KEY});
             break;
         case notificationsView.states['NOTIFICATIONS_SUMMARY']:
             // notificationsView.showNotificationsList();
-            if (_emergencyNote = notificationsView.emergencyNote()) exports.alert(app.localDictionary.emergencyNotification, _emergencyNote.message);
+            if (_emergencyNote = notificationsView.emergencyNote()) exports.alert(localDictionary.emergencyNotification, _emergencyNote.message);
             break;
         case notificationsView.states['NOTIFICATIONS_EXPANDED']:
             notificationsView.hideNotificationsList();
             break;
         default:
-            app.models.windowManager.openWindow(app.config.SETTINGS_KEY);
+            Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.SETTINGS_KEY});
     }
 };
 
 function _controlNotificationsBar () {
     if (_layoutState === exports.indicatorStates['GUEST'] ||
         _layoutState === exports.indicatorStates['NO_USER'] ||
-        app.config.NOTIFICATIONS_ENABLED) {
+        config.NOTIFICATIONS_ENABLED) {
         _addNotificationsBar();
     }
     else {
@@ -239,12 +249,12 @@ function _onDimensionChanges (e) {
     // is the appropriate size when the device rotates
     // Let's update the Styles reference again for good measure
     if (_contentLayer) {
-        _contentLayer.width = app.styles.portalContentLayer.width;
-        _contentLayer.height = app.styles.portalContentLayer.height;
+        _contentLayer.width = styles.portalContentLayer.width;
+        _contentLayer.height = styles.portalContentLayer.height;
     }
     
     if (isNotificationsViewInitialized) {
-        notificationsView.view().top = app.styles.homeGuestNote.top;
+        notificationsView.view().top = styles.homeGuestNote.top;
     }
 };
 
@@ -255,6 +265,3 @@ function _onPortalGridViewStateChange (e) {
         exports.hideActivityIndicator(portalGridView.states['COMPLETE']);
     }
 };
-
-exports.initialize();
-

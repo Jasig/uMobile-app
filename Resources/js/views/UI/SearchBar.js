@@ -1,13 +1,15 @@
-var searchBar, searchBarObject = {}, searchBarInput;
+var searchBar, searchBarObject = {}, searchBarInput,
+deviceProxy = require('/js/models/DeviceProxy'),
+styles = require('/js/style');
 
-if (app.models.deviceProxy.isIOS()) {
-    searchBar = Titanium.UI.createSearchBar(app.styles.searchBar);
+if (deviceProxy.isIOS()) {
+    searchBar = Titanium.UI.createSearchBar(styles.searchBar);
     searchBarObject.container = searchBar;
     searchBarObject.input = searchBar;
 }
 else {
-    searchBar = Titanium.UI.createView(app.styles.searchBar);
-    searchBarInput = Titanium.UI.createTextField(app.styles.searchBarInput);
+    searchBar = Titanium.UI.createView(styles.searchBar);
+    searchBarInput = Titanium.UI.createTextField(styles.searchBarInput);
     searchBar.add(searchBarInput);
     searchBarObject.container = searchBar;
     searchBarObject.input = searchBarInput;
@@ -38,6 +40,6 @@ exports.createSearchBar = function (opts) {
 };
 
 exports.rotate = function (orientation) {
-    if (searchBar) { searchBar.width = app.styles.searchBar.width; }
-    if (searchBarInput) { searchBarInput.width = app.styles.searchBarInput.width; }
+    if (searchBar) { searchBar.width = styles.searchBar.width; }
+    if (searchBarInput) { searchBarInput.width = styles.searchBarInput.width; }
 };

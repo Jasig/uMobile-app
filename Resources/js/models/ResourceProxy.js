@@ -20,21 +20,23 @@
 * @constructor
 **/
 
-var resolutionMatrix;
+var resolutionMatrix,
+config = require('/js/config'),
+deviceProxy = require('/js/models/DeviceProxy');
 
 exports.retrievePortletIcon = function (fname) {
-    if (!app.config.nativeIcons[fname]) {
+    if (!config.nativeIcons[fname]) {
         Ti.API.error("Couldn't find icon for " + fname);
         return false;
     }
-    else if (app.models.deviceProxy.isIPad()) {
-        return '/images/' + app.config.nativeIcons[fname].replace('.png', '_72.png');
+    else if (deviceProxy.isIPad()) {
+        return '/images/' + config.nativeIcons[fname].replace('.png', '_72.png');
     }
-    else if (app.models.deviceProxy.isIPhone()){
-        return '/images/' + app.config.nativeIcons[fname];
+    else if (deviceProxy.isIPhone()){
+        return '/images/' + config.nativeIcons[fname];
     }
-    else if (app.models.deviceProxy.isAndroid()) {
-        return '/images/' + app.config.nativeIcons[fname];
+    else if (deviceProxy.isAndroid()) {
+        return '/images/' + config.nativeIcons[fname];
     }
     else {
         Ti.API.error("This device type could not be determined in retrievePortletIcon() in ResourceProxy");

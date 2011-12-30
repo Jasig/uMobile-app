@@ -19,6 +19,7 @@
 
 var person, emptyRow, 
 table = Titanium.UI.createTableView(app.styles.directoryDetailAttributeTable), 
+_ = require('/js/libs/underscore-min'),
 isDataEmpty = false;
 
 exports.table = table;

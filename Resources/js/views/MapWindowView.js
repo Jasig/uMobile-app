@@ -17,7 +17,8 @@
 * under the License.
 */
 
-var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar;
+var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar,
+_ = require('/js/libs/underscore-min');
 
 
 // Public methods

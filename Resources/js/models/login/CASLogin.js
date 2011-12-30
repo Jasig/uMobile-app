@@ -17,24 +17,27 @@
  * under the License.
  */
 
-
-    
-
-
-var _url, _credentials, 
-_refUrl = app.config.PORTAL_CONTEXT + '/layout.json',
-_serviceUrl = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + '/Login?refUrl=' + _refUrl,
-_logoutUrl = app.config.CAS_URL + '/logout';
+var _url, _credentials, sessionProxy,
+config = require('/js/config'),
+deviceProxy = require('/js/models/DeviceProxy'),
+userProxy = require('/js/models/UserProxy'),
+app = require('/js/Facade'),
+_refUrl = config.PORTAL_CONTEXT + '/layout.json',
+_serviceUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?refUrl=' + _refUrl,
+_logoutUrl = config.CAS_URL + '/logout';
 
 // XHR client
 var _client;
 
+exports.doSetSessionProxy = function (proxy) {
+    sessionProxy = proxy;
+};
 
 exports.login = function (credentials, opts) {
     _credentials = credentials;
     if (_credentials.username === '') {
-        /*_credentials.username = app.models.loginProxy.userTypes['GUEST'];
-        _credentials.password = app.models.loginProxy.userTypes['GUEST'];
+        /*_credentials.username = app.userTypes['GUEST'];
+        _credentials.password = app.userTypes['GUEST'];
         exports.logout();*/
         _client = Titanium.Network.createHTTPClient({
             onload: _onLoginComplete,
@@ -43,17 +46,17 @@ exports.login = function (credentials, opts) {
         });
         
         _client.open('GET', _serviceUrl, true);
-        if (app.models.deviceProxy.isAndroid()) {
-            if(_client.clearCookies) _client.clearCookies(app.config.BASE_PORTAL_URL);
+        if (deviceProxy.isAndroid()) {
+            if(_client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
             _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         }
-        else if (app.models.deviceProxy.isIOS()) {
-        	if (_client.clearCookies) _client.clearCookies(app.config.BASE_PORTAL_URL);
+        else if (deviceProxy.isIOS()) {
+        	if (_client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
         }
         _client.send();
     }
     else {
-        _url = app.config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_serviceUrl);
+        _url = config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(_serviceUrl);
         
         // Send an initial response to the CAS login page
         _client = Titanium.Network.createHTTPClient({
@@ -63,7 +66,7 @@ exports.login = function (credentials, opts) {
         });
         
         _client.open('GET', _url, true);
-        if (app.models.deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        if (deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         _client.send();            
     }
 };
@@ -79,7 +82,7 @@ exports.logout = function () {
     _client.send();
     
     // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
-    if (app.models.deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(app.config.BASE_PORTAL_URL);
+    if (deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
 };
 
 function _onLogoutComplete (e) {
@@ -90,7 +93,7 @@ function _onLogoutComplete (e) {
         onerror: _onInitialError
     });
     _client.open('GET', _serviceUrl, true);
-    if (app.models.deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+    if (deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     _client.send();
 };
 
@@ -102,8 +105,8 @@ function _onLoginComplete (e) {
     
     _failureRegex = new RegExp(/body id="cas"/);
     if (_failureRegex.exec(_client.responseText)) {
-        app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+        sessionProxy.stopTimer();
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
     } 
     else {
         _processResponse(_client.responseText);
@@ -117,38 +120,34 @@ function _processResponse (responseText) {
     }
     catch (e) {
         _parsedResponse = {
-            user: app.models.loginProxy.userTypes['NO_USER'],
+            user: app.userTypes['NO_USER'],
             layout: []
         };
     }   
 
-    app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
-    app.models.portalProxy.savePortlets(_parsedResponse.layout);
+    userProxy.saveLayoutUserName(_parsedResponse.user);
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout });
 
-    if (app.models.userProxy.retrieveLayoutUserName() === _credentials.username || app.models.userProxy.retrieveLayoutUserName() === app.models.loginProxy.userTypes['GUEST']) {
-        app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
+    if (userProxy.retrieveLayoutUserName() === _credentials.username || userProxy.retrieveLayoutUserName() === app.userTypes['GUEST']) {
+        sessionProxy.resetTimer();
         
-        if (app.models.deviceProxy.isAndroid()) {
-            app.models.sessionProxy.resetTimer(app.models.loginProxy.sessionTimeContexts.WEBVIEW);
-        }
-        
-        app.models.portalProxy.saveIsPortalReachable(true);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true });
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_SUCCESS'], {user: userProxy.retrieveLayoutUserName()});
     }
     else {
-        app.models.portalProxy.saveIsPortalReachable(false);
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: false });
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
 };
 
 function _onLoginError (e) {
-    app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-    Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+    sessionProxy.stopTimer();
+    Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
 };
 
 function _onInitialError (e) {
-    app.models.sessionProxy.stopTimer(app.models.loginProxy.sessionTimeContexts.NETWORK);
-    Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+    sessionProxy.stopTimer();
+    Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
 };
 
 function _onInitialResponse (e) {
@@ -178,7 +177,7 @@ function _onInitialResponse (e) {
             });
 
             _client.open('POST', _url, true);
-            if (app.models.deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            if (deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             
             data = { 
                 username: _credentials.username, 
@@ -191,7 +190,7 @@ function _onInitialResponse (e) {
         }
         catch (e) {
             Ti.API.error("Couldn't get flowID from response");
-            Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+            Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
         }
     }
 };

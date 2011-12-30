@@ -6,6 +6,7 @@ notification: {
     unread: true
 }
 */
+var _ = require('/js/libs/underscore-min');
 exports.notificationLevels = {
     EMERGENCY : "Emergency",
     URGENT : "Urgent",

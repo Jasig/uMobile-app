@@ -23,7 +23,11 @@ exports.events = {
 
 
 var hidePreviousWindow, 
-applicationWindows = app.config.WINDOW_CONTROLLERS,
+config = require('/js/config'),
+app = require('/js/Facade'),
+localDictionary = require('/js/localization')[Titanium.App.Properties.getString('locale')],
+deviceProxy = require('/js/models/DeviceProxy'),
+applicationWindows = config.WINDOW_CONTROLLERS,
 activityStack = [],
 currentController,
 homeController;
@@ -50,7 +54,7 @@ exports.openWindow = function (windowKey, portlet) {
         Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
         if (activityStack.length > 0) {
-            if (exports.retrieveCurrentWindow() !== app.config.HOME_KEY) {
+            if (exports.retrieveCurrentWindow() !== config.HOME_KEY) {
                 currentController.close();
                 currentController = null;
             }
@@ -64,9 +68,9 @@ exports.openWindow = function (windowKey, portlet) {
             currentController.open(portlet ? portlet : null);
             activityStack.push(windowKey);
         }
-        else if (windowKey === app.config.HOME_KEY){
+        else if (windowKey === config.HOME_KEY){
             currentController = homeController;
-            currentController.rotate(app.models.deviceProxy.retrieveCurrentOrientation());
+            currentController.rotate(deviceProxy.retrieveCurrentOrientation());
             activityStack.push(windowKey);
         }
         else {
@@ -117,8 +121,8 @@ function onAndroidBack (e) {
 };
 
 function onNetworkConnectionError (e) {
-    exports.openWindow(app.config.PORTLET_KEY, {
-        title: app.localDictionary.noNetworkTitle,
+    exports.openWindow(config.PORTLET_KEY, {
+        title: localDictionary.noNetworkTitle,
         fname: 'nonetwork',
         url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/no-network-en_US.html').nativePath
     });
@@ -129,6 +133,6 @@ function onShowWindow (e) {
 };
 
 function onShowPortlet (portlet) {
-    exports.openWindow(app.config.PORTLET_KEY, portlet);
+    exports.openWindow(config.PORTLET_KEY, portlet);
 };
 

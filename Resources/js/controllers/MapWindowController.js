@@ -25,17 +25,20 @@ exports.events = {
     LOAD_DETAIL : 'loaddetail'
 };
     
-var _locationDetailViewOptions, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win,
+var _locationDetailViewOptions, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win, localDictionary, deviceProxy, styles,
 _categoryResultsPerPage = 10;
 
 exports.open = function () {
     _mapWindowView = require('/js/views/MapWindowView');
     _mapDetailView = require('/js/views/MapDetailView');
     _mapProxy = require('/js/models/MapProxy');
+    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
+    deviceProxy = require('/js/models/DeviceProxy');
+    styles = require('/js/style');
 
     _win = Titanium.UI.createWindow({
         // url: 'js/views/WindowContext.js',
-        backgroundColor: app.styles.backgroundColor,
+        backgroundColor: styles.backgroundColor,
         exitOnClose: false,
         navBarHidden: true,
         orientationModes: [
@@ -93,6 +96,9 @@ exports.close = function (options) {
     _mapWindowView = null;
     _mapDetailView = null;
     _mapProxy = null;
+    localDictionary = null;
+    deviceProxy = null;
+    styles = null;
     
     _win.close();
 };
@@ -103,12 +109,10 @@ exports.rotate = function (orientation) {
 
 function _loadDetail (_annotation) {
     //Create and open the view for the map detail
-    _mapWindowView.saveActivityIndicatorMessage(app.localDictionary.loading);
+    _mapWindowView.saveActivityIndicatorMessage(localDictionary.loading);
     _mapWindowView.showActivityIndicator();
     _mapWindowView.searchBlur();
 
-    /*_locationDetailViewOptions = _.clone(app.styles.view);
-    _locationDetailViewOptions.data = _annotation;*/
     exports._locationDetailView = _mapDetailView.detailView;
     _win.add(exports._locationDetailView);
 
@@ -204,12 +208,12 @@ function _onViewDetailOnMap (e) {
 
 //Proxy Events
 function _onProxySearching (e) {
-    _mapWindowView.saveActivityIndicatorMessage(app.localDictionary.searching);
+    _mapWindowView.saveActivityIndicatorMessage(localDictionary.searching);
     _mapWindowView.showActivityIndicator();
 }
 
 function _onProxyLoading (e) {
-    _mapWindowView.saveActivityIndicatorMessage(app.localDictionary.mapLoadingLocations);
+    _mapWindowView.saveActivityIndicatorMessage(localDictionary.mapLoadingLocations);
     _mapWindowView.showActivityIndicator();
 }
 
@@ -224,12 +228,12 @@ function _onProxySearchComplete (e) {
     _mapWindowView.hideActivityIndicator();
     
     if(e.points.length < 1) {
-        if (_win.visible || app.models.deviceProxy.isIOS()) {
+        if (_win.visible || deviceProxy.isIOS()) {
             try {
                 alertDialog = Titanium.UI.createAlertDialog({
-                    title: app.localDictionary.noResults,
-                    message: app.localDictionary.mapNoSearchResults,
-                    buttonNames: [app.localDictionary.OK]
+                    title: localDictionary.noResults,
+                    message: localDictionary.mapNoSearchResults,
+                    buttonNames: [localDictionary.OK]
                 });
                 alertDialog.show();
             }
@@ -261,54 +265,54 @@ function _onProxyLoadError (e) {
     
     _mapWindowView.hideActivityIndicator();
     
-    if (_win.visible || app.models.deviceProxy.isIOS()) {
+    if (_win.visible || deviceProxy.isIOS()) {
         try {
             switch (e.errorCode) {
                 case _mapProxy.requestErrors.NETWORK_UNAVAILABLE:
                     alertDialog = Titanium.UI.createAlertDialog({
-                        title: app.localDictionary.error,
-                        message: app.localDictionary.map_NETWORK_UNAVAILABLE,
-                        buttonNames: [app.localDictionary.OK]
+                        title: localDictionary.error,
+                        message: localDictionary.map_NETWORK_UNAVAILABLE,
+                        buttonNames: [localDictionary.OK]
                     });
                     alertDialog.show();
                     break;
                 case _mapProxy.requestErrors.REQUEST_TIMEOUT:
                     alertDialog = Titanium.UI.createAlertDialog({
-                        title: app.localDictionary.error,
-                        message: app.localDictionary.map_REQUEST_TIMEOUT,
-                        buttonNames: [app.localDictionary.OK]
+                        title: localDictionary.error,
+                        message: localDictionary.map_REQUEST_TIMEOUT,
+                        buttonNames: [localDictionary.OK]
                     });
                     alertDialog.show();
                     break;
                 case _mapProxy.requestErrors.SERVER_ERROR:
                     alertDialog = Titanium.UI.createAlertDialog({
-                        title: app.localDictionary.error,
-                        message: app.localDictionary.map_SERVER_ERROR,
-                        buttonNames: [app.localDictionary.OK]
+                        title: localDictionary.error,
+                        message: localDictionary.map_SERVER_ERROR,
+                        buttonNames: [localDictionary.OK]
                     });
                     alertDialog.show();
                     break;
                 case _mapProxy.requestErrors.NO_DATA_RETURNED:
                     alertDialog = Titanium.UI.createAlertDialog({
-                        title: app.localDictionary.error,
-                        message: app.localDictionary.map_NO_DATA_RETURNED,
-                        buttonNames: [app.localDictionary.OK]
+                        title: localDictionary.error,
+                        message: localDictionary.map_NO_DATA_RETURNED,
+                        buttonNames: [localDictionary.OK]
                     });
                     alertDialog.show();
                     break;
                 case _mapProxy.requestErrors.INVALID_DATA_RETURNED: 
                     alertDialog = Titanium.UI.createAlertDialog({
-                        title: app.localDictionary.error,
-                        message: app.localDictionary.map_INVALID_DATA_RETURNED,
-                        buttonNames: [app.localDictionary.OK]
+                        title: localDictionary.error,
+                        message: localDictionary.map_INVALID_DATA_RETURNED,
+                        buttonNames: [localDictionary.OK]
                     });
                     alertDialog.show();
                     break;
                 default:
                     alertDialog = Titanium.UI.createAlertDialog({
-                        title: app.localDictionary.error,
-                        message: app.localDictionary.map_GENERAL_ERROR,
-                        buttonNames: [app.localDictionary.OK]
+                        title: localDictionary.error,
+                        message: localDictionary.map_GENERAL_ERROR,
+                        buttonNames: [localDictionary.OK]
                     });
                     alertDialog.show();
             }

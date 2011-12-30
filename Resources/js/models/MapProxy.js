@@ -318,7 +318,7 @@ exports._newPointsLoaded = function (e) {
     Ti.API.info("newPointsLoaded() in MapProxy");
     // Customize the response and add it to the cached mapPoints array in the MapProxy object.
     
-    Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: app.models.loginProxy.sessionTimeContexts.NETWORK});
+    Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
     
     var _response, _responseLength, _db, _categories = {};
     try {

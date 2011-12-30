@@ -17,12 +17,14 @@
  * under the License.
  */
 
-var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowView;
+var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowView, config, localDictionary;
 
 exports.open = function () {
     //Listen for events, mostly fired from models.DirectoryProxy
     directoryProxy = require('/js/models/DirectoryProxy');
     directoryWindowView = require('/js/views/DirectoryWindowView');
+    config = require('/js/config');
+    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
     
     Titanium.App.addEventListener(directoryProxy.events['SEARCHING'], onProxySearching);
     Titanium.App.addEventListener(directoryProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
@@ -31,7 +33,7 @@ exports.open = function () {
     Titanium.App.addEventListener(directoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
     
     directoryWindowView.open({
-        defaultNumber: app.config.phoneDirectoryNumber,
+        defaultNumber: config.phoneDirectoryNumber,
         emergencyContacts: directoryProxy.retrieveEmergencyContacts()
     });
 };
@@ -46,6 +48,7 @@ exports.close = function (options) {
     directoryProxy = null;
     directoryWindowView.close();
     directoryWindowView = null;
+    localDictionary = null;
 };
 
 exports.rotate = function (orientation) {
@@ -68,7 +71,7 @@ onSearchSubmit = function(e) {
 //Proxy events
 
 onProxySearching = function (e) {
-    directoryWindowView.showActivityIndicator(app.localDictionary.searching);
+    directoryWindowView.showActivityIndicator(localDictionary.searching);
 };
 
 onProxySearchComplete = function (e) {
@@ -77,7 +80,7 @@ onProxySearchComplete = function (e) {
     }
     else {
         directoryWindowView.alert({
-            title: app.localDictionary.error,
+            title: localDictionary.error,
             message: e.error
         });
     }
@@ -85,7 +88,7 @@ onProxySearchComplete = function (e) {
 
 onProxySearchError = function (e) {
     directoryWindowView.alert({
-        title: app.localDictionary.errorPerformingSearch,
-        message: app.localDictionary.noSearchResults
+        title: localDictionary.errorPerformingSearch,
+        message: localDictionary.noSearchResults
     });
 };

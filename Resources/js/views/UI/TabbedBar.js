@@ -1,6 +1,7 @@
-var labels = [], width, index, _listeners = [], _numButtons = 0;
+var labels = [], width, index, _listeners = [], _numButtons = 0,
+styles = require('/js/style');
 
-exports.view = Ti.UI.createView(app.styles.mapButtonBar);
+exports.view = Ti.UI.createView(styles.mapButtonBar);
 
 exports.labels = labels;
 exports.doSetLabels = function (newLabels) {
@@ -8,13 +9,13 @@ exports.doSetLabels = function (newLabels) {
         labels = newLabels;
         _numButtons = labels.length;
 
-        var _buttonWidth = Math.floor((app.styles.mapButtonBar.getWidth - 10) / _numButtons) - 10;
+        var _buttonWidth = Math.floor((styles.mapButtonBar.getWidth - 10) / _numButtons) - 10;
 
         for (var i=0; i<_numButtons; i++) {
             var _button = Ti.UI.createButton({
                 width: _buttonWidth + 'dp',
                 color: "#000",
-                height: app.styles.mapButtonBar.getHeight - 5 + 'dp',
+                height: styles.mapButtonBar.getHeight - 5 + 'dp',
                 top: '5dp',
                 left: (i * _buttonWidth) + ((i+1) * 10) + 'dp',
                 title: labels[i],

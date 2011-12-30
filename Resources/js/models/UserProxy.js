@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-var _layoutUserName;
+Titanium.include('js/gibberishAES.js');
+var config = require('/js/config');
 
 exports.saveCredentials = function (credentials) {
     var db, username, password;
 
-    username = GibberishAES.enc(credentials.username, app.config.ENCRYPTION_KEY);
-    password = GibberishAES.enc(credentials.password, app.config.ENCRYPTION_KEY);
+    username = GibberishAES.enc(credentials.username, config.ENCRYPTION_KEY);
+    password = GibberishAES.enc(credentials.password, config.ENCRYPTION_KEY);
 
     // open the database
     db = Ti.Database.open('umobile');
@@ -51,7 +51,6 @@ exports.saveCredentials = function (credentials) {
  * will each be null;
  */
 exports.retrieveCredentials = function () {
-    Ti.API.debug('retrieveCredentials() in UserProxy');
     var db, rows, credentials;
 
     // make sure the database has been initialized
@@ -65,7 +64,7 @@ exports.retrieveCredentials = function () {
     rows = db.execute('SELECT value from prefs where name="username"');
     if (rows.isValidRow()) {
         try { 
-            credentials.username = GibberishAES.dec(rows.fieldByName('value'), app.config.ENCRYPTION_KEY);
+            credentials.username = GibberishAES.dec(rows.fieldByName('value'), config.ENCRYPTION_KEY);
         } catch (e) {
             Ti.API.error("Couldn't decrypt username");
         }
@@ -76,7 +75,7 @@ exports.retrieveCredentials = function () {
     if (rows.isValidRow()) {
         (function(){
             try {
-                credentials.password = GibberishAES.dec(rows.fieldByName('value'), app.config.ENCRYPTION_KEY);
+                credentials.password = GibberishAES.dec(rows.fieldByName('value'), config.ENCRYPTION_KEY);
             } catch (e) {
                 Ti.API.debug("Couldn't decrypt password");
             }            
@@ -89,13 +88,14 @@ exports.retrieveCredentials = function () {
 };
 
 exports.saveLayoutUserName = function (name) {
-    _layoutUserName = name;
+    Ti.App.Properties.setString('layoutUserName', name);
 };
 
 exports.retrieveLayoutUserName = function () {
-    return _layoutUserName;
+    return Ti.App.Properties.getString('layoutUserName');
 };
 
 exports.isGuestUser = function () {
+    var _layoutUserName = Ti.App.Properties.getString('layoutUserName');
     return _layoutUserName === '' || _layoutUserName === 'guest' ? true : false;
 };

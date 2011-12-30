@@ -19,33 +19,14 @@
 var _loginMethod = {},
 config = require('/js/config'),
 app = require('/js/Facade'),
-sessionProxy = require('/js/models/SessionProxy');
-exports.events = {
-    NETWORK_SESSION_FAILURE : "EstablishNetworkSessionFailure",
-    NETWORK_SESSION_SUCCESS : "EstablishNetworkSessionSuccess",
-    LOGIN_METHOD_RESPONSE   : "LoginProxyLoginMethodResponse",
-    LOGIN_METHOD_COMPLETE   : "LoginProxyLoginMethodComplete",
-    WEBVIEW_LOGIN_RESPONSE  : "LoginProxyWebviewLoginResponse",
-    WEBVIEW_LOGIN_FAILURE   : "LoginProxyWebviewLoginFailure",
-    WEBVIEW_LOGIN_SUCCESS   : "LoginProxyWebviewLoginSuccess"
-};
-
-app.sessionTimeContexts = {
-    NETWORK: "Network",
-    WEBVIEW: "Webview"
-};
+sessionProxy = require('/js/models/SessionProxy'),
+userProxy = require('/js/models/UserProxy');
 
 exports.loginMethods = {
     CAS         : "Cas",
     LOCAL_LOGIN : "LocalLogin",
     SHIBBOLETH2  : "Shibboleth"
 };
-
-exports.userTypes = {
-    GUEST   : "guest",
-    NO_USER : "NoUser"
-};
-
 
 switch (config.LOGIN_METHOD) {
     case exports.loginMethods.CAS:
@@ -61,10 +42,14 @@ switch (config.LOGIN_METHOD) {
         Ti.API.error("Login method not recognized in exports.exports.initialize()");
 }
 
+_loginMethod.doSetSessionProxy(sessionProxy);
+
 sessionProxy.createSessionTimer();
 
 Ti.App.addEventListener(sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
-Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], exports._processLoginResponse);
+Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], _processLoginResponse);
+Ti.App.addEventListener(app.loginEvents['ESTABLISH_NETWORK_SESSION'], exports.establishNetworkSession);
+Ti.App.addEventListener(app.loginEvents['CLEAR_SESSION'], exports.clearSession);
 
 exports.isActiveSession = function () {
     return sessionProxy.isActive();
@@ -80,7 +65,7 @@ exports.establishNetworkSession = function(options) {
         and when the local network session timer expires.
     */
     var credentials, url;
-    credentials = app.models.userProxy.retrieveCredentials();
+    credentials = userProxy.retrieveCredentials();
     _loginMethod.login(credentials, options);
 };
 
@@ -96,7 +81,7 @@ exports.onSessionExpire = function (e) {
     exports.establishNetworkSession({isUnobtrusive: true});
 };
 
-exports._processLoginResponse = function (e) {
+function _processLoginResponse (e) {
     var _responseText = e.responseText, _credentials = e.credentials, _parsedResponse;
     
     if (_credentials.username === '') {
@@ -112,23 +97,23 @@ exports._processLoginResponse = function (e) {
             layout: []
         };
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE']);
-        app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
+        userProxy.saveLayoutUserName(_parsedResponse.user);
         return;
     }
     
-    app.models.userProxy.saveLayoutUserName(_parsedResponse.user);
-    app.models.portalProxy.savePortlets(_parsedResponse.layout);
+    userProxy.saveLayoutUserName(_parsedResponse.user);
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout });
     
-    if (app.models.userProxy.retrieveLayoutUserName() === _credentials.username) {
+    if (userProxy.retrieveLayoutUserName() === _credentials.username) {
         Ti.API.info("_layoutUser matches credentials.username");
 
         sessionProxy.resetTimer();
-        app.models.portalProxy.saveIsPortalReachable(true);
-        Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: app.models.userProxy.retrieveLayoutUserName()});
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true });
+        Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: userProxy.retrieveLayoutUserName()});
     }
     else {
         Ti.API.error("Network session failed");
-        app.models.portalProxy.saveIsPortalReachable(false);
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: false });
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
-};
+}

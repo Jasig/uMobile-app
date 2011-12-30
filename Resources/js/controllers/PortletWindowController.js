@@ -18,7 +18,7 @@
  */
 
 
-var _activePortlet, _homeURL, _currentURL, _homeFName, 
+var _activePortlet, _homeURL, _currentURL, _homeFName, app, config, styles, deviceProxy, localDictionary,
 _lastVideoOpened = '', 
 _isListeningForAndroidBack = false,
 _win, _activityIndicator, _titleBar, _navBar,_webView;
@@ -29,22 +29,33 @@ exports.open = function (portlet) {
         This method isn't called until the user has selected a webview-based portlet
         from the home screen.
     */
+    app = require('/js/Facade');
+    config = require('/js/config');
+    styles = require('/js/style');
+    deviceProxy = require('/js/models/DeviceProxy');
+    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
+    
     if (portlet) {
         _activePortlet = portlet;
     }
     else {
-        app.models.windowManager.openWindow(app.config.HOME_KEY);
+        Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
         return;
     }
     
     _createView(portlet);
-    Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], _onDimensionChanges);
     
     _includePortlet(_activePortlet);
 };
 
 exports.close = function () {
     //Set the webview to blank.html if Android, otherwise leave it.
+    app = null;
+    config = null;
+    styles = null;
+    deviceProxy = null;
+    localDictionary = null;
+    
     try {
         _webView.removeEventListener('load', _onPortletLoad);
         _webView.removeEventListener('beforeload', _onPortletBeforeLoad);
@@ -63,7 +74,7 @@ function _createView (portlet) {
         This method creates and arranges the view for the Controller, to keep the 
         open() method simpler and more focused on business logic than view logic.
     */
-    _win = Titanium.UI.createWindow(app.styles.portletWindow);
+    _win = Titanium.UI.createWindow(styles.portletWindow);
     _win.open();
     
     _titleBar = require('/js/views/UI/TitleBar');
@@ -85,14 +96,14 @@ function _createView (portlet) {
     _win.add(_titleBar.view);
     _win.add(_navBar.view);
     
-    if (app.models.deviceProxy.isIOS() && _webView) {
-        _webView = Titanium.UI.createWebView(app.styles.portletView);
+    if (deviceProxy.isIOS() && _webView) {
+        _webView = Titanium.UI.createWebView(styles.portletView);
         _win.add(_webView);
         _webView.addEventListener('load', _onPortletLoad);
         _webView.addEventListener('beforeload', _onPortletBeforeLoad);
     }
     else {
-        _webView = Titanium.UI.createWebView(app.styles.portletView);
+        _webView = Titanium.UI.createWebView(styles.portletView);
         _win.add(_webView);
         _webView.addEventListener('load', _onPortletLoad);
         _webView.addEventListener('beforeload', _onPortletBeforeLoad);
@@ -127,7 +138,7 @@ function _includePortlet (portlet) {
     var _isValidSession;
     
     Ti.API.debug("includePortlet() in PortletWindowController. Portlet: " + JSON.stringify(portlet));
-    _activityIndicator.saveLoadingMessage(app.localDictionary.loading);
+    _activityIndicator.saveLoadingMessage(localDictionary.loading);
     _activityIndicator.view.show();
     
     _homeURL = _webView.url = _currentURL = _getAbsoluteURL(portlet.url);
@@ -137,7 +148,7 @@ function _includePortlet (portlet) {
 };
 
 exports.parseFNameFromURL = function (url) {
-	if (url.indexOf('/' === 0 || url.indexOf(app.config.BASE_PORTAL_URL))) {
+	if (url.indexOf('/' === 0 || url.indexOf(config.BASE_PORTAL_URL))) {
 		var _urlParts = url.split('/');
 		for (var i = 0, iLength = _urlParts.length; i<iLength; i++) {
 			if (_urlParts[i] === 'p') {
@@ -157,13 +168,13 @@ function _getLocalUrl (url) {
     This method only returns a URL, doesn't actually set the url property of the webview.
     */
 
-    if (!app.models.deviceProxy.checkNetwork()) {
+    if (!deviceProxy.checkNetwork()) {
         return false;
     }
 
     if (url.indexOf('/') === 0) {
         Ti.API.info("Index of / in URL is 0");
-        var newUrl = app.config.BASE_PORTAL_URL + url;
+        var newUrl = config.BASE_PORTAL_URL + url;
         Ti.API.info(newUrl);
         localUrl = newUrl;
     }
@@ -190,7 +201,7 @@ function _getAbsoluteURL (url) {
     if (url.indexOf('/') == 0) {
         _url = _getLocalUrl(url);
         _webView.externalModule = false;
-        _webView.top = app.styles.titleBar.height + 'dp';
+        _webView.top = styles.titleBar.height + 'dp';
     }
     else {
         _url = url;
@@ -208,7 +219,7 @@ function _onPortletBeforeLoad (e) {
         _webView.stopLoading();
         _webView.url = _getAbsoluteURL(_webView.url);
     }
-    else if (e.url.indexOf('http://m.youtube.com') === 0 && app.models.deviceProxy.isAndroid()) {
+    else if (e.url.indexOf('http://m.youtube.com') === 0 && deviceProxy.isAndroid()) {
         /*
             Android had/has a bug that won't play youTube videos inside of a webView,
             so we want to broadcast an intent outside of our app for the OS to handle
@@ -245,7 +256,7 @@ function _onPortletBeforeLoad (e) {
     	    Ti.API.debug("The WebView isn't youtube: " + e.url);
     	}
     }
-    _activityIndicator.saveLoadingMessage(app.localDictionary.loading);
+    _activityIndicator.saveLoadingMessage(localDictionary.loading);
     _activityIndicator.view.show();
 };
 
@@ -254,13 +265,13 @@ function _onDimensionChanges (e) {
     if (_isHome()) {
         Ti.API.info("Webview is home, can't go back");
         _navBar.view.visible = false;
-        _webView.top = app.styles.titleBar.height + 'dp';
-        _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height + 'dp';
+        _webView.top = styles.titleBar.height + 'dp';
+        _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
     }
     else {
         _navBar.view.visible = true;
-        _webView.top = app.styles.titleBar.height + app.styles.secondaryNavBar.getHeight;
-        _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height - app.styles.secondaryNavBar.getHeight + 'dp';
+        _webView.top = styles.titleBar.height + styles.secondaryNavBar.getHeight;
+        _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height - styles.secondaryNavBar.getHeight + 'dp';
     }
 };
 
@@ -280,7 +291,7 @@ function _onPortletLoad (e) {
         and show the nav bar with back button
     */
     Ti.API.debug("onPortletLoad() in PortletWindowController");
-    var portalIndex = e.url.indexOf(app.config.BASE_PORTAL_URL);
+    var portalIndex = e.url.indexOf(config.BASE_PORTAL_URL);
 
     _webView.show();
     _currentURL = e.url;
@@ -289,13 +300,13 @@ function _onPortletLoad (e) {
     
     if (portalIndex >= 0) {
         Ti.API.debug("Visiting a portal link");
-        Ti.App.fireEvent(app.events['SESSION_ACTIVITY'], {context: app.models.loginProxy.sessionTimeContexts['WEBVIEW']});
+        Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
         //We want to be able to open any video now, so we'll clear the YouTube workaround variable
         _lastVideoOpened = '';
         _webView.externalModule = false;
         _navBar.view.visible = false;
-        _webView.top = app.styles.titleBar.height + 'dp';
-        _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height + 'dp';
+        _webView.top = styles.titleBar.height + 'dp';
+        _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
         if (_isHome()) {
             _removeAndroidBackListener();
         }
@@ -305,14 +316,14 @@ function _onPortletLoad (e) {
         _webView.externalModule = true;
         if (!_isHome()) {
             _navBar.view.visible = true;
-            _webView.top = app.styles.titleBar.height + app.styles.secondaryNavBar.getHeight + 'dp';
-            _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height - app.styles.secondaryNavBar.getHeight + 'dp';
+            _webView.top = styles.titleBar.height + styles.secondaryNavBar.getHeight + 'dp';
+            _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height - styles.secondaryNavBar.getHeight + 'dp';
             _addAndroidBackListener();
         }
         else {
             Ti.API.info("Webview can't go back");
-            _webView.top = app.styles.titleBar.height + 'dp';
-            _webView.height = app.models.deviceProxy.retrieveHeight(true) - app.styles.titleBar.height + 'dp';
+            _webView.top = styles.titleBar.height + 'dp';
+            _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
             _removeAndroidBackListener();
         }
     }
@@ -341,7 +352,7 @@ function _isHome () {
         If localhost is in the base URL (simulator), we will use webview.url 
         because the e object doesn't contain localhost in the path.
     */
-    _newURL = (_homeURL.indexOf('file://') > -1 && app.models.deviceProxy.isIOS()) ? treatAsLocalhost(_currentURL) : _currentURL;
+    _newURL = (_homeURL.indexOf('file://') > -1 && deviceProxy.isIOS()) ? treatAsLocalhost(_currentURL) : _currentURL;
     
     /*
         It's either a portlet (with an fname) or not
@@ -357,14 +368,14 @@ function _isHome () {
 
 function _addAndroidBackListener () {
     // Add listener for Android hardware back button
-	if (!_isListeningForAndroidBack && app.models.deviceProxy.isAndroid()) {
+	if (!_isListeningForAndroidBack && deviceProxy.isAndroid()) {
 		_win.addEventListener('android:back', _onAndroidBack);
 		_isListeningForAndroidBack = true;
 	}
 };
 
 function _removeAndroidBackListener () {
-	if (_isListeningForAndroidBack && app.models.deviceProxy.isAndroid()) {
+	if (_isListeningForAndroidBack && deviceProxy.isAndroid()) {
 		try {
             _win.removeEventListener('android:back', _onAndroidBack);
 			_isListeningForAndroidBack = false;

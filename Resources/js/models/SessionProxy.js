@@ -21,7 +21,7 @@ var timer = {}, sessionLifeTimeMilli,
 app = require('/js/Facade');
 
 /* 
-The SessionProxy acts as a sub-proxy for app.models.loginProxy to maintain a local
+The SessionProxy acts as a sub-proxy for the LoginProxy to maintain a local
 representation of session time for the mobile application session. The current
 Android implementation of Titanium maintains separate sessions for Network requests
 and WebViews, so we need to manage multiple "contexts" for Android. iPhone uses the same

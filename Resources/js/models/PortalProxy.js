@@ -20,13 +20,7 @@
 ** @constructor
 */
 //Implemented as a static object so other scripts can access before an instance of the proxy exists.
-exports.events = {
-    GETTING_PORTLETS            : 'PortalProxyGettingPortlets',
-    PORTLETS_RETRIEVED_SUCCESS  : 'PortalProxyPortletsRetrievedSuccess',
-    PORTLETS_RETRIEVED_FAILURE  : 'PortalProxyPortletsRetrievedFailure',
-    PORTLETS_LOADED             : 'PortalProxyPortletsLoaded', //When portlets are sorted, organized, ready to use
-    NETWORK_ERROR               : 'PortalProxyNetworkError'
-};
+
 exports.states = {
     INITIALIZED             : "Initialized",
     PORTLETS_LOADED         : "PortletsLoaded",
@@ -36,64 +30,69 @@ exports.states = {
 
 var currentState = exports.states['INITIALIZED'],
 isPortalReachable = false,
-portlets = [],
+app = require('/js/Facade'),
+config = require('/js/config'),
+resourceProxy = require('/js/models/ResourceProxy'),
 pathToRoot = '../../';
+
+Ti.App.addEventListener(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], function (e) {
+    exports.savePortlets(e.portlets);
+});
+
+Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
+    exports.saveIsPortalReachable(e.reachable);
+});
 
 exports.retrieveShowPortletFunc = function (portlet) {
     //Returns a function to the PortalWindowController to open the appropriate window 
     //when an icon is clicked in the home screen grid.
     return function () {
-        if (portlet.url) {
-            app.models.windowManager.openWindow(app.config.PORTLET_KEY, portlet);
-        } 
-        else {
-            app.models.windowManager.openWindow(portlet.window);
-        }
+        Ti.App.fireEvent(app.events['SHOW_WINDOW'], portlet);
     };
 };
 
 exports.retrievePortlets = function () {
-    return portlets;
+    return Ti.App.Properties.getList('portlets');
 };
 
 exports.savePortlets = function (_portlets) {
-    var nativeModules = app.config.retrieveLocalModules(), module;
-    portlets = _portlets;
+    var nativeModules = config.retrieveLocalModules(), module;
 
     for (module in nativeModules) {
         if (nativeModules.hasOwnProperty(module)) {
             nativeModules[module].added = false;
         }
     }
-    for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
-        if(nativeModules[portlets[i].fname]) {
-            portlets[i] = nativeModules[portlets[i].fname];
-            nativeModules[portlets[i].fname].added = true;
+    for (var i = 0, iLength = _portlets.length; i<iLength; i++ ) {
+        if(nativeModules[_portlets[i].fname]) {
+            _portlets[i] = nativeModules[_portlets[i].fname];
+            nativeModules[_portlets[i].fname].added = true;
         }
     }
 
     for (module in nativeModules) {
         if (nativeModules.hasOwnProperty(module)) {
-
             if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
                 // As long as the module has a title, hasn't already been added, and doesn't 
                 // require the fname for the module to be returned in the personalized layout.
-                portlets.push(nativeModules[module]);
+                _portlets.push(nativeModules[module]);
             }
         }
     }
 
-    portlets.sort(exports._sortPortlets);
+    _portlets.sort(exports._sortPortlets);
     
     //Set the state of the portal proxy. Assume local portlets only if _portlets.length < 1
     exports.saveState(exports.states[_portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
-    Ti.App.fireEvent(exports.events['PORTLETS_LOADED'],{state: exports.retrieveState()});
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.retrieveState() });
+    Ti.App.Properties.setList('portlets', _portlets);
 };
 
 exports.retrievePortletByFName = function (fname) {
+    var portlets = Ti.App.Properties.getList('portlets');
 	for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
 		if (portlets[i].fname === fname) {
-			return pathToRoot[i];
+			return portlets[i];
 		}
 	}
 	return false;
@@ -101,7 +100,6 @@ exports.retrievePortletByFName = function (fname) {
 
 exports._sortPortlets = function(a, b) {
     if (!a.title || !b.title) {
-        Ti.API.error("Missing a title for one of these:" + JSON.stringify(a) + " & " + JSON.stringify(b));
         return -1;
     }
     // get the values for the configured property from 
@@ -126,17 +124,17 @@ exports._sortPortlets = function(a, b) {
 exports.retrieveIconUrl = function (p) {
     var _iconUrl;
 
-    if (app.models.resourceProxy.retrievePortletIcon(p.fname)) {
-        _iconUrl = app.models.resourceProxy.retrievePortletIcon(p.fname);
+    if (resourceProxy.retrievePortletIcon(p.fname)) {
+        _iconUrl = resourceProxy.retrievePortletIcon(p.fname);
     }
     else if (p.iconUrl && p.iconUrl.indexOf('/') == 0) {
-        _iconUrl = app.config.BASE_PORTAL_URL + p.iconUrl;
+        _iconUrl = config.BASE_PORTAL_URL + p.iconUrl;
     } 
     else if (p.iconUrl) {
         _iconUrl = pathToRoot + p.iconUrl;
     } 
     else {
-        _iconUrl = app.config.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
+        _iconUrl = config.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
     }
 
     return _iconUrl;

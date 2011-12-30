@@ -30,17 +30,25 @@ exports.events = {
     STATE_CHANGE    : 'PortalGridViewStateChange'
 };
 
-var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanup = false, _state, _numGridItems = 0, _gridView, _gridItems = {};
+var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanup = false, _state, _numGridItems = 0, _gridView, _gridItems = {}, styles, deviceProxy, portalProxy,
+_ = require('/js/libs/underscore-min');;
 
 function _init () {
-    _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
-    _leftPadding = Math.floor(((app.models.deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
+    styles = require('/js/style');
+    deviceProxy = require('/js/models/DeviceProxy');
     
-    _gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
+    _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
+    _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
+    _numColumns = Math.floor(deviceProxy.retrieveWidth(true) / _completeWidth);
+    _leftPadding = Math.floor(((deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
+    
+    _gridView = Titanium.UI.createScrollView(styles.homeGrid);
     
     exports.saveState(exports.states.INITIALIZED);
+};
+
+exports.doSetPortalProxy = function (proxy) {
+    portalProxy = proxy;
 };
 
 exports.retrieveState = function () {
@@ -56,13 +64,14 @@ exports.saveState = function (newState) {
 
 exports.retrieveGridView = function () {
     if (_didLayoutCleanup || !_gridView) {
-        _gridView = Titanium.UI.createScrollView(app.styles.homeGrid);
+        _gridView = Titanium.UI.createScrollView(styles.homeGrid);
     }
     _rearrangeGrid();
     return _gridView;
 };
 
 exports.updateGrid = function (portlets) {
+    Ti.API.debug('updateGrid() in PortalGridView. Portlets: '+JSON.stringify(portlets));
     var _portlets = portlets || [], _item;
 
     /*
@@ -88,7 +97,7 @@ exports.updateGrid = function (portlets) {
     
     for (var i=0; i<_numGridItems; i++ ) {
         //Place the item in the scrollview and listen for singletaps
-        if (!_gridItems['fName' + _portlets[i].fname] || app.models.deviceProxy.isIOS()) {
+        if (!_gridItems['fName' + _portlets[i].fname] || deviceProxy.isIOS()) {
             //Create the item, implicity add to local array, and explicitly assign sort order
             _gridView.add(_createGridItem(_portlets[i], i).view);
         }
@@ -107,9 +116,9 @@ exports.updateGrid = function (portlets) {
 
 exports.rotate = function (orientation, specialLayout) {
     Ti.API.debug('rotate() in PortalGridView');
-    _completeWidth = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _completeHeight = app.styles.gridItem.width + 2 * app.styles.gridItem.padding;
-    _numColumns = Math.floor(app.models.deviceProxy.retrieveWidth(true) / _completeWidth);
+    _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
+    _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
+    _numColumns = Math.floor(deviceProxy.retrieveWidth(true) / _completeWidth);
     exports.resizeGrid(specialLayout);
     _rearrangeGrid();
 };
@@ -117,7 +126,7 @@ exports.rotate = function (orientation, specialLayout) {
 function _createGridItem (portlet, sortOrder) {
     // Create the container for the grid item
     var gridItem = {}, gridItemLabel, gridItemIcon, gridBadgeBackground, gridBadgeNumber,
-    gridItemDefaults = _.clone(app.styles.gridItem), 
+    gridItemDefaults = _.clone(styles.gridItem), 
     gridItemIconDefaults, gridBadgeBackgroundDefaults, 
     gridBadgeNumberDefaults;
     gridItemDefaults.width = gridItemDefaults.width + 'dp';
@@ -137,7 +146,7 @@ function _createGridItem (portlet, sortOrder) {
 
         //Add a label to the grid item
         if (portlet.title) {
-            var gridItemLabelDefaults = _.clone(app.styles.gridItemLabel);
+            var gridItemLabelDefaults = _.clone(styles.gridItemLabel);
             gridItemLabelDefaults.top += 'dp';
             gridItemLabelDefaults.text =  portlet.title.toLowerCase();
             gridItemLabel = Ti.UI.createLabel(gridItemLabelDefaults);
@@ -145,10 +154,10 @@ function _createGridItem (portlet, sortOrder) {
         }
 
         //Add an icon to the grid item
-        gridItemIconDefaults = _.clone(app.styles.gridIcon);
+        gridItemIconDefaults = _.clone(styles.gridIcon);
         
         gridItemIconDefaults.top += 'dp';
-        gridItemIconDefaults.image = app.models.portalProxy.retrieveIconUrl(portlet);
+        gridItemIconDefaults.image = portalProxy.retrieveIconUrl(portlet);
         gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
         gridItemIcon.portlet = portlet;
         gridItem.view.add(gridItemIcon);
@@ -156,10 +165,10 @@ function _createGridItem (portlet, sortOrder) {
         // if the module has a new item count of more than zero (no new items)
         // add a badge number to the home screen icon
         if (portlet.newItemCount > 0) {
-            gridBadgeBackground = Ti.UI.createImageView(app.styles.gridBadgeBackground);
+            gridBadgeBackground = Ti.UI.createImageView(styles.gridBadgeBackground);
             gridItem.view.add(gridBadgeBackground);
 
-            gridBadgeNumberDefaults = app.styles.gridBadgeNumber;
+            gridBadgeNumberDefaults = styles.gridBadgeNumber;
             gridBadgeNumberDefaults.text = portlet.newItemCount;
             gridBadgeNumber = Ti.UI.createLabel(gridBadgeNumberDefaults);
             gridItem.view.add(gridBadgeNumber);
@@ -177,14 +186,14 @@ function _createGridItem (portlet, sortOrder) {
         gridItem.addEventListeners = function () {
             gridItemIcon.addEventListener("singletap", _onGridItemClick);
             gridItemIcon.addEventListener("touchstart", _onGridItemPressDown);
-            gridItemIcon.addEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
+            gridItemIcon.addEventListener(deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
         };
         
         gridItem.removeEventListeners = function () {
             try {
                 gridItemIcon.removeEventListener("singletap", _onGridItemClick);
                 gridItemIcon.removeEventListener("touchstart", _onGridItemPressDown);
-                gridItemIcon.removeEventListener(app.models.deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
+                gridItemIcon.removeEventListener(deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
             }
             catch (e) {
                 Ti.API.error("Couldn't remove event listeners");
@@ -204,8 +213,8 @@ function _rearrangeGrid () {
     
     for (_gridItem in _gridItems) {
         if (_gridItems.hasOwnProperty(_gridItem)) {
-            _gridItems[_gridItem].view.top = (app.styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / _numColumns) * _completeHeight) + 'dp';
-            _gridItems[_gridItem].view.left = (_leftPadding + app.styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % _numColumns) * _completeWidth) + 'dp';
+            _gridItems[_gridItem].view.top = (styles.gridItem.padding + Math.floor(_gridItems[_gridItem].sortOrder / _numColumns) * _completeHeight) + 'dp';
+            _gridItems[_gridItem].view.left = (_leftPadding + styles.gridItem.padding + (_gridItems[_gridItem].sortOrder % _numColumns) * _completeWidth) + 'dp';
             _gridItems[_gridItem].view.show();
         }
     }
@@ -223,13 +232,13 @@ exports.clear = function () {
 
 exports.resizeGrid = function (_isSpecialLayout) {
     //Variable tells if the notifications bar is displayed or not
-    _gridView.height = _isSpecialLayout ? app.styles.homeGrid.heightWithNote : app.styles.homeGrid.height;
+    _gridView.height = _isSpecialLayout ? styles.homeGrid.heightWithNote : styles.homeGrid.height;
 };
 
 function _onGridItemClick (e) {
     var func;
     if (e.source.portlet) {
-        func = app.models.portalProxy.retrieveShowPortletFunc(e.source.portlet);
+        func = portalProxy.retrieveShowPortletFunc(e.source.portlet);
         func();
     }
     else {
@@ -238,12 +247,12 @@ function _onGridItemClick (e) {
 };
 
 function _onGridItemPressDown (e) {
-    if(app.models.deviceProxy.isIOS()) {
+    if(deviceProxy.isIOS()) {
         if (e.source.type === 'gridIcon') {
-            e.source.getParent().opacity = app.styles.gridItem.pressOpacity;
+            e.source.getParent().opacity = styles.gridItem.pressOpacity;
         }
         else {
-            e.source.opacity = app.styles.gridItem.pressOpacity;
+            e.source.opacity = styles.gridItem.pressOpacity;
         }
     }
     else {
@@ -252,7 +261,7 @@ function _onGridItemPressDown (e) {
 };
 
 _onGridItemPressUp = function (e) {
-    if(app.models.deviceProxy.isIOS()) {
+    if(deviceProxy.isIOS()) {
         if (e.source.type === 'gridIcon') {
             e.source.getParent().setOpacity(1.0);
         }

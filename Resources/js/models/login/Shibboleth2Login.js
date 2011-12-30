@@ -3,10 +3,14 @@ This method is only known to work with Titanium SDK 1.7.5,
 and logout only works if the Ti.Network.HTTPClient.clearCookies method
 has been implemented. It will be tested with later versions of the Titanium SDK
 */
-var _credentials, _client,
+var _credentials, _client, sessionProxy,
 _loginURL = app.config.SHIB_URL,
 _postURL = app.config.SHIB_POST_URL,
 _logoutURL = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + "/Logout";
+
+exports.doSetSessionProxy = function (proxy) {
+    sessionProxy = proxy;
+};
 
 exports.login = function (credentials, options) {
     _credentials = credentials;
@@ -85,12 +89,12 @@ function _onInitialResponse (e) {
     }
     catch (e) {
         Ti.API.error("Couldn't log in with Shibboleth");
-        Ti.App.fireEvent(app.models.loginProxy.events['NETWORK_SESSION_FAILURE']);
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
     }
 };
 
 function _onInitialError (e) {
-    Ti.App.fireEvent(app.models.loginProxy.events["NETWORK_SESSION_FAILURE"]);
+    Ti.App.fireEvent(app.loginEvents["NETWORK_SESSION_FAILURE"]);
 };
 
 function _getRedirectURL (responseText) {
@@ -124,13 +128,13 @@ _onPortalSessionEstablished = function (e) {
     */
     _client = Ti.Network.createHTTPClient({
         onload: function (e) {
-            Ti.App.fireEvent(app.models.loginProxy.events['LOGIN_METHOD_RESPONSE'], {
+            Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_RESPONSE'], {
                 responseText:_client.responseText
                 , credentials: _credentials
             });
         },
         onerror: function (e) {
-            Ti.App.fireEvent(app.models.loginProxy.events["NETWORK_SESSION_FAILURE"]);
+            Ti.App.fireEvent(app.loginEvents["NETWORK_SESSION_FAILURE"]);
         }
     });
 
@@ -151,7 +155,7 @@ _onPortalSessionEstablished = function (e) {
 };
 
 function _onPortalSessionEstablishedError (e) {
-    Ti.App.fireEvent(app.models.loginProxy.events["NETWORK_SESSION_FAILURE"]);
+    Ti.App.fireEvent(app.loginEvents["NETWORK_SESSION_FAILURE"]);
 };
 
 function _isLoginSuccess (responseText) {

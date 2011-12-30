@@ -1,13 +1,15 @@
-var messageLabel, indicator, dialog;
+var messageLabel, indicator, dialog,
+styles = require('/js/style'),
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
 
-indicator = {view: Ti.UI.createView(app.styles.globalActivityIndicator)};
+indicator = {view: Ti.UI.createView(styles.globalActivityIndicator)};
 exports.view = indicator.view;
 
-dialog = Ti.UI.createView(app.styles.activityIndicatorDialog);
+dialog = Ti.UI.createView(styles.activityIndicatorDialog);
 indicator.view.add(dialog);
 
-messageLabel = Ti.UI.createLabel(app.styles.activityIndicatorMessage);
-messageLabel.text = app.localDictionary.loading;
+messageLabel = Ti.UI.createLabel(styles.activityIndicatorMessage);
+messageLabel.text = localDictionary.loading;
 dialog.add(messageLabel);
 
 exports.saveLoadingMessage = function (m) {
@@ -30,9 +32,9 @@ exports.rotate = function (orientation) {
 };
 
 exports.resetDimensions = function () {
-    indicator.view.top = app.styles.globalActivityIndicator.top;
-    indicator.view.height = app.styles.globalActivityIndicator.height;
-    indicator.view.width = app.styles.globalActivityIndicator.width;
-    dialog.width = app.styles.activityIndicatorDialog.width;
+    indicator.view.top = styles.globalActivityIndicator.top;
+    indicator.view.height = styles.globalActivityIndicator.height;
+    indicator.view.width = styles.globalActivityIndicator.width;
+    dialog.width = styles.activityIndicatorDialog.width;
 };
 

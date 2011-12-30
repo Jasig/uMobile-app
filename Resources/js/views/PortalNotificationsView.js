@@ -1,4 +1,8 @@
-var _view, _guestNotificationLabel, _state, _previousState, _notifications, emergencyNote;
+var _view, _guestNotificationLabel, _state, _previousState, _notifications, emergencyNote,
+styles = require('/js/style'),
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
+deviceProxy = require('/js/models/DeviceProxy'),
+_ = require('/js/libs/underscore-min');;
 
 exports.states = {
     GUEST_USER : "GuestUser",
@@ -24,24 +28,24 @@ exports.emergencyNote = function () {
 };
 
 exports.createView = function () {
-    _view = Ti.UI.createView(app.styles.homeGuestNote);
+    _view = Ti.UI.createView(styles.homeGuestNote);
 
-    _guestNotificationLabel = Ti.UI.createLabel(app.styles.homeGuestNoteLabel);
+    _guestNotificationLabel = Ti.UI.createLabel(styles.homeGuestNoteLabel);
     _guestNotificationLabel.touchEnabled = false;
     
     _view.add(_guestNotificationLabel);
 };
 exports.showGuestNote = function () {
-    _view.backgroundGradient = app.styles.homeGuestNote.backgroundGradient;
-    if (app.models.deviceProxy.isAndroid()) _view.backgroundImage = app.styles.homeGuestNote.backgroundImage;
-    _guestNotificationLabel.text = app.localDictionary.viewingGuestLayout;
+    _view.backgroundGradient = styles.homeGuestNote.backgroundGradient;
+    if (deviceProxy.isAndroid()) _view.backgroundImage = styles.homeGuestNote.backgroundImage;
+    _guestNotificationLabel.text = localDictionary.viewingGuestLayout;
     _state = exports.states['GUEST_USER'];
 };
 
 exports.showPortalUnreachableNote = function () {
-    _view.backgroundGradient = app.styles.homeGuestNote.backgroundGradient;
-    if (app.models.deviceProxy.isAndroid()) _view.backgroundImage = app.styles.homeGuestNote.backgroundImage;
-    _guestNotificationLabel.text = app.localDictionary.portalNotReachable;
+    _view.backgroundGradient = styles.homeGuestNote.backgroundGradient;
+    if (deviceProxy.isAndroid()) _view.backgroundImage = styles.homeGuestNote.backgroundImage;
+    _guestNotificationLabel.text = localDictionary.portalNotReachable;
     _state = exports.states['PORTAL_UNREACHABLE'];
 };
 
@@ -54,13 +58,13 @@ exports.showNotificationSummary = function (notifications) {
         });
         if (emergencyNote) {
             Ti.App.fireEvent(exports.events['EMERGENCY_NOTIFICATION'], emergencyNote);
-            _view.backgroundGradient = app.styles.homeGuestNote.emergencyBackgroundGradient;
-            if (app.models.deviceProxy.isAndroid()) _view.backgroundImage = app.styles.homeGuestNote.emergencyBackgroundImage;
+            _view.backgroundGradient = styles.homeGuestNote.emergencyBackgroundGradient;
+            if (deviceProxy.isAndroid()) _view.backgroundImage = styles.homeGuestNote.emergencyBackgroundImage;
             _guestNotificationLabel.text = emergencyNote.message;
         }
         else {
-            _view.backgroundGradient = app.styles.homeGuestNote.backgroundGradient;
-            _guestNotificationLabel.text = app.localDictionary.notifications;
+            _view.backgroundGradient = styles.homeGuestNote.backgroundGradient;
+            _guestNotificationLabel.text = localDictionary.notifications;
         }
     }
     else if (!_notifications || (_notifications && _notifications.length < 1)) {

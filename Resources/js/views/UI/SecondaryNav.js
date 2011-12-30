@@ -1,4 +1,7 @@
-var leftButton, rightButton, view, titleLabel;
+var leftButton, rightButton, view, titleLabel,
+styles = require('/js/style'),
+deviceProxy = require('/js/models/DeviceProxy'),
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
 
 exports.hide = function () {
     view.hide();
@@ -10,26 +13,26 @@ exports.show = function () {
 
 exports.rotate = function (orientation) {
     var _visibility = view.visible;
-    titleLabel.width = app.styles.secondaryNavLabel.width;
-    leftButton.left = app.styles.secondaryNavButton.left;
-    rightButton.left = app.models.deviceProxy.retrieveWidth(true) - rightButton.getWidth - app.styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
+    titleLabel.width = styles.secondaryNavLabel.width;
+    leftButton.left = styles.secondaryNavButton.left;
+    rightButton.left = deviceProxy.retrieveWidth(true) - rightButton.getWidth - styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
 
-    view.width = app.styles.secondaryNavBar.width;
+    view.width = styles.secondaryNavBar.width;
     view.visible = _visibility || true;
 };
 
-view = Titanium.UI.createView(app.styles.secondaryNavBar);
+view = Titanium.UI.createView(styles.secondaryNavBar);
 
-leftButton = Titanium.UI.createButton(app.styles.secondaryNavButton);
-leftButton.left = app.styles.secondaryNavButton.left;
-leftButton.title = app.localDictionary.back;
+leftButton = Titanium.UI.createButton(styles.secondaryNavButton);
+leftButton.left = styles.secondaryNavButton.left;
+leftButton.title = localDictionary.back;
 view.add(leftButton);
 
-rightButton = Titanium.UI.createButton(app.styles.secondaryNavButton);
-rightButton.left = app.models.deviceProxy.retrieveWidth(true) - app.styles.secondaryNavButton.getWidth - app.styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
+rightButton = Titanium.UI.createButton(styles.secondaryNavButton);
+rightButton.left = deviceProxy.retrieveWidth(true) - styles.secondaryNavButton.getWidth - styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
 view.add(rightButton);
 
-titleLabel = Titanium.UI.createLabel(app.styles.secondaryNavLabel);
+titleLabel = Titanium.UI.createLabel(styles.secondaryNavLabel);
 view.add(titleLabel);
 
 exports.view = view;
