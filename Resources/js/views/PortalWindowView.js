@@ -45,6 +45,7 @@ _layoutState = exports.indicatorStates['NONE'],
 win, contentLayer, titleBar, activityIndicator, notificationsView, isNotificationsViewInitialized, portalGridView;
 
 exports.initialize = function (portalProxy) {
+    Ti.API.info('initialize() in PortalWindowView');
     portalGridView = require('/js/views/PortalGridView');
     portalGridView.doSetPortalProxy(portalProxy);
     notificationsView = require('/js/views/PortalNotificationsView');
@@ -62,6 +63,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     if (!win) win = Ti.UI.createWindow(styles.portalWindow);
 
     if (exports.retrieveState() === exports.states['INITIALIZED']) {
+        Ti.API.info('PortalWindowView state is INITIALIZED');
         win.open();
         _drawUI(_isGuestLayout, _isPortalReachable);
         
@@ -104,11 +106,6 @@ exports.rotateView = function (orientation) {
         Ti.API.info('couldn\'t remove titleBar');
     }
     win.add(titleBar.view);
-    titleBar.view.top = 0;
-    titleBar.view.left = 0;
-    titleBar.view.width = styles.titleBar.width;
-    titleBar.view.height = styles.titleBar.height;
-    titleBar.view.show();
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {

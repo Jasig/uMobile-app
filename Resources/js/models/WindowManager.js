@@ -55,10 +55,10 @@ exports.openWindow = function (windowKey, portlet) {
         Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
         if (activityStack.length > 0) {
-            if (exports.retrieveCurrentWindow() !== config.HOME_KEY) {
+            // if (exports.retrieveCurrentWindow() !== config.HOME_KEY) {
                 currentController.close();
-                currentController = null;
-            }
+                // currentController = null;
+            // }
         }
         
         //If it's the first window, we assume it's home, and so define the currentController AND homeController
@@ -71,7 +71,8 @@ exports.openWindow = function (windowKey, portlet) {
         }
         else if (windowKey === config.HOME_KEY){
             currentController = homeController;
-            currentController.rotate(deviceProxy.retrieveCurrentOrientation());
+            // currentController.rotate(deviceProxy.retrieveCurrentOrientation());
+            currentController.open();
             activityStack.push(windowKey);
         }
         else {
