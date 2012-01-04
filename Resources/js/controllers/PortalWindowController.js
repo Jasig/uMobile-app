@@ -27,24 +27,25 @@ var firstTimeOpened=true, portalWindowView, notificationsProxy, app, deviceProxy
 portalProxy = require('/js/models/PortalProxy'),
 _newNetworkDowntime = true; //This var is to prevent multiple notifications of network downtime. Set to false as soon as downtime is encountered
 
+portalWindowView = require('/js/views/PortalWindowView');
+portalWindowView.initialize(portalProxy);
+notificationsProxy = require('/js/models/NotificationsProxy');
+deviceProxy = require('/js/models/DeviceProxy');
+userProxy = require('/js/models/UserProxy');
+config = require('/js/config');
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
+app = require('/js/Facade');
+
 exports.open = function () {
+    Ti.API.info('open() in PortalWindowController');
     // This will determine if a network session exists, and what 
     // window was open last time the app closed, and will manage the process
     // of establishing a session and opening the window.
     
-    portalWindowView = require('/js/views/PortalWindowView');
-    portalWindowView.initialize(portalProxy);
-    notificationsProxy = require('/js/models/NotificationsProxy');
-    deviceProxy = require('/js/models/DeviceProxy');
-    userProxy = require('/js/models/UserProxy');
-    config = require('/js/config');
-    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
-    app = require('/js/Facade');
-    
     if (firstTimeOpened) {
         Ti.App.addEventListener(app.portalEvents['PORTLETS_LOADED'], onPortletsLoaded);
     }
-
+    
     Ti.App.addEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.addEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);
     Ti.App.addEventListener(app.portalEvents['PORTLETS_LOADED'], _onPortletsLoaded);
@@ -70,13 +71,13 @@ exports.open = function () {
 };
 
 exports.close = function () {
-    portalWindowView.close();
+    /*portalWindowView.close();
     notificationsProxy = null;
     deviceProxy = null;
     userProxy = null;
     config = null;
     localDictionary = null;
-    app = null;
+    app = null;*/
     
     Ti.App.removeEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.removeEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);

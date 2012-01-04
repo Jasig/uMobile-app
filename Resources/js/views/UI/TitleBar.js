@@ -67,16 +67,8 @@ exports.addSettingsButton = function () {
     settingsButtonContainer.show();
 };
 
-exports.clear = function () {
-    if (settingsButtonContainer) settingsButtonContainer.removeEventListener('singletap', onSettingsClick);
-    settingsButtonContainer = null;
-    if (infoButtonContainer) infoButtonContainer.removeEventListener('singletap', onInfoClick);
-    infoButtonContainer = null;
-    if (homeButtonContainer) homeButtonContainer.addEventListener('singletap', onHomeClick);
-    homeButtonContainer = null;
-};
-
 exports.rotate = function (orientation) {
+    Ti.API.debug('rotate() in TitleBar');
     styles = require('/js/style');
     if (titleBar) { titleBar.view.width = styles.titleBar.width; }
     if (settingsButtonContainer) { settingsButtonContainer.left = styles.titleBarSettingsContainer.left; }

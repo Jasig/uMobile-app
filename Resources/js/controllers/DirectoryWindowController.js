@@ -21,10 +21,10 @@ var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowVie
 
 exports.open = function () {
     //Listen for events, mostly fired from models.DirectoryProxy
-    directoryProxy = require('/js/models/DirectoryProxy');
-    directoryWindowView = require('/js/views/DirectoryWindowView');
-    config = require('/js/config');
-    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
+    directoryProxy = directoryProxy || require('/js/models/DirectoryProxy');
+    directoryWindowView = directoryWindowView || require('/js/views/DirectoryWindowView');
+    config = config || require('/js/config');
+    localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     
     Titanium.App.addEventListener(directoryProxy.events['SEARCHING'], onProxySearching);
     Titanium.App.addEventListener(directoryProxy.events['SEARCH_COMPLETE'], onProxySearchComplete);
@@ -45,10 +45,7 @@ exports.close = function (options) {
     Titanium.App.removeEventListener(directoryWindowView.events['SEARCH_CHANGE'], onDirectoryWindowSearchChange);
     Titanium.App.removeEventListener(directoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
     
-    directoryProxy = null;
     directoryWindowView.close();
-    directoryWindowView = null;
-    localDictionary = null;
 };
 
 exports.rotate = function (orientation) {

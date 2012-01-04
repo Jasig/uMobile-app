@@ -120,10 +120,8 @@ function _destroyView () {
     
     _navBar.leftButton.removeEventListener('click', _onBackBtnPress);
     _navBar = null;        
-    _activityIndicator.clear();
     _activityIndicator = null;
     if (_titleBar) {
-        _titleBar.clear();
         _titleBar = null;        
     }
 };

@@ -21,12 +21,6 @@ exports.saveLoadingMessage = function (m) {
     }
 };
 
-exports.clear = function () {
-    indicator.view = null;
-    dialog = null;
-    indicator = null;
-};
-
 exports.rotate = function (orientation) {
     exports.resetDimensions();
 };

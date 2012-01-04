@@ -53,11 +53,11 @@ exports.initialize = function (portalProxy) {
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
     Ti.API.info('open() in PortalWindowView. state:'+exports.retrieveState());
-    app = require('/js/Facade');
-    config = require('/js/config');
-    styles = require('/js/style');
-    deviceProxy = require('/js/models/DeviceProxy');
-    localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
+    app = app || require('/js/Facade');
+    config = config || require('/js/config');
+    styles = styles || require('/js/style');
+    deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
+    localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     
     if (!win) win = Ti.UI.createWindow(styles.portalWindow);
 
@@ -83,18 +83,13 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
 };
 
 exports.close = function () {
-    app = null;
-    config = null;
-    styles = null;
-    deviceProxy = null;
-    localDictionary = null;
     win.hide();
     win.removeEventListener('android:search', _onAndroidSearch);
-    
     exports.saveState(exports.states.HIDDEN);
 };
 
 exports.rotateView = function (orientation) {
+    Ti.API.info('rotateView() in PortalWindowView');
     if (contentLayer) {
         contentLayer.width = styles.portalContentLayer.width;
         contentLayer.height = styles.portalContentLayer.height;
@@ -102,10 +97,22 @@ exports.rotateView = function (orientation) {
     if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
     if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
     if (activityIndicator) activityIndicator.rotate();
-    if (titleBar) titleBar.rotate();
+    // if (titleBar) titleBar.rotate();
+    try {
+        win.remove(titleBar.view);
+    } catch (e){
+        Ti.API.info('couldn\'t remove titleBar');
+    }
+    win.add(titleBar.view);
+    titleBar.view.top = 0;
+    titleBar.view.left = 0;
+    titleBar.view.width = styles.titleBar.width;
+    titleBar.view.height = styles.titleBar.height;
+    titleBar.view.show();
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
+    Ti.API.debug('_drawUI in PortalWindowView');
     // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
     if (contentLayer) {
         win.remove(contentLayer);
@@ -128,6 +135,7 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
+    Ti.API.debug('_updateUI in PortalWindowView');
     _controlNotificationsBar(_isGuestLayout, _isPortalReachable);
 };
 
