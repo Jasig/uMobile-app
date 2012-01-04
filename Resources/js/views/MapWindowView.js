@@ -18,7 +18,12 @@
 */
 
 var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar,
-_ = require('/js/libs/underscore-min');
+_ = require('/js/libs/underscore-min'),
+app = require('/js/Facade'),
+styles = require('/js/style'),
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')].
+deviceProxy = require('/js/models/DeviceProxy'),
+config = require('/js/config');
 
 
 // Public methods
@@ -36,8 +41,8 @@ exports.plotPoints = function (points) {
     mapView.removeAllAnnotations();
     for (var i=0, iLength = points.length; i<iLength; i++) {
         var _annotationParams, _annotation;
-        _annotationParams = app.styles.mapAnnotation;
-        _annotationParams.title = points[i].title || app.localDictionary.titleNotAvailable;
+        _annotationParams = styles.mapAnnotation;
+        _annotationParams.title = points[i].title || localDictionary.titleNotAvailable;
         _annotationParams.latitude = points[i].latitude;
         _annotationParams.longitude = points[i].longitude;
         _annotationParams.myid = 'annotation' + i;
@@ -66,8 +71,8 @@ exports.saveActivityIndicatorMessage = function (message) {
 };
 
 exports.rotate = function (orientation) {
-    if (mapView) mapView.height = app.styles.mapView.height;
-    if (bottomNavView) bottomNavView.top = app.styles.mapNavView.top;
+    if (mapView) mapView.height = styles.mapView.height;
+    if (bottomNavView) bottomNavView.top = styles.mapNavView.top;
     if (titleBar) titleBar.rotate(orientation);
     if (searchBar) searchBar.rotate(orientation);
     if (categoryNavBar) categoryNavBar.rotate(orientation);
@@ -91,7 +96,7 @@ exports.openCategoryBrowsingView = function (categories) {
     
     categoryNavBar.view.show();
     categoryNavBar.leftButton.hide();
-    categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
+    categoryNavBar.titleLabel.text = localDictionary.browseLocations;
     categoryNavBar.rightButton.hide();
     categoryNavBar.rightButton.visible = false;
     
@@ -99,7 +104,7 @@ exports.openCategoryBrowsingView = function (categories) {
         // Create the view to hold tableviews listing categories and locations.
         categoryBrowsingView = Ti.UI.createTableView({
             data: (function(c) {
-                var _data = [], _labelStyle = _.clone(app.styles.mapCategoryCount), _rowStyle = _.clone(app.styles.mapCategoryRow), _categoryName;
+                var _data = [], _labelStyle = _.clone(styles.mapCategoryCount), _rowStyle = _.clone(styles.mapCategoryRow), _categoryName;
                 
                 // Iterate through array of categories and create table view rows for user to select.
                 for (var i=0, iLength = c.length; i<iLength; i++) {
@@ -133,8 +138,8 @@ exports.openCategoryBrowsingView = function (categories) {
                 
                 return _data;
             })(categories),
-            height: app.styles.mapTableView.height,
-            top: app.styles.mapTableView.top
+            height: styles.mapTableView.height,
+            top: styles.mapTableView.top
         });
         view.add(categoryBrowsingView);
     }
@@ -147,7 +152,7 @@ exports.openCategoryLocationsListView = function (viewModel) {
     _hideAllViews();
     
     if (!categoryLocationsListView) {
-        categoryLocationsListView = Ti.UI.createTableView(app.styles.mapTableView);
+        categoryLocationsListView = Ti.UI.createTableView(styles.mapTableView);
         view.add(categoryLocationsListView);
     }
     
@@ -156,7 +161,7 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryNavBar.view.show();
     categoryNavBar.leftButton.show();
     categoryNavBar.titleLabel.text = viewModel.categoryName;
-    categoryNavBar.rightButton.title = app.localDictionary.map;
+    categoryNavBar.rightButton.title = localDictionary.map;
     categoryNavBar.rightButton.show();
     
     categoryLocationsListView.setData(viewModel.locations);
@@ -175,8 +180,8 @@ exports.openCategoryLocationsMapView = function (viewModel) {
     categoryNavBar.view.show();
     mapView.show();
 
-    categoryNavBar.titleLabel.text = app.localDictionary.browseLocations;
-    categoryNavBar.rightButton.title = app.localDictionary.list;
+    categoryNavBar.titleLabel.text = localDictionary.browseLocations;
+    categoryNavBar.rightButton.title = localDictionary.list;
     categoryNavBar.rightButton.show();
     
     exports.plotPoints(viewModel.locations);
@@ -248,14 +253,14 @@ var _createMainView = function() {
     var mapViewOpts;
     
     titleBar = require('/js/views/UI/TitleBar');
-    titleBar.updateTitle(app.localDictionary.map);
+    titleBar.updateTitle(localDictionary.map);
     titleBar.addHomeButton();
 
-    if ((app.models.deviceProxy.isAndroid() && !mapView) || app.models.deviceProxy.isIOS()) {
+    if ((deviceProxy.isAndroid() && !mapView) || deviceProxy.isIOS()) {
         // create the map view
-        mapViewOpts = _.clone(app.styles.mapView);
-        if (app.config.DEFAULT_MAP_REGION) {
-            mapViewOpts.region = app.config.DEFAULT_MAP_REGION;
+        mapViewOpts = _.clone(styles.mapView);
+        if (config.DEFAULT_MAP_REGION) {
+            mapViewOpts.region = config.DEFAULT_MAP_REGION;
         }
 
         mapView = Titanium.Map.createView(mapViewOpts);
@@ -281,21 +286,21 @@ var _createMainView = function() {
     searchBar.input.addEventListener('return', _searchSubmit);
     searchBar.input.addEventListener('cancel', exports.searchBlur);
 
-    bottomNavView = Ti.UI.createView(app.styles.mapNavView);
+    bottomNavView = Ti.UI.createView(styles.mapNavView);
     view.add(bottomNavView);
-    if (app.models.deviceProxy.isIOS()) {
-        bottomNavButtons = Titanium.UI.createTabbedBar(app.styles.mapButtonBar);
+    if (deviceProxy.isIOS()) {
+        bottomNavButtons = Titanium.UI.createTabbedBar(styles.mapButtonBar);
         bottomNavButtons.labels = exports.navButtonValues;
         bottomNavButtons.width = 225;
         bottomNavButtons.index = 0;        
     }
     else {
         bottomNavButtons = require('/js/views/UI/TabbedBar');
-        bottomNavButtons.doSetWidth(app.models.deviceProxy.retrieveWidth(true));
+        bottomNavButtons.doSetWidth(deviceProxy.retrieveWidth(true));
         bottomNavButtons.doSetLabels(exports.navButtonValues);
         bottomNavButtons.doSetIndex(0);
     }
-    bottomNavView.add(app.models.deviceProxy.isAndroid() ? bottomNavButtons.view : bottomNavButtons);
+    bottomNavView.add(deviceProxy.isAndroid() ? bottomNavButtons.view : bottomNavButtons);
     
     bottomNavButtons.addEventListener('click', function (e) {
         Ti.API.debug("Click event with index: "+e.index);
@@ -304,12 +309,12 @@ var _createMainView = function() {
         });
     });
     
-    if (app.models.deviceProxy.isIOS()) {
+    if (deviceProxy.isIOS()) {
         // create controls for zoomin / zoomout
         // included in Android by default
         bottomNavButtons.left = 5;
 
-        zoomButtonBar = Titanium.UI.createButtonBar(app.styles.mapButtonBar);
+        zoomButtonBar = Titanium.UI.createButtonBar(styles.mapButtonBar);
         zoomButtonBar.labels =  ['+', '-'];
         zoomButtonBar.width = 75;
         zoomButtonBar.right = 5;
@@ -319,7 +324,7 @@ var _createMainView = function() {
         }
         
         Titanium.App.addEventListener(app.events['DIMENSION_CHANGES'], function (e) {
-            zoomButtonBar.top = app.styles.mapButtonBar.top;
+            zoomButtonBar.top = styles.mapButtonBar.top;
         });
 
         // add event listeners for the zoom buttons
@@ -363,7 +368,7 @@ var _hideAllViews = function () {
 var _createAndAddCategoryNav = function () {
     categoryNavBar = require('/js/views/UI/SecondaryNav');
     view.add(categoryNavBar.view);
-    categoryNavBar.view.top = app.styles.titleBar.height + 'dp';
+    categoryNavBar.view.top = styles.titleBar.height + 'dp';
     
     categoryNavBar.leftButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);
@@ -385,8 +390,8 @@ exports.events = {
 };
 
 exports.navButtonValues = [
-    app.localDictionary['search'],
-    app.localDictionary['browse']
+    localDictionary['search'],
+    localDictionary['browse']
 ];
 
 exports.views = {

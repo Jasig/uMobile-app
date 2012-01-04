@@ -28,28 +28,30 @@ exports.loginMethods = {
     SHIBBOLETH2  : "Shibboleth"
 };
 
-switch (config.LOGIN_METHOD) {
-    case exports.loginMethods.CAS:
-        _loginMethod = require('/js/models/login/CASLogin');;
-        break;
-    case exports.loginMethods.LOCAL_LOGIN:
-        _loginMethod = require('/js/models/login/LocalLogin');
-        break;
-    case exports.loginMethods.SHIBBOLETH2:
-        _loginMethod = require('/js/models/login/Shibboleth2Login');
-        break;
-    default:
-        Ti.API.error("Login method not recognized in exports.exports.initialize()");
+function init() {
+    switch (config.LOGIN_METHOD) {
+        case exports.loginMethods.CAS:
+            _loginMethod = require('/js/models/login/CASLogin');;
+            break;
+        case exports.loginMethods.LOCAL_LOGIN:
+            _loginMethod = require('/js/models/login/LocalLogin');
+            break;
+        case exports.loginMethods.SHIBBOLETH2:
+            _loginMethod = require('/js/models/login/Shibboleth2Login');
+            break;
+        default:
+            Ti.API.error("Login method not recognized in exports.exports.initialize()");
+    }
+
+    _loginMethod.doSetSessionProxy(sessionProxy);
+
+    sessionProxy.createSessionTimer();
+
+    Ti.App.addEventListener(sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
+    Ti.App.addEventListener(app.loginEvents['LOGIN_METHOD_RESPONSE'], _processLoginResponse);
+    Ti.App.addEventListener(app.loginEvents['ESTABLISH_NETWORK_SESSION'], exports.establishNetworkSession);
+    Ti.App.addEventListener(app.loginEvents['CLEAR_SESSION'], exports.clearSession);   
 }
-
-_loginMethod.doSetSessionProxy(sessionProxy);
-
-sessionProxy.createSessionTimer();
-
-Ti.App.addEventListener(sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
-Ti.App.addEventListener(exports.events['LOGIN_METHOD_RESPONSE'], _processLoginResponse);
-Ti.App.addEventListener(app.loginEvents['ESTABLISH_NETWORK_SESSION'], exports.establishNetworkSession);
-Ti.App.addEventListener(app.loginEvents['CLEAR_SESSION'], exports.clearSession);
 
 exports.isActiveSession = function () {
     return sessionProxy.isActive();
@@ -64,12 +66,14 @@ exports.establishNetworkSession = function(options) {
         when the app starts up, when the user updates their credentials, 
         and when the local network session timer expires.
     */
+    Ti.API.debug('establishNetworkSession() in LoginProxy');
     var credentials, url;
     credentials = userProxy.retrieveCredentials();
     _loginMethod.login(credentials, options);
 };
 
 exports.clearSession = function () {
+    Ti.API.debug('clearSession() in LoginProxy');
     _loginMethod.logout();
 };
 
@@ -117,3 +121,5 @@ function _processLoginResponse (e) {
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
     }
 }
+
+init();

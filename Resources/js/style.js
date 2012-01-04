@@ -214,11 +214,13 @@ exports.titleBarInfoContainer= {
 exports.titleBarInfoButton= {
     image: "images/tab-info.png",
     width: '20dp',
-    height: '20dp'
+    height: '20dp',
+    touchEnabled: false
 };
 //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
 exports.titleBarHomeButton= {
     image: "images/tab-home.png",
+    touchEnabled: false,
     width: '18dp',
     height: '18dp'
 };
@@ -234,7 +236,8 @@ exports.titleBarSettingsContainer= {
 exports.titleBarSettingsButton= {
     height: '18dp',
     width: '18dp',
-    image: "images/tab-settings.png"
+    image: "images/tab-settings.png",
+    touchEnabled: false
 };
 exports.secondaryNavBar= {
 	left: 0,

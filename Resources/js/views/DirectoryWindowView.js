@@ -23,14 +23,17 @@ exports.events = {
 };
 
 var defaultTableData=[], tableData = [], _viewModel, directoryDetailView,
-win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator;
+win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator,
+styles = require('/js/style'),
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
+deviceProxy = require('/js/models/DeviceProxy');
 
 exports.open = function (viewModel) {
     _viewModel = viewModel;
     
     win = Titanium.UI.createWindow({
         // url: 'js/views/WindowContext.js',
-        backgroundColor: app.styles.backgroundColor,
+        backgroundColor: styles.backgroundColor,
         exitOnClose: false,
         navBarHidden: true,
         orientationModes: [
@@ -44,7 +47,7 @@ exports.open = function (viewModel) {
     });
     win.open();
     
-    if (app.models.deviceProxy.isAndroid()) win.addEventListener('android:search', onAndroidSearch);
+    if (deviceProxy.isAndroid()) win.addEventListener('android:search', onAndroidSearch);
     
     drawDefaultView();
 };
@@ -58,7 +61,7 @@ exports.close = function () {
         peopleListTable.addEventListener('move', blurSearch);
     }
     
-    if (win && app.models.deviceProxy.isAndroid()) win.removeEventListener('android:search', onAndroidSearch);
+    if (win && deviceProxy.isAndroid()) win.removeEventListener('android:search', onAndroidSearch);
     
     win.close();
 };
@@ -84,12 +87,12 @@ exports.showDetail = function (person) {
 };
 
 exports.alert = function (attributes) {
-    if (win.visible || app.models.deviceProxy.isIOS()) {
+    if (win.visible || deviceProxy.isIOS()) {
         try {
             var alertDialog = Titanium.UI.createAlertDialog({
                 title: attributes.title,
                 message: attributes.message,
-                buttonNames: [app.localDictionary.OK]
+                buttonNames: [localDictionary.OK]
             });
             activityIndicator.view.hide();
             alertDialog.show();
@@ -133,12 +136,12 @@ exports.displaySearchResults = function (results) {
         peopleListTable.setData(_peopleTableData);
     }
     else {
-        if (win.visible || app.models.deviceProxy.isIOS()) {
+        if (win.visible || deviceProxy.isIOS()) {
             try {
                 alertDialog = Titanium.UI.createAlertDialog({
-                    title: app.localDictionary.noResults,
-                    message: app.localDictionary.noSearchResults,
-                    buttonNames: [app.localDictionary.OK]
+                    title: localDictionary.noResults,
+                    message: localDictionary.noSearchResults,
+                    buttonNames: [localDictionary.OK]
                 });
                 alertDialog.show();
             }
@@ -151,46 +154,42 @@ exports.displaySearchResults = function (results) {
 };
 
 function drawDefaultView () {
-    if (win) {
-        titleBar = require('/js/views/UI/TitleBar');
-        titleBar.updateTitle(app.localDictionary.directory);
-        titleBar.addHomeButton();
-        
-        win.add(titleBar.view);
+    if (!win) return Ti.API.error("No win in drawDefaultView() in DirectoryWindowController");
+    titleBar = require('/js/views/UI/TitleBar');
+    titleBar.updateTitle(localDictionary.directory);
+    titleBar.addHomeButton();
+    
+    win.add(titleBar.view);
 
-        createDefaultGroups();
+    createDefaultGroups();
 
-        //Create the main table
-        peopleListTable = Titanium.UI.createTableView({
-            data: defaultTableData,
-            top: app.styles.titleBar.height + app.styles.searchBar.getHeight + 'dp'
-        });
+    //Create the main table
+    peopleListTable = Titanium.UI.createTableView({
+        data: defaultTableData,
+        top: styles.titleBar.height + styles.searchBar.getHeight + 'dp'
+    });
 
-        peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+    peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
 
-        win.add(peopleListTable);
-        peopleListTable.addEventListener('touchstart', blurSearch);
-        peopleListTable.addEventListener('move', blurSearch);
+    win.add(peopleListTable);
+    peopleListTable.addEventListener('touchstart', blurSearch);
+    peopleListTable.addEventListener('move', blurSearch);
 
-        //Create and add a search bar at the top of the table to search for contacts
-        searchBar = require('/js/views/UI/SearchBar');
-        searchBar.createSearchBar({
-            cancel: onSearchCancel,
-            submit: onSearchSubmit,
-            change: onSearchChange
-        });
-        win.add(searchBar.container);
+    //Create and add a search bar at the top of the table to search for contacts
+    searchBar = require('/js/views/UI/SearchBar');
+    searchBar.createSearchBar({
+        cancel: onSearchCancel,
+        submit: onSearchSubmit,
+        change: onSearchChange
+    });
+    win.add(searchBar.container);
 
-        
+    
 
-        activityIndicator = require('/js/views/UI/ActivityIndicator');
-        activityIndicator.resetDimensions();
-        win.add(activityIndicator.view);
-        activityIndicator.view.hide();
-    }
-    else {
-        Ti.API.error("No win in drawDefaultView() in DirectoryWindowController");
-    }
+    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    activityIndicator.resetDimensions();
+    win.add(activityIndicator.view);
+    activityIndicator.view.hide();
 };
 
 function createDefaultGroups () {
@@ -198,7 +197,7 @@ function createDefaultGroups () {
     if (_viewModel.defaultNumber) {
         //Create the section and one row to display the phone number for the phone directory
         phoneDirectorySection = Titanium.UI.createTableViewSection({
-            headerTitle: app.localDictionary.phoneDirectory
+            headerTitle: localDictionary.phoneDirectory
         });
         phoneDirectoryRow = Titanium.UI.createTableViewRow({
             title: _viewModel.defaultNumber
@@ -212,7 +211,7 @@ function createDefaultGroups () {
 
     if (_viewModel.emergencyContacts.length > 0) {
         emergencyContactSection = Titanium.UI.createTableViewSection();
-        emergencyContactSection.headerTitle =  app.localDictionary.emergencyContacts;
+        emergencyContactSection.headerTitle =  localDictionary.emergencyContacts;
         for (var i=0, iLength = _viewModel.emergencyContacts.length; i<iLength; i++) {
             var _contact = _viewModel.emergencyContacts[i],
             _emergencyContactRow = Titanium.UI.createTableViewRow({

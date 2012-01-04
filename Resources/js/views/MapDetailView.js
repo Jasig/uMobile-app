@@ -17,10 +17,12 @@
  * under the License.
  */
 
-var mapDetailTableView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView,onBackBtnClick,
-_ = require('/js/libs/underscore-min');
+var mapDetailTableView, locationDetailTitleBar, locationDetailMap, locationDetail, locationPhoto, topDetailView, onBackBtnClick,
+_ = require('/js/libs/underscore-min'),
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
+styles = require('/js/style');
 
-exports.detailView = Titanium.UI.createView(app.styles.view);
+exports.detailView = Titanium.UI.createView(styles.view);
 
 exports.render = function (viewModel) {
     var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage,
@@ -48,21 +50,21 @@ exports.render = function (viewModel) {
     exports.detailView.add(locationDetailTitleBar.view);
     
     mapGroupAddress = Ti.UI.createTableViewSection({
-        headerTitle: app.localDictionary.locationDetails
+        headerTitle: localDictionary.locationDetails
     });
     
     mapGroupAddress.add(Ti.UI.createTableViewRow({
-        title: viewModel.title || app.localDictionary.titleNotAvailable
+        title: viewModel.title || localDictionary.titleNotAvailable
     }));
     
     mapGroupAddress.add(Ti.UI.createTableViewRow({
-        title: viewModel.address || app.localDictionary.noAddressAvailable
+        title: viewModel.address || localDictionary.noAddressAvailable
     }));
     
     var viewOnMapButton, viewOnMapButtonOptions, viewOnMapRow;
-    viewOnMapButtonOptions = _.clone(app.styles.contentButton);
+    viewOnMapButtonOptions = _.clone(styles.contentButton);
     viewOnMapButtonOptions.width = '150dp';
-    viewOnMapButtonOptions.title = app.localDictionary.viewOnMap;
+    viewOnMapButtonOptions.title = localDictionary.viewOnMap;
     
     viewOnMapButton = Ti.UI.createButton(viewOnMapButtonOptions);
     
@@ -74,16 +76,16 @@ exports.render = function (viewModel) {
         Ti.App.fireEvent(exports.events["VIEW_ON_MAP_CLICK"], {title: viewModel.title});
     });
     viewOnMapButton.addEventListener('touchstart', function (e) {
-        viewOnMapButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+        viewOnMapButton.backgroundGradient = styles.contentButton.backgroundGradientPress;
     });
     viewOnMapButton.addEventListener('touchend', function (e) {
-        viewOnMapButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+        viewOnMapButton.backgroundGradient = styles.contentButton.backgroundGradient;
     });
     
     if(viewModel.address) {
-        directionsButtonOptions = _.clone(app.styles.contentButton);
+        directionsButtonOptions = _.clone(styles.contentButton);
         directionsButtonOptions.width = '150dp';
-        directionsButtonOptions.title = app.localDictionary.getDirections;
+        directionsButtonOptions.title = localDictionary.getDirections;
         directionsButton = Titanium.UI.createButton(directionsButtonOptions);
         // directionsButton.width = 'auto';
         directionsButtonRow = Ti.UI.createTableViewRow();
@@ -94,11 +96,11 @@ exports.render = function (viewModel) {
             Ti.Platform.openURL('http://maps.google.com/maps?daddr='+ viewModel.address +','+ viewModel.zip +'&ie=UTF8&t=h&z=16');
         });
         directionsButton.addEventListener('touchstart', function (e) {
-            directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradientPress;
+            directionsButton.backgroundGradient = styles.contentButton.backgroundGradientPress;
         });
 
         directionsButton.addEventListener('touchend', function (e) {
-            directionsButton.backgroundGradient = app.styles.contentButton.backgroundGradient;
+            directionsButton.backgroundGradient = styles.contentButton.backgroundGradient;
         });
     }
     
@@ -106,9 +108,9 @@ exports.render = function (viewModel) {
     
     if (viewModel.img) {
         mapImageGroup = Ti.UI.createTableViewSection({
-            headerTitle: app.localDictionary.locationImage
+            headerTitle: localDictionary.locationImage
         });
-        detailImageRow = Ti.UI.createTableViewRow(app.styles.mapDetailImageRow);
+        detailImageRow = Ti.UI.createTableViewRow(styles.mapDetailImageRow);
         detailImage = Titanium.UI.createImageView({
             height: '200dp', 
             image: viewModel.img.replace(/\/thumbnail\//,'/photo/')
@@ -118,7 +120,7 @@ exports.render = function (viewModel) {
         _tableViewData.push(mapImageGroup);
     }
 
-    mapDetailTableView = Ti.UI.createTableView(app.styles.mapDetailTableView);
+    mapDetailTableView = Ti.UI.createTableView(styles.mapDetailTableView);
     exports.detailView.add(mapDetailTableView);
     mapDetailTableView.setData(_tableViewData);
     

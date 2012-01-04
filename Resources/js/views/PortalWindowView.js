@@ -42,7 +42,7 @@ exports.events = {
  
 var _state, styles, deviceProxy, localDictionary, app, config,
 _layoutState = exports.indicatorStates['NONE'],
-_win, _contentLayer, _titleBar, _activityIndicator, notificationsView, isNotificationsViewInitialized, portalGridView;
+win, contentLayer, titleBar, activityIndicator, notificationsView, isNotificationsViewInitialized, portalGridView;
 
 exports.initialize = function (portalProxy) {
     portalGridView = require('/js/views/PortalGridView');
@@ -52,32 +52,33 @@ exports.initialize = function (portalProxy) {
 };
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
+    Ti.API.info('open() in PortalWindowView. state:'+exports.retrieveState());
     app = require('/js/Facade');
     config = require('/js/config');
     styles = require('/js/style');
     deviceProxy = require('/js/models/DeviceProxy');
     localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
     
-    if (!_win) _win = Ti.UI.createWindow(styles.portalWindow);
+    if (!win) win = Ti.UI.createWindow(styles.portalWindow);
 
     if (exports.retrieveState() === exports.states['INITIALIZED']) {
-        _win.open();
+        win.open();
         _drawUI(_isGuestLayout, _isPortalReachable);
         
         Ti.App.addEventListener(portalGridView.events['STATE_CHANGE'], _onPortalGridViewStateChange);
         Ti.App.addEventListener(notificationsView.events['EMERGENCY_NOTIFICATION'], _onEmergencyNotification);
     }
     else {
-        _win.show();
+        win.show();
         _updateUI(_isGuestLayout, _isPortalReachable);
     }
-    if (deviceProxy.isIOS()) _win.visible = true;
+    if (deviceProxy.isIOS()) win.visible = true;
     
-    _win.addEventListener('android:search', _onAndroidSearch);
-
+    win.addEventListener('android:search', _onAndroidSearch);
+    
     // exports.showActivityIndicator(localDictionary.gettingPortlets);
-    // portalGridView.updateGrid(_modules);
-            
+    portalGridView.updateGrid(_modules);
+    
     exports.saveState(exports.states.OPENED);
 };
 
@@ -87,43 +88,43 @@ exports.close = function () {
     styles = null;
     deviceProxy = null;
     localDictionary = null;
-    _win.hide();
-    _win.removeEventListener('android:search', _onAndroidSearch);
+    win.hide();
+    win.removeEventListener('android:search', _onAndroidSearch);
     
     exports.saveState(exports.states.HIDDEN);
 };
 
 exports.rotateView = function (orientation) {
-    if (_contentLayer) {
-        _contentLayer.width = styles.portalContentLayer.width;
-        _contentLayer.height = styles.portalContentLayer.height;
+    if (contentLayer) {
+        contentLayer.width = styles.portalContentLayer.width;
+        contentLayer.height = styles.portalContentLayer.height;
     }
     if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
     if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
-    if (_activityIndicator) _activityIndicator.rotate();
-    if (_titleBar) _titleBar.rotate();
+    if (activityIndicator) activityIndicator.rotate();
+    if (titleBar) titleBar.rotate();
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
     // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
-    if (_contentLayer) {
-        _win.remove(_contentLayer);
+    if (contentLayer) {
+        win.remove(contentLayer);
     }
     
-    _contentLayer = Ti.UI.createView(styles.portalContentLayer);
-    _win.add(_contentLayer);
-    _contentLayer.add(portalGridView.retrieveGridView());
+    contentLayer = Ti.UI.createView(styles.portalContentLayer);
+    win.add(contentLayer);
+    contentLayer.add(portalGridView.retrieveGridView());
 
     _controlNotificationsBar();
 
-    _activityIndicator = require('/js/views/UI/ActivityIndicator');
-    _win.add(_activityIndicator.view);
+    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    win.add(activityIndicator.view);
 
-    _titleBar = require('/js/views/UI/TitleBar');
-    _titleBar.addSettingsButton();
-    _titleBar.addInfoButton();
-    _titleBar.updateTitle(localDictionary.homeTitle);
-    _win.add(_titleBar.view);
+    titleBar = require('/js/views/UI/TitleBar');
+    titleBar.addSettingsButton();
+    titleBar.addInfoButton();
+    titleBar.updateTitle(localDictionary.homeTitle);
+    win.add(titleBar.view);
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
@@ -139,6 +140,7 @@ exports.retrieveState = function () {
 };
 
 exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
+    Ti.API.debug('updateModules() in PortalWindowView');
     if (portalGridView) portalGridView.updateGrid(_modules);
     if (!_isPortalReachable) _layoutState = exports.indicatorStates['NO_PORTAL'];
     if (_isGuestLayout) _layoutState = exports.indicatorStates['GUEST'];
@@ -147,18 +149,18 @@ exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) 
 };
 
 exports.showActivityIndicator = function (message) {
-    _activityIndicator.saveLoadingMessage(message || localDictionary.loading);
-    _activityIndicator.view.show();
+    activityIndicator.saveLoadingMessage(message || localDictionary.loading);
+    activityIndicator.view.show();
 };
 
 exports.hideActivityIndicator = function () {
-    _activityIndicator.view.hide();
+    activityIndicator.view.hide();
 };
 
 exports.alert = function (title, message) {
     Ti.API.debug('alert() in PortalWindowView');
     exports.hideActivityIndicator();
-    // if (deviceProxy.isIOS() || _win.visible) {
+    // if (deviceProxy.isIOS() || win.visible) {
         try {
             // alert(message);
             Titanium.UI.createAlertDialog({ title: title,
@@ -230,7 +232,7 @@ function _addNotificationsBar () {
         
         isNotificationsViewInitialized = true;
         
-        _contentLayer.add(notificationsView.view());
+        contentLayer.add(notificationsView.view());
     }
     notificationsView.show();
     
@@ -248,9 +250,9 @@ function _onDimensionChanges (e) {
     // We want to make sure the content layer (the view holding the icons) 
     // is the appropriate size when the device rotates
     // Let's update the Styles reference again for good measure
-    if (_contentLayer) {
-        _contentLayer.width = styles.portalContentLayer.width;
-        _contentLayer.height = styles.portalContentLayer.height;
+    if (contentLayer) {
+        contentLayer.width = styles.portalContentLayer.width;
+        contentLayer.height = styles.portalContentLayer.height;
     }
     
     if (isNotificationsViewInitialized) {
@@ -261,7 +263,7 @@ function _onDimensionChanges (e) {
 
 
 function _onPortalGridViewStateChange (e) {
-    if (portalGridView && _activityIndicator && e.state && e.state === portalGridView.states['COMPLETE']) {
+    if (portalGridView && activityIndicator && e.state && e.state === portalGridView.states['COMPLETE']) {
         exports.hideActivityIndicator(portalGridView.states['COMPLETE']);
     }
 };

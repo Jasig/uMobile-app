@@ -43,19 +43,13 @@ Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
     exports.saveIsPortalReachable(e.reachable);
 });
 
-exports.retrieveShowPortletFunc = function (portlet) {
-    //Returns a function to the PortalWindowController to open the appropriate window 
-    //when an icon is clicked in the home screen grid.
-    return function () {
-        Ti.App.fireEvent(app.events['SHOW_WINDOW'], portlet);
-    };
-};
-
 exports.retrievePortlets = function () {
+    Ti.API.debug('retrievePortlets() in PortalProxy');
     return Ti.App.Properties.getList('portlets');
 };
 
 exports.savePortlets = function (_portlets) {
+    Ti.API.debug('savePortlets() in PortalProxy. Portlets: '+JSON.stringify(_portlets));
     var nativeModules = config.retrieveLocalModules(), module;
 
     for (module in nativeModules) {

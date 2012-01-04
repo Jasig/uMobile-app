@@ -77,12 +77,14 @@ exports.clear = function () {
 };
 
 exports.rotate = function (orientation) {
+    styles = require('/js/style');
     if (titleBar) { titleBar.view.width = styles.titleBar.width; }
     if (settingsButtonContainer) { settingsButtonContainer.left = styles.titleBarSettingsContainer.left; }
     if (homeButtonContainer) { homeButtonContainer.left = styles.titleBarHomeContainer.left; }
 };
 
 function onHomeClick (e) {
+    Ti.API.info('onHomeClick() in TitleBar');
     Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
 };
 
@@ -98,3 +100,4 @@ function onInfoClick (e) {
 function onSettingsClick (e) {
     Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.SETTINGS_KEY});
 };
+Ti.API.debug('TitleBar is done being loaded');

@@ -31,7 +31,8 @@ exports.events = {
 };
 
 var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanup = false, _state, _numGridItems = 0, _gridView, _gridItems = {}, styles, deviceProxy, portalProxy,
-_ = require('/js/libs/underscore-min');;
+_ = require('/js/libs/underscore-min'),
+app = require('/js/Facade');
 
 function _init () {
     styles = require('/js/style');
@@ -106,7 +107,6 @@ exports.updateGrid = function (portlets) {
             _gridItems['fName' + _portlets[i].fname].sortOrder = i;
             _gridItems['fName' + _portlets[i].fname].view.show();
             _gridItems['fName' + _portlets[i].fname].view.visible =true;
-            _gridItems['fName' + _portlets[i].fname].addEventListeners();
         }
     }
     
@@ -185,15 +185,15 @@ function _createGridItem (portlet, sortOrder) {
         
         gridItem.addEventListeners = function () {
             gridItemIcon.addEventListener("singletap", _onGridItemClick);
-            gridItemIcon.addEventListener("touchstart", _onGridItemPressDown);
-            gridItemIcon.addEventListener(deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
+            // gridItemIcon.addEventListener("touchstart", _onGridItemPressDown);
+            // gridItemIcon.addEventListener(deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
         };
         
         gridItem.removeEventListeners = function () {
             try {
                 gridItemIcon.removeEventListener("singletap", _onGridItemClick);
-                gridItemIcon.removeEventListener("touchstart", _onGridItemPressDown);
-                gridItemIcon.removeEventListener(deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
+                // gridItemIcon.removeEventListener("touchstart", _onGridItemPressDown);
+                // gridItemIcon.removeEventListener(deviceProxy.isAndroid() ? 'touchcancel' : 'touchend', _onGridItemPressUp);
             }
             catch (e) {
                 Ti.API.error("Couldn't remove event listeners");
@@ -236,13 +236,14 @@ exports.resizeGrid = function (_isSpecialLayout) {
 };
 
 function _onGridItemClick (e) {
-    var func;
-    if (e.source.portlet) {
-        func = portalProxy.retrieveShowPortletFunc(e.source.portlet);
-        func();
+    Ti.API.debug('_onGridItemClick() in PortalGridView. e: '+JSON.stringify(e));
+    if (e.source.portlet.url) {
+        Ti.API.debug('Firing SHOW_PORTLET event: '+JSON.stringify(e.source.portlet));
+        Ti.App.fireEvent(app.events['SHOW_PORTLET'], e.source.portlet);
     }
     else {
-        Ti.API.error("No portlet was attached to the icon.");
+        Ti.API.debug('Firing SHOW_WINDOW event: '+e.source.portlet.fname);
+        Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow: e.source.portlet.fname });
     }
 };
 

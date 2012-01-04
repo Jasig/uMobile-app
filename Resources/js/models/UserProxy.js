@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-Titanium.include('js/gibberishAES.js');
+Titanium.include('/js/gibberishAES.js');
 var config = require('/js/config');
 
 exports.saveCredentials = function (credentials) {

@@ -17,12 +17,14 @@
  * under the License.
  */
 
-var windowManager = require('/js/models/WindowManager'), 
-deviceProxy = require('/js/models/DeviceProxy');
+var app = require('/js/Facade'),
+deviceProxy = require('/js/models/DeviceProxy'),
+loginProxy = require('/js/models/LoginProxy');
 
-windowManager.openWindow(require('/js/config').HOME_KEY);
+// Ti.App.fireEvent(app.events['SHOW_WINDOW'], require('/js/config').HOME_KEY);
+require('/js/models/WindowManager').openWindow(require('/js/config').HOME_KEY);
 
-Ti.App.addEventListener(require('/js/Facade').events['OPEN_EXTERNAL_URL'], function (e) {
+Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
 	if (e.url) return Ti.Platform.openURL(e.url);
     Ti.API.error("No url was attached to the event: " + JSON.stringify(e));
 });

@@ -43,6 +43,7 @@ exports.rotateWindow = function (orientation) {
 };
 
 exports.openWindow = function (windowKey, portlet) {
+    Ti.API.debug('openWindow() in WindowManager. windowKey: '+windowKey);
     var callback;
     
     if (applicationWindows[windowKey] && exports.retrieveCurrentWindow() !== windowKey) {

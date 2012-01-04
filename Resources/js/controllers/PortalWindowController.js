@@ -106,7 +106,7 @@ function onNotificationsUpdated (e) {
 
 function onAndroidSearchClick (e) {
 	var _searchPortlet = portalProxy.retrievePortletByFName('search'); 
-	if (_searchPortlet) portalProxy.retrieveShowPortletFunc(_searchPortlet)();
+	if (_searchPortlet) Ti.App.fireEvent(app.events['SHOW_PORTLET'], _searchPortlet);
 };
 
 function onNetworkSessionSuccess (e) {

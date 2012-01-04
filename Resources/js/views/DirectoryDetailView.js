@@ -18,22 +18,24 @@
  */
 
 var _view, personDetailTable, titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
-directoryPerson = require('/js/models/VOs/DirectoryPersonVO');
+directoryPerson = require('/js/models/VOs/DirectoryPersonVO'),
+styles = require('/js/style'),
+config = require('/js/config');
 
 exports.retrieveDetailView = function () {
-    if (!_view) {
-        _view = Titanium.UI.createView(app.styles.contactDetailView);
+    if (_view) return _view;
+    _view = Titanium.UI.createView(styles.contactDetailView);
 
-        secondaryNavBar = require('/js/views/UI/SecondaryNav');
-        secondaryNavBar.view.top = 0;
-        secondaryNavBar.rightButton.hide();
-        secondaryNavBar.rightButton.visible = false;
-        secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
-        _view.add(secondaryNavBar.view);
+    secondaryNavBar = require('/js/views/UI/SecondaryNav');
+    secondaryNavBar.view.top = 0;
+    secondaryNavBar.rightButton.hide();
+    secondaryNavBar.rightButton.visible = false;
+    secondaryNavBar.leftButton.addEventListener('click', onBackBtnClick);
+    _view.add(secondaryNavBar.view);
 
-        attributeTable = require('/js/views/PersonDetailTableView');
-        _view.add(attributeTable.table);
-    }
+    attributeTable = require('/js/views/PersonDetailTableView');
+    _view.add(attributeTable.table);
+
     return _view;
 };
 
@@ -51,11 +53,11 @@ exports.hide = function () {
 
 exports.rotate = function (orientation) {
     if (_view) {
-        _view.width = app.styles.contactDetailView.width;
-        _view.height = app.styles.contactDetailView.height;
+        _view.width = styles.contactDetailView.width;
+        _view.height = styles.contactDetailView.height;
     }
     if (secondaryNavBar) secondaryNavBar.rotate(orientation);
-    if (attributeTable) attributeTable.table.width = app.styles.directoryDetailAttributeTable.width;
+    if (attributeTable) attributeTable.table.width = styles.directoryDetailAttributeTable.width;
 };
 
 function constructPerson (attributes) {
@@ -87,7 +89,7 @@ function constructPerson (attributes) {
 };
 
 function getAttribute (tiAttrName, attributes) {
-    var portalAttrName = app.config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
+    var portalAttrName = config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
     if (portalAttrName) {
         var values = attributes[portalAttrName];
         Ti.API.info(values);
