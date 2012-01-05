@@ -73,12 +73,12 @@ exports.addSettingsButton = function () {
 };
 
 exports.rotate = function (orientation) {
-    Ti.API.info('rotate() in TitleBar');
-    styles = require('/js/style');
+    styles = styles.updateStyles();
+    
     if (titleBar) titleBar.view.width = styles.titleBar.width;
     if (settingsButtonContainer) settingsButtonContainer.left = styles.titleBarSettingsContainer.left;
     if (homeButtonContainer) homeButtonContainer.left = styles.titleBarHomeContainer.left; 
-    if (infoButtonContainer) infoButtonContainer.left = styles.titleBarInfoContainer.left
+    if (infoButtonContainer) infoButtonContainer.left = styles.titleBarInfoContainer.left;
 };
 
 function onHomeClick (e) {

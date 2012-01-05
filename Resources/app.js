@@ -19,10 +19,11 @@
 
 var app = require('/js/Facade'),
 deviceProxy = require('/js/models/DeviceProxy'),
-loginProxy = require('/js/models/LoginProxy');
+loginProxy = require('/js/models/LoginProxy'),
+windowManager = require('/js/models/WindowManager');
 
 // Ti.App.fireEvent(app.events['SHOW_WINDOW'], require('/js/config').HOME_KEY);
-require('/js/models/WindowManager').openWindow(require('/js/config').HOME_KEY);
+windowManager.openWindow(require('/js/config').HOME_KEY);
 
 Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
 	if (e.url) return Ti.Platform.openURL(e.url);
@@ -32,5 +33,8 @@ Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
 function onOrientationChange (e) {
     if (deviceProxy.retrieveCurrentOrientation() && deviceProxy.retrieveCurrentOrientation() === e.orientation) return;
     deviceProxy.saveCurrentOrientation(e.orientation);
+    require('/js/style').updateStyles();
     windowManager.rotateWindow(e.orientation);
 }
+
+Ti.Gesture.addEventListener('orientationchange', onOrientationChange);
