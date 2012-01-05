@@ -7,16 +7,21 @@ styles = require('/js/style'),
 config = require('/js/config'),
 _ = require('/js/libs/underscore-min'),
 localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
+
 labelStyle = styles.titleBarLabel;
 
 titleBarDefaults = _.clone(styles.titleBar);
 titleBarDefaults.left += 'dp';
 titleBarDefaults.height += 'dp';
-titleBar = {view:Titanium.UI.createView(titleBarDefaults)};
-exports.view = titleBar.view;
 
-title = Titanium.UI.createLabel(labelStyle);
-titleBar.view.add(title);
+exports.createTitleBar = function () {
+    titleBar = {view:Titanium.UI.createView(titleBarDefaults)};
+    title = Titanium.UI.createLabel(labelStyle);
+    titleBar.view.add(title);
+    exports.view = titleBar.view;
+    return titleBar;
+};
+
 exports.updateTitle = function (t) {
     title.text = t;
 };
@@ -28,10 +33,10 @@ exports.addHomeButton = function(){
     if (!homeButtonContainer) {
         homeButtonContainer = Titanium.UI.createView(styles.titleBarHomeContainer);
         titleBar.view.add(homeButtonContainer);
-
+        
         homeButton = Titanium.UI.createImageView(styles.titleBarHomeButton);
         homeButtonContainer.add(homeButton);
-
+        
         homeButtonContainer.addEventListener('singletap', onHomeClick);
     }
     homeButtonContainer.show();
@@ -40,39 +45,40 @@ exports.addHomeButton = function(){
 exports.addInfoButton = function () {
     Ti.API.debug('addInfoButton()');
     if (homeButtonContainer) homeButtonContainer.hide();
-    if (!infoButtonContainer) {
-        infoButtonContainer = Titanium.UI.createView(styles.titleBarInfoContainer);
-        titleBar.view.add(infoButtonContainer);
-        infoButton = Titanium.UI.createImageView(styles.titleBarInfoButton);
-        infoButtonContainer.add(infoButton);
+    if (infoButtonContainer) return infoButtonContainer.show();
 
-        infoButtonContainer.addEventListener('singletap', onInfoClick);
-    }
-    infoButtonContainer.show();
+    infoButtonContainer = Titanium.UI.createView(styles.titleBarInfoContainer);
+    titleBar.view.add(infoButtonContainer);
+    infoButton = Titanium.UI.createImageView(styles.titleBarInfoButton);
+    infoButtonContainer.add(infoButton);
     
+    infoButtonContainer.addEventListener('singletap', onInfoClick);
+    
+    infoButtonContainer.show();
 };
 
 exports.addSettingsButton = function () {
     Ti.API.debug('addSettingsButton()');
-    if (!settingsButtonContainer) {
-        settingsButtonContainer = Titanium.UI.createView(styles.titleBarSettingsContainer);
-        titleBar.view.add(settingsButtonContainer);
-
-        //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
-        settingsButton = Titanium.UI.createImageView(styles.titleBarSettingsButton);
-    	settingsButtonContainer.add(settingsButton);
-
-        settingsButtonContainer.addEventListener('singletap', onSettingsClick);
-    }
+    
+    settingsButtonContainer = Titanium.UI.createView(styles.titleBarSettingsContainer);
+    titleBar.view.add(settingsButtonContainer);
+    
+    //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
+    settingsButton = Titanium.UI.createImageView(styles.titleBarSettingsButton);
+	settingsButtonContainer.add(settingsButton);
+    
+    settingsButtonContainer.addEventListener('singletap', onSettingsClick);
+    
     settingsButtonContainer.show();
 };
 
 exports.rotate = function (orientation) {
-    Ti.API.debug('rotate() in TitleBar');
+    Ti.API.info('rotate() in TitleBar');
     styles = require('/js/style');
-    if (titleBar) { titleBar.view.width = styles.titleBar.width; }
-    if (settingsButtonContainer) { settingsButtonContainer.left = styles.titleBarSettingsContainer.left; }
-    if (homeButtonContainer) { homeButtonContainer.left = styles.titleBarHomeContainer.left; }
+    if (titleBar) titleBar.view.width = styles.titleBar.width;
+    if (settingsButtonContainer) settingsButtonContainer.left = styles.titleBarSettingsContainer.left;
+    if (homeButtonContainer) homeButtonContainer.left = styles.titleBarHomeContainer.left; 
+    if (infoButtonContainer) infoButtonContainer.left = styles.titleBarInfoContainer.left
 };
 
 function onHomeClick (e) {

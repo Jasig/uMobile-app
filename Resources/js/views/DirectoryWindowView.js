@@ -155,11 +155,6 @@ exports.displaySearchResults = function (results) {
 
 function drawDefaultView () {
     if (!win) return Ti.API.error("No win in drawDefaultView() in DirectoryWindowController");
-    titleBar = require('/js/views/UI/TitleBar');
-    titleBar.updateTitle(localDictionary.directory);
-    titleBar.addHomeButton();
-    
-    win.add(titleBar.view);
 
     createDefaultGroups();
 
@@ -183,9 +178,14 @@ function drawDefaultView () {
         change: onSearchChange
     });
     win.add(searchBar.container);
-
     
-
+    titleBar = require('/js/views/UI/TitleBar');
+    Ti.API.info('titleBar.view: '+titleBar.view);
+    win.add(titleBar.createTitleBar().view);
+    titleBar.updateTitle(localDictionary.directory);
+    titleBar.addHomeButton();
+    titleBar.view.show();
+    
     activityIndicator = require('/js/views/UI/ActivityIndicator');
     activityIndicator.resetDimensions();
     win.add(activityIndicator.view);

@@ -99,13 +99,7 @@ exports.rotateView = function (orientation) {
     if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
     if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
     if (activityIndicator) activityIndicator.rotate();
-    // if (titleBar) titleBar.rotate();
-    try {
-        win.remove(titleBar.view);
-    } catch (e){
-        Ti.API.info('couldn\'t remove titleBar');
-    }
-    win.add(titleBar.view);
+    if (titleBar) titleBar.rotate();
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
@@ -125,14 +119,24 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     win.add(activityIndicator.view);
 
     titleBar = require('/js/views/UI/TitleBar');
+    
+    win.add(titleBar.createTitleBar().view);
     titleBar.addSettingsButton();
     titleBar.addInfoButton();
     titleBar.updateTitle(localDictionary.homeTitle);
-    win.add(titleBar.view);
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
-    Ti.API.debug('_updateUI in PortalWindowView');
+    Ti.API.info('_updateUI in PortalWindowView');
+    Ti.API.info('titleBar:'+titleBar);
+    try {
+        win.remove(titleBar.view);
+    } catch (e){
+        Ti.API.error('couldn\'t remove titleBar');
+    }
+    win.add(titleBar.view);
+    titleBar.updateTitle(localDictionary.homeTitle);
+    
     _controlNotificationsBar(_isGuestLayout, _isPortalReachable);
 };
 
