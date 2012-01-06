@@ -17,10 +17,6 @@
  * under the License.
  */
 
-
-    
-    
-    
 var _mapCenter = {
     latitude        : false,
     longitude       : false,
@@ -167,12 +163,12 @@ exports.retrieveAnnotationByTitle = function(t, shouldRecenter) {
 exports.loadMapPoints = function () {
     //Default returns all points for an institution.
     Ti.App.fireEvent(exports.events['LOADING']);
-    if (app.models.deviceProxy.checkNetwork()) {
+    if (require('/js/models/DeviceProxy').checkNetwork()) {
         request = Titanium.Network.createHTTPClient ({
             onload : exports._newPointsLoaded,
             onerror : _onLoadError
         });
-        request.open("GET", app.config.MAP_SERVICE_URL);
+        request.open("GET", require('/js/config').MAP_SERVICE_URL);
         request.send();
     }
     else {

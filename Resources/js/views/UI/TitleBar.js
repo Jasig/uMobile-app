@@ -1,101 +1,99 @@
 
     // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
     //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
-var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer, titleBar, titleBarDefaults,
-app = require('/js/Facade'),
+var app = require('/js/Facade'),
 styles = require('/js/style'),
 config = require('/js/config'),
 _ = require('/js/libs/underscore-min'),
-localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
-
-labelStyle = styles.titleBarLabel;
-
-titleBarDefaults = _.clone(styles.titleBar);
-titleBarDefaults.left += 'dp';
-titleBarDefaults.height += 'dp';
+localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
 
 exports.createTitleBar = function () {
+    var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer, titleBarDefaults,
+    titleBar = {};
+    
+    styles = styles.updateStyles();
+    
+    titleBarDefaults = _.clone(styles.titleBar);
+    titleBarDefaults.left += 'dp';
+    titleBarDefaults.height += 'dp';
+    
+    titleBarDefaults = _.clone(styles.titleBar);
+    titleBarDefaults.left += 'dp';
+    titleBarDefaults.height += 'dp';
+    labelStyle = styles.titleBarLabel;
+    
     titleBar = {view:Titanium.UI.createView(titleBarDefaults)};
     title = Titanium.UI.createLabel(labelStyle);
     titleBar.view.add(title);
-    exports.view = titleBar.view;
-    return titleBar;
-};
+    
+    titleBar.updateTitle = function (t) {
+        title.text = t;
+    };
+    
+    titleBar.addHomeButton = function(){
+        if (infoButtonContainer) infoButtonContainer.hide();
+        if (settingsButtonContainer) settingsButtonContainer.hide();
 
-exports.updateTitle = function (t) {
-    title.text = t;
-};
-
-exports.addHomeButton = function(){
-    Ti.API.debug('addHomeButton()');
-    if (infoButtonContainer) infoButtonContainer.hide();
-    if (settingsButtonContainer) settingsButtonContainer.hide();
-    if (!homeButtonContainer) {
         homeButtonContainer = Titanium.UI.createView(styles.titleBarHomeContainer);
         titleBar.view.add(homeButtonContainer);
-        
+
         homeButton = Titanium.UI.createImageView(styles.titleBarHomeButton);
         homeButtonContainer.add(homeButton);
-        
+
         homeButtonContainer.addEventListener('singletap', onHomeClick);
-    }
-    homeButtonContainer.show();
-};
 
-exports.addInfoButton = function () {
-    Ti.API.debug('addInfoButton()');
-    if (homeButtonContainer) homeButtonContainer.hide();
-    if (infoButtonContainer) return infoButtonContainer.show();
+        homeButtonContainer.show();
+    };
+    
+    titleBar.addInfoButton = function () {
+        if (homeButtonContainer) homeButtonContainer.hide();
+        
+        infoButtonContainer = Titanium.UI.createView(styles.titleBarInfoContainer);
+        titleBar.view.add(infoButtonContainer);
+        infoButton = Titanium.UI.createImageView(styles.titleBarInfoButton);
+        infoButtonContainer.add(infoButton);
 
-    infoButtonContainer = Titanium.UI.createView(styles.titleBarInfoContainer);
-    titleBar.view.add(infoButtonContainer);
-    infoButton = Titanium.UI.createImageView(styles.titleBarInfoButton);
-    infoButtonContainer.add(infoButton);
-    
-    infoButtonContainer.addEventListener('singletap', onInfoClick);
-    
-    infoButtonContainer.show();
-};
+        infoButtonContainer.addEventListener('singletap', onInfoClick);
 
-exports.addSettingsButton = function () {
-    Ti.API.debug('addSettingsButton()');
+        infoButtonContainer.show();
+    };
     
-    settingsButtonContainer = Titanium.UI.createView(styles.titleBarSettingsContainer);
-    titleBar.view.add(settingsButtonContainer);
-    
-    //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
-    settingsButton = Titanium.UI.createImageView(styles.titleBarSettingsButton);
-	settingsButtonContainer.add(settingsButton);
-    
-    settingsButtonContainer.addEventListener('singletap', onSettingsClick);
-    
-    settingsButtonContainer.show();
-};
+    titleBar.addSettingsButton = function () {
+        settingsButtonContainer = Titanium.UI.createView(styles.titleBarSettingsContainer);
+        titleBar.view.add(settingsButtonContainer);
 
-exports.rotate = function (orientation) {
-    styles = styles.updateStyles();
+        //Expects settingsButton to be a boolean indicating whether or not to show the settings icon
+        settingsButton = Titanium.UI.createImageView(styles.titleBarSettingsButton);
+    	settingsButtonContainer.add(settingsButton);
+
+        settingsButtonContainer.addEventListener('singletap', onSettingsClick);
+
+        settingsButtonContainer.show();
+    };
+
+    titleBar.rotate = function (orientation) {
+        if (titleBar) titleBar.view.width = styles.titleBar.width;
+        if (settingsButtonContainer) settingsButtonContainer.left = styles.titleBarSettingsContainer.left;
+        if (homeButtonContainer) homeButtonContainer.left = styles.titleBarHomeContainer.left;
+        if (infoButtonContainer) infoButtonContainer.left = styles.titleBarInfoContainer.left;
+    };
+
+    function onHomeClick (e) {
+        Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
+    };
+
+    function onInfoClick (e) {
+        Ti.App.fireEvent(app.events['SHOW_PORTLET'], {
+            fname: 'info',
+            externalModule: true,
+            title: localDictionary.info,
+            url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html').nativePath
+        });
+    };
+
+    function onSettingsClick (e) {
+        Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.SETTINGS_KEY});
+    };
     
-    if (titleBar) titleBar.view.width = styles.titleBar.width;
-    if (settingsButtonContainer) settingsButtonContainer.left = styles.titleBarSettingsContainer.left;
-    if (homeButtonContainer) homeButtonContainer.left = styles.titleBarHomeContainer.left; 
-    if (infoButtonContainer) infoButtonContainer.left = styles.titleBarInfoContainer.left;
+    return titleBar;
 };
-
-function onHomeClick (e) {
-    Ti.API.info('onHomeClick() in TitleBar');
-    Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
-};
-
-function onInfoClick (e) {
-    Ti.App.fireEvent(app.events['SHOW_PORTLET'], {
-        fname: 'info',
-        externalModule: true,
-        title: localDictionary.info,
-        url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/info.html').nativePath
-    });
-};
-
-function onSettingsClick (e) {
-    Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.SETTINGS_KEY});
-};
-Ti.API.debug('TitleBar is done being loaded');

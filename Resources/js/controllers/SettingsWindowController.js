@@ -59,7 +59,7 @@ exports.open = function () {
 
     win.open();
     
-    titleBar = require('/js/views/UI/TitleBar');
+    titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     titleBar.addHomeButton();
     titleBar.updateTitle(localDictionary.settings);
     

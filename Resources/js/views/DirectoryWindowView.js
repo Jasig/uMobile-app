@@ -24,11 +24,13 @@ exports.events = {
 
 var defaultTableData=[], tableData = [], _viewModel, directoryDetailView,
 win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRow, contentScrollView, peopleListTable, emergencyContactSection, phoneDirectorySection, phoneDirectoryRow, activityIndicator,
-styles = require('/js/style'),
-localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
-deviceProxy = require('/js/models/DeviceProxy');
+styles, localDictionary, deviceProxy;
 
 exports.open = function (viewModel) {
+    styles = styles ? styles.updateStyles() : require('/js/style').updateStyles(),
+    localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')],
+    deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
+    
     _viewModel = viewModel;
     
     win = Titanium.UI.createWindow({
@@ -155,21 +157,21 @@ exports.displaySearchResults = function (results) {
 
 function drawDefaultView () {
     if (!win) return Ti.API.error("No win in drawDefaultView() in DirectoryWindowController");
-
+    
     createDefaultGroups();
-
+    
     //Create the main table
     peopleListTable = Titanium.UI.createTableView({
         data: defaultTableData,
         top: styles.titleBar.height + styles.searchBar.getHeight + 'dp'
     });
-
+    
     peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
-
+    
     win.add(peopleListTable);
     peopleListTable.addEventListener('touchstart', blurSearch);
     peopleListTable.addEventListener('move', blurSearch);
-
+    
     //Create and add a search bar at the top of the table to search for contacts
     searchBar = require('/js/views/UI/SearchBar');
     searchBar.createSearchBar({
@@ -179,11 +181,10 @@ function drawDefaultView () {
     });
     win.add(searchBar.container);
     
-    titleBar = require('/js/views/UI/TitleBar');
-    Ti.API.info('titleBar.view: '+titleBar.view);
-    win.add(titleBar.createTitleBar().view);
+    titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     titleBar.updateTitle(localDictionary.directory);
     titleBar.addHomeButton();
+    win.add(titleBar.view);
     titleBar.view.show();
     
     activityIndicator = require('/js/views/UI/ActivityIndicator');

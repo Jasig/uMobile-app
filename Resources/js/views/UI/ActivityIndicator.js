@@ -1,5 +1,5 @@
 var messageLabel, indicator, dialog,
-styles = require('/js/style'),
+styles = require('/js/style').updateStyles(),
 localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
 
 indicator = {view: Ti.UI.createView(styles.globalActivityIndicator)};
@@ -26,9 +26,9 @@ exports.rotate = function (orientation) {
 };
 
 exports.resetDimensions = function () {
+    styles = styles.updateStyles();
     indicator.view.top = styles.globalActivityIndicator.top;
     indicator.view.height = styles.globalActivityIndicator.height;
     indicator.view.width = styles.globalActivityIndicator.width;
     dialog.width = styles.activityIndicatorDialog.width;
 };
-

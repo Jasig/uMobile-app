@@ -77,7 +77,7 @@ function _createView (portlet) {
     _win = Titanium.UI.createWindow(styles.portletWindow);
     _win.open();
     
-    _titleBar = require('/js/views/UI/TitleBar');
+    _titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     _titleBar.updateTitle(portlet.title);
     _titleBar.addHomeButton();
     _titleBar.addSettingsButton();

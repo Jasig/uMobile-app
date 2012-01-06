@@ -56,7 +56,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     Ti.API.info('open() in PortalWindowView. state:'+exports.retrieveState());
     app = app || require('/js/Facade');
     config = config || require('/js/config');
-    styles = styles || require('/js/style');
+    styles = styles ? styles.updateStyles() : require('/js/style');
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
     localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     
@@ -92,6 +92,7 @@ exports.close = function () {
 
 exports.rotateView = function (orientation) {
     Ti.API.info('rotateView() in PortalWindowView');
+    styles = styles.updateStyles();
     if (contentLayer) {
         contentLayer.width = styles.portalContentLayer.width;
         contentLayer.height = styles.portalContentLayer.height;
@@ -118,9 +119,9 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     activityIndicator = require('/js/views/UI/ActivityIndicator');
     win.add(activityIndicator.view);
 
-    titleBar = require('/js/views/UI/TitleBar');
+    titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     
-    win.add(titleBar.createTitleBar().view);
+    win.add(titleBar.view);
     titleBar.addSettingsButton();
     titleBar.addInfoButton();
     titleBar.updateTitle(localDictionary.homeTitle);
@@ -129,13 +130,19 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
 function _updateUI (_isGuestLayout, _isPortalReachable) {
     Ti.API.info('_updateUI in PortalWindowView');
     Ti.API.info('titleBar:'+titleBar);
-    try {
+    
+    /*try {
         win.remove(titleBar.view);
     } catch (e){
         Ti.API.error('couldn\'t remove titleBar');
     }
+    titleBar = titleBar.createTitleBar();
     win.add(titleBar.view);
-    titleBar.updateTitle(localDictionary.homeTitle);
+    
+    titleBar.addInfoButton();
+    titleBar.addSettingsButton();
+    titleBar.updateTitle(localDictionary.homeTitle);*/
+    titleBar.rotate();
     
     _controlNotificationsBar(_isGuestLayout, _isPortalReachable);
 };

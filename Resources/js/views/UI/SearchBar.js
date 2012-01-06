@@ -1,6 +1,6 @@
 var searchBar, searchBarObject = {}, searchBarInput,
 deviceProxy = require('/js/models/DeviceProxy'),
-styles = require('/js/style');
+styles = require('/js/style').updateStyles();
 
 if (deviceProxy.isIOS()) {
     searchBar = Titanium.UI.createSearchBar(styles.searchBar);
@@ -40,6 +40,7 @@ exports.createSearchBar = function (opts) {
 };
 
 exports.rotate = function (orientation) {
+    styles = styles.updateStyles();
     if (searchBar) { searchBar.width = styles.searchBar.width; }
     if (searchBarInput) { searchBarInput.width = styles.searchBarInput.width; }
 };

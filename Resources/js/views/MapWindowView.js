@@ -55,19 +55,19 @@ exports.plotPoints = function (points) {
     
     // Center the map around the active points
     mapView.setLocation(mapProxy.retrieveMapCenter());
-    activityIndicator.view.hide();
+    if (activityIndicator) activityIndicator.view.hide();
 };
 
 exports.hideActivityIndicator = function () {
-    activityIndicator.view.hide();
+    if (activityIndicator) activityIndicator.view.hide();
 };
 
 exports.showActivityIndicator = function () {
-    activityIndicator.view.show();
+    if (activityIndicator) activityIndicator.view.show();
 };
 
 exports.saveActivityIndicatorMessage = function (message) {
-    activityIndicator.saveLoadingMessage(message);
+    if (activityIndicator) activityIndicator.saveLoadingMessage(message);
 };
 
 exports.rotate = function (orientation) {
@@ -252,7 +252,7 @@ exports.doSetView = function (newView, viewModel) {
 var _createMainView = function() {
     var mapViewOpts;
     
-    titleBar = require('/js/views/UI/TitleBar');
+    titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     titleBar.updateTitle(localDictionary.map);
     titleBar.addHomeButton();
 

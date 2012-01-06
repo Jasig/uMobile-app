@@ -19,7 +19,7 @@
 
 var _view, personDetailTable, titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
 directoryPerson = require('/js/models/VOs/DirectoryPersonVO'),
-styles = require('/js/style'),
+styles = require('/js/style').updateStyles(),
 config = require('/js/config');
 
 exports.retrieveDetailView = function () {
@@ -52,6 +52,7 @@ exports.hide = function () {
 };
 
 exports.rotate = function (orientation) {
+    styles = styles.updateStyles();
     if (_view) {
         _view.width = styles.contactDetailView.width;
         _view.height = styles.contactDetailView.height;

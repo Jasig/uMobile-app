@@ -33,7 +33,6 @@ Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
 function onOrientationChange (e) {
     if (deviceProxy.retrieveCurrentOrientation() && deviceProxy.retrieveCurrentOrientation() === e.orientation) return;
     deviceProxy.saveCurrentOrientation(e.orientation);
-    require('/js/style').updateStyles();
     windowManager.rotateWindow(e.orientation);
 }
 

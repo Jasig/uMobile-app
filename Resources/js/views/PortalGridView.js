@@ -35,7 +35,7 @@ _ = require('/js/libs/underscore-min'),
 app = require('/js/Facade');
 
 function _init () {
-    styles = require('/js/style');
+    styles = require('/js/style').updateStyles();
     deviceProxy = require('/js/models/DeviceProxy');
     
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
@@ -116,6 +116,7 @@ exports.updateGrid = function (portlets) {
 
 exports.rotate = function (orientation, specialLayout) {
     Ti.API.debug('rotate() in PortalGridView');
+    styles = styles.updateStyles();
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
     _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
     _numColumns = Math.floor(deviceProxy.retrieveWidth(true) / _completeWidth);
