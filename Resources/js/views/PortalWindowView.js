@@ -82,6 +82,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     portalGridView.updateGrid(_modules);
     
     exports.saveState(exports.states.OPENED);
+    exports.rotateView();
 };
 
 exports.close = function () {
