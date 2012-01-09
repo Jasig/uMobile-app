@@ -43,7 +43,6 @@ exports.rotateWindow = function (orientation) {
 };
 
 exports.openWindow = function (windowKey, portlet) {
-    Ti.API.debug('openWindow() in WindowManager. windowKey: '+windowKey);
     var callback;
     
     if (applicationWindows[windowKey] && exports.retrieveCurrentWindow() !== windowKey) {
@@ -113,7 +112,6 @@ exports.retrievePreviousWindow = function () {
 exports.retrieveCurrentPortlet = function () {
     // var _currentPortlet = (activityStack.length > 0 && activityStack[activityStack.length -1].portlet) ? activityStack[activityStack.length - 1].portlet : false;
     var _currentPortlet = activityStack[activityStack.length -1].portlet;
-    Ti.API.info("retrieveCurrentPortlet() in WindowManager: " + JSON.stringify(_currentPortlet));
     return _currentPortlet;
 };
 

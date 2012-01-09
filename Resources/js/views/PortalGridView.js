@@ -57,7 +57,6 @@ exports.retrieveState = function () {
 };
 
 exports.saveState = function (newState) {
-    Ti.API.debug("saveState() in PortalGridView: " + newState);
     _state = newState;
     Ti.App.fireEvent(exports.events['STATE_CHANGE'], {state: _state});
     
@@ -72,7 +71,6 @@ exports.retrieveGridView = function () {
 };
 
 exports.updateGrid = function (portlets) {
-    Ti.API.debug('updateGrid() in PortalGridView. Portlets: '+JSON.stringify(portlets));
     var _portlets = portlets || [], _item;
 
     /*
@@ -115,7 +113,6 @@ exports.updateGrid = function (portlets) {
 };
 
 exports.rotate = function (orientation, specialLayout) {
-    Ti.API.debug('rotate() in PortalGridView');
     styles = styles.updateStyles();
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
     _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
@@ -178,7 +175,6 @@ function _createGridItem (portlet, sortOrder) {
         gridItem.view.visible = false;
 
         gridItem.destroy = function () {
-            Ti.API.info("Destroying GridItem!");
             gridItem.view.hide();
             gridItem.view.visible = false;
             gridItem.sortOrder = -1;
@@ -237,13 +233,10 @@ exports.resizeGrid = function (_isSpecialLayout) {
 };
 
 function _onGridItemClick (e) {
-    Ti.API.debug('_onGridItemClick() in PortalGridView. e: '+JSON.stringify(e));
     if (e.source.portlet.url) {
-        Ti.API.debug('Firing SHOW_PORTLET event: '+JSON.stringify(e.source.portlet));
         Ti.App.fireEvent(app.events['SHOW_PORTLET'], e.source.portlet);
     }
     else {
-        Ti.API.debug('Firing SHOW_WINDOW event: '+e.source.portlet.fname);
         Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow: e.source.portlet.fname });
     }
 };
@@ -257,9 +250,6 @@ function _onGridItemPressDown (e) {
             e.source.opacity = styles.gridItem.pressOpacity;
         }
     }
-    else {
-        Ti.API.debug("Not setting opacity of icon because Android doesn't support it.");
-    }
 };
 
 _onGridItemPressUp = function (e) {
@@ -270,9 +260,6 @@ _onGridItemPressUp = function (e) {
         else {
             e.source.setOpacity(1.0);
         }
-    }
-    else {
-        Ti.API.debug("onGridItemPressUp condition wasn't met");
     }
 };
 

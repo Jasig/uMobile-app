@@ -167,7 +167,6 @@ function _onInitialResponse (e) {
 
         try {
             flowId = flowRegex.exec(initialResponse)[1];
-            Ti.API.debug("flowId: " + flowId);
             // Post the user credentials and other required webflow parameters to the 
             // CAS login page.  This step should accomplish authentication and redirect
             // to the portal if the user is successfully authenticated.

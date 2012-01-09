@@ -27,7 +27,6 @@ exports.detailView = Titanium.UI.createView(styles.view);
 exports.render = function (viewModel) {
     var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage,
     _tableViewData = [], directionsButtonOptions;
-    Ti.API.debug("render() in MapDetailView");
     if (mapDetailTableView) {
         mapDetailTableView.setData([]);
         try {
@@ -36,9 +35,6 @@ exports.render = function (viewModel) {
         catch (e) {
             Ti.API.error("Couldn't remove mapDetailTableView from detailView");
         }
-    }
-    else {
-        Ti.API.debug("mapDetailTableView not defined.");
     }
     
     locationDetailTitleBar = require('/js/views/UI/SecondaryNav').createSecondarNav();
@@ -72,7 +68,6 @@ exports.render = function (viewModel) {
     viewOnMapRow.add(viewOnMapButton);
     mapGroupAddress.add(viewOnMapRow);
     viewOnMapButton.addEventListener("click", function (e) {
-        Ti.API.debug('click viewOnMapButton');
         Ti.App.fireEvent(exports.events["VIEW_ON_MAP_CLICK"], {title: viewModel.title});
     });
     viewOnMapButton.addEventListener('touchstart', function (e) {

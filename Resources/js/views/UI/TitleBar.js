@@ -27,7 +27,6 @@ exports.createTitleBar = function () {
     titleBar.view.add(title);
     
     titleBar.updateTitle = function (t) {
-        Ti.API.debug('updateTitle() in TitleBar with new title: '+t);
         title.text = t;
     };
     

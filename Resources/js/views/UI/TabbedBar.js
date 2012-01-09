@@ -11,7 +11,6 @@ exports.createTabbedBar = function () {
         }
     }
     
-    
     bar.view = Ti.UI.createView(styles.mapButtonBar);
 
     bar.labels = labels;
@@ -20,7 +19,7 @@ exports.createTabbedBar = function () {
             labels = newLabels;
             _numButtons = labels.length;
 
-            var _buttonWidth = Math.floor((styles.mapButtonBar.getWidth - 10) / _numButtons) - 10;
+            var _buttonWidth = Math.floor((styles.mapButtonBar.getWidth - 10) / _numButtons);
 
             for (var i=0; i<_numButtons; i++) {
                 var _button = Ti.UI.createButton({

@@ -178,8 +178,6 @@ function _onLoginComplete (e) {
             onerror: _onPortalSessionEstablishedError
         });
         _client.open("POST", _getRedirectURL(_loginCompleteResponse));
-        Ti.API.debug("SAMLResponse hidden field: " + _getSAMLResponse(_loginCompleteResponse));
-        Ti.API.debug("RelayState hidden field: " + _getRelayState(_loginCompleteResponse));
         _client.send({
             SAMLResponse: _getSAMLResponse(_loginCompleteResponse),
             RelayState: _getRelayState(_loginCompleteResponse)

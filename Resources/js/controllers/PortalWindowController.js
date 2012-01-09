@@ -28,7 +28,6 @@ portalProxy = require('/js/models/PortalProxy'),
 _newNetworkDowntime = true; //This var is to prevent multiple notifications of network downtime. Set to false as soon as downtime is encountered
 
 exports.open = function () {
-    Ti.API.info('open() in PortalWindowController');
     // This will determine if a network session exists, and what 
     // window was open last time the app closed, and will manage the process
     // of establishing a session and opening the window.
@@ -86,14 +85,12 @@ exports.rotate = function (orientation) {
 };
 
 function _onPortletsLoaded (e) {
-    Ti.API.debug('_onPortletsLoaded' + JSON.stringify(e));
     portalWindowView.updateModules(portalProxy.retrievePortlets(), portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
 };
 
 
 function onNotificationsUpdated (e) {
     var _notifications = notificationsProxy.retrieveNotifications();
-    Ti.API.debug('notifications from notificationsProxy: '+JSON.stringify(_notifications));
     portalWindowView.updateNotificationsView(_notifications);
 };
 

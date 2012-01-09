@@ -134,7 +134,6 @@ function _includePortlet (portlet) {
     */
     var _isValidSession;
     
-    Ti.API.debug("includePortlet() in PortletWindowController. Portlet: " + JSON.stringify(portlet));
     _activityIndicator.saveLoadingMessage(localDictionary.loading);
     _activityIndicator.view.show();
     
@@ -158,7 +157,6 @@ exports.parseFNameFromURL = function (url) {
 
 function _getLocalUrl (url) {
     var localUrl, isValidSession;
-    Ti.API.debug("getLocalUrl() in SharedWebView");
     /*
     This method determines if a session is valid for the webview, and will
     either modify the URL and load, or will load the URL as-is if session is active.
@@ -170,13 +168,10 @@ function _getLocalUrl (url) {
     }
 
     if (url.indexOf('/') === 0) {
-        Ti.API.info("Index of / in URL is 0");
         var newUrl = config.BASE_PORTAL_URL + url;
-        Ti.API.info(newUrl);
         localUrl = newUrl;
     }
     else {
-        Ti.API.info("Index of / in URL is NOT 0");
         localUrl = url;
     }
     
@@ -193,7 +188,6 @@ function _getAbsoluteURL (url) {
         what the Login URL should be. However, to automate the process, there will need
         to be some process-specific logic in this controller.
     */
-    Ti.API.debug("getQualifiedURL() in PortletWindowController");
     var _url;
     if (url.indexOf('/') == 0) {
         _url = _getLocalUrl(url);
@@ -209,9 +203,6 @@ function _getAbsoluteURL (url) {
 };
 
 function _onPortletBeforeLoad (e) {
-    Ti.API.debug("onPortletBeforeLoad() in PortletWindowController" + _webView.url);
-
-    //We want to make sure we don't need to re-establish a session.
     if (_webView.url !== _getAbsoluteURL(_webView.url)) {
         _webView.stopLoading();
         _webView.url = _getAbsoluteURL(_webView.url);
@@ -227,31 +218,19 @@ function _onPortletBeforeLoad (e) {
     	_webView.stopLoading();
 
     	for (var i=0, iLength = _params.length; i<iLength; i++) {
-    		Ti.API.info("iterating through url params");
     		if (_params[i].indexOf('desktop_uri') > -1) {
-    			Ti.API.info("Found the desktop URI:" + _params[i]);
     			_URLToOpen = _params[i].split('=', 2)[1];
     			_URLToOpen = decodeURIComponent(_URLToOpen);
     			break;
     		}
     	}
-    	Ti.API.info("Opening: " + _URLToOpen);
     	if (_URLToOpen !== _lastVideoOpened) {
     	    _webView.stopLoading();
             Ti.Platform.openURL(_URLToOpen);
             //Set the last video to this, so that it doesn't try to broadcast the intent twice.
             _lastVideoOpened = _URLToOpen;
     	}
-    	if (e.url.indexOf('http://m.youtube.com') === 0) {
-    	    Ti.API.debug("The WebView is YouTube: " + e.url);
-    	    if (_homeFName === 'videos') {
-    	        Ti.API.debug("_homeFName is 'videos', so loading the videos home URL");
-    	        _webView.url = _homeURL;
-    	    }
-    	}
-    	else {
-    	    Ti.API.debug("The WebView isn't youtube: " + e.url);
-    	}
+    	if (e.url.indexOf('http://m.youtube.com') === 0 && _homeFName === 'videos') _webView.url = _homeURL;
     }
     _activityIndicator.saveLoadingMessage(localDictionary.loading);
     _activityIndicator.view.show();
@@ -260,7 +239,6 @@ function _onPortletBeforeLoad (e) {
 function _onDimensionChanges (e) {
     // Handle device rotation changes
     if (_isHome()) {
-        Ti.API.info("Webview is home, can't go back");
         _navBar.view.visible = false;
         _webView.top = styles.titleBar.height + 'dp';
         _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
@@ -287,7 +265,6 @@ function _onPortletLoad (e) {
         such as determining whether to reset the webview session timer,
         and show the nav bar with back button
     */
-    Ti.API.debug("onPortletLoad() in PortletWindowController");
     var portalIndex = e.url.indexOf(config.BASE_PORTAL_URL);
 
     _webView.show();
@@ -296,7 +273,6 @@ function _onPortletLoad (e) {
     _activityIndicator.view.hide();
     
     if (portalIndex >= 0) {
-        Ti.API.debug("Visiting a portal link");
         Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
         //We want to be able to open any video now, so we'll clear the YouTube workaround variable
         _lastVideoOpened = '';
@@ -309,7 +285,6 @@ function _onPortletLoad (e) {
         }
     }
     else {
-        Ti.API.debug("Visiting an external link. Webview.url = " + _webView.url + " & e.url = " + e.url);
         _webView.externalModule = true;
         if (!_isHome()) {
             _navBar.view.visible = true;
@@ -318,7 +293,6 @@ function _onPortletLoad (e) {
             _addAndroidBackListener();
         }
         else {
-            Ti.API.info("Webview can't go back");
             _webView.top = styles.titleBar.height + 'dp';
             _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
             _removeAndroidBackListener();
@@ -333,8 +307,6 @@ function _isHome () {
         opened the module/portlet). This is primarily used to determine if the
         back button should be displayed or not.
     */
-    Ti.API.debug('isHome() in PortletWindowController');
-
     var _newURL, treatAsLocalhost;
     
     /*

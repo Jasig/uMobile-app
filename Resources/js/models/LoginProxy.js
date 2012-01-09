@@ -66,14 +66,12 @@ exports.establishNetworkSession = function(options) {
         when the app starts up, when the user updates their credentials, 
         and when the local network session timer expires.
     */
-    Ti.API.debug('establishNetworkSession() in LoginProxy');
     var credentials, url;
     credentials = userProxy.retrieveCredentials();
     _loginMethod.login(credentials, options);
 };
 
 exports.clearSession = function () {
-    Ti.API.debug('clearSession() in LoginProxy');
     _loginMethod.logout();
 };
 
@@ -109,8 +107,6 @@ function _processLoginResponse (e) {
     Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout });
     
     if (userProxy.retrieveLayoutUserName() === _credentials.username) {
-        Ti.API.info("_layoutUser matches credentials.username");
-
         sessionProxy.resetTimer();
         Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true });
         Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: userProxy.retrieveLayoutUserName()});

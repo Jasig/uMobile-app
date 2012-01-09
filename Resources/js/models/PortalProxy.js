@@ -44,12 +44,10 @@ Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
 });
 
 exports.retrievePortlets = function () {
-    Ti.API.debug('retrievePortlets() in PortalProxy');
     return Ti.App.Properties.getList('portlets');
 };
 
 exports.savePortlets = function (_portlets) {
-    Ti.API.debug('savePortlets() in PortalProxy. Portlets: '+JSON.stringify(_portlets));
     var nativeModules = config.retrieveLocalModules(), module;
 
     for (module in nativeModules) {

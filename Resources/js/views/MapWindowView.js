@@ -25,9 +25,6 @@ localDictionary = require('/js/localization').retrieveLocale(Ti.App.Properties.g
 deviceProxy = require('/js/models/DeviceProxy'),
 config = require('/js/config');
 
-Ti.API.debug('Ti.App.Properties.getString(locale): '+Ti.App.Properties.getString('locale'));
-Ti.API.debug('localDictionary: '+JSON.stringify(localDictionary));
-
 // Public methods
 exports.createView = function (dataProxy) {
     mapProxy = dataProxy;
@@ -305,7 +302,6 @@ var _createMainView = function() {
     bottomNavView.add(deviceProxy.isAndroid() ? bottomNavButtons.view : bottomNavButtons);
     
     bottomNavButtons.addEventListener('click', function (e) {
-        Ti.API.debug("Click event with index: "+e.index);
         Ti.App.fireEvent(exports.events['NAV_BUTTON_CLICK'], {
             buttonName: exports.navButtonValues[e.index] || ''
         });

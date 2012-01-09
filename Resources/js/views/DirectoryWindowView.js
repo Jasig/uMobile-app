@@ -124,7 +124,6 @@ exports.displaySearchResults = function (results) {
     _people = results;
 
     if(_people.length > 0) {
-        Ti.API.info(_people);
         for (var i=0, iLength=_people.length; i<iLength; i++) {
             var _contactRow = Titanium.UI.createTableViewRow({
                 title: _people[i].displayName[0],
@@ -223,9 +222,6 @@ function createDefaultGroups () {
             _emergencyContactRow.addEventListener('click', onContactRowClick);
         }
         defaultTableData.push(emergencyContactSection);
-    }
-    else {
-        Ti.API.info("There aren't any emergency contacts");
     }
 };
 

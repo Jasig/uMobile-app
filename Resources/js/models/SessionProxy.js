@@ -36,7 +36,6 @@ exports.events = {
 //Gets the session expiration time from the config in seconds,
 //converts to milliseconds for use in the setTimeout
 sessionLifeTimeMilli = Ti.App.Properties.getInt('SERVER_SESSION_TIMEOUT');
-Ti.API.debug('sessionLifeTimeMilli = '+sessionLifeTimeMilli);
 Ti.App.addEventListener(app.events['SESSION_ACTIVITY'], onSessionActivity);
 
 exports.resetTimer = function() {    
@@ -83,7 +82,6 @@ exports.createSessionTimer = function () {
 
 
 function onTimeout () {
-    Ti.API.debug('onTimeout() in SessionProxy');
     Ti.App.fireEvent(exports.events['TIMER_EXPIRED']);
 };
 

@@ -74,7 +74,6 @@ exports.search = function (query, opts) {
         query = query.toLowerCase();
         query = query.replace(/[^a-zA-Z 0-9]+/g,'');
         query = '%' + query + '%';
-        
         _db = Titanium.Database.open('umobile');
         //Query the database for rows in the map_locations table that match the query
         queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ?', query, query, query);
@@ -110,7 +109,7 @@ exports.search = function (query, opts) {
             queryResult.next();
         }
         queryResult.close();
-
+        
 
         _db.close();
         
@@ -311,7 +310,6 @@ exports.retrieveLocationsByCategory = function (_catName, _numResults, _pageNum)
 };
 
 exports._newPointsLoaded = function (e) {
-    Ti.API.info("newPointsLoaded() in MapProxy");
     // Customize the response and add it to the cached mapPoints array in the MapProxy object.
     
     Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
@@ -354,9 +352,6 @@ exports._newPointsLoaded = function (e) {
                         );
                     
                 }
-                else {
-                    Ti.API.debug("Skipping " + building.name);
-                }
                 
                 if (building.categories) {
                     //Populate local array with unique indeces of categories, to be added to db
@@ -384,7 +379,6 @@ exports._newPointsLoaded = function (e) {
         }
     }
     catch (err) {
-        Ti.API.info("Data was invalid, calling onInvalidData()");
         //Data didn't parse, so fire an event so the controller is aware
         Ti.App.fireEvent(exports.events['LOAD_ERROR'], {errorCode: exports.requestErrors.INVALID_DATA_RETURNED, data: e.source.responseText});
     }
@@ -403,14 +397,12 @@ exports.retrieveMapCenter = function (isDefault) {
         _mapCenter.latitudeDelta = (_mapCenter.latHigh - _mapCenter.latLow) > 0.005 ? _mapCenter.latHigh - _mapCenter.latLow : 0.005;
         _mapCenter.longitudeDelta = (_mapCenter.longHigh - _mapCenter.longLow) > 0.005 ? _mapCenter.longHigh - _mapCenter.longLow : 0.005;
         
-        Ti.API.debug("mapProxy.retrieveMapCenter result: " + JSON.stringify(_mapCenter));
         return _mapCenter;
     }
 };
 
 function _onLoadError (e) {
     var errorCode;
-    Ti.API.debug("Error with map service" + JSON.stringify(e));
     Ti.App.fireEvent(exports.events['LOAD_ERROR'], {errorCode: exports.requestErrors.GENERAL_ERROR});
 };
 

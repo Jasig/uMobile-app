@@ -45,7 +45,6 @@ _layoutState = exports.indicatorStates['NONE'],
 win, contentLayer, titleBar, activityIndicator, notificationsView, isNotificationsViewInitialized, portalGridView;
 
 exports.initialize = function (portalProxy) {
-    Ti.API.info('initialize() in PortalWindowView');
     portalGridView = require('/js/views/PortalGridView');
     portalGridView.doSetPortalProxy(portalProxy);
     notificationsView = require('/js/views/PortalNotificationsView');
@@ -53,7 +52,6 @@ exports.initialize = function (portalProxy) {
 };
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
-    Ti.API.info('open() in PortalWindowView. state:'+exports.retrieveState());
     app = app || require('/js/Facade');
     config = config || require('/js/config');
     styles = styles ? styles.updateStyles() : require('/js/style');
@@ -63,7 +61,6 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     if (!win) win = Ti.UI.createWindow(styles.portalWindow);
 
     if (exports.retrieveState() === exports.states['INITIALIZED']) {
-        Ti.API.info('PortalWindowView state is INITIALIZED');
         win.open();
         _drawUI(_isGuestLayout, _isPortalReachable);
         
@@ -92,7 +89,6 @@ exports.close = function () {
 };
 
 exports.rotateView = function (orientation) {
-    Ti.API.info('rotateView() in PortalWindowView');
     styles = styles.updateStyles();
     if (contentLayer) {
         contentLayer.width = styles.portalContentLayer.width;
@@ -105,7 +101,6 @@ exports.rotateView = function (orientation) {
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
-    Ti.API.debug('_drawUI in PortalWindowView');
     // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
     if (contentLayer) {
         win.remove(contentLayer);
@@ -129,9 +124,6 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
 };
 
 function _updateUI (_isGuestLayout, _isPortalReachable) {
-    Ti.API.info('_updateUI in PortalWindowView');
-    Ti.API.info('titleBar:'+titleBar);
-    
     titleBar.rotate();
     
     _controlNotificationsBar(_isGuestLayout, _isPortalReachable);
@@ -146,7 +138,6 @@ exports.retrieveState = function () {
 };
 
 exports.updateModules = function (_modules, _isPortalReachable, _isGuestLayout) {
-    Ti.API.debug('updateModules() in PortalWindowView');
     if (portalGridView) portalGridView.updateGrid(_modules);
     if (!_isPortalReachable) _layoutState = exports.indicatorStates['NO_PORTAL'];
     if (_isGuestLayout) _layoutState = exports.indicatorStates['GUEST'];
@@ -164,7 +155,6 @@ exports.hideActivityIndicator = function () {
 };
 
 exports.alert = function (title, message) {
-    Ti.API.debug('alert() in PortalWindowView');
     exports.hideActivityIndicator();
     // if (deviceProxy.isIOS() || win.visible) {
         try {
@@ -191,7 +181,6 @@ function _onEmergencyNotification (e) {
 }
 
 function _specialLayoutIndicatorClick (e) {
-    Ti.API.debug('_specialLayoutIndicatorClick');
     var _emergencyNote;
     switch (notificationsView.currentState()) {
         case notificationsView.states['GUEST_USER']:
@@ -231,8 +220,8 @@ function _removeNotificationsBar () {
 function _addNotificationsBar () {
     var guestNotificationLabel, _timeout, _method;
     if (!isNotificationsViewInitialized) {
-        Ti.API.debug('!!! !isNotificationsViewInitialized');
-        Ti.API.debug(isNotificationsViewInitialized);
+
+
         notificationsView.createView();
         notificationsView.view().addEventListener('click', _specialLayoutIndicatorClick);
         

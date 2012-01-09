@@ -77,7 +77,7 @@ exports.retrieveCredentials = function () {
             try {
                 credentials.password = GibberishAES.dec(rows.fieldByName('value'), config.ENCRYPTION_KEY);
             } catch (e) {
-                Ti.API.debug("Couldn't decrypt password");
+                Ti.API.error("Couldn't decrypt password");
             }            
         })();
     }

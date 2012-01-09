@@ -62,7 +62,6 @@ exports.rotate = function (orientation) {
 };
 
 function constructPerson (attributes) {
-    Ti.API.info('creating person');
     var person = {};
     person.address = {};
     person.email = {};
@@ -83,8 +82,7 @@ function constructPerson (attributes) {
     person.firstName = getAttribute('firstName', attributes);
     person.fullName = getAttribute('fullName', attributes);
     person.jobTitle = getAttribute('jobTitle', attributes);
-    person.lastName = getAttribute('lastName', attributes);        
-    Ti.API.info(person);
+    person.lastName = getAttribute('lastName', attributes);
 
     return person;
 };
@@ -93,7 +91,6 @@ function getAttribute (tiAttrName, attributes) {
     var portalAttrName = config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
     if (portalAttrName) {
         var values = attributes[portalAttrName];
-        Ti.API.info(values);
         if (values && values.length > 0) {
             return values[0].replace('$', '\n');
         }
