@@ -151,7 +151,7 @@ exports.updateStyles = function () {
         width: deviceProxy.retrieveWidth(true) + 'dp'
     };
     exports.searchBarInput= {
-        width: OS === 'iphone' ? deviceProxy.retrieveWidth() - 5 - 5 : '310dp',
+        width: deviceProxy.retrieveWidth(true) - 5 - 5 + 'dp',
         height: defaults.SEARCHBAR_HEIGHT - 7 + 'dp',
         top: '5dp',
         borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,

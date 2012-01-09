@@ -36,8 +36,8 @@ exports.createSearchBar = function (opts) {
 
     searchBarObject.rotate = function (orientation) {
         styles = styles.updateStyles();
-        if (searchBar) { searchBar.width = styles.searchBar.width; }
-        if (searchBarInput) { searchBarInput.width = styles.searchBarInput.width; }
+        if (searchBar) searchBar.width = styles.searchBar.width;
+        if (searchBarInput) searchBarInput.width = styles.searchBarInput.width;
     };
     
     return searchBarObject;
