@@ -108,3 +108,6 @@ exports.en_US = {
     emailAddresses: "Email Addresses",
     directoryErrorFetching: "There was an error fetching the results for your query. Please try a different query."
 };
+exports.retrieveLocale = function (locale) {
+    return exports[locale] || exports['en_US'];
+};

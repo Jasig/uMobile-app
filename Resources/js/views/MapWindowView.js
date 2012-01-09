@@ -21,9 +21,12 @@ var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavVi
 _ = require('/js/libs/underscore-min'),
 app = require('/js/Facade'),
 styles = require('/js/style'),
-localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')].
+localDictionary = require('/js/localization').retrieveLocale(Ti.App.Properties.getString('locale')),
 deviceProxy = require('/js/models/DeviceProxy'),
 config = require('/js/config');
+
+Ti.API.debug('Ti.App.Properties.getString(locale): '+Ti.App.Properties.getString('locale'));
+Ti.API.debug('localDictionary: '+JSON.stringify(localDictionary));
 
 // Public methods
 exports.createView = function (dataProxy) {

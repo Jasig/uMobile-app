@@ -27,21 +27,22 @@ exports.createTitleBar = function () {
     titleBar.view.add(title);
     
     titleBar.updateTitle = function (t) {
+        Ti.API.debug('updateTitle() in TitleBar with new title: '+t);
         title.text = t;
     };
     
     titleBar.addHomeButton = function(){
         if (infoButtonContainer) infoButtonContainer.hide();
         if (settingsButtonContainer) settingsButtonContainer.hide();
-
+        
         homeButtonContainer = Titanium.UI.createView(styles.titleBarHomeContainer);
         titleBar.view.add(homeButtonContainer);
-
+        
         homeButton = Titanium.UI.createImageView(styles.titleBarHomeButton);
         homeButtonContainer.add(homeButton);
-
+        
         homeButtonContainer.addEventListener('singletap', onHomeClick);
-
+        
         homeButtonContainer.show();
     };
     
@@ -52,9 +53,9 @@ exports.createTitleBar = function () {
         titleBar.view.add(infoButtonContainer);
         infoButton = Titanium.UI.createImageView(styles.titleBarInfoButton);
         infoButtonContainer.add(infoButton);
-
+        
         infoButtonContainer.addEventListener('singletap', onInfoClick);
-
+        
         infoButtonContainer.show();
     };
     

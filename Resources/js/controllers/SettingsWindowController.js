@@ -45,6 +45,7 @@ exports.open = function () {
     
     win = Titanium.UI.createWindow({
         // url: 'js/views/WindowContext.js',
+        modal: false,
         exitOnClose: false, 
         backgroundColor: styles.backgroundColor,
         orientationModes: [
@@ -56,7 +57,7 @@ exports.open = function () {
         	Titanium.UI.FACE_DOWN
         ]
     });
-
+    
     win.open();
     
     titleBar = require('/js/views/UI/TitleBar').createTitleBar();
@@ -187,7 +188,7 @@ function createCredentialsForm () {
     settingsTable = Ti.UI.createTableView(styles.settingsTable);
     settingsTable.setData([credentialsGroup]);
     if (deviceProxy.isAndroid()) {
-    	settingsTable.top = titleBar.view.top + titleBar.view.height;
+    	settingsTable.top = styles.titleBar.top + styles.titleBar.height;
     }
     win.add(settingsTable);
 
