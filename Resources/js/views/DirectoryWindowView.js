@@ -173,8 +173,7 @@ function drawDefaultView () {
     peopleListTable.addEventListener('move', blurSearch);
     
     //Create and add a search bar at the top of the table to search for contacts
-    searchBar = require('/js/views/UI/SearchBar');
-    searchBar.createSearchBar({
+    searchBar = require('/js/views/UI/SearchBar').createSearchBar({
         cancel: onSearchCancel,
         submit: onSearchSubmit,
         change: onSearchChange
@@ -187,7 +186,7 @@ function drawDefaultView () {
     win.add(titleBar.view);
     titleBar.view.show();
     
-    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
     activityIndicator.resetDimensions();
     win.add(activityIndicator.view);
     activityIndicator.view.hide();

@@ -41,7 +41,7 @@ exports.render = function (viewModel) {
         Ti.API.debug("mapDetailTableView not defined.");
     }
     
-    locationDetailTitleBar = require('/js/views/UI/SecondaryNav');
+    locationDetailTitleBar = require('/js/views/UI/SecondaryNav').createSecondarNav();
     locationDetailTitleBar.view.top = 0;
     locationDetailTitleBar.titleLabel.text = viewModel.title;
     locationDetailTitleBar.leftButton.addEventListener('click', onBackBtnClick);

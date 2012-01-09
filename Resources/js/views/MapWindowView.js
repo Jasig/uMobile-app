@@ -25,7 +25,6 @@ localDictionary = require('/js/localization')[Ti.App.Properties.getString('local
 deviceProxy = require('/js/models/DeviceProxy'),
 config = require('/js/config');
 
-
 // Public methods
 exports.createView = function (dataProxy) {
     mapProxy = dataProxy;
@@ -253,6 +252,7 @@ var _createMainView = function() {
     var mapViewOpts;
     
     titleBar = require('/js/views/UI/TitleBar').createTitleBar();
+    deviceProxy = require('/js/models/DeviceProxy');
     titleBar.updateTitle(localDictionary.map);
     titleBar.addHomeButton();
 
@@ -276,12 +276,11 @@ var _createMainView = function() {
 
     view.add(titleBar.view);
     
-    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
     view.add(activityIndicator.view);
     activityIndicator.view.hide();
 
-    searchBar = require('/js/views/UI/SearchBar');
-    searchBar.createSearchBar();
+    searchBar = require('/js/views/UI/SearchBar').createSearchBar();
     view.add(searchBar.container);
     searchBar.input.addEventListener('return', _searchSubmit);
     searchBar.input.addEventListener('cancel', exports.searchBlur);
@@ -295,7 +294,7 @@ var _createMainView = function() {
         bottomNavButtons.index = 0;        
     }
     else {
-        bottomNavButtons = require('/js/views/UI/TabbedBar');
+        bottomNavButtons = require('/js/views/UI/TabbedBar').createTabbedBar();
         bottomNavButtons.doSetWidth(deviceProxy.retrieveWidth(true));
         bottomNavButtons.doSetLabels(exports.navButtonValues);
         bottomNavButtons.doSetIndex(0);
@@ -366,7 +365,7 @@ var _hideAllViews = function () {
 };
 
 var _createAndAddCategoryNav = function () {
-    categoryNavBar = require('/js/views/UI/SecondaryNav');
+    categoryNavBar = require('/js/views/UI/SecondaryNav').createSecondaryNav();
     view.add(categoryNavBar.view);
     categoryNavBar.view.top = styles.titleBar.height + 'dp';
     

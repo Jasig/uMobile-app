@@ -116,7 +116,7 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
 
     _controlNotificationsBar();
 
-    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
     win.add(activityIndicator.view);
 
     titleBar = require('/js/views/UI/TitleBar').createTitleBar();
@@ -131,17 +131,6 @@ function _updateUI (_isGuestLayout, _isPortalReachable) {
     Ti.API.info('_updateUI in PortalWindowView');
     Ti.API.info('titleBar:'+titleBar);
     
-    /*try {
-        win.remove(titleBar.view);
-    } catch (e){
-        Ti.API.error('couldn\'t remove titleBar');
-    }
-    titleBar = titleBar.createTitleBar();
-    win.add(titleBar.view);
-    
-    titleBar.addInfoButton();
-    titleBar.addSettingsButton();
-    titleBar.updateTitle(localDictionary.homeTitle);*/
     titleBar.rotate();
     
     _controlNotificationsBar(_isGuestLayout, _isPortalReachable);

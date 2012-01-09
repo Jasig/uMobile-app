@@ -83,14 +83,14 @@ function _createView (portlet) {
     _titleBar.addSettingsButton();
     
     // initialize navigation bar for URLs outside the portal
-    _navBar = require('/js/views/UI/SecondaryNav');
+    _navBar = require('/js/views/UI/SecondaryNav').createSecondaryNav();
     _navBar.leftButton.addEventListener('click', _onBackBtnPress);
     _navBar.rightButton.hide();
     _navBar.rightButton.visible = false;
     _navBar.view.top = '40dp';
     _navBar.view.visible = false;
 
-    _activityIndicator = require('/js/views/UI/ActivityIndicator');
+    _activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
     _activityIndicator.view.hide();
 
     _win.add(_titleBar.view);
@@ -117,12 +117,11 @@ function _createView (portlet) {
     
 };
 function _destroyView () {
-    
     _navBar.leftButton.removeEventListener('click', _onBackBtnPress);
-    _navBar = null;        
+    _navBar = null;
     _activityIndicator = null;
     if (_titleBar) {
-        _titleBar = null;        
+        _titleBar = null;
     }
 };
 

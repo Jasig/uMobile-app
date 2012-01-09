@@ -26,7 +26,7 @@ exports.retrieveDetailView = function () {
     if (_view) return _view;
     _view = Titanium.UI.createView(styles.contactDetailView);
 
-    secondaryNavBar = require('/js/views/UI/SecondaryNav');
+    secondaryNavBar = require('/js/views/UI/SecondaryNav').createSecondaryNav();
     secondaryNavBar.view.top = 0;
     secondaryNavBar.rightButton.hide();
     secondaryNavBar.rightButton.visible = false;

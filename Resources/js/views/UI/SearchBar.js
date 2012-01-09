@@ -1,29 +1,25 @@
-var searchBar, searchBarObject = {}, searchBarInput,
-deviceProxy = require('/js/models/DeviceProxy'),
+var deviceProxy = require('/js/models/DeviceProxy'),
 styles = require('/js/style').updateStyles();
-
-if (deviceProxy.isIOS()) {
-    searchBar = Titanium.UI.createSearchBar(styles.searchBar);
-    searchBarObject.container = searchBar;
-    searchBarObject.input = searchBar;
-}
-else {
-    searchBar = Titanium.UI.createView(styles.searchBar);
-    searchBarInput = Titanium.UI.createTextField(styles.searchBarInput);
-    searchBar.add(searchBarInput);
-    searchBarObject.container = searchBar;
-    searchBarObject.input = searchBarInput;
-}
-
-exports.container = searchBarObject.container;
-exports.input = searchBarObject.input;
-exports.hide = function () {
-    searchBarObject.container.hide();
-};
-exports.show = function () {
-    searchBarObject.container.show();
-};
 exports.createSearchBar = function (opts) {
+    var searchBar, searchBarObject = {}, searchBarInput;
+    styles = styles.updateStyles();
+    
+    if (deviceProxy.isIOS()) {
+        searchBar = Titanium.UI.createSearchBar(styles.searchBar);
+        searchBarObject.container = searchBar;
+        searchBarObject.input = searchBar;
+    }
+    else {
+        searchBar = Titanium.UI.createView(styles.searchBar);
+        searchBarInput = Titanium.UI.createTextField(styles.searchBarInput);
+        searchBar.add(searchBarInput);
+        searchBarObject.container = searchBar;
+        searchBarObject.input = searchBarInput;
+    }
+    
+    searchBarObject.hide = searchBarObject.container.hide;
+    searchBarObject.show = searchBarObject.container.show;
+    
     if (!opts) {
         opts = {};
     }
@@ -37,10 +33,12 @@ exports.createSearchBar = function (opts) {
     if (opts.change) {
         searchBarObject.input.addEventListener('change', opts.change);
     }
-};
 
-exports.rotate = function (orientation) {
-    styles = styles.updateStyles();
-    if (searchBar) { searchBar.width = styles.searchBar.width; }
-    if (searchBarInput) { searchBarInput.width = styles.searchBarInput.width; }
+    searchBarObject.rotate = function (orientation) {
+        styles = styles.updateStyles();
+        if (searchBar) { searchBar.width = styles.searchBar.width; }
+        if (searchBarInput) { searchBarInput.width = styles.searchBarInput.width; }
+    };
+    
+    return searchBarObject;
 };

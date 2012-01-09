@@ -67,7 +67,7 @@ exports.open = function () {
 
     createCredentialsForm();
     
-    activityIndicator = require('/js/views/UI/ActivityIndicator');
+    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
     activityIndicator.resetDimensions();
     win.add(activityIndicator.view);
     activityIndicator.view.hide();
