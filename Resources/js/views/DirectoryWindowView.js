@@ -166,7 +166,7 @@ function drawDefaultView () {
         top: styles.titleBar.height + styles.searchBar.getHeight + 'dp'
     });
     
-    peopleListTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+    peopleListTable.style = deviceProxy.isIOS() ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0;
     
     win.add(peopleListTable);
     peopleListTable.addEventListener('touchstart', blurSearch);

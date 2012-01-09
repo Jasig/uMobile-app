@@ -88,7 +88,7 @@ exports.updateStyles = function () {
     };
     exports.settingsTable= {
         top: defaults.TITLEBAR_HEIGHT,
-        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+        style: OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0
     };
     //Settings Properties
     exports.settingsPasswordInput= {
@@ -491,7 +491,7 @@ exports.updateStyles = function () {
     };
     exports.mapDetailTableView= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+        style: OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0
     };
     exports.mapDetailImageRow= {
         height: '220dp'
@@ -551,7 +551,7 @@ exports.updateStyles = function () {
     
     //iPhone-specific overrides
     if (OS === 'iphone' || OS === 'ipad') {
-        exports.directoryDetailAttributeTable.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+        exports.directoryDetailAttributeTable.style = OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0;
         exports.contentButton = {
             style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN,
             height: 30,

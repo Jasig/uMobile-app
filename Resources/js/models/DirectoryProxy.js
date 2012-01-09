@@ -23,11 +23,11 @@ exports.events = {
 };
 
 var person, people = [], xhrSearchClient,
+app = require('/js/Facade'),
 deviceProxy = require('/js/models/DeviceProxy'),
 config = require('/js/config'),
 localDictionary = require('/js/localization')[Titanium.App.Properties.getString('locale')];
 
-//Generate the HTTP request to be used each time a search is performed
 xhrSearchClient = Titanium.Network.createHTTPClient({
     onload: onXhrSearchLoad,
     onerror: onXhrSearchError
@@ -35,7 +35,8 @@ xhrSearchClient = Titanium.Network.createHTTPClient({
 
 exports.search = function (query) {
     if (!deviceProxy.checkNetwork()) return;
-    else if (query === '') {
+    
+    if (query === '') {
         people = [];
         Ti.App.fireEvent(exports.events['SEARCH_COMPLETE']);
     }
@@ -70,8 +71,13 @@ function doXhrSearch (query) {
     for (i = 0; i < config.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
         url += separator + config.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
         separator = '&';
-    }
-
+    }    //Generate the HTTP request to be used each time a search is performed
+    
+    xhrSearchClient = Titanium.Network.createHTTPClient({
+        onload: onXhrSearchLoad,
+        onerror: onXhrSearchError
+    });
+    
     xhrSearchClient.open('GET', url);
     xhrSearchClient.send();
     
@@ -83,18 +89,17 @@ function onXhrSearchLoad (e) {
     Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
 
     people = [];
-    (function() {
-        try {
-            var _people = JSON.parse(xhrSearchClient.responseText).people;
-            for (var i=0, iLength=_people.length; i<iLength; i++) {
-                people.push(_people[i].attributes);
-            }
-            Ti.App.fireEvent(exports.events['SEARCH_COMPLETE']);
+    
+    try {
+        var _people = JSON.parse(xhrSearchClient.responseText).people;
+        for (var i=0, iLength=_people.length; i<iLength; i++) {
+            people.push(_people[i].attributes);
         }
-        catch (err) {
-            Ti.App.fireEvent(exports.events['SEARCH_COMPLETE'], {error: localDictionary.directoryErrorFetching});
-        }            
-    })();
+        Ti.App.fireEvent(exports.events['SEARCH_COMPLETE']);
+    }
+    catch (err) {
+        Ti.App.fireEvent(exports.events['SEARCH_COMPLETE'], {error: localDictionary.directoryErrorFetching});
+    }
 };
 
 function onXhrSearchError (e) {

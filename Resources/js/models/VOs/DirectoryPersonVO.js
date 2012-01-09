@@ -17,9 +17,9 @@
  * under the License.
  */
 
-
+var config = require('/js/config');
 function getAttribute (tiAttrName, attributes) {
-    var portalAttrName = app.config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
+    var portalAttrName = config.DIRECTORY_SERVICE_RESULT_FIELDS[tiAttrName];
     if (portalAttrName) {
         var values = attributes[portalAttrName];
         if (values && values.length > 0) {
