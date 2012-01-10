@@ -37,7 +37,7 @@ exports.render = function (viewModel) {
         }
     }
     
-    locationDetailTitleBar = require('/js/views/UI/SecondaryNav').createSecondarNav();
+    locationDetailTitleBar = require('/js/views/UI/SecondaryNav').createSecondaryNav();
     locationDetailTitleBar.view.top = 0;
     locationDetailTitleBar.titleLabel.text = viewModel.title;
     locationDetailTitleBar.leftButton.addEventListener('click', onBackBtnClick);

@@ -27,16 +27,17 @@ exports.createSecondaryNav = function () {
     
     navBar.hide = navBar.view.hide;
     navBar.show = navBar.view.show;
-
+    
     navBar.rotate = function (orientation) {
         var _visibility = navBar.view.visible;
+        styles = styles.updateStyles();
         titleLabel.width = styles.secondaryNavLabel.width;
         leftButton.left = styles.secondaryNavButton.left;
         rightButton.left = deviceProxy.retrieveWidth(true) - rightButton.getWidth - styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
-
+        
         navBar.view.width = styles.secondaryNavBar.width;
         navBar.view.visible = _visibility || true;
     };
-
+    
     return navBar;
 };

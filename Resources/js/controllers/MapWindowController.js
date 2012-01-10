@@ -104,7 +104,8 @@ exports.close = function (options) {
 };
 
 exports.rotate = function (orientation) {
-    _mapWindowView.rotate(orientation);
+    if (_mapWindowView) _mapWindowView.rotate(orientation);
+    if (_mapDetailView) _mapDetailView.rotate(orientation);
 };
 
 function _loadDetail (_annotation) {
@@ -130,11 +131,10 @@ function _onMapSearch (e) {
 
 function _onMapViewClick (e) {
     var _annotation;
-    if (e.clicksource === 'title' && e.title) {
-        // _mapWindowView.searchBlur(); //Search should already be blurred...
-        _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
-        _loadDetail(_annotation);
-    }
+    if (e.clicksource !== 'title' || e.title) return;
+    // _mapWindowView.searchBlur(); //Search should already be blurred...
+    _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
+    _loadDetail(_annotation);
 }
 
 function _onNavButtonClick (e) {

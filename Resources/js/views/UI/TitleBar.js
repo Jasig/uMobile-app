@@ -72,6 +72,7 @@ exports.createTitleBar = function () {
     };
 
     titleBar.rotate = function (orientation) {
+        styles = styles.updateStyles();
         if (titleBar) titleBar.view.width = styles.titleBar.width;
         if (settingsButtonContainer) settingsButtonContainer.left = styles.titleBarSettingsContainer.left;
         if (homeButtonContainer) homeButtonContainer.left = styles.titleBarHomeContainer.left;

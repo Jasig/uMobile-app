@@ -69,6 +69,12 @@ exports.close = function () {
     _win.close();
 };
 
+exports.rotate = function (orientation) {
+    Ti.API.debug('exports.rotate() in PortletWindowController');
+    if (_titleBar) _titleBar.rotate(orientation);
+    if (_navBar) _navBar.rotate(orientation);
+};
+
 function _createView (portlet) {
     /*
         This method creates and arranges the view for the Controller, to keep the 
@@ -80,7 +86,6 @@ function _createView (portlet) {
     _titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     _titleBar.updateTitle(portlet.title);
     _titleBar.addHomeButton();
-    _titleBar.addSettingsButton();
     
     // initialize navigation bar for URLs outside the portal
     _navBar = require('/js/views/UI/SecondaryNav').createSecondaryNav();
