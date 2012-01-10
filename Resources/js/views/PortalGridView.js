@@ -94,7 +94,7 @@ exports.updateGrid = function (portlets) {
         }
     }
     
-    for (var i=0; i<_numGridItems; i++ ) {
+    for (var i=0; i<_numGridItems; i++) {
         //Place the item in the scrollview and listen for singletaps
         if (!_gridItems['fName' + _portlets[i].fname] || deviceProxy.isIOS()) {
             //Create the item, implicity add to local array, and explicitly assign sort order
@@ -117,6 +117,7 @@ exports.rotate = function (orientation, specialLayout) {
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
     _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
     _numColumns = Math.floor(deviceProxy.retrieveWidth(true) / _completeWidth);
+    _leftPadding = Math.floor(((deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
     exports.resizeGrid(specialLayout);
     _rearrangeGrid();
 };
