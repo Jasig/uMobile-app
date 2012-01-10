@@ -385,7 +385,7 @@ exports.updateStyles = function () {
         visible: false,
         top: defaults.TITLEBAR_HEIGHT + 'dp',
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT + 'dp',
-        width: OS === 'android' ? deviceProxy.retrieveWidth(true) + 'dp' : 'auto',
+        width: deviceProxy.retrieveWidth(true),
         modal: true
     };
 

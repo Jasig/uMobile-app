@@ -162,11 +162,9 @@ function _getLocalUrl (url) {
     either modify the URL and load, or will load the URL as-is if session is active.
     This method only returns a URL, doesn't actually set the url property of the webview.
     */
-
-    if (!deviceProxy.checkNetwork()) {
-        return false;
-    }
-
+    
+    if (!deviceProxy.checkNetwork()) return false;
+    
     if (url.indexOf('/') === 0) {
         var newUrl = config.BASE_PORTAL_URL + url;
         localUrl = newUrl;
