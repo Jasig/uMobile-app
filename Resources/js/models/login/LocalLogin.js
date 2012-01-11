@@ -21,7 +21,8 @@ var init,
 client, url, credentials, onLoginComplete, onLoginError, sessionProxy,
 app = require('/js/Facade'),
 config = require('/js/config'),
-userProxy = require('/js/models/UserProxy');
+userProxy = require('/js/models/UserProxy'),
+deviceProxy = require('/js/models/DeviceProxy');
 
 exports.doSetSessionProxy = function (proxy) {
     sessionProxy = proxy;
@@ -38,7 +39,7 @@ exports.login = function (creds, options) {
     });
     
     client.open('GET', url, true);
-
+    if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
 };
 
