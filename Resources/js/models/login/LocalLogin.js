@@ -29,7 +29,6 @@ onLoginComplete = function (e) {
 };
 
 onLoginError = function (e) {
-    Ti.API.debug('onLoginError() in LocalLogin. e:'+JSON.stringify(e));
     Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR'], e);
 };
 
@@ -52,8 +51,11 @@ exports.logout = function () {
     var _logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Logout';
     client = Titanium.Network.createHTTPClient({
         onload: function (e){
-            // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
+            // If it's Android, we'll use our custom clearcookies method to 
+            // clear the cookies in HTTPClient and WebView for good measure
             if (deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
+            
+            // Logout process complete, now let's get the user's layout and process the response.
             client = Titanium.Network.createHTTPClient({
                 onload: onLoginComplete,
                 onerror: onLoginError
