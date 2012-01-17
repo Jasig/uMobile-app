@@ -40,7 +40,7 @@ exports.open = function () {
     Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_SUCCESS'], onSessionSuccess);
     Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_FAILURE'], onSessionError);
     Ti.App.addEventListener(app.portalEvents['PORTLETS_LOADED'], onPortalProxyPortletsLoaded);
-
+    
     credentials = userProxy.retrieveCredentials();
     
     win = Titanium.UI.createWindow({
@@ -278,54 +278,51 @@ function onWindowBlur (e) {
 function onSessionSuccess (e) {
     var _toast;
     activityIndicator.view.hide();
+    if (!isOpen || (!wasFormSubmitted && !wasLogOutClicked)) return;
 
-    if(isOpen && (wasFormSubmitted || wasLogOutClicked)) {
-        if (e.user === usernameInput.value) {
-            logOutButton.show();
-            if (deviceProxy.isAndroid()) {
-                _toast = Titanium.UI.createNotification({
-                    duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
-                    message: localDictionary.authenticationSuccessful
-                });
-                _toast.show();
-            }
-            else {
-                exports.alert(localDictionary.success, localDictionary.authenticationSuccessful);
-            }
-        }
-        else if (e.user === 'guest' && wasLogOutClicked) {
-            if (deviceProxy.isAndroid()) {
-                _toast = Titanium.UI.createNotification({
-                    duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
-                    message: localDictionary.logOutSuccessful
-                });
-                _toast.show();
-            }
-            else {
-                exports.alert(localDictionary.success, localDictionary.logOutSuccessful);
-            }
-        }
-        else if (e.user === 'guest') {
-            wasFormSubmitted = false;
-            logOutButton.hide();
-            exports.alert(localDictionary.error, localDictionary.authenticationFailed);
+    if (e.user === usernameInput.value) {
+        logOutButton.show();
+        if (deviceProxy.isAndroid()) {
+            _toast = Titanium.UI.createNotification({
+                duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+                message: localDictionary.authenticationSuccessful
+            });
+            _toast.show();
         }
         else {
-            Ti.API.error("Logout must not've worked, user: " + e.user);
+            exports.alert(localDictionary.success, localDictionary.authenticationSuccessful);
         }
     }
+    else if (e.user === 'guest' && wasLogOutClicked) {
+        if (deviceProxy.isAndroid()) {
+            _toast = Titanium.UI.createNotification({
+                duration: Ti.UI.NOTIFICATION_DURATION_SHORT,
+                message: localDictionary.logOutSuccessful
+            });
+            _toast.show();
+        }
+        else {
+            exports.alert(localDictionary.success, localDictionary.logOutSuccessful);
+        }
+    }
+    else if (e.user === 'guest') {
+        wasFormSubmitted = false;
+        logOutButton.hide();
+        exports.alert(localDictionary.error, localDictionary.authenticationFailed);
+    }
+    else {
+        Ti.API.error("Logout must not've worked, user: " + e.user);
+    }
+
     wasLogOutClicked = false;
 }
 
 function onPortalProxyPortletsLoaded (e) {
-    if (wasFormSubmitted && e.user === credentials.username) {
-        Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
-        wasFormSubmitted = false;
-        wasLogOutClicked = false;
-    }
-    else {
-        onSessionError(e);
-    }
+    if (!wasFormSubmitted) return onSessionError(e);;
+    Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
+    wasFormSubmitted = false;
+    wasLogOutClicked = false;
+
 }
 
 function onSessionError (e) {

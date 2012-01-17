@@ -43,14 +43,17 @@ function init() {
             Ti.API.error("Login method not recognized in exports.exports.initialize()");
     }
 
-    _loginMethod.doSetSessionProxy(sessionProxy);
-
     sessionProxy.createSessionTimer();
 
     Ti.App.addEventListener(sessionProxy.events['TIMER_EXPIRED'], exports.onSessionExpire);
-    Ti.App.addEventListener(app.loginEvents['LOGIN_METHOD_RESPONSE'], _processLoginResponse);
+    Ti.App.addEventListener(app.loginEvents['LOGIN_METHOD_COMPLETE'], _processLoginResponse);
+    Ti.App.addEventListener(app.loginEvents['LOGOUT_COMPLETE'], _processLoginResponse); //TODO: Do something different to show specific text to user.
     Ti.App.addEventListener(app.loginEvents['ESTABLISH_NETWORK_SESSION'], exports.establishNetworkSession);
     Ti.App.addEventListener(app.loginEvents['CLEAR_SESSION'], exports.clearSession);   
+    Ti.App.addEventListener(app.loginEvents['LOGIN_METHOD_ERROR'], function (e){
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
+        sessionProxy.stopTimer();
+    });
 }
 
 exports.isActiveSession = function () {
@@ -76,7 +79,7 @@ exports.clearSession = function () {
 };
 
 exports.onNetworkError = function (e) {
-    Ti.App.fireEvent(app.events['NETWORK_ERROR']);
+    Ti.App.fireEvent(app.loginEvents['NETWORK_ERROR']);
 };
 
 exports.onSessionExpire = function (e) {
@@ -84,37 +87,42 @@ exports.onSessionExpire = function (e) {
 };
 
 function _processLoginResponse (e) {
-    var _responseText = e.responseText, _credentials = e.credentials, _parsedResponse;
-    
-    if (_credentials.username === '') {
-        _credentials.username = exports.userTypes['GUEST'];
-    }
+    /*
+        This method handles login/logout events fired from individual login methods (CAS,
+        Local Login, Shibboleth). The event object is supposed to contain a response 
+        (which should be a JSON string of the layout, including the user name and portlets).
+        
+    */
+    var _responseText = e.response, _parsedResponse, username;
     
     try {
-        _parsedResponse = JSON.parse(_responseText);
+        _parsedResponse = JSON.parse(e.response);
     }
-    catch (e) {
+    catch (err) {
+        Ti.API.error('Could not parse responseText: '+e.response);
         _parsedResponse = {
-            user: exports.userTypes['NO_USER'],
+            user: app.userTypes['NO_USER'],
             layout: []
         };
-        Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE']);
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
         userProxy.saveLayoutUserName(_parsedResponse.user);
         return;
     }
     
-    userProxy.saveLayoutUserName(_parsedResponse.user);
-    Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout });
+    username = _parsedResponse.user || app.userTypes['GUEST'];
     
-    if (userProxy.retrieveLayoutUserName() === _credentials.username) {
+    userProxy.saveLayoutUserName(username);
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout, user: username });
+    
+    if (userProxy.retrieveLayoutUserName() === username) {
         sessionProxy.resetTimer();
-        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true });
-        Ti.App.fireEvent(exports.events['NETWORK_SESSION_SUCCESS'], {user: userProxy.retrieveLayoutUserName()});
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true, user: username });
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_SUCCESS'], {user: username});
     }
     else {
         Ti.API.error("Network session failed");
-        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: false });
-        Ti.App.fireEvent(exports.events['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
+        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: false, user: username });
+        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE'], {user: username});
     }
 }
 

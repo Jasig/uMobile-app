@@ -40,6 +40,7 @@ Ti.App.addEventListener(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], function
 });
 
 Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
+    Ti.API.debug('PORTAL_REACHABLE event received in PortalProxy. e: '+JSON.stringify(e));
     exports.saveIsPortalReachable(e.reachable);
 });
 

@@ -18,70 +18,56 @@
  */
 
 var init,
-client, url, credentials, onLoginComplete, onLoginError, sessionProxy,
+client, url, credentials, onLoginComplete, onLoginError,
 app = require('/js/Facade'),
 config = require('/js/config'),
 userProxy = require('/js/models/UserProxy'),
 deviceProxy = require('/js/models/DeviceProxy');
 
-exports.doSetSessionProxy = function (proxy) {
-    sessionProxy = proxy;
+onLoginComplete = function (e) {
+    Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response: client.responseText });
+};
+
+onLoginError = function (e) {
+    Ti.API.debug('onLoginError() in LocalLogin. e:'+JSON.stringify(e));
+    Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR'], e);
 };
 
 exports.login = function (creds, options) {
     credentials = creds;
     url = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + config.PORTAL_CONTEXT + '/layout.json';
-    // url = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password;
-
+    
     client = Titanium.Network.createHTTPClient({
         onload: onLoginComplete,
         onerror: onLoginError
     });
     
+    Ti.API.debug('login url: '+ url);
     client.open('GET', url, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
 };
 
 exports.logout = function () {
-    exports.login({username: '', password: ''});
-    if (client.clearCookies) {
-        client.clearCookies(config.BASE_PORTAL_URL);
-    }
-};
-
-exports.retrieveLoginURL = function (url) {
-    // This method returns a URL suitable to automatically login a user in a webview.
-    credentials = userProxy.retrieveCredentials();
-    return config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + Ti.Network.encodeURIComponent(url);
-};
-
-onLoginComplete = function (e) {
-    try {
-        _parsedResponse = JSON.parse(client.responseText);
-    }
-    catch (e) {
-        _parsedResponse = {
-            user: app.userTypes['NO_USER'],
-            layout: []
-        };
-    }
-    
-    userProxy.saveLayoutUserName(_parsedResponse.user);
-    Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout });
-    
-    if (userProxy.retrieveLayoutUserName() === credentials.username || userProxy.retrieveLayoutUserName() === app.userTypes['GUEST']) {
-        sessionProxy.resetTimer();
-        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: true });
-        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_SUCCESS'], {user: userProxy.retrieveLayoutUserName()});
-    }
-    else {
-        Ti.App.fireEvent(app.portalEvents['PORTAL_REACHABLE'], { reachable: false });
-        Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE'], {user: _parsedResponse.user});
-    }
-};
-
-onLoginError = function (e) {
-    sessionProxy.stopTimer();
-    Ti.App.fireEvent(app.loginEvents['NETWORK_SESSION_FAILURE']);
+    var _logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Logout';
+    client = Titanium.Network.createHTTPClient({
+        onload: function (e){
+            // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
+            if (deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
+            client = Titanium.Network.createHTTPClient({
+                onload: onLoginComplete,
+                onerror: onLoginError
+            });
+            
+            client.open('GET', config.LAYOUT_URL, true);
+            if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            client.send();
+        },
+        onerror: function (e) {
+            Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR'], e);
+        }
+    });
+    client.open('GET', _logoutUrl, true);
+    if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+    client.send();
 };

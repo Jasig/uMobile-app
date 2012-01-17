@@ -16,11 +16,9 @@ exports.loginEvents = {
     CLEAR_SESSION           : "ClearNetworkSession",
     NETWORK_SESSION_FAILURE : "EstablishNetworkSessionFailure",
     NETWORK_SESSION_SUCCESS : "EstablishNetworkSessionSuccess",
-    LOGIN_METHOD_RESPONSE   : "LoginProxyLoginMethodResponse",
     LOGIN_METHOD_COMPLETE   : "LoginProxyLoginMethodComplete",
-    WEBVIEW_LOGIN_RESPONSE  : "LoginProxyWebviewLoginResponse",
-    WEBVIEW_LOGIN_FAILURE   : "LoginProxyWebviewLoginFailure",
-    WEBVIEW_LOGIN_SUCCESS   : "LoginProxyWebviewLoginSuccess"
+    LOGIN_METHOD_ERROR      : "LoginProxyLoginMethodError",
+    LOGOUT_COMPLETE         : "LoginProxyLogoutComplete"
 };
 
 exports.userTypes = {
@@ -32,7 +30,8 @@ exports.portalEvents = {
     GETTING_PORTLETS            : 'PortalProxyGettingPortlets',
     PORTLETS_RETRIEVED_SUCCESS  : 'PortalProxyPortletsRetrievedSuccess',
     PORTLETS_RETRIEVED_FAILURE  : 'PortalProxyPortletsRetrievedFailure',
-    PORTAL_REACHABLE          : "PortalUnreachable",
+    PORTAL_REACHABLE            : "PortalReachable",
+    PORTAL_UNREACHABLE          : "PortalUnreachable",
     PORTLETS_LOADED             : 'PortalProxyPortletsLoaded', //When portlets are sorted, organized, ready to use
     NETWORK_ERROR               : 'PortalProxyNetworkError'
 };
