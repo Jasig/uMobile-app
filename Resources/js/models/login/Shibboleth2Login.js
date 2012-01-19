@@ -10,40 +10,37 @@ _logoutURL = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + "/Logout";
 
 exports.login = function (credentials, options) {
     _credentials = credentials;
-    if (_credentials.username === '') {
-        //No credentials with which to login, let's load layout.json
-        _onPortalSessionEstablished();
-    }
-    else {
-        /*
-            First step is to load the HTML form, which sets the cookies
-            that will be used to complete the login process and login to
-            the portal.
-        */
-        _client = Ti.Network.createHTTPClient({
-            onload: function (e) {
-                _client = Ti.Network.createHTTPClient({
-                    onload  : _onInitialResponse,
-                    onerror : _onInitialError
-                });
-                _client.open('GET', _loginURL);
-                _client.send();
-            },
-            onerror: function (e) {
-                Ti.API.error("There was an error requesting the portal");
-            }
-        });
-        _client.open("GET", app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT);
-        if (_client.clearCookies) {
-            _client.clearCookies(app.config.BASE_PORTAL_URL);
-            _client.clearCookies(app.config.SHIB_BASE_URL);
-            _client.clearCookies(app.config.SHIB_BASE_URL + "/idp");
+    if (_credentials.username === '') return _onPortalSessionEstablished();
+    
+    /*
+        First step is to load the HTML form, which sets the cookies
+        that will be used to complete the login process and login to
+        the portal.
+    */
+    _client = Ti.Network.createHTTPClient({
+        onload: function (e) {
+            _client = Ti.Network.createHTTPClient({
+                onload  : _onInitialResponse,
+                onerror : _onInitialError
+            });
+            _client.open('GET', _loginURL);
+            _client.send();
+        },
+        onerror: function (e) {
+            Ti.API.error("There was an error requesting the portal");
         }
-        if (app.models.deviceProxy.isAndroid()) {
-            _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-        }
-        _client.send();
+    });
+    _client.open("GET", app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT);
+    
+    if (_client.clearCookies) {
+        _client.clearCookies(app.config.BASE_PORTAL_URL);
+        _client.clearCookies(app.config.SHIB_BASE_URL);
+        _client.clearCookies(app.config.SHIB_BASE_URL + "/idp");
     }
+    if (app.models.deviceProxy.isAndroid()) {
+        _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+    }
+    _client.send();
 };
 
 exports.logout = function () {
@@ -124,10 +121,7 @@ _onPortalSessionEstablished = function (e) {
     */
     _client = Ti.Network.createHTTPClient({
         onload: function (e) {
-            Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], {
-                responseText:_client.responseText
-                , credentials: _credentials
-            });
+            Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response : _client.responseText });
         },
         onerror: function (e) {
             Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
@@ -191,5 +185,5 @@ function _onLoginComplete (e) {
 };
 
 function _onLoginError (e) {
-    Ti.API.error("responseText: " + _client.responseText);
+    Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
 };
