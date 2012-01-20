@@ -24,9 +24,11 @@ windowManager = require('/js/models/WindowManager'),
 appMessages = require('/js/models/AppMessageManager'),
 config = require('/js/config');
 
+Ti.Database.install('umobile.sqlite','umobile');
+
 appMessages.register('location', 'map');
 
-Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow: config.HOME_KEY });
+Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow : config.HOME_KEY });
 
 Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
 	if (e.url) return Ti.Platform.openURL(e.url);

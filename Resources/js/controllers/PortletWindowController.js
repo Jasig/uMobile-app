@@ -20,8 +20,17 @@
 
 var _activePortlet, _homeURL, _currentURL, _homeFName, app, config, styles, deviceProxy, localDictionary,
 _lastVideoOpened = '', 
+_ = require('/js/libs/underscore-min'),
 _isListeningForAndroidBack = false,
-_win, _activityIndicator, _titleBar, _navBar,_webView;
+_win, _activityIndicator, _titleBar, _navBar,_webView,
+updateIntentURLs = function updateIntentURLs () {
+    var links = document.links;
+    for (var i = 0, iLength = links.length; i < iLength; i++) {
+        if (links[i].href.indexOf('/s/') > -1) {
+            links[i].href = links[i].href.replace('{PORTAL_CONTEXT}', '/umobile.nativeapplication');
+        }
+    }
+};
 
 exports.open = function (portlet) {
     /*
@@ -101,18 +110,11 @@ function _createView (portlet) {
     _win.add(_titleBar.view);
     _win.add(_navBar.view);
     
-    if (deviceProxy.isIOS() && _webView) {
-        _webView = Titanium.UI.createWebView(styles.portletView);
-        _win.add(_webView);
-        _webView.addEventListener('load', _onPortletLoad);
-        _webView.addEventListener('beforeload', _onPortletBeforeLoad);
-    }
-    else {
-        _webView = Titanium.UI.createWebView(styles.portletView);
-        _win.add(_webView);
-        _webView.addEventListener('load', _onPortletLoad);
-        _webView.addEventListener('beforeload', _onPortletBeforeLoad);
-    }
+    _webView = Titanium.UI.createWebView(styles.portletView);
+    _win.add(_webView);
+    _webView.addEventListener('load', _onPortletLoad);
+    _webView.addEventListener('beforeload', _onPortletBeforeLoad);
+    
     _webView.scalePageToFit = true;
     _webView.validatesSecureCertificate = false;
     
@@ -122,12 +124,10 @@ function _createView (portlet) {
     
 };
 function _destroyView () {
-    _navBar.leftButton.removeEventListener('click', _onBackBtnPress);
+    if (_navBar) _navBar.leftButton.removeEventListener('click', _onBackBtnPress);
     _navBar = null;
     _activityIndicator = null;
-    if (_titleBar) {
-        _titleBar = null;
-    }
+    _titleBar = null;
 };
 
 function _includePortlet (portlet) {
@@ -205,10 +205,35 @@ function _getAbsoluteURL (url) {
     return _url;
 };
 
+function broadcastMessage (url) {
+    /*
+        This method is called when a link in the webview is clicked if
+        if contains a special code indicating that the uMobile native
+        application should handle the link natively.
+        If no callback is registered for the intent, the broadcast 
+        method returns false.
+    */
+    var parameters = {},
+    rawParamArray = url.split('?')[1].split('&');
+    
+    _.each(rawParamArray, function (item, index, list){
+        parameters[item.split('=')[0]] = item.split('=')[1];
+    });
+    
+    var intent = url.split('/s/')[1].split('?')[0];
+    
+    return require('/js/models/AppMessageManager').broadcast(intent, parameters);
+}
+
 function _onPortletBeforeLoad (e) {
     if (_webView.url !== _getAbsoluteURL(_webView.url)) {
         _webView.stopLoading();
         _webView.url = _getAbsoluteURL(_webView.url);
+    }
+    else if (e.url.indexOf('umobile.nativeapplication') > -1 || _webView.url.indexOf('umobile.nativeapplication') > -1) {
+        //Check if the loading URL should be opened natively, if an intent has been registered for it.
+        var url = e.url.indexOf('umobile.nativeapplication') === 0 ? e.url : _webView.url;
+        if (broadcastMessage(url)) return;
     }
     else if (e.url.indexOf('http://m.youtube.com') === 0 && deviceProxy.isAndroid()) {
         /*
@@ -268,9 +293,18 @@ function _onPortletLoad (e) {
         such as determining whether to reset the webview session timer,
         and show the nav bar with back button
     */
+    if (e.url.indexOf('umobile.nativeapplication') > -1 || _webView.url.indexOf('umobile.nativeapplication') > -1) {
+        //Check if the loading URL should be opened natively, if an intent has been registered for it.
+        var url = e.url.indexOf('umobile.nativeapplication') === 0 ? e.url : _webView.url;
+        if (broadcastMessage(url)) return;
+    }
+    
     var portalIndex = e.url.indexOf(config.BASE_PORTAL_URL);
 
     _webView.show();
+    
+    _webView.evalJS(updateIntentURLs.toString().replace('{PORTAL_CONTEXT}', config.PORTAL_CONTEXT));
+    _webView.evalJS('updateIntentURLs()');
     _currentURL = e.url;
     
     _activityIndicator.view.hide();
