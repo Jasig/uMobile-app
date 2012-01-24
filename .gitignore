@@ -1,7 +1,4 @@
 .fastdev.lock
-*.sqlite
-umobile.sqlite
-Resources/umobile.sqlite
 .DS_Store
 build/
 build.log

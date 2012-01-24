@@ -24,12 +24,12 @@ _ = require('/js/libs/underscore-min'),
 _isListeningForAndroidBack = false,
 _win, _activityIndicator, _titleBar, _navBar,_webView,
 updateIntentURLs = function updateIntentURLs () {
-    var links = document.links;
+    /*var links = document.links;
     for (var i = 0, iLength = links.length; i < iLength; i++) {
         if (links[i].href.indexOf('/s/') > -1) {
             links[i].href = links[i].href.replace('{PORTAL_CONTEXT}', '/umobile.nativeapplication');
         }
-    }
+    }*/
 };
 
 exports.open = function (portlet) {
@@ -114,6 +114,12 @@ function _createView (portlet) {
     _win.add(_webView);
     _webView.addEventListener('load', _onPortletLoad);
     _webView.addEventListener('beforeload', _onPortletBeforeLoad);
+    _webView.addEventListener('request', function (e) {
+        if (e.url.indexOf('/s/') > -1) {
+            //Check if the loading URL should be opened natively, if an intent has been registered for it.
+            if (broadcastMessage(e.url)) _webView.stopLoading();
+        }
+    });
     
     _webView.scalePageToFit = true;
     _webView.validatesSecureCertificate = false;
@@ -230,11 +236,6 @@ function _onPortletBeforeLoad (e) {
         _webView.stopLoading();
         _webView.url = _getAbsoluteURL(_webView.url);
     }
-    else if (e.url.indexOf('umobile.nativeapplication') > -1 || _webView.url.indexOf('umobile.nativeapplication') > -1) {
-        //Check if the loading URL should be opened natively, if an intent has been registered for it.
-        var url = e.url.indexOf('umobile.nativeapplication') === 0 ? e.url : _webView.url;
-        if (broadcastMessage(url)) return;
-    }
     else if (e.url.indexOf('http://m.youtube.com') === 0 && deviceProxy.isAndroid()) {
         /*
             Android had/has a bug that won't play youTube videos inside of a webView,
@@ -293,18 +294,11 @@ function _onPortletLoad (e) {
         such as determining whether to reset the webview session timer,
         and show the nav bar with back button
     */
-    if (e.url.indexOf('umobile.nativeapplication') > -1 || _webView.url.indexOf('umobile.nativeapplication') > -1) {
-        //Check if the loading URL should be opened natively, if an intent has been registered for it.
-        var url = e.url.indexOf('umobile.nativeapplication') === 0 ? e.url : _webView.url;
-        if (broadcastMessage(url)) return;
-    }
     
     var portalIndex = e.url.indexOf(config.BASE_PORTAL_URL);
 
     _webView.show();
     
-    _webView.evalJS(updateIntentURLs.toString().replace('{PORTAL_CONTEXT}', config.PORTAL_CONTEXT));
-    _webView.evalJS('updateIntentURLs()');
     _currentURL = e.url;
     
     _activityIndicator.view.hide();
