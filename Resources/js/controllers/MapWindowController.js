@@ -28,7 +28,8 @@ exports.events = {
 var _locationDetailViewOptions, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win, localDictionary, deviceProxy, styles,
 _categoryResultsPerPage = 10;
 
-exports.open = function () {
+exports.open = function (parameters) {
+    Ti.API.debug('exports.open() in MapWindowController. parameters:'+JSON.stringify(parameters));
     _mapWindowView = require('/js/views/MapWindowView');
     _mapDetailView = require('/js/views/MapDetailView');
     _mapProxy = require('/js/models/MapProxy');

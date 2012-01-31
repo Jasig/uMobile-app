@@ -20,29 +20,13 @@ Titanium.include('/js/gibberishAES.js');
 var config = require('/js/config');
 
 exports.saveCredentials = function (credentials) {
-    var db, username, password;
-
+    var username, password;
+    
     username = GibberishAES.enc(credentials.username, config.ENCRYPTION_KEY);
     password = GibberishAES.enc(credentials.password, config.ENCRYPTION_KEY);
-
-    // open the database
-    db = Ti.Database.open('umobile');
-
-    // clear out any existing credentials to prevent the accumulation of duplicate rows
-    db.execute('DELETE FROM prefs WHERE name="username" OR name="password"');
-
-    // persist the new credentials
-    db.execute(
-        'INSERT INTO prefs (name, value) values ("username", ?)',
-        username
-    );
-    db.execute(
-        'INSERT INTO prefs (name, value) values ("password", ?)',
-        password
-    );
-
-    // close the database
-    db.close();
+    
+    Ti.App.Properties.setString('username', username);
+    Ti.App.Properties.setString('password', password);
 };
 
 /**
@@ -51,39 +35,20 @@ exports.saveCredentials = function (credentials) {
  * will each be null;
  */
 exports.retrieveCredentials = function () {
-    var db, rows, credentials;
-
-    // make sure the database has been initialized
-    db = Ti.Database.install('umobile.sqlite','umobile');
-
+    var db, rows, credentials,
+    encUsername = Ti.App.Properties.getString('username'),
+    encPassword = Ti.App.Properties.getString('password');
+    
     credentials = {
         username: '',
         password: ''
     };
-
-    rows = db.execute('SELECT value from prefs where name="username"');
-    if (rows.isValidRow()) {
-        try { 
-            credentials.username = GibberishAES.dec(rows.fieldByName('value'), config.ENCRYPTION_KEY);
-        } catch (e) {
-            Ti.API.error("Couldn't decrypt username");
-        }
-    }
-    rows.close();
-
-    rows = db.execute('SELECT value from prefs where name="password"');
-    if (rows.isValidRow()) {
-        (function(){
-            try {
-                credentials.password = GibberishAES.dec(rows.fieldByName('value'), config.ENCRYPTION_KEY);
-            } catch (e) {
-                Ti.API.error("Couldn't decrypt password");
-            }            
-        })();
-    }
-    rows.close();
-    db.close();
-
+    
+    if (encUsername) credentials.username = GibberishAES.dec(encUsername, config.ENCRYPTION_KEY);
+    if (encPassword) credentials.password = GibberishAES.dec(encPassword, config.ENCRYPTION_KEY);
+    
+    Ti.API.debug('retrieving credentials: '+JSON.stringify(credentials));
+    
     return credentials;
 };
 

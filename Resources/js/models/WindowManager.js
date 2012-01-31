@@ -42,7 +42,7 @@ exports.rotateWindow = function (orientation) {
     }
 };
 
-exports.openWindow = function (windowKey, portlet) {
+function openWindow (windowKey, portlet, parameters) {
     var callback;
     
     if (applicationWindows[windowKey] && exports.retrieveCurrentWindow() !== windowKey) {
@@ -96,7 +96,7 @@ exports.goBack = function () {
     //Show the previous window, and add it to the top of the activity stack.
     //Use this method at your own risk, doesn't open portlets yet, and is quirky with opening home window.
     if (activityStack.length >= 2) {
-        exports.openWindow(activityStack[activityStack.length - 2]);
+        openWindow(activityStack[activityStack.length - 2]);
     }
 };
 
@@ -121,7 +121,7 @@ function onAndroidBack (e) {
 };
 
 function onNetworkConnectionError (e) {
-    exports.openWindow(config.PORTLET_KEY, {
+    openWindow(config.PORTLET_KEY, {
         title: localDictionary.noNetworkTitle,
         fname: 'nonetwork',
         url: Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, 'html/no-network-en_US.html').nativePath
@@ -129,10 +129,21 @@ function onNetworkConnectionError (e) {
 };
 
 function onShowWindow (e) {
-    exports.openWindow(e.newWindow);
+    if (e.parameters) {
+        openWindow(e.newWindow, null, e.parameters);
+    }
+    else {
+        openWindow(e.newWindow);
+    }
 };
 
-function onShowPortlet (portlet) {
-    exports.openWindow(config.PORTLET_KEY, portlet);
+function onShowPortlet (e) {
+    if (e.parameters) {
+        openWindow(config.PORTLET_KEY, e.portlet, e.parameters);
+    }
+    else {
+        openWindow(config.PORTLET_KEY, e);
+    }
+    
 };
 

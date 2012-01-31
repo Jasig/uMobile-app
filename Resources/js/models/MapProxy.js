@@ -365,20 +365,20 @@ exports._newPointsLoaded = function (e) {
             _db.execute("COMMIT TRANSACTION");
             
             for (var _category in _categories) {
-                if (_categories.hasOwnProperty(_category)) {
-                    _db.execute('REPLACE INTO map_categories (name) VALUES (?)', _category);
-                }
+                if (_categories.hasOwnProperty(_category)) _db.execute('REPLACE INTO map_categories (name) VALUES (?)', _category);
             }
             
             _db.close();
             _onPointsLoaded();
         }
         else {
+            Ti.API.error('MapProxy: No Data returned');
             //No location objects in the response, so fire an event so the controller is aware.
             Ti.App.fireEvent(exports.events['LOAD_ERROR'], {errorCode: exports.requestErrors.NO_DATA_RETURNED});
         }
     }
     catch (err) {
+        Ti.API.error('MapProxy: Invalid Data Returned');
         //Data didn't parse, so fire an event so the controller is aware
         Ti.App.fireEvent(exports.events['LOAD_ERROR'], {errorCode: exports.requestErrors.INVALID_DATA_RETURNED, data: e.source.responseText});
     }
