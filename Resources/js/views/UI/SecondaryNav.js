@@ -14,13 +14,12 @@ exports.createSecondaryNav = function () {
     navBar.view.add(leftButton);
 
     rightButton = Titanium.UI.createButton(styles.secondaryNavButton);
-    rightButton.left = deviceProxy.retrieveWidth(true) - styles.secondaryNavButton.getWidth - styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
+    rightButton.left = deviceProxy.retrieveWidth(true) - styles.secondaryNavButton.plainWidth - styles.secondaryNavButton.plainLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
     navBar.view.add(rightButton);
 
     titleLabel = Titanium.UI.createLabel(styles.secondaryNavLabel);
     navBar.view.add(titleLabel);
 
-    
     navBar.leftButton = leftButton;
     navBar.rightButton = rightButton;
     navBar.titleLabel = titleLabel;
@@ -33,7 +32,8 @@ exports.createSecondaryNav = function () {
         styles = styles.updateStyles();
         titleLabel.width = styles.secondaryNavLabel.width;
         leftButton.left = styles.secondaryNavButton.left;
-        rightButton.left = deviceProxy.retrieveWidth(true) - rightButton.getWidth - styles.secondaryNavButton.getLeft + 'dp'; //Had to do it this way so Android wouldn't stretch the button
+        rightButton.left = (deviceProxy.retrieveWidth(true) - rightButton.plainWidth - styles.secondaryNavButton.plainLeft);
+        if (deviceProxy.isAndroid()) rightButton.left += 'dp'; //Had to do it this way so Android wouldn't stretch the button
         
         navBar.view.width = styles.secondaryNavBar.width;
         navBar.view.visible = _visibility || true;
