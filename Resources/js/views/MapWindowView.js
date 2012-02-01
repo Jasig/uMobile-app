@@ -116,13 +116,16 @@ exports.openCategoryBrowsingView = function (categories) {
                     _labelStyle.text = c[i]['numChildren'];
                     _data[i].add(Ti.UI.createLabel(_labelStyle));
                     
-                    // Add the label for the row
-                    var _categoryLabel = Ti.UI.createLabel({
-                        text: _categoryName,
-                        left: '10dp',
-                        color: "#000"
-                    });
-                    _data[i].add(_categoryLabel);
+                    if (deviceProxy.isAndroid()) {
+                        // This was causing double titles to be displayed in iOS. If it looks bad in Android, remove it altogether.
+                        // Add the label for the row
+                        var _categoryLabel = Ti.UI.createLabel({
+                            text: _categoryName,
+                            left: '10dp',
+                            color: "#000"
+                        });
+                        _data[i].add(_categoryLabel);
+                    }
                     
                     // Add a listener to the row to let the controller 
                     // know the user wants to explore the category
