@@ -25,11 +25,10 @@ exports.events = {
     LOAD_DETAIL : 'loaddetail'
 };
     
-var _locationDetailViewOptions, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win, localDictionary, deviceProxy, styles,
+var _locationDetailView, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win, localDictionary, deviceProxy, styles,
 _categoryResultsPerPage = 10;
 
 exports.open = function (parameters) {
-    Ti.API.debug('exports.open() in MapWindowController. parameters:'+JSON.stringify(parameters));
     _mapWindowView = require('/js/views/MapWindowView');
     _mapDetailView = require('/js/views/MapDetailView');
     _mapProxy = require('/js/models/MapProxy');
@@ -50,7 +49,7 @@ exports.open = function (parameters) {
         ]
     });
     _win.open();
-
+    
     Ti.App.addEventListener(_mapProxy.events['SEARCHING'], _onProxySearching);
     Ti.App.addEventListener(_mapProxy.events['SEARCH_COMPLETE'], _onProxySearchComplete);
     Ti.App.addEventListener(_mapProxy.events['EMPTY_SEARCH'], _onProxyEmptySearch);
@@ -71,7 +70,7 @@ exports.open = function (parameters) {
     _mapProxy.initialize();
     
     _win.add(_mapWindowView.createView(_mapProxy));
-    _mapWindowView.hideActivityIndicator();    
+    _mapWindowView.hideActivityIndicator();
 };
 
 exports.close = function (options) {
@@ -95,6 +94,7 @@ exports.close = function (options) {
     _win.removeEventListener('android:search', _onAndroidSearch);
     
     _mapWindowView = null;
+    _locationDetailView = null;
     _mapDetailView = null;
     _mapProxy = null;
     localDictionary = null;
@@ -115,12 +115,13 @@ function _loadDetail (_annotation) {
     _mapWindowView.showActivityIndicator();
     _mapWindowView.searchBlur();
 
-    exports._locationDetailView = _mapDetailView.detailView;
-    _win.add(exports._locationDetailView);
-
+    if (!_locationDetailView) {
+        _locationDetailView = _mapDetailView.detailView;
+        _win.add(_locationDetailView);
+    }
     _mapDetailView.render(_annotation);
     
-    exports._locationDetailView.show();
+    _locationDetailView.show();
 
     _mapWindowView.hideActivityIndicator();
 }
@@ -256,8 +257,8 @@ function _onAndroidSearch (e) {
 	if (_mapWindowView._searchBar && _mapWindowView._searchBar.input) {
 		_mapWindowView._searchBar.input.focus();
 	}
-	if (_mapWindowView._locationDetailView) {
-		_mapWindowView._locationDetailView.hide();
+	if (_mapDetailView.detailView) {
+		_mapDetailView.detailView.hide();
 	}
 };
 
