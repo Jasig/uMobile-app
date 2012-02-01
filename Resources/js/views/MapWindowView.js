@@ -118,6 +118,7 @@ exports.openCategoryBrowsingView = function (categories) {
                     
                     if (deviceProxy.isAndroid()) {
                         // This was causing double titles to be displayed in iOS. If it looks bad in Android, remove it altogether.
+                        // See UMOBILE-224 for backstory.
                         // Add the label for the row
                         var _categoryLabel = Ti.UI.createLabel({
                             text: _categoryName,
@@ -175,6 +176,7 @@ exports.openCategoryLocationsListView = function (viewModel) {
 
 exports.openCategoryLocationsMapView = function (viewModel) {
     _hideAllViews();
+    if (zoomButtonBar) zoomButtonBar.show();
     
     // If there isn't a categoryNavBar yet, go ahead and create one.
     if (!categoryNavBar) _createAndAddCategoryNav();
@@ -192,6 +194,7 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 exports.openSearchView = function () {
     _hideAllViews();
     if (searchBar) searchBar.show();
+    if (zoomButtonBar) zoomButtonBar.show();
     if (mapView) mapView.show();
 };
 
@@ -203,6 +206,7 @@ exports.openFavoritesBrowsingView = function () {
 exports.openFavoritesMapView = function () {
     // TODO: Implement this view
     _hideAllViews();
+    if (zoomButtonBar) zoomButtonBar.show();
 };
 
 exports.doGetView = function () {
@@ -360,6 +364,7 @@ var _hideAllViews = function () {
     // so that the different methods don't have to worry about what views to close
     if (searchBar) searchBar.hide();
     if (mapView) mapView.hide();
+    if (zoomButtonBar) zoomButtonBar.hide();
     if (favoritesBar) favoritesBar.hide();
     if (categoryNavBar) categoryNavBar.hide();
     if (categoryBrowsingView) categoryBrowsingView.hide();
