@@ -132,7 +132,7 @@ function _onMapSearch (e) {
 
 function _onMapViewClick (e) {
     var _annotation;
-    if (e.clicksource !== 'title' || e.title) return;
+    if (e.clicksource !== 'title' || !e.title) return;
     // _mapWindowView.searchBlur(); //Search should already be blurred...
     _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
     _loadDetail(_annotation);
