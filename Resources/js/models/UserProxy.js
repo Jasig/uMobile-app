@@ -47,8 +47,6 @@ exports.retrieveCredentials = function () {
     if (encUsername) credentials.username = GibberishAES.dec(encUsername, config.ENCRYPTION_KEY);
     if (encPassword) credentials.password = GibberishAES.dec(encPassword, config.ENCRYPTION_KEY);
     
-    Ti.API.debug('retrieving credentials: '+JSON.stringify(credentials));
-    
     return credentials;
 };
 
