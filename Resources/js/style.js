@@ -478,7 +478,7 @@ exports.updateStyles = function () {
         color: '#fff',
         backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
         style: OS === "iphone" ? Titanium.UI.iPhone.SystemButtonStyle.BAR : "",
-        height: OS === "iphone" ? 35 : '50dp',
+        height: OS === "iphone" || OS === "ipad" ? 35 : '50dp',
         getHeight: OS === "iphone" ? 35 : 50,
         width: deviceProxy.retrieveWidth(true) - 20 + 'dp',
         getWidth: deviceProxy.retrieveWidth(true) - 20

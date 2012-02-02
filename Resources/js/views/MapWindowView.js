@@ -292,7 +292,7 @@ var _createMainView = function() {
     bottomNavView = Ti.UI.createView(styles.mapNavView);
     view.add(bottomNavView);
     if (deviceProxy.isIOS()) {
-        bottomNavButtons = Titanium.UI.createTabbedBar(styles.mapButtonBar);
+        bottomNavButtons = Ti.UI.iOS.createTabbedBar(styles.mapButtonBar);
         bottomNavButtons.labels = exports.navButtonValues;
         bottomNavButtons.width = 225;
         bottomNavButtons.index = 0;        
