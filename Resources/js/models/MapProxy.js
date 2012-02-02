@@ -324,19 +324,19 @@ exports._newPointsLoaded = function (e) {
     try {
         _response = JSON.parse(e.source.responseText);
         //Set the default map center
-        _defaultMapCenter.latitude = parseFloat(_response.defaultLocation.latitude);
-        _defaultMapCenter.longitude = parseFloat(_response.defaultLocation.longitude);
-        _responseLength = _response.buildings.length;
+        _defaultMapCenter.latitude = parseFloat(_response.mapData.defaultLocation.latitude);
+        _defaultMapCenter.longitude = parseFloat(_response.mapData.defaultLocation.longitude);
+        _responseLength = _response.mapData.locations.length;
         
         if (_responseLength > 0) {
             _db = Ti.Database.open('umobile');
-            _mapCenter.latLow = _response.buildings[0].latitude;
-            _mapCenter.latHigh = _response.buildings[0].latitude; 
-            _mapCenter.longLow = _response.buildings[0].longitude;
-            _mapCenter.longHigh = _response.buildings[0].longitude;
+            _mapCenter.latLow = _response.mapData.locations[0].latitude;
+            _mapCenter.latHigh = _response.mapData.locations[0].latitude; 
+            _mapCenter.longLow = _response.mapData.locations[0].longitude;
+            _mapCenter.longHigh = _response.mapData.locations[0].longitude;
             _db.execute("BEGIN IMMEDIATE TRANSACTION");
             for (var i = 0; i < _responseLength; i++) {
-                var building = _response.buildings[i];
+                var building = _response.mapData.locations[i];
                 
                 if (building.name && building.latitude && building.longitude) {
                     building.title = building.name;
