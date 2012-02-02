@@ -49,7 +49,7 @@ exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT +
 
 //------- MAP SERVICE -------
 
-exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
+exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/p/map/resource.uP';
 
 //-------- NOTIFICATIONS SERVICE ---------
 exports.NOTIFICATIONS_ENABLED = false;
