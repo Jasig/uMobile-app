@@ -136,7 +136,7 @@ exports.SETTINGS_KEY = 'settings';
 exports.nativeIcons = {
     athletics: 'athletics.png',
 	calendar : 'calendar.png',
-        computer-labs : 'computer_lab.png',
+        "computer-labs" : 'computer_lab.png',
 	courses: 'courses.png',
         dining : 'dining.png',
 	directory : 'directory.png',
