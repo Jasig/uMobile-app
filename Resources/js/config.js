@@ -52,7 +52,7 @@ exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT +
 exports.MAP_SERVICE_URL = exports.BASE_PORTAL_URL + '/MapPortlet/api/locations.json';
 
 //-------- NOTIFICATIONS SERVICE ---------
-exports.NOTIFICATIONS_ENABLED = true;
+exports.NOTIFICATIONS_ENABLED = false;
 exports.NOTIFICATIONS_SERVICE = (Titanium.Platform.name == 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000')+'/search/Notifications';
 
 
