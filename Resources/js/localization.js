@@ -91,6 +91,8 @@ exports.en_US = {
     //Directory Window
     directory: "Directory",
     directoryRequiresNetwork: "Directory search requires a network connection. Please connect to a network prior to searching.",
+    gettingContactInfo: "Getting contact info for user.",
+    couldNotLoadUser: "Information for that user could not be found.",
     noContactData: "No contact data is available.",
     directorySearchHintText: "John Doe, Jdoe@myschool.edu, 555 555 5555",
     phoneDirectory: "Phone Directory",
