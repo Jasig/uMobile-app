@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+var numCategories;
 var _mapCenter = {
     latitude        : false,
     longitude       : false,
@@ -176,6 +176,10 @@ exports.loadMapPoints = function () {
 
 };
 
+exports.retrieveTotalCategories = function () {
+    return numCategories || -1;
+};
+
 exports.retrieveCategoryList = function () {
     /*
         In this method, we'll 
@@ -221,6 +225,8 @@ exports.retrieveCategoryList = function () {
         _resultSet.close();
     }
     db.close();
+    
+    numCategories = result.length;
     
     return result;
 };

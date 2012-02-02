@@ -90,6 +90,13 @@ exports.searchBlur = function (e) {
 exports.openCategoryBrowsingView = function (categories) {
     _hideAllViews();
     
+    Ti.API.debug('openCategoryBrowsingView() in MapWindowView.');
+    var _categoryName = categories[0].name;
+    Ti.API.debug('_categoryName: '+_categoryName);
+    var _locationsByCategory = require('/js/models/MapProxy').retrieveLocationsByCategory(_categoryName);
+    Ti.API.debug('_locationsByCategory: '+_locationsByCategory);
+    if (categories.length === 1) return exports.openCategoryLocationsListView(_locationsByCategory);
+    Ti.API.debug('There are more than one category, or else this method would have returned by now.');
     // If there isn't a categoryNavBar yet, go ahead and create one.
     if (!categoryNavBar) _createAndAddCategoryNav();
     
@@ -159,7 +166,9 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryLocationsListView.show();
     if (!categoryNavBar) _createAndAddCategoryNav();
     categoryNavBar.view.show();
-    categoryNavBar.leftButton.show();
+    Ti.API.debug("require('/js/models/MapProxy').retrieveTotalCategories():"+require('/js/models/MapProxy').retrieveTotalCategories());
+    
+    categoryNavBar.leftButton[require('/js/models/MapProxy').retrieveTotalCategories() > 1 ? 'show' : 'hide']();
     categoryNavBar.titleLabel.text = viewModel.categoryName;
     categoryNavBar.rightButton.title = localDictionary.map;
     categoryNavBar.rightButton.show();
