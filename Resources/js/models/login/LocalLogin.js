@@ -48,19 +48,20 @@ exports.login = function (creds, options) {
 };
 
 exports.logout = function () {
+    Ti.API.debug('exports.logout() in LocalLogin');
     var _logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Logout';
     client = Titanium.Network.createHTTPClient({
         onload: function (e){
             // If it's Android, we'll use our custom clearcookies method to 
             // clear the cookies in HTTPClient and WebView for good measure
-            if (deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
+            if (deviceProxy.isAndroid() && client.clearCookies) client.clearCookies(config.BASE_PORTAL_URL);
             
             // Logout process complete, now let's get the user's layout and process the response.
             client = Titanium.Network.createHTTPClient({
                 onload: onLoginComplete,
                 onerror: onLoginError
             });
-            
+            Ti.API.debug('Getting ready to open layout url: '+config.LAYOUT_URL);
             client.open('GET', config.LAYOUT_URL, true);
             if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             client.send();
