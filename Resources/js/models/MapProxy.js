@@ -119,6 +119,47 @@ exports.search = function (query, opts) {
         _onEmptySearch();
     }
 };
+exports.retrieveAnnotationByAbbr = function (a, shouldRecenter) {
+    var result = {}, resultSet, db;
+    db = Titanium.Database.open('umobile');
+    resultSet = db.execute("SELECT * FROM map_locations WHERE abbreviation IS ? LIMIT 1", a);
+    while (resultSet.isValidRow()) {
+        
+        result = {
+            title: resultSet.fieldByName('title'),
+            address: resultSet.fieldByName('address'),
+            latitude: parseFloat(resultSet.fieldByName('latitude')),
+            longitude: parseFloat(resultSet.fieldByName('longitude')),
+            zip: resultSet.fieldByName('zip'),
+            img: resultSet.fieldByName('img')
+        };
+        
+        if (shouldRecenter) {
+            _mapCenter.latLow = parseFloat(resultSet.fieldByName('latitude'));
+            _mapCenter.latHigh = parseFloat(resultSet.fieldByName('latitude')); 
+            _mapCenter.longLow = parseFloat(resultSet.fieldByName('longitude'));
+            _mapCenter.longHigh = parseFloat(resultSet.fieldByName('longitude'));
+            if (resultSet.fieldByName('latitude') < _mapCenter.latLow) {
+                _mapCenter.latLow = parseFloat(resultSet.fieldByName('latitude'));
+            }
+            else if (resultSet.fieldByName('latitude') > _mapCenter.latHigh) {
+                _mapCenter.latHigh = parseFloat(resultSet.fieldByName('latitude'));
+            }
+            if (resultSet.fieldByName('longitude') < _mapCenter.longLow) {
+                _mapCenter.longLow = parseFloat(resultSet.fieldByName('longitude'));
+            }
+            else if (resultSet.fieldByName('longitude') > _mapCenter.longHigh) {
+                _mapCenter.longHigh = parseFloat(resultSet.fieldByName('longitude'));
+            }
+        }
+        resultSet.next();
+    }
+    resultSet.close();
+    db.close();
+    
+    return result;
+};
+
 exports.retrieveAnnotationByTitle = function(t, shouldRecenter) {
     var result = {}, resultSet, db;
     db = Titanium.Database.open('umobile');

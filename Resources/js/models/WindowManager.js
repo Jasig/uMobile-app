@@ -54,10 +54,7 @@ function openWindow (windowKey, portlet, parameters) {
         Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
         if (activityStack.length > 0) {
-            // if (exports.retrieveCurrentWindow() !== config.HOME_KEY) {
-                currentController.close();
-                // currentController = null;
-            // }
+            currentController.close();
         }
         
         //If it's the first window, we assume it's home, and so define the currentController AND homeController
@@ -76,7 +73,8 @@ function openWindow (windowKey, portlet, parameters) {
         }
         else {
             currentController = require('/js/controllers/' + applicationWindows[windowKey]);
-            currentController.open(portlet ? portlet : null);
+            //Parameters may be passed in from another portlet broadcasting a message to open another portlet.
+            currentController.open(portlet || parameters || null);
             activityStack.push(windowKey);
         }
         

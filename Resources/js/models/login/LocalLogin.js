@@ -41,14 +41,12 @@ exports.login = function (creds, options) {
         onerror: onLoginError
     });
     
-    Ti.API.debug('login url: '+ url);
     client.open('GET', url, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
 };
 
 exports.logout = function () {
-    Ti.API.debug('exports.logout() in LocalLogin');
     var _logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Logout';
     client = Titanium.Network.createHTTPClient({
         onload: function (e){
@@ -61,7 +59,6 @@ exports.logout = function () {
                 onload: onLoginComplete,
                 onerror: onLoginError
             });
-            Ti.API.debug('Getting ready to open layout url: '+config.LAYOUT_URL);
             client.open('GET', config.LAYOUT_URL, true);
             if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             client.send();

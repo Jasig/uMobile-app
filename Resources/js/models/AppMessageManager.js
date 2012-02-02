@@ -1,6 +1,5 @@
 var _intents = {}, app = require('/js/Facade');
 exports.register = function (intent, windowKey, portlet) {
-    Ti.API.debug('exports.register() in AppMessageManager. intent: '+intent+', windowKey: '+windowKey+', portlet: '+portlet);
     _intents[intent] = { window: windowKey };
     if (portlet) _intents[intent].portlet = portlet;
 };

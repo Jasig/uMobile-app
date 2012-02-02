@@ -90,13 +90,7 @@ exports.searchBlur = function (e) {
 exports.openCategoryBrowsingView = function (categories) {
     _hideAllViews();
     
-    Ti.API.debug('openCategoryBrowsingView() in MapWindowView.');
-    var _categoryName = categories[0].name;
-    Ti.API.debug('_categoryName: '+_categoryName);
-    var _locationsByCategory = require('/js/models/MapProxy').retrieveLocationsByCategory(_categoryName);
-    Ti.API.debug('_locationsByCategory: '+_locationsByCategory);
-    if (categories.length === 1) return exports.openCategoryLocationsListView(_locationsByCategory);
-    Ti.API.debug('There are more than one category, or else this method would have returned by now.');
+    if (categories.length === 1) return exports.openCategoryLocationsListView(require('/js/models/MapProxy').retrieveLocationsByCategory(categories[0].name));
     // If there isn't a categoryNavBar yet, go ahead and create one.
     if (!categoryNavBar) _createAndAddCategoryNav();
     

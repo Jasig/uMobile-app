@@ -17,9 +17,10 @@
  * under the License.
  */
 
-var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowView, config, localDictionary;
+var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowView, config, localDictionary, showUser;
 
-exports.open = function () {
+exports.open = function (parameters) {
+    Ti.API.debug(parameters);
     //Listen for events, mostly fired from models.DirectoryProxy
     directoryProxy = directoryProxy || require('/js/models/DirectoryProxy');
     directoryWindowView = directoryWindowView || require('/js/views/DirectoryWindowView');
@@ -36,6 +37,12 @@ exports.open = function () {
         defaultNumber: config.phoneDirectoryNumber,
         emergencyContacts: directoryProxy.retrieveEmergencyContacts()
     });
+    
+    //Unless a parameters object exists with an id, we're done opening the window.
+    //If parameters.id exists, we will open a specific user.
+    if (!parameters || !parameters.id) return;
+    showUser(parameters);
+    
 };
 
 exports.close = function (options) {
@@ -50,6 +57,30 @@ exports.close = function (options) {
 
 exports.rotate = function (orientation) {
     if (directoryWindowView) directoryWindowView.rotate(orientation);
+};
+
+showUser = function (parameters) {
+    directoryWindowView.showActivityIndicator(localDictionary.gettingContactInfo);
+    var _xhr = Ti.Network.createHTTPClient({
+        onload: function(e) {
+            directoryWindowView.hideActivityIndicator();
+            try {
+                directoryWindowView.showDetail(JSON.parse(_xhr.responseText).people[0].attributes);
+            }
+            catch (e) {
+                Ti.API.error('Could not load person in Directory.');
+                directoryWindowView.alert(localDictionary.couldNotLoadUser);
+            }
+        },
+        onerror: function (e) {
+            Ti.API.error('Could not load person in Directory.');
+            directoryWindowView.hideActivityIndicator();
+            directoryWindowView.alert(localDictionary.couldNotLoadUser);
+        }
+    });
+    
+    _xhr.open('GET', config.DIRECTORY_SERVICE_URL + '?searchTerms[]=username&username='+ parameters.id);
+    _xhr.send();
 };
 
 resetHome = function () {

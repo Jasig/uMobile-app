@@ -27,6 +27,7 @@ config = require('/js/config');
 Ti.Database.install('umobile.sqlite','umobile');
 
 appMessages.register('location', 'map');
+appMessages.register('person', 'directory');
 
 Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow : config.HOME_KEY });
 

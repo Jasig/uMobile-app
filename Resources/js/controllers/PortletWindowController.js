@@ -22,15 +22,7 @@ var _activePortlet, _homeURL, _currentURL, _homeFName, app, config, styles, devi
 _lastVideoOpened = '', 
 _ = require('/js/libs/underscore-min'),
 _isListeningForAndroidBack = false,
-_win, _activityIndicator, _titleBar, _navBar,_webView,
-updateIntentURLs = function updateIntentURLs () {
-    /*var links = document.links;
-    for (var i = 0, iLength = links.length; i < iLength; i++) {
-        if (links[i].href.indexOf('/s/') > -1) {
-            links[i].href = links[i].href.replace('{PORTAL_CONTEXT}', '/umobile.nativeapplication');
-        }
-    }*/
-};
+_win, _activityIndicator, _titleBar, _navBar,_webView;
 
 exports.open = function (portlet) {
     /*
@@ -79,7 +71,6 @@ exports.close = function () {
 };
 
 exports.rotate = function (orientation) {
-    Ti.API.debug('exports.rotate() in PortletWindowController');
     if (_titleBar) _titleBar.rotate(orientation);
     if (_navBar) _navBar.rotate(orientation);
 };
@@ -217,7 +208,7 @@ function broadcastMessage (url) {
         if contains a special code indicating that the uMobile native
         application should handle the link natively.
         If no callback is registered for the intent, the broadcast 
-        method returns false.
+        method returns false so the WebView can load the content itself.
     */
     var parameters = {},
     rawParamArray = url.split('?')[1].split('&');
