@@ -19,7 +19,8 @@
 
 var peopleResult = [], defaultTableData = [], directoryProxy, directoryWindowView, config, localDictionary;
 
-exports.open = function () {
+exports.open = function (parameters) {
+    Ti.API.debug('exports.open() in DirectoryWindowController');
     //Listen for events, mostly fired from models.DirectoryProxy
     directoryProxy = directoryProxy || require('/js/models/DirectoryProxy');
     directoryWindowView = directoryWindowView || require('/js/views/DirectoryWindowView');
@@ -32,6 +33,7 @@ exports.open = function () {
     Titanium.App.addEventListener(directoryWindowView.events['SEARCH_CHANGE'], onDirectoryWindowSearchChange);
     Titanium.App.addEventListener(directoryWindowView.events['SEARCH_SUBMIT'], onSearchSubmit);
     
+    // if (parameters && parameters.id) 
     directoryWindowView.open({
         defaultNumber: config.phoneDirectoryNumber,
         emergencyContacts: directoryProxy.retrieveEmergencyContacts()
