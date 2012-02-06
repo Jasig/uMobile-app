@@ -40,5 +40,13 @@ exports.createSearchBar = function (opts) {
         if (searchBarInput) searchBarInput.width = styles.searchBarInput.width;
     };
     
+    searchBarObject.hide = function () {
+        //In Android, it didn't respect searchBarObject.hide = searchBar.hide;
+        searchBar.hide();
+    };
+    searchBarObject.show = function () {
+        searchBar.show();
+    };
+    
     return searchBarObject;
 };

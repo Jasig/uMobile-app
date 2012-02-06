@@ -24,8 +24,15 @@ exports.createSecondaryNav = function () {
     navBar.rightButton = rightButton;
     navBar.titleLabel = titleLabel;
     
-    navBar.hide = navBar.view.hide;
-    navBar.show = navBar.view.show;
+    navBar.hide = function () {
+        //Couldn't directly alias view method in Android
+        navBar.view.hide();
+    };
+    
+    navBar.show = function() {
+        //Couldn't directly alias view method in Android
+        navBar.view.show();
+    };
     
     navBar.rotate = function (orientation) {
         var _visibility = navBar.view.visible;
