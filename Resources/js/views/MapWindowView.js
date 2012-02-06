@@ -46,12 +46,10 @@ exports.plotPoints = function (points) {
         _annotationParams.longitude = points[i].longitude;
         _annotationParams.myid = 'annotation' + i;
         _annotationParams.subtitle = '';
-        _annotationParams.rightButton = Titanium.UI.iPhone.SystemButtonStyle.BORDERED;
         
         _annotation = Titanium.Map.createAnnotation(_annotationParams);
         mapView.addAnnotation(_annotation);
     }
-    
     // Center the map around the active points
     mapView.setLocation(mapProxy.retrieveMapCenter());
     if (activityIndicator) activityIndicator.view.hide();
@@ -160,7 +158,6 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryLocationsListView.show();
     if (!categoryNavBar) _createAndAddCategoryNav();
     categoryNavBar.view.show();
-    Ti.API.debug("require('/js/models/MapProxy').retrieveTotalCategories():"+require('/js/models/MapProxy').retrieveTotalCategories());
     
     categoryNavBar.leftButton[require('/js/models/MapProxy').retrieveTotalCategories() > 1 ? 'show' : 'hide']();
     categoryNavBar.titleLabel.text = viewModel.categoryName;

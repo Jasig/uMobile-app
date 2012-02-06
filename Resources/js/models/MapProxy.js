@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var numCategories;
+var numCategories, app = require('/js/Facade');
 var _mapCenter = {
     latitude        : false,
     longitude       : false,
@@ -112,7 +112,6 @@ exports.search = function (query, opts) {
         
 
         _db.close();
-        
         _onSearchComplete(result);
         
     } else if (query === '') {

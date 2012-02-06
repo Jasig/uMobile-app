@@ -212,14 +212,14 @@ exports.updateStyles = function () {
         left: '5dp'
     };
     exports.titleBarInfoButton= {
-        image: "images/tab-info.png",
+        image: "/images/tab-info.png",
         width: '20dp',
         height: '20dp',
         touchEnabled: false
     };
     //Titanium.UI.View with home icon implemented in GenericTitleBar on left-hand side
     exports.titleBarHomeButton= {
-        image: "images/tab-home.png",
+        image: "/images/tab-home.png",
         touchEnabled: false,
         width: '18dp',
         height: '18dp'
@@ -236,7 +236,7 @@ exports.updateStyles = function () {
     exports.titleBarSettingsButton= {
         height: '18dp',
         width: '18dp',
-        image: "images/tab-settings.png",
+        image: "/images/tab-settings.png",
         touchEnabled: false
     };
     exports.secondaryNavBar= {
@@ -272,7 +272,7 @@ exports.updateStyles = function () {
         plainWidth: 50,
         height: '30dp',
         plainHeight: 30,
-        optionalImage: 'img/back-icon.png',
+        optionalImage: '/images/back-icon.png',
     	backgroundImage: 'img/secondarybarbtnbg.png',
     	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
     	color: '#fff',
@@ -363,7 +363,7 @@ exports.updateStyles = function () {
         right: '11dp',
         height: '20dp',
         width: '20dp',
-        image: 'images/badgeBackground.png'
+        image: '/images/badgeBackground.png'
     };
     exports.gridBadgeNumber= {
         textAlign: "center",
@@ -530,7 +530,7 @@ exports.updateStyles = function () {
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT +'dp',
         color: '#fff',
         zIndex: 10,
-        backgroundImage: 'img/bgActivityIndicator.png'
+        backgroundImage: '/images/bgActivityIndicator.png'
     };
     exports.activityIndicatorDialog= {
         width: (deviceProxy.retrieveWidth(true) > 480 ? 360 : Math.round(deviceProxy.retrieveWidth(true) * 0.75)) + 'dp',
@@ -538,7 +538,7 @@ exports.updateStyles = function () {
         borderRadius: 10,
         borderWidth: 1,
         borderColor: "#fff",
-        backgroundImage: 'img/bgActivityIndicatorDialog.png'
+        backgroundImage: '/images/bgActivityIndicatorDialog.png'
     };
     exports.activityIndicatorMessage= {
         textAlign: 'center',
@@ -577,6 +577,7 @@ exports.updateStyles = function () {
             selectedColor: '#333'
         };
         exports.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
+        exports.mapAnnotation.rightButton = Titanium.UI.iPhone.SystemButtonStyle.BORDERED;
     }
     
     if(OS === 'android') {
@@ -585,7 +586,8 @@ exports.updateStyles = function () {
         exports.mapNavView.backgroundImage = '/images/secondarybarbg.png';
         exports.secondaryNavBar.backgroundImage = '/images/secondarybarbg.png';
         exports.homeGuestNote.backgroundImage = '/images/secondarybarbg.png';
-        exports.mapAnnotation.image = '/images/mapPin.png';
+        // exports.mapAnnotation.image = '/images/mapPin.png';
+        exports.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
     }
     
     return exports;
