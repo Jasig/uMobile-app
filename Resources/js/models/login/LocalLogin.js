@@ -33,9 +33,10 @@ onLoginError = function (e) {
 };
 
 exports.login = function (creds, options) {
+    Ti.API.debug('exports.login() in LocalLogin. Username:'+creds.username);
     credentials = creds;
     url = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?userName=' + credentials.username + '&password=' + credentials.password + '&refUrl=' + config.PORTAL_CONTEXT + '/layout.json';
-    
+    Ti.API.debug('Login url: '+url);
     client = Titanium.Network.createHTTPClient({
         onload: onLoginComplete,
         onerror: onLoginError
@@ -47,6 +48,7 @@ exports.login = function (creds, options) {
 };
 
 exports.logout = function () {
+    Ti.API.debug('exports.logout() in LocalLogin');
     var _logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Logout';
     client = Titanium.Network.createHTTPClient({
         onload: function (e){
@@ -67,6 +69,7 @@ exports.logout = function () {
             Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR'], e);
         }
     });
+    Ti.API.debug('_logoutUrl: '+_logoutUrl);
     client.open('GET', _logoutUrl, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();

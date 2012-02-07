@@ -30,6 +30,12 @@ appMessages.register('location', 'map');
 appMessages.register('person', 'directory');
 
 Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow : config.HOME_KEY });
+if (!deviceProxy.checkNetwork()) {
+    Ti.App.fireEvent(app.events['NETWORK_ERROR']);
+}
+else {
+    Ti.App.fireEvent(app.loginEvents['ESTABLISH_NETWORK_SESSION']);
+}
 
 Ti.App.addEventListener(app.events['OPEN_EXTERNAL_URL'], function (e) {
 	if (e.url) return Ti.Platform.openURL(e.url);

@@ -34,16 +34,13 @@ exports.open = function () {
     
     portalWindowView = portalWindowView || require('/js/views/PortalWindowView');
     if (firstTimeOpened) portalWindowView.initialize(portalProxy);
+    
     notificationsProxy = notificationsProxy || require('/js/models/NotificationsProxy');
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
     userProxy = userProxy || require('/js/models/UserProxy');
     config = config || require('/js/config');
     localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     app = app || require('/js/Facade');
-    
-    if (firstTimeOpened) {
-        Ti.App.addEventListener(app.portalEvents['PORTLETS_LOADED'], onPortletsLoaded);
-    }
     
     Ti.App.addEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.addEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);
@@ -53,14 +50,6 @@ exports.open = function () {
     Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
     Ti.App.addEventListener(portalWindowView.events['ANDROID_SEARCH_CLICKED'], onAndroidSearchClick);
     Ti.App.addEventListener(notificationsProxy.notificationEvents['UPDATED'], onNotificationsUpdated);
-    
-    if (!deviceProxy.checkNetwork()) {
-        Ti.App.fireEvent(app.events['NETWORK_ERROR']);
-        return;
-    }
-    else if (firstTimeOpened) {
-        Ti.App.fireEvent(app.loginEvents['ESTABLISH_NETWORK_SESSION']);
-    }
     
     //Open the portal window
     //portlets, isGuestLayout, isPortalReachable, isFirstOpen
@@ -85,9 +74,12 @@ exports.rotate = function (orientation) {
 };
 
 function _onPortletsLoaded (e) {
-    portalWindowView.updateModules(portalProxy.retrievePortlets(), portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
+    var _portlets = portalProxy.retrievePortlets();
+    Ti.API.debug('_onPortletsLoaded() in PortalWindowController.');
+    Ti.API.debug('portalProxy.retrievePortlets(): '+JSON.stringify(_portlets));
+    portalWindowView.updateModules(_portlets, portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
+    portalWindowView.hideActivityIndicator();
 };
-
 
 function onNotificationsUpdated (e) {
     var _notifications = notificationsProxy.retrieveNotifications();
@@ -104,6 +96,7 @@ function onNetworkSessionSuccess (e) {
 };
 
 function onNetworkSessionFailure (e) {
+    Ti.API.debug('onNetworkSessionFailure() in PortalWindowController');
     if (!e.user || e.user == app.userTypes['NO_USER']) {
         if (deviceProxy.checkNetwork()) {
             if (_newNetworkDowntime) {
@@ -111,6 +104,7 @@ function onNetworkSessionFailure (e) {
                 _newNetworkDowntime = false;
             }
             portalWindowView.updateModules(portalProxy.retrievePortlets(), portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
+            portalWindowView.hideActivityIndicator();
         }
         else {
             Ti.App.fireEvent(app.events['NETWORK_ERROR']);
@@ -121,17 +115,17 @@ function onNetworkSessionFailure (e) {
 
 //PortalProxy events
 function onGettingPortlets (e) {
+    Ti.API.debug('onGettingPortlets() in PortalWindowController.');
     // Display a loading indicator until we can finish downloading the user
     // layout and creating the initial view
-};
-
-function onPortletsLoaded (e) {
-    portalWindowView.updateModules(portalProxy.retrievePortlets(), portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
+    portalWindowView.showActivityIndicator(localDictionary.gettingPortlets);
 };
 
 function onPortalProxyNetworkError (e) {
+    Ti.API.debug('onPortalProxyNetworkError() in PortalWindowController. e: '+JSON.stringify(e));
     //This event responds to any type of error in retrieving portlets from the sever.
     if (_newNetworkDowntime) {
+        portalWindowView.hideActivityIndicator();
         portalWindowView.alert(localDictionary.error, e.message);
         _newNetworkDonwtime = false;
     }

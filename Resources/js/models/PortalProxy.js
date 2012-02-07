@@ -33,10 +33,14 @@ isPortalReachable = false,
 app = require('/js/Facade'),
 config = require('/js/config'),
 resourceProxy = require('/js/models/ResourceProxy'),
-pathToRoot = '../../';
+pathToRoot = '../../',
+portlets = [];
 
 Ti.App.addEventListener(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], function (e) {
     exports.savePortlets(e.portlets);
+});
+Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_FAILURE'], function (e){
+    exports.savePortlets([]);
 });
 
 Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
@@ -45,10 +49,12 @@ Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
 });
 
 exports.retrievePortlets = function () {
-    return Ti.App.Properties.getList('portlets');
+    Ti.API.debug('retrievePortlets() in PortalProxy. Portlets: '+JSON.stringify(portlets));
+    return portlets;
 };
 
 exports.savePortlets = function (_portlets) {
+    Ti.API.debug('savePortlets() in PortalProxy');
     var nativeModules = config.retrieveLocalModules(), module;
 
     for (module in nativeModules) {
@@ -77,12 +83,11 @@ exports.savePortlets = function (_portlets) {
     
     //Set the state of the portal proxy. Assume local portlets only if _portlets.length < 1
     exports.saveState(exports.states[_portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
+    portlets = _portlets;
     Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.retrieveState() });
-    Ti.App.Properties.setList('portlets', _portlets);
 };
 
 exports.retrievePortletByFName = function (fname) {
-    var portlets = Ti.App.Properties.getList('portlets');
 	for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
 		if (portlets[i].fname === fname) {
 			return portlets[i];
