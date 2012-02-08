@@ -31,9 +31,8 @@ exports.open = function () {
     // This will determine if a network session exists, and what 
     // window was open last time the app closed, and will manage the process
     // of establishing a session and opening the window.
-    
+    Ti.API.debug('exports.open() in PortalWindowController');
     portalWindowView = portalWindowView || require('/js/views/PortalWindowView');
-    if (firstTimeOpened) portalWindowView.initialize(portalProxy);
     
     notificationsProxy = notificationsProxy || require('/js/models/NotificationsProxy');
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
@@ -59,6 +58,7 @@ exports.open = function () {
 };
 
 exports.close = function () {
+    Ti.API.debug('exports.close() in PortalWindowController');
     Ti.App.removeEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.removeEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);
     Ti.App.removeEventListener(app.portalEvents['PORTLETS_LOADED'], _onPortletsLoaded);
@@ -77,7 +77,7 @@ function _onPortletsLoaded (e) {
     var _portlets = portalProxy.retrievePortlets();
     Ti.API.debug('_onPortletsLoaded() in PortalWindowController.');
     Ti.API.debug('portalProxy.retrievePortlets(): '+JSON.stringify(_portlets));
-    portalWindowView.updateModules(_portlets, portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
+    portalWindowView.updateLayout(portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser(), _portlets);
     portalWindowView.hideActivityIndicator();
 };
 
@@ -92,6 +92,7 @@ function onAndroidSearchClick (e) {
 };
 
 function onNetworkSessionSuccess (e) {
+    Ti.API.debug('onNetworkSessionSuccess() in PortalWindowController');
     _newNetworkDowntime = true;
 };
 
@@ -103,7 +104,7 @@ function onNetworkSessionFailure (e) {
                 portalWindowView.alert(localDictionary.error, localDictionary.failedToLoadPortlets);
                 _newNetworkDowntime = false;
             }
-            portalWindowView.updateModules(portalProxy.retrievePortlets(), portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser());
+            portalWindowView.updateLayout(portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser(), portalProxy.retrievePortlets());
             portalWindowView.hideActivityIndicator();
         }
         else {

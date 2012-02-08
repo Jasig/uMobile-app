@@ -32,7 +32,8 @@ exports.events = {
 
 var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanup = false, _state, _numGridItems = 0, _gridView, _gridItems = {}, styles, deviceProxy, portalProxy,
 _ = require('/js/libs/underscore-min'),
-app = require('/js/Facade');
+app = require('/js/Facade'),
+portalProxy = require('/js/models/PortalProxy');
 
 function _init () {
     styles = require('/js/style').updateStyles();
@@ -46,10 +47,6 @@ function _init () {
     _gridView = Titanium.UI.createScrollView(styles.homeGrid);
     
     exports.saveState(exports.states.INITIALIZED);
-};
-
-exports.doSetPortalProxy = function (proxy) {
-    portalProxy = proxy;
 };
 
 exports.retrieveState = function () {

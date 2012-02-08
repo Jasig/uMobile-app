@@ -29,7 +29,7 @@ exports.states = {
 };
 
 var currentState = exports.states['INITIALIZED'],
-isPortalReachable = false,
+isPortalReachable,
 app = require('/js/Facade'),
 config = require('/js/config'),
 resourceProxy = require('/js/models/ResourceProxy'),
