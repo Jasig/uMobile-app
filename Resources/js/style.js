@@ -149,10 +149,10 @@ exports.updateStyles = function () {
         barColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
         backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
         showCancel: OS === 'android' ? false : true,
-        width: deviceProxy.retrieveWidth(true) + 'dp'
+        width: '100%'
     };
     exports.searchBarInput= {
-        width: deviceProxy.retrieveWidth(true) - 5 - 5 + 'dp',
+        width: '96%',
         height: defaults.SEARCHBAR_HEIGHT - 7 + 'dp',
         top: '5dp',
         borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -527,7 +527,7 @@ exports.updateStyles = function () {
     // ACTIVITY INDICATOR STYLING
     exports.globalActivityIndicator= {
         top: defaults.TITLEBAR_HEIGHT +'dp',
-        width: deviceProxy.retrieveWidth(true) +'dp',
+        width: '100%',
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT +'dp',
         color: '#fff',
         zIndex: 10,

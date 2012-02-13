@@ -71,6 +71,7 @@ exports.close = function () {
 
 exports.rotate = function (orientation) {
     resizeAndPositionWebView();
+    if (_activityIndicator) _activityIndicator.rotate();
 };
 
 function _createView (portlet) {

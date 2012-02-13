@@ -33,12 +33,6 @@ exports.createSearchBar = function (opts) {
     if (opts.change) {
         searchBarObject.input.addEventListener('change', opts.change);
     }
-
-    searchBarObject.rotate = function (orientation) {
-        styles = styles.updateStyles();
-        if (searchBar) searchBar.width = styles.searchBar.width;
-        if (searchBarInput) searchBarInput.width = styles.searchBarInput.width;
-    };
     
     searchBarObject.hide = function () {
         //In Android, it didn't respect searchBarObject.hide = searchBar.hide;

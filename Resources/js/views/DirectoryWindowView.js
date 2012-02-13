@@ -77,7 +77,6 @@ exports.reset = function () {
 };
 
 exports.rotate = function (orientation) {
-    if (searchBar) searchBar.rotate(orientation);
     if (directoryDetailView) directoryDetailView.rotate(orientation);
 };
 

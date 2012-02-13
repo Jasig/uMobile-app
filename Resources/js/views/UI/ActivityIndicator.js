@@ -27,9 +27,10 @@ exports.createActivityIndicator = function () {
     };
     
     indicator.resetDimensions = function () {
-        indicator.view.top = styles.globalActivityIndicator.top;
+        
+        styles = styles.updateStyles();
+        Ti.API.debug('styles.globalActivityIndicator.height: '+styles.globalActivityIndicator.height);
         indicator.view.height = styles.globalActivityIndicator.height;
-        indicator.view.width = styles.globalActivityIndicator.width;
         dialog.width = styles.activityIndicatorDialog.width;
     };
     

@@ -71,7 +71,6 @@ exports.rotate = function (orientation) {
     styles = styles.updateStyles();
     if (mapView) mapView.height = styles.mapView.height;
     if (bottomNavView) bottomNavView.top = styles.mapNavView.top;
-    if (searchBar) searchBar.rotate(orientation);
 
     if (categoryBrowsingView) categoryBrowsingView.height = styles.mapTableView.height;
 };
