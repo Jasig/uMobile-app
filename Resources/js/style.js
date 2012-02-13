@@ -253,7 +253,7 @@ exports.updateStyles = function () {
     // Styles for new prototype in v1.1, views/SecondaryNav.js
     exports.secondaryNavLabel= {
         width: deviceProxy.retrieveWidth(true) - 70 * 2 - 10 * 4 + 'dp',
-        left: 70 + 10 * 2 + 'dp',
+        // left: 70 + 10 * 2 + 'dp',
         height: defaults.TITLEBAR_HEIGHT + 'dp',
         color: defaults.SECONDARY_BAR_COLOR,
         textAlign: "center",
@@ -386,13 +386,13 @@ exports.updateStyles = function () {
         visible: false,
         top: defaults.TITLEBAR_HEIGHT + 'dp',
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT + 'dp',
-        width: deviceProxy.retrieveWidth(true),
+        width: '100%',
         modal: true
     };
 
     exports.directoryDetailAttributeTable= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        width: deviceProxy.retrieveWidth(true) + 'dp'
+        width: '100%'
     };
     exports.directoryDetailRow= {
         backgroundColor: "#fff",

@@ -145,7 +145,7 @@ exports.updateLayout = function (_isPortalReachable, _isGuestLayout, _modules) {
 
 exports.showActivityIndicator = function (message) {
     Ti.API.debug('exports.showActivityIndicator() in PortalWindowView');
-    activityIndicator.saveLoadingMessage(message || localDictionary.loading);
+    activityIndicator.setLoadingMessage(message || localDictionary.loading);
     activityIndicator.view.show();
 };
 

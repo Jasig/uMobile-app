@@ -135,7 +135,7 @@ function _includePortlet (portlet) {
     */
     var _isValidSession;
     
-    _activityIndicator.saveLoadingMessage(localDictionary.loading);
+    _activityIndicator.setLoadingMessage(localDictionary.loading);
     _activityIndicator.view.show();
     
     _homeURL = _webView.url = _currentURL = _getAbsoluteURL(portlet.url);
@@ -251,7 +251,7 @@ function _onPortletBeforeLoad (e) {
     	}
     	if (e.url.indexOf('http://m.youtube.com') === 0 && _homeFName === 'videos') _webView.url = _homeURL;
     }
-    _activityIndicator.saveLoadingMessage(localDictionary.loading);
+    _activityIndicator.setLoadingMessage(localDictionary.loading);
     _activityIndicator.view.show();
 };
 

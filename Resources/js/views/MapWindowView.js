@@ -64,7 +64,7 @@ exports.showActivityIndicator = function () {
 };
 
 exports.saveActivityIndicatorMessage = function (message) {
-    if (activityIndicator) activityIndicator.saveLoadingMessage(message);
+    if (activityIndicator) activityIndicator.setLoadingMessage(message);
 };
 
 exports.rotate = function (orientation) {

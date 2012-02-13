@@ -13,7 +13,7 @@ exports.createActivityIndicator = function () {
     messageLabel.text = localDictionary.loading;
     dialog.add(messageLabel);
     
-    indicator.saveLoadingMessage = function (m) {
+    indicator.setLoadingMessage = function (m) {
         if (typeof m == 'string') {
             messageLabel.text = m;
         }
@@ -27,7 +27,6 @@ exports.createActivityIndicator = function () {
     };
     
     indicator.resetDimensions = function () {
-        
         styles = styles.updateStyles();
         Ti.API.debug('styles.globalActivityIndicator.height: '+styles.globalActivityIndicator.height);
         indicator.view.height = styles.globalActivityIndicator.height;

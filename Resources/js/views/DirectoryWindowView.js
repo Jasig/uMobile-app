@@ -105,8 +105,12 @@ exports.alert = function (attributes) {
 };
 
 exports.showActivityIndicator = function (message) {
-    if (message) { activityIndicator.saveLoadingMessage(message); }
+    if (message) { activityIndicator.setLoadingMessage(message); }
     activityIndicator.view.show();
+};
+
+exports.hideActivityIndicator = function () {
+    activityIndicator.view.hide();
 };
 
 exports.updateTable = function (newTableData) {

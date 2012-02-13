@@ -53,11 +53,7 @@ exports.hide = function () {
 
 exports.rotate = function (orientation) {
     styles = styles.updateStyles();
-    if (_view) {
-        _view.width = styles.contactDetailView.width;
-        _view.height = styles.contactDetailView.height;
-    }
-    if (attributeTable) attributeTable.table.width = styles.directoryDetailAttributeTable.width;
+    if (_view) _view.height = styles.contactDetailView.height;
 };
 
 function constructPerson (attributes) {
