@@ -125,7 +125,7 @@ exports.events = {
 };
 
 exports.rotate = function (orientation) {
-    if (locationDetailTitleBar) locationDetailTitleBar.rotate(orientation);
+    
 };
 
 exports.hide = function () {

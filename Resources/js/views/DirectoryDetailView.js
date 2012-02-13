@@ -57,7 +57,6 @@ exports.rotate = function (orientation) {
         _view.width = styles.contactDetailView.width;
         _view.height = styles.contactDetailView.height;
     }
-    if (secondaryNavBar) secondaryNavBar.rotate(orientation);
     if (attributeTable) attributeTable.table.width = styles.directoryDetailAttributeTable.width;
 };
 

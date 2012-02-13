@@ -85,7 +85,6 @@ exports.rotateView = function (orientation) {
     if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
     if (portalGridView) portalGridView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
     if (activityIndicator) activityIndicator.rotate();
-    if (titleBar) titleBar.rotate();
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {

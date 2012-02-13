@@ -60,7 +60,6 @@ exports.close = function () {
     try {
         _webView.removeEventListener('load', _onPortletLoad);
         _webView.removeEventListener('beforeload', _onPortletBeforeLoad);
-        Titanium.App.removeEventListener(app.events['DIMENSION_CHANGES'], _onDimensionChanges);
     }
     catch (e) {
         Ti.API.error("Couldn't remove events.");
@@ -71,8 +70,7 @@ exports.close = function () {
 };
 
 exports.rotate = function (orientation) {
-    if (_titleBar) _titleBar.rotate(orientation);
-    if (_navBar) _navBar.rotate(orientation);
+    resizeAndPositionWebView();
 };
 
 function _createView (portlet) {
@@ -256,20 +254,6 @@ function _onPortletBeforeLoad (e) {
     _activityIndicator.view.show();
 };
 
-function _onDimensionChanges (e) {
-    // Handle device rotation changes
-    if (_isHome()) {
-        _navBar.view.visible = false;
-        _webView.top = styles.titleBar.height + 'dp';
-        _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
-    }
-    else {
-        _navBar.view.visible = true;
-        _webView.top = styles.titleBar.height + styles.secondaryNavBar.getHeight;
-        _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height - styles.secondaryNavBar.getHeight + 'dp';
-    }
-};
-
 function _onBackBtnPress (e) {
     _webView.goBack();
 };
@@ -278,50 +262,55 @@ function _onAndroidBack (e) {
     // Responds to hardware back button press
 	_webView.goBack();
 };
-
+function resizeAndPositionWebView () {
+    if (_isPortal()) Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
+    _webView.externalModule = _isPortal() ? false : true;
+    if (_isHome()) {
+        _removeAndroidBackListener();
+    } else {
+        _addAndroidBackListener();
+    }
+    var _shouldNotShowBackBtn = _isHome() || _isPortal();
+    styles = styles.updateStyles();
+    _navBar.view[_shouldNotShowBackBtn ? 'hide' : 'show']();
+    _webView.top = _shouldNotShowBackBtn ? styles.titleBar.height + 'dp': styles.titleBar.height + styles.secondaryNavBar.getHeight + 'dp' ;
+    _webView.height = _shouldNotShowBackBtn ? styles.portletView.height : styles.portletView.heightWithSecondary;
+}
 function _onPortletLoad (e) {
     /*
         Once the webView is done loading, we want to take care of some business,
         such as determining whether to reset the webview session timer,
         and show the nav bar with back button
     */
-    
-    var portalIndex = e.url.indexOf(config.BASE_PORTAL_URL);
 
     _webView.show();
     
     _currentURL = e.url;
     
-    _activityIndicator.view.hide();
+    //We want to be able to open any video now, so we'll clear the YouTube workaround variable
+    _lastVideoOpened = '';
     
-    if (portalIndex >= 0) {
-        Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
-        //We want to be able to open any video now, so we'll clear the YouTube workaround variable
-        _lastVideoOpened = '';
-        _webView.externalModule = false;
-        _navBar.view.visible = false;
-        _webView.top = styles.titleBar.height + 'dp';
-        _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
-        if (_isHome()) {
-            _removeAndroidBackListener();
-        }
-    }
-    else {
-        _webView.externalModule = true;
-        if (!_isHome()) {
-            _navBar.view.visible = true;
-            _webView.top = styles.titleBar.height + styles.secondaryNavBar.getHeight + 'dp';
-            _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height - styles.secondaryNavBar.getHeight + 'dp';
-            _addAndroidBackListener();
-        }
-        else {
-            _webView.top = styles.titleBar.height + 'dp';
-            _webView.height = deviceProxy.retrieveHeight(true) - styles.titleBar.height + 'dp';
-            _removeAndroidBackListener();
-        }
-    }
+    _activityIndicator.view.hide();
+    resizeAndPositionWebView();
 };
-
+function _isPortal () { 
+    /*
+        This method is used to determine if the current URL is in the portal.
+        Most commonly used to determine if a back button should be shown.
+    */
+    var _newURL, treatAsLocalhost;
+    
+    //See _isHome method for purpose of this method.
+    treatAsLocalhost = function (_url) {
+    	return _url.replace('file://', 'file://localhost');
+    };
+    _newURL = (_homeURL.indexOf('file://') > -1 && deviceProxy.isIOS()) ? treatAsLocalhost(_currentURL) : _currentURL;
+    if (_newURL.indexOf(config.BASE_PORTAL_URL) > -1) {
+		return true;
+	}
+	return false;
+    
+}
 function _isHome () {
     /*
         This private method is used to determine if the current URL of the

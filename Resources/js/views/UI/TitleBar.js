@@ -71,13 +71,6 @@ exports.createTitleBar = function () {
         settingsButtonContainer.show();
     };
 
-    titleBar.rotate = function (orientation) {
-        styles = styles.updateStyles();
-        if (titleBar) titleBar.view.width = styles.titleBar.width;
-        if (settingsButtonContainer) settingsButtonContainer.left = styles.titleBarSettingsContainer.left;
-        if (homeButtonContainer) homeButtonContainer.left = styles.titleBarHomeContainer.left;
-        if (infoButtonContainer) infoButtonContainer.left = styles.titleBarInfoContainer.left;
-    };
 
     function onHomeClick (e) {
         Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});

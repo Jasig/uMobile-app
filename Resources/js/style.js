@@ -61,7 +61,8 @@ exports.updateStyles = function () {
     };
     exports.portletView= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT + 'dp'
+        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
+        heightWithSecondary: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2) - defaults.STATUSBAR_HEIGHT + 'dp'
     };
     exports.portletWindow= {
         // url: 'js/views/WindowContext.js',
@@ -163,7 +164,7 @@ exports.updateStyles = function () {
     	left: 0,
     	height: defaults.TITLEBAR_HEIGHT,
         backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
-    	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth,
+        width: '100%',
     	zIndex: 1
     };
     //Titanium.UI.Button implemented in the GenericTitleBar
@@ -231,7 +232,8 @@ exports.updateStyles = function () {
         borderRadius: 5,
         backgroundColor: 'transparent',
         backgroundColorPressed: "#999",
-        left: deviceProxy.retrieveWidth(true) - 40 - 5 + 'dp'
+        // left: deviceProxy.retrieveWidth(true) - 40 - 5 + 'dp'
+        right: '5dp'
     };
     exports.titleBarSettingsButton= {
         height: '18dp',
@@ -245,7 +247,7 @@ exports.updateStyles = function () {
     	getHeight: defaults.TITLEBAR_HEIGHT,
     	backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
     	backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
-    	width: OS === 'android' ? 'auto' : Titanium.Platform.displayCaps.platformWidth
+    	width: '100%'
     };
 
     // Styles for new prototype in v1.1, views/SecondaryNav.js
@@ -266,7 +268,6 @@ exports.updateStyles = function () {
 
     exports.secondaryNavButton= {
         style: OS === 'iphone' ? Titanium.UI.iPhone.SystemButtonStyle.PLAIN : 0,
-        left: '10dp',
         plainLeft: 10,
         width: '50dp',
         plainWidth: 50,
@@ -519,7 +520,7 @@ exports.updateStyles = function () {
         textAlign: "left"
     };
     exports.mapDetailLocationPhoto= {
-        width: Titanium.Platform.displayCaps.platformWidth,
+        width: '100%',
         top: defaults.TITLEBAR_HEIGHT + 206 + 'dp',
         height: '241dp'
     };
