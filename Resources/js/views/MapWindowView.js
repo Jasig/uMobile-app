@@ -151,6 +151,9 @@ exports.openCategoryLocationsListView = function (viewModel) {
     if (!categoryLocationsListView) {
         categoryLocationsListView = Ti.UI.createTableView(styles.mapTableView);
         view.add(categoryLocationsListView);
+        categoryLocationsListView.addEventListener('click', function (e) {
+            Ti.App.fireEvent(exports.events['CATEGORY_LIST_ITEM_CLICK'], {title:e.rowData.title});
+        });
     }
     
     categoryLocationsListView.show();
@@ -163,10 +166,6 @@ exports.openCategoryLocationsListView = function (viewModel) {
     categoryNavBar.rightButton.show();
     
     categoryLocationsListView.setData(viewModel.locations);
-    
-    categoryLocationsListView.addEventListener('click', function (e) {
-        Ti.App.fireEvent(exports.events['CATEGORY_LIST_ITEM_CLICK'], {title:e.rowData.title});
-    });
 };
 
 exports.openCategoryLocationsMapView = function (viewModel) {
