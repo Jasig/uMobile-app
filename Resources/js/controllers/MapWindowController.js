@@ -69,7 +69,7 @@ exports.open = function (parameters) {
     
     _mapProxy.initialize();
     
-    _win.add(_mapWindowView.createView(_mapProxy));
+    _win.add(_mapWindowView.open());
     //If we're supposed to directly open a detail view, let's get the info from map proxy and show it.
     if (parameters && parameters.id) _loadDetail(_mapProxy.retrieveAnnotationByAbbr(parameters.id));
     _mapWindowView.hideActivityIndicator();
@@ -95,13 +95,10 @@ exports.close = function (options) {
     Ti.App.removeEventListener(_mapDetailView.events['VIEW_ON_MAP_CLICK'], _onViewDetailOnMap);
     _win.removeEventListener('android:search', _onAndroidSearch);
     
-    _mapWindowView = null;
+    _mapWindowView.close();
+    
     _locationDetailView = null;
     _mapDetailView = null;
-    _mapProxy = null;
-    localDictionary = null;
-    deviceProxy = null;
-    styles = null;
     
     _win.close();
 };
