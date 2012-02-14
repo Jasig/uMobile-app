@@ -27,8 +27,8 @@ win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRo
 styles, localDictionary, deviceProxy;
 
 exports.open = function (viewModel) {
-    styles = styles ? styles.updateStyles() : require('/js/style').updateStyles(),
-    localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')],
+    styles = styles ? styles.updateStyles() : require('/js/style').updateStyles();
+    localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
     
     _viewModel = viewModel;
@@ -88,20 +88,13 @@ exports.showDetail = function (person) {
 };
 
 exports.alert = function (attributes) {
-    if (win.visible || deviceProxy.isIOS()) {
-        try {
-            var alertDialog = Titanium.UI.createAlertDialog({
-                title: attributes.title,
-                message: attributes.message,
-                buttonNames: [localDictionary.OK]
-            });
-            activityIndicator.view.hide();
-            alertDialog.show();
-        }
-        catch (e) {
-            Ti.API.error("Couldn't show alert in DirectoryWindowView " + e);
-        }
-    }
+    var alertDialog = Titanium.UI.createAlertDialog({
+        title: attributes.title,
+        message: attributes.message,
+        buttonNames: [localDictionary.OK]
+    });
+    activityIndicator.view.hide();
+    alertDialog.show();
 };
 
 exports.showActivityIndicator = function (message) {
@@ -122,16 +115,13 @@ exports.displaySearchResults = function (results) {
     var _peopleTableData = [], _people, alertDialog;
 
     activityIndicator.view.hide();
-    
-    //Get array of people from search results from proxy
-    _people = results;
 
-    if(_people.length > 0) {
-        for (var i=0, iLength=_people.length; i<iLength; i++) {
+    if(results.length > 0) {
+        for (var i=0, iLength=results.length; i<iLength; i++) {
             var _contactRow = Titanium.UI.createTableViewRow({
-                title: _people[i].displayName[0],
+                title: results[i].displayName[0],
                 hasChild: true,
-                data: _people[i],
+                data: results[i],
                 className: 'ContactRow'
             });
             _peopleTableData.push(_contactRow);
@@ -140,19 +130,11 @@ exports.displaySearchResults = function (results) {
         peopleListTable.setData(_peopleTableData);
     }
     else {
-        if (win.visible || deviceProxy.isIOS()) {
-            try {
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: localDictionary.noResults,
-                    message: localDictionary.noSearchResults,
-                    buttonNames: [localDictionary.OK]
-                });
-                alertDialog.show();
-            }
-            catch (e) {
-                Ti.API.error("Couldn't show alert in DirectoryWindowView: " + e);
-            }
-        }
+        exports.alert({
+            title: localDictionary.noResults,
+            message: localDictionary.noSearchResults
+        });
+        
         peopleListTable.setData(defaultTableData);
     }
 };

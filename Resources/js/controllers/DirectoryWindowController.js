@@ -109,7 +109,7 @@ onProxySearchComplete = function (e) {
     else {
         directoryWindowView.alert({
             title: localDictionary.error,
-            message: e.error
+            message: e.error + ' ' +e.response
         });
     }
 };

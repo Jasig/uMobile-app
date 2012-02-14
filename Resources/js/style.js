@@ -253,7 +253,6 @@ exports.updateStyles = function () {
     // Styles for new prototype in v1.1, views/SecondaryNav.js
     exports.secondaryNavLabel= {
         width: deviceProxy.retrieveWidth(true) - 70 * 2 - 10 * 4 + 'dp',
-        // left: 70 + 10 * 2 + 'dp',
         height: defaults.TITLEBAR_HEIGHT + 'dp',
         color: defaults.SECONDARY_BAR_COLOR,
         textAlign: "center",

@@ -67,7 +67,7 @@ function doXhrSearch (query) {
         url += separator + 'searchTerms[]=' + config.DIRECTORY_SERVICE_SEARCH_FIELDS[i];
         separator = '&';
     }
-    separator = '&';
+    separator = '&'; //[Jeff Cross] Seems superfluous. Shouldn't the previous loop always loop at least once?
     for (i = 0; i < config.DIRECTORY_SERVICE_SEARCH_FIELDS.length; i++) {
         url += separator + config.DIRECTORY_SERVICE_SEARCH_FIELDS[i] + '=' + query;
         separator = '&';
@@ -87,7 +87,7 @@ function doXhrSearch (query) {
 function onXhrSearchLoad (e) {
     //When the search is complete, reset the main people array
     Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
-
+    var _eventObject = {};
     people = [];
     
     try {
@@ -95,11 +95,12 @@ function onXhrSearchLoad (e) {
         for (var i=0, iLength=_people.length; i<iLength; i++) {
             people.push(_people[i].attributes);
         }
-        Ti.App.fireEvent(exports.events['SEARCH_COMPLETE']);
     }
     catch (err) {
-        Ti.App.fireEvent(exports.events['SEARCH_COMPLETE'], {error: localDictionary.directoryErrorFetching});
+        _eventObject = {error: localDictionary.directoryErrorFetching, response: xhrSearchClient.responseText};
     }
+    
+    Ti.App.fireEvent(exports.events['SEARCH_COMPLETE'], _eventObject);
 };
 
 function onXhrSearchError (e) {
