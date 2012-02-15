@@ -47,10 +47,14 @@ Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
 
 exports.getPortlets = function (folder) {
     Ti.API.debug('getPortlets() in PortalProxy. Portlets: '+JSON.stringify(portlets));
-    if (folder) {
-        //Let's iterate through all of the portlets and find which ones 
+    if (!folder) return portlets;
+    
+    //Let's iterate through all of the portlets and find which ones contain the folder id.
+    var i = 0, l=portlets.length, _portletsByFolder = [];
+    while (i++ != l) {
+        portlets[i-1] && portlets[i-1].folders && portlets[i-1].folders.indexOf(folder) > -1 && _portletsByFolder.push(portlets[i-1]);
     }
-    return portlets;
+    return _portletsByFolder;
 };
 
 exports.getFolderList = function () {

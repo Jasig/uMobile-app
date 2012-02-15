@@ -76,7 +76,6 @@ exports.rotate = function (orientation) {
 function _onPortletsLoaded (e) {
     var _portlets = portalProxy.getPortlets();
     Ti.API.debug('_onPortletsLoaded() in PortalWindowController.');
-    Ti.API.debug('portalProxy.getPortlets(): '+JSON.stringify(_portlets));
     portalWindowView.updateLayout(portalProxy.getIsPortalReachable(), userProxy.isGuestUser(), _portlets);
     portalWindowView.hideActivityIndicator();
 };
