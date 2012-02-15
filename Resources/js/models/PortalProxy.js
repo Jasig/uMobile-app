@@ -99,12 +99,38 @@ function _processFolderLayout (layout) {
         }
     }
     
+    var nativeModules = config.retrieveLocalModules(), module;
+    for (module in nativeModules) {
+        if (nativeModules.hasOwnProperty(module)) {
+            nativeModules[module].added = false;
+        }
+    }
+    
+    /* Here we want to override any portlets from the portal with
+    native modules if there is a matching fname */
+    for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
+        if(nativeModules[portlets[i].fname]) {
+            portlets[i] = nativeModules[portlets[i].fname];
+            nativeModules[portlets[i].fname].added = true;
+        }
+    }
+
+    for (module in nativeModules) {
+        if (nativeModules.hasOwnProperty(module)) {
+            if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
+                // As long as the module has a title, hasn't already been added, and doesn't 
+                // require the fname for the module to be returned in the personalized layout.
+                portlets.push(nativeModules[module]);
+            }
+        }
+    }
+    
     portlets.sort(_sortPortlets);
     Ti.API.debug('Final folders: '+JSON.stringify(folders));
     Ti.API.debug('Final portlets: '+JSON.stringify(portlets));
     
     //Set the state of the portal proxy. Assume local portlets only if layout.length < 1
-    exports.setState(exports.states[layout.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
+    exports.setState(exports.states[portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
     Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.getState() });
 }
 
