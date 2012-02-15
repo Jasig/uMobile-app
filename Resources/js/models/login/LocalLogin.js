@@ -19,7 +19,7 @@
 
 var init,
 client, url, credentials, onLoginComplete, onLoginError,
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 config = require('/js/config'),
 userProxy = require('/js/models/UserProxy'),
 deviceProxy = require('/js/models/DeviceProxy');

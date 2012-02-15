@@ -23,7 +23,7 @@ exports.events = {
 };
 
 var person, people = [], xhrSearchClient,
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 deviceProxy = require('/js/models/DeviceProxy'),
 config = require('/js/config'),
 localDictionary = require('/js/localization')[Titanium.App.Properties.getString('locale')];

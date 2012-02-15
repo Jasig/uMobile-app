@@ -24,7 +24,7 @@ exports.events = {
 
 var hidePreviousWindow, 
 config = require('/js/config'),
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 localDictionary = require('/js/localization')[Titanium.App.Properties.getString('locale')],
 deviceProxy = require('/js/models/DeviceProxy'),
 applicationWindows = config.WINDOW_CONTROLLERS,

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var numCategories, app = require('/js/Facade');
+var numCategories, app = require('/js/Constants');
 var _mapCenter = {
     latitude        : false,
     longitude       : false,

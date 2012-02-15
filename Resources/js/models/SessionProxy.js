@@ -18,7 +18,7 @@
  */
 
 var timer = {}, sessionLifeTimeMilli, 
-app = require('/js/Facade');
+app = require('/js/Constants');
 
 /* 
 The SessionProxy acts as a sub-proxy for the LoginProxy to maintain a local

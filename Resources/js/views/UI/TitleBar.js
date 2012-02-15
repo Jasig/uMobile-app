@@ -1,7 +1,7 @@
 
     // Partial view used in almost every view, which places a title bar at the top of the screen with some optional attributes.
     //Optional attributes include top, left, height, title, homeButton (bool), backButton (View), settingsButton (bool)
-var app = require('/js/Facade'),
+var app = require('/js/Constants'),
 styles = require('/js/style'),
 config = require('/js/config'),
 _ = require('/js/libs/underscore-min'),

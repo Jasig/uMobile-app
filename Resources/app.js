@@ -17,7 +17,7 @@
  * under the License.
  */
 
-var app = require('/js/Facade'),
+var app = require('/js/Constants'),
 deviceProxy = require('/js/models/DeviceProxy'),
 loginProxy = require('/js/models/LoginProxy'),
 windowManager = require('/js/models/WindowManager'),

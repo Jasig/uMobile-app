@@ -46,7 +46,7 @@ win, contentLayer, titleBar, activityIndicator, notificationsView, isNotificatio
 
 exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstOpen) {
     Ti.API.debug('exports.open() in PortalWindowView');
-    app = app || require('/js/Facade');
+    app = app || require('/js/Constants');
     config = config || require('/js/config');
     styles = styles ? styles.updateStyles() : require('/js/style');
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');

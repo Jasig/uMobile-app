@@ -21,7 +21,7 @@ var _url, _credentials,
 config = require('/js/config'),
 deviceProxy = require('/js/models/DeviceProxy'),
 userProxy = require('/js/models/UserProxy'),
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 refUrl = config.PORTAL_CONTEXT + '/layout.json',
 serviceUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Login?refUrl=' + refUrl,
 logoutUrl = config.CAS_URL + '/logout';

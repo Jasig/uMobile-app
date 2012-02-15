@@ -39,7 +39,7 @@ exports.open = function () {
     userProxy = userProxy || require('/js/models/UserProxy');
     config = config || require('/js/config');
     localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
-    app = app || require('/js/Facade');
+    app = app || require('/js/Constants');
     
     Ti.App.addEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.addEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);
@@ -52,7 +52,7 @@ exports.open = function () {
     
     //Open the portal window
     //portlets, isGuestLayout, isPortalReachable, isFirstOpen
-    portalWindowView.open(portalProxy.retrievePortlets(), userProxy.isGuestUser(), portalProxy.retrieveIsPortalReachable(), firstTimeOpened);
+    portalWindowView.open(portalProxy.getPortlets(), userProxy.isGuestUser(), portalProxy.getIsPortalReachable(), firstTimeOpened);
     if (config.NOTIFICATIONS_ENABLED) notificationsProxy.updateNotifications();
     firstTimeOpened = false;
 };
@@ -74,10 +74,10 @@ exports.rotate = function (orientation) {
 };
 
 function _onPortletsLoaded (e) {
-    var _portlets = portalProxy.retrievePortlets();
+    var _portlets = portalProxy.getPortlets();
     Ti.API.debug('_onPortletsLoaded() in PortalWindowController.');
-    Ti.API.debug('portalProxy.retrievePortlets(): '+JSON.stringify(_portlets));
-    portalWindowView.updateLayout(portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser(), _portlets);
+    Ti.API.debug('portalProxy.getPortlets(): '+JSON.stringify(_portlets));
+    portalWindowView.updateLayout(portalProxy.getIsPortalReachable(), userProxy.isGuestUser(), _portlets);
     portalWindowView.hideActivityIndicator();
 };
 
@@ -87,7 +87,7 @@ function onNotificationsUpdated (e) {
 };
 
 function onAndroidSearchClick (e) {
-	var _searchPortlet = portalProxy.retrievePortletByFName('search');
+	var _searchPortlet = portalProxy.getPortletByFName('search');
 	if (_searchPortlet) Ti.App.fireEvent(app.events['SHOW_PORTLET'], _searchPortlet);
 };
 
@@ -104,7 +104,7 @@ function onNetworkSessionFailure (e) {
                 portalWindowView.alert(localDictionary.error, localDictionary.failedToLoadPortlets);
                 _newNetworkDowntime = false;
             }
-            portalWindowView.updateLayout(portalProxy.retrieveIsPortalReachable(), userProxy.isGuestUser(), portalProxy.retrievePortlets());
+            portalWindowView.updateLayout(portalProxy.getIsPortalReachable(), userProxy.isGuestUser(), portalProxy.getPortlets());
             portalWindowView.hideActivityIndicator();
         }
         else {

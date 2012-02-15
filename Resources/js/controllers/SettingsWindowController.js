@@ -29,7 +29,7 @@ wasLogOutClicked = false;
 
 exports.open = function () {
     isOpen = true;
-    app = require('/js/Facade');
+    app = require('/js/Constants');
     _ = require('/js/libs/underscore-min');
     userProxy = require('/js/models/UserProxy');
     styles = require('/js/style');

@@ -18,7 +18,7 @@
  */
 var _loginMethod = {},
 config = require('/js/config'),
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 sessionProxy = require('/js/models/SessionProxy'),
 userProxy = require('/js/models/UserProxy');
 

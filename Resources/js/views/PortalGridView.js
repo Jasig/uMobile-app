@@ -32,7 +32,7 @@ exports.events = {
 
 var _completeWidth, _completeHeight, _numColumns, _leftPadding, _didLayoutCleanup = false, _state, _numGridItems = 0, _gridView, _gridItems = {}, styles, deviceProxy, portalProxy,
 _ = require('/js/libs/underscore-min'),
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 portalProxy = require('/js/models/PortalProxy');
 
 function _init () {
@@ -46,14 +46,14 @@ function _init () {
     
     _gridView = Titanium.UI.createScrollView(styles.homeGrid);
     
-    exports.saveState(exports.states.INITIALIZED);
+    exports.setState(exports.states.INITIALIZED);
 };
 
-exports.retrieveState = function () {
+exports.getState = function () {
     return _state;
 };
 
-exports.saveState = function (newState) {
+exports.setState = function (newState) {
     _state = newState;
     Ti.App.fireEvent(exports.events['STATE_CHANGE'], {state: _state});
     
@@ -154,7 +154,7 @@ function _createGridItem (portlet, sortOrder) {
         gridItemIconDefaults = _.clone(styles.gridIcon);
         
         gridItemIconDefaults.top += 'dp';
-        gridItemIconDefaults.image = portalProxy.retrieveIconUrl(portlet);
+        gridItemIconDefaults.image = portalProxy.getIconUrl(portlet);
         gridItemIcon = Ti.UI.createImageView(gridItemIconDefaults);
         gridItemIcon.portlet = portlet;
         gridItem.view.add(gridItemIcon);
@@ -215,7 +215,7 @@ function _rearrangeGrid () {
         }
     }
     
-    exports.saveState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
+    exports.setState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
 };
 
 exports.clear = function () {    

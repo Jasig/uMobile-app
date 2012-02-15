@@ -1,4 +1,4 @@
-var _intents = {}, app = require('/js/Facade');
+var _intents = {}, app = require('/js/Constants');
 exports.register = function (intent, windowKey, portlet) {
     _intents[intent] = { window: windowKey };
     if (portlet) _intents[intent].portlet = portlet;

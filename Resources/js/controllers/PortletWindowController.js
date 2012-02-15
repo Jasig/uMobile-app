@@ -30,7 +30,7 @@ exports.open = function (portlet) {
         This method isn't called until the user has selected a webview-based portlet
         from the home screen.
     */
-    app = require('/js/Facade');
+    app = require('/js/Constants');
     config = require('/js/config');
     styles = require('/js/style');
     deviceProxy = require('/js/models/DeviceProxy');

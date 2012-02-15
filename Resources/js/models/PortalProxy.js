@@ -26,7 +26,7 @@ exports.states = {
 
 var currentState = exports.states['INITIALIZED'],
 isPortalReachable,
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 config = require('/js/config'),
 resourceProxy = require('/js/models/ResourceProxy'),
 pathToRoot = '../../',
@@ -34,19 +34,19 @@ portlets = [], //Portlet model: {fname:"unique", title:"Human Readable", url: "p
 folders = []; //Folder model: {id: "u12345", title: "Campus", numChildren: 2 }
 
 Ti.App.addEventListener(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], function (e) {
-    exports.savePortlets(e.portlets);
+    exports.setPortlets(e.portlets);
 });
 Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_FAILURE'], function (e){
-    exports.savePortlets([]);
+    exports.setPortlets([]);
 });
 
 Ti.App.addEventListener(app.portalEvents['PORTAL_REACHABLE'], function (e){
     Ti.API.debug('PORTAL_REACHABLE event received in PortalProxy. e: '+JSON.stringify(e));
-    exports.saveIsPortalReachable(e.reachable);
+    exports.setIsPortalReachable(e.reachable);
 });
 
-exports.retrievePortlets = function (folder) {
-    Ti.API.debug('retrievePortlets() in PortalProxy. Portlets: '+JSON.stringify(portlets));
+exports.getPortlets = function (folder) {
+    Ti.API.debug('getPortlets() in PortalProxy. Portlets: '+JSON.stringify(portlets));
     if (folder) {
         //Let's iterate through all of the portlets and find which ones 
     }
@@ -104,8 +104,8 @@ function _processFolderLayout (layout) {
     Ti.API.debug('Final portlets: '+JSON.stringify(portlets));
     
     //Set the state of the portal proxy. Assume local portlets only if layout.length < 1
-    exports.saveState(exports.states[layout.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
-    Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.retrieveState() });
+    exports.setState(exports.states[layout.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.getState() });
 }
 
 function _processFlatLayout (layout) {
@@ -146,13 +146,13 @@ function _processFlatLayout (layout) {
     layout.sort(_sortPortlets);
     
     //Set the state of the portal proxy. Assume local portlets only if layout.length < 1
-    exports.saveState(exports.states[layout.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
+    exports.setState(exports.states[layout.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
     portlets = layout;
-    Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.retrieveState() });
+    Ti.App.fireEvent(app.portalEvents['PORTLETS_LOADED'], { state: exports.getState() });
 }
 
-exports.savePortlets = function (_portlets) {
-    Ti.API.debug('savePortlets() in PortalProxy');
+exports.setPortlets = function (_portlets) {
+    Ti.API.debug('setPortlets() in PortalProxy');
     if ("folders" in _portlets[0]) {
         Ti.API.debug('We are dealing with a nested layout.');
         _processFolderLayout(_portlets);
@@ -163,7 +163,7 @@ exports.savePortlets = function (_portlets) {
     }
 };
 
-exports.retrievePortletByFName = function (fname) {
+exports.getPortletByFName = function (fname) {
 	for (var i=0, iLength = portlets.length; i<iLength; i++ ) {
 		if (portlets[i].fname === fname) {
 			return portlets[i];
@@ -195,23 +195,23 @@ function _sortPortlets (a, b) {
 
 };
 
-exports.retrieveIconUrl = function (p) {
+exports.getIconUrl = function (p) {
     if (resourceProxy.retrievePortletIcon(p.fname)) return resourceProxy.retrievePortletIcon(p.fname);
     if (p.iconUrl && p.iconUrl.indexOf('/') == 0)  return config.BASE_PORTAL_URL + p.iconUrl;
     if (p.iconUrl) return pathToRoot + p.iconUrl;
     return config.BASE_PORTAL_URL + '/ResourceServingWebapp/rs/tango/0.8.90/32x32/categories/applications-other.png';
 };
 
-exports.retrieveIsPortalReachable = function () {
+exports.getIsPortalReachable = function () {
     return isPortalReachable;
 };
 
-exports.saveIsPortalReachable = function (newval) {
+exports.setIsPortalReachable = function (newval) {
     if (typeof newval == "boolean") return isPortalReachable = newval;
     Ti.API.error("Couldn't set value of _isPortalReachable, wasn't type 'boolean' but was type: " + typeof newval);
 };
 
-exports.saveState = function (_state) {
+exports.setState = function (_state) {
     for (var state in exports.states) {
         if (exports.states.hasOwnProperty(state)) {
             if (exports.states[state] === _state) {
@@ -221,6 +221,6 @@ exports.saveState = function (_state) {
     }
 };
 
-exports.retrieveState = function () {
+exports.getState = function () {
     return currentState;
 };

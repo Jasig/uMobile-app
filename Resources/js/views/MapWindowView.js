@@ -19,7 +19,7 @@
 
 var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar,
 _ = require('/js/libs/underscore-min'),
-app = require('/js/Facade'),
+app = require('/js/Constants'),
 styles = require('/js/style'),
 localDictionary = require('/js/localization').retrieveLocale(Ti.App.Properties.getString('locale')),
 deviceProxy = require('/js/models/DeviceProxy'),
