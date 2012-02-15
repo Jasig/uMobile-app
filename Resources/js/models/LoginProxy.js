@@ -87,6 +87,7 @@ exports.onSessionExpire = function (e) {
 };
 
 function _processLoginResponse (e) {
+    Ti.API.debug('_processLoginResponse() in LoginProxy. '+JSON.stringify(e));
     /*
         This method handles login/logout events fired from individual login methods (CAS,
         Local Login, Shibboleth). The event object is supposed to contain a response 
@@ -110,7 +111,7 @@ function _processLoginResponse (e) {
     }
     
     username = _parsedResponse.user || app.userTypes['GUEST'];
-    
+    Ti.API.debug('username: '+username);
     userProxy.saveLayoutUserName(username);
     Ti.App.fireEvent(app.portalEvents['PORTLETS_RETRIEVED_SUCCESS'], { portlets: _parsedResponse.layout, user: username });
     

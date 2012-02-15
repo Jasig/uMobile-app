@@ -25,10 +25,12 @@ userProxy = require('/js/models/UserProxy'),
 deviceProxy = require('/js/models/DeviceProxy');
 
 onLoginComplete = function (e) {
+    Ti.API.debug('onLoginComplete() in LocalLogin');
     Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response: client.responseText });
 };
 
 onLoginError = function (e) {
+    Ti.API.debug('onLoginError() in LocalLogin. e: '+JSON.stringify(e));
     Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR'], e);
 };
 
@@ -52,6 +54,7 @@ exports.logout = function () {
     var _logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/Logout';
     client = Titanium.Network.createHTTPClient({
         onload: function (e){
+            Ti.API.debug('onload() in exports.logout() in LocalLogin');
             // If it's Android, we'll use our custom clearcookies method to 
             // clear the cookies in HTTPClient and WebView for good measure
             if (deviceProxy.isAndroid() && client.clearCookies) client.clearCookies(config.BASE_PORTAL_URL);
@@ -66,6 +69,7 @@ exports.logout = function () {
             client.send();
         },
         onerror: function (e) {
+            Ti.API.debug('onerror() in exports.logout() in LocalLogin');
             Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR'], e);
         }
     });

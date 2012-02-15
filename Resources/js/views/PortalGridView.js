@@ -68,6 +68,7 @@ exports.retrieveGridView = function () {
 };
 
 exports.updateGrid = function (portlets) {
+    Ti.API.debug('updateGrid() in PortalGridView. portlets:'+JSON.stringify(portlets));
     var _portlets = portlets || [], _item;
 
     /*

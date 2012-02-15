@@ -275,6 +275,7 @@ function onWindowBlur (e) {
 
 //LoginProxy events
 function onSessionSuccess (e) {
+    Ti.API.debug('onSessionSuccess() in SettingsWindowController. e.user: '+e.user);
     var _toast;
     activityIndicator.view.hide();
     if (!isOpen || (!wasFormSubmitted && !wasLogOutClicked)) return;
@@ -317,6 +318,7 @@ function onSessionSuccess (e) {
 }
 
 function onPortalProxyPortletsLoaded (e) {
+    Ti.API.debug('onPortalProxyPortletsLoaded() in SettingsWindowController');
     if (!wasFormSubmitted) return onSessionError(e);;
     Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
     wasFormSubmitted = false;
@@ -325,6 +327,7 @@ function onPortalProxyPortletsLoaded (e) {
 }
 
 function onSessionError (e) {
+    Ti.API.debug('onSessionError() in SettingsWindowController');
     activityIndicator.view.hide();
     
     //If we at least received a user layout back from the service
