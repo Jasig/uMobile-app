@@ -312,6 +312,37 @@ exports.updateStyles = function () {
         contentHeight:'auto',
         zIndex: 1
     };
+    exports.portalFolderView = {
+        top: 0,
+        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
+        heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
+        layout: 'vertical',
+        contentHeight: 'auto'
+    };
+    exports.portalFolderHeader = {
+        height: '40dp',
+        width: '100%',
+        backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+    };
+    exports.portalFolderLabel = {
+        left: '10dp',
+        color: '#ffffff',
+        textAlign: 'left',
+        font: {
+            fontWeight: 'bold',
+            fontSize: '14'
+        }
+    };
+    exports.portletRow = {
+        height: '60dp',
+        width: '100%',
+        backgroundColor: '#eee'
+    };
+    exports.portletRowLabel = {
+        left: '50dp',
+        color: '#333',
+        textAlign: 'left'
+    };
     exports.homeGuestNote = {
         height: '40dp',
         rawHeight: 40,
@@ -580,7 +611,8 @@ exports.updateStyles = function () {
         exports.mapAnnotation.rightButton = Titanium.UI.iPhone.SystemButtonStyle.BORDERED;
     }
     
-    if(OS === 'android') {
+    if (OS === 'android') {
+        exports.portalFolderHeader.backgroundImage = '/images/secondarybarbg.png';
         exports.titleBar.backgroundImage = '/images/titlebarbg.png';
         exports.searchBar.backgroundImage = '/images/secondarybarbg.png';
         exports.mapNavView.backgroundImage = '/images/secondarybarbg.png';

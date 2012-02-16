@@ -35,3 +35,9 @@ exports.portalEvents = {
     PORTLETS_LOADED             : 'PortalProxyPortletsLoaded', //When portlets are sorted, organized, ready to use
     NETWORK_ERROR               : 'PortalProxyNetworkError'
 };
+
+//Types of layouts to display in the PortalWindow
+exports.layoutTypes = {
+    GRID_LAYOUT: "PortalWindowGridLayout",
+    FOLDER_LAYOUT: "PortalWindowFolderLayout"
+};

@@ -69,7 +69,6 @@ function _processFolderLayout (layout) {
     var _folders = layout[0]["folders"], _portlets = {};
     //First, we'll populate the module's folders array
     var l = _folders.length, i=0, _currentFolder, _currentPortlet, j, pLength;
-    var perfTimer = new Date().getTime();
     while (i++ != l) {
         _currentFolder = _folders[i-1];
         j = 0;
@@ -81,7 +80,6 @@ function _processFolderLayout (layout) {
         });
         //Let's add this folder's portlets to the _portlets Object. 
         //We'll worry about sorting later.
-        Ti.API.debug('Iterating through folder\'s portlets. '+JSON.stringify(_currentFolder.portlets));
         while (j++ != pLength) {
             _currentPortlet = _currentFolder.portlets[j-1];
             if (_currentPortlet.fname in _portlets) {
@@ -182,8 +180,8 @@ function _processFlatLayout (layout) {
 }
 
 exports.setPortlets = function (_portlets) {
-    Ti.API.debug('setPortlets() in PortalProxy');
-    if ("folders" in _portlets[0]) {
+    Ti.API.debug('setPortlets() in PortalProxy. _portlets:'+JSON.stringify(_portlets));
+    if (_portlets[0] && typeof _portlets[0] === "object" && "folders" in _portlets[0]) {
         Ti.API.debug('We are dealing with a nested layout.');
         _processFolderLayout(_portlets);
     }
