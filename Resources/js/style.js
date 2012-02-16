@@ -314,6 +314,7 @@ exports.updateStyles = function () {
     };
     exports.portalFolderView = {
         top: 0,
+        backgroundColor: '#fff',
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
         heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
         layout: 'vertical',
@@ -328,21 +329,33 @@ exports.updateStyles = function () {
         left: '10dp',
         color: '#ffffff',
         textAlign: 'left',
+        touchEnabled: false,
         font: {
             fontWeight: 'bold',
             fontSize: '14'
         }
     };
+    exports.portletRowIcon = {
+        left: '10dp',
+        width: OS === 'ipad' ? 72 : '57dp',
+        height: OS === 'ipad' ? 72 : '57dp'
+    };
     exports.portletRow = {
-        height: '60dp',
         width: '100%',
-        backgroundColor: '#eee'
+        height: OS === 'ipad' ? 82 : '67dp',
+        backgroundColor: '#eee',
+        backgroundGradient: {
+            type: 'linear',
+            colors: ['#fff', '#eee']
+        }
     };
     exports.portletRowLabel = {
-        left: '50dp',
+        left: OS === 'ipad' ? 92 : '77dp',
         color: '#333',
-        textAlign: 'left'
+        textAlign: 'left',
+        touchEnabled: false
     };
+    
     exports.homeGuestNote = {
         height: '40dp',
         rawHeight: 40,
@@ -613,6 +626,7 @@ exports.updateStyles = function () {
     
     if (OS === 'android') {
         exports.portalFolderHeader.backgroundImage = '/images/secondarybarbg.png';
+        exports.portletRow.backgroundImage = '/images/portlet-row.png';
         exports.titleBar.backgroundImage = '/images/titlebarbg.png';
         exports.searchBar.backgroundImage = '/images/secondarybarbg.png';
         exports.mapNavView.backgroundImage = '/images/secondarybarbg.png';

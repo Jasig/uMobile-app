@@ -48,7 +48,14 @@ function onFolderClick (e) {
 }
 
 function onPortletClick(e) {
-    Ti.API.debug('onPortletClick() in PortalFolderView. portlet fname:'+e.source.fname);
+    Ti.API.debug('onPortletClick() in PortalFolderView. portlet fname:'+e.source.portlet.fname);
+
+    if (e.source.portlet.url) {
+        Ti.App.fireEvent(app.events['SHOW_PORTLET'], e.source.portlet);
+    }
+    else {
+        Ti.App.fireEvent(app.events['SHOW_WINDOW'], { newWindow: e.source.portlet.fname });
+    }
 }
 
 function updateFolderListView(folders) {
@@ -58,8 +65,8 @@ function updateFolderListView(folders) {
     var l, i = view.children ? view.children.length : 0, _folderLabel, _folderHeaderView;
     
     while (i-- > 0) {
-        if (view.children[i].folderId) view.children[i].removeEventListener('click', onFolderClick);
-        if (view.children[i].fname) view.children[i].removeEventListener('click', onPortletClick);
+        if (view.children[i].folderId) view.children[i].removeEventListener('singletap', onFolderClick);
+        if (view.children[i].portlet) view.children[i].removeEventListener('singletap', onPortletClick);
         view.remove(view.children[i]);
     }
     
@@ -69,7 +76,7 @@ function updateFolderListView(folders) {
     while (i++ != l) {
         _folderHeaderView = Ti.UI.createView(styles.portalFolderHeader);
         _folderHeaderView.folderId = folders[i-1].id;
-        _folderHeaderView.addEventListener('click', onFolderClick);
+        _folderHeaderView.addEventListener('singletap', onFolderClick);
         view.add(_folderHeaderView);
         
         _folderLabel = Ti.UI.createLabel(styles.portalFolderLabel);
@@ -81,8 +88,9 @@ function updateFolderListView(folders) {
         if (_portlets.length > 0) {
             while (j++ != p) {
                 var _portletRow = Ti.UI.createView(styles.portletRow);
-                _portletRow.fname = _portlets[j-1].fname;
-                _portletRow.addEventListener('click', onPortletClick);
+                _portletRow.portlet = _portlets[j-1];
+                
+                _portletRow.addEventListener('singletap', onPortletClick);
                 
                 view.add(_portletRow);
                 
@@ -90,6 +98,10 @@ function updateFolderListView(folders) {
                 _portletLabel.text = _portlets[j-1].title;
                 
                 _portletRow.add(_portletLabel);
+                
+                var _portletIcon = Ti.UI.createImageView(styles.portletRowIcon);
+                _portletIcon.image = portalProxy.getIconUrl(_portlets[j-1]);
+                _portletRow.add(_portletIcon);
                 
             }
             
