@@ -22,7 +22,7 @@
 * intended for use in abstracting out strings which
 * may differ between deploying institutions.
 */
-var ILocalModule;
+var constants = require('/js/Constants');
 Titanium.App.Properties.setString('locale', 'en_US');
 
 //------- PORTAL LOCATION -------
@@ -33,6 +33,7 @@ Titanium.App.Properties.setString('locale', 'en_US');
 exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
 exports.PORTAL_CONTEXT = '';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
+exports.LAYOUT_VIEW = constants.layoutTypes['FOLDER_LAYOUT'];
 
 //------- AUTHENTICATION -------
 Ti.App.Properties.setInt('SERVER_SESSION_TIMEOUT', parseInt((2 * 60 * 60 * 1000), 10));
@@ -73,14 +74,14 @@ exports.DIRECTORY_SERVICE_RESULT_FIELDS = {
 	department : 'department',
 	organization : 'organization'
 };
-ILocalModule = {
+/* Local Module example: {
 	title : "", // Req string, Shows at the top of the module window
 	fname : "", // Req String, unique ID
 	window : "", // Opt String, Key of native window associated with this module
 	doesRequireLayout : false, // Opt Bool, Indicates if portlet with matching fname must be returned from portal for this to be displayed. Implies also that the module works when portal is down/unavailable.
 	externalModule : false, // Opt Bool, Indicates if it's an external site. Requires url attribute as well.
 	url : ""        // Opt String, URL of module. Uses PortletWindowController if set.
-};
+};*/
 
 exports.LOCAL_MODULES = [];
 
