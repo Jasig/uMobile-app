@@ -86,13 +86,13 @@ exports.DIRECTORY_SERVICE_RESULT_FIELDS = {
 exports.LOCAL_MODULES = [];
 
 exports.LOCAL_MODULES.map = {
-	title : 'map',
+	title : 'Map',
 	fname : 'map',
 	window : 'map'
 };
 
 exports.LOCAL_MODULES.directory = {
-	title : 'directory',
+	title : 'Directory',
 	fname : 'directory',
 	doesRequireLayout : true,
 	window : 'directory'

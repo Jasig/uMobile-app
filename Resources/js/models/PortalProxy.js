@@ -110,18 +110,30 @@ function _processFolderLayout (layout) {
     
     /* Here we want to override any portlets from the portal with
     native modules if there is a matching fname */
+    Ti.API.debug('About to override portlets with native modules. nativeModules:'+JSON.stringify(nativeModules));
     for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
         if(nativeModules[portlets[i].fname]) {
+            Ti.API.debug('YES native module for '+portlets[i].fname);
+            nativeModules[portlets[i].fname].folders = portlets[i].folders;
             portlets[i] = nativeModules[portlets[i].fname];
             nativeModules[portlets[i].fname].added = true;
         }
+        else {
+            Ti.API.debug('No native module for '+portlets[i].fname);
+        }
     }
-
+    
+    // Now we'll add any native modules to the collection 
+    // if they aren't overriding a portlet from the layout
     for (module in nativeModules) {
         if (nativeModules.hasOwnProperty(module)) {
             if(nativeModules[module].title && !nativeModules[module].added && !nativeModules[module].doesRequireLayout) {
                 // As long as the module has a title, hasn't already been added, and doesn't 
                 // require the fname for the module to be returned in the personalized layout.
+                
+                //If there's no folder for this one, let's assign it to the first folder's id or nil
+                
+                if (!nativeModules[module].folders && folders.length > 0) nativeModules[module].folders = [folders[0].id];
                 portlets.push(nativeModules[module]);
             }
         }
