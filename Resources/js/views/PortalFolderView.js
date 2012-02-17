@@ -35,16 +35,20 @@ exports.rotate = function (orientation, specialLayout) {
 };
 
 function showPortletsByFolder (folderId) {
+    if (folderId === activeFolder) return;
     activeFolder = folderId;
     for (var _view in portletListViewsByFolder) {
         if (portletListViewsByFolder.hasOwnProperty(_view)) {
+            portletListViewsByFolder[_view].height = 0;
             portletListViewsByFolder[_view].hide();
         }
     }
+    portletListViewsByFolder[folderId].height = 'auto';
     portletListViewsByFolder[folderId].show();
 }
 function onFolderClick (e) {
     Ti.API.debug('onFolderClick() in PortalFolderView. folderId:'+e.source.folderId);
+    if (e.source.folderId) showPortletsByFolder(e.source.folderId);
 }
 
 function onPortletClick(e) {
@@ -58,7 +62,7 @@ function onPortletClick(e) {
     }
 }
 
-function updateFolderListView(folders) {
+function updateFolderListView(folders, activeFolderId) {
     exports.setState(exports.states['LOADING']);
     
     //Remove all current views
@@ -84,32 +88,45 @@ function updateFolderListView(folders) {
         
         _folderHeaderView.add(_folderLabel);
         
+        //If this folder is supposed to be collapsed right now, let's continue the loop.
+        // if (folders[i-1].id != activeFolderId || (!activeFolderId && i != 1)) continue;
+        
+        var _folderPortletsView = Ti.UI.createView({
+            layout: 'vertical',
+            height: (styles.portletRow.rawHeight * folders[i-1].numChildren) + 'dp',
+            parentFolderId: folders[i-1].id
+        });
+        view.add(_folderPortletsView);
+        
+        
+        portletListViewsByFolder[folders[i-1].id] = _folderPortletsView;
+        
         var j = 0, _portlets = portalProxy.getPortlets(folders[i-1].id), p = _portlets.length;
-        if (_portlets.length > 0) {
-            while (j++ != p) {
-                var _portletRow = Ti.UI.createView(styles.portletRow);
-                _portletRow.portlet = _portlets[j-1];
-                
-                _portletRow.addEventListener('singletap', onPortletClick);
-                
-                view.add(_portletRow);
-                
-                var _portletLabel = Ti.UI.createLabel(styles.portletRowLabel);
-                _portletLabel.text = _portlets[j-1].title;
-                
-                _portletRow.add(_portletLabel);
-                
-                var _portletIcon = Ti.UI.createImageView(styles.portletRowIcon);
-                _portletIcon.image = portalProxy.getIconUrl(_portlets[j-1]);
-                _portletRow.add(_portletIcon);
-                
-            }
+
+        while (j++ != p) {
+            var _portletRow = Ti.UI.createView(styles.portletRow);
+            _portletRow.portlet = _portlets[j-1];
             
+            _portletRow.addEventListener('singletap', onPortletClick);
+            
+            _folderPortletsView.add(_portletRow);
+            
+            var _portletLabel = Ti.UI.createLabel(styles.portletRowLabel);
+            _portletLabel.text = _portlets[j-1].title;
+            
+            _portletRow.add(_portletLabel);
+            
+            var _portletIcon = Ti.UI.createImageView(styles.portletRowIcon);
+            _portletIcon.image = portalProxy.getIconUrl(_portlets[j-1]);
+            _portletRow.add(_portletIcon);
+            
+            var _arrow = Ti.UI.createImageView(styles.portletRowArrow);
+            _portletRow.add(_arrow);
         }
     }
     
-    //Then if there's a currentFolder that matches a currentFolder in the new array, show it.
-    //Otherwise show the portlets for the first item in the folders array
+    if (!activeFolder && folders[0]) showPortletsByFolder(folders[0].id);
+    
     exports.setState(exports.states['COMPLETE']);
 }
 

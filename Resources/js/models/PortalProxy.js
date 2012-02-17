@@ -66,7 +66,7 @@ exports.getFolderList = function () {
 };
 
 function _processFolderLayout (layout) {
-    var _folders = layout[0]["folders"], _portlets = {};
+    var _folders = layout["folders"], _portlets = {};
     //First, we'll populate the module's folders array
     var l = _folders.length, i=0, _currentFolder, _currentPortlet, j, pLength;
     while (i++ != l) {
@@ -133,7 +133,10 @@ function _processFolderLayout (layout) {
                 
                 //If there's no folder for this one, let's assign it to the first folder's id or nil
                 
-                if (!nativeModules[module].folders && folders.length > 0) nativeModules[module].folders = [folders[0].id];
+                if (!nativeModules[module].folders && folders.length > 0) {
+                    nativeModules[module].folders = [folders[0].id];
+                    folders[0].numChildren++;
+                }
                 portlets.push(nativeModules[module]);
             }
         }
@@ -193,7 +196,7 @@ function _processFlatLayout (layout) {
 
 exports.setPortlets = function (_portlets) {
     Ti.API.debug('setPortlets() in PortalProxy. _portlets:'+JSON.stringify(_portlets));
-    if (_portlets[0] && typeof _portlets[0] === "object" && "folders" in _portlets[0]) {
+    if (_portlets && "folders" in _portlets) {
         Ti.API.debug('We are dealing with a nested layout.');
         _processFolderLayout(_portlets);
     }

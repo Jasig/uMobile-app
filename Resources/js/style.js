@@ -337,17 +337,26 @@ exports.updateStyles = function () {
     };
     exports.portletRowIcon = {
         left: '10dp',
+        touchEnabled: false,
         width: OS === 'ipad' ? 72 : '57dp',
         height: OS === 'ipad' ? 72 : '57dp'
     };
     exports.portletRow = {
         width: '100%',
         height: OS === 'ipad' ? 82 : '67dp',
+        rawHeight: OS === 'ipad' ? 82 : 67,
         backgroundColor: '#eee',
         backgroundGradient: {
             type: 'linear',
             colors: ['#fff', '#eee']
         }
+    };
+    exports.portletRowArrow = {
+        width: '14dp',
+        height: '22dp',
+        right: '20dp',
+        image: '/images/portlet-list-arrow.png',
+        touchEnabled: false
     };
     exports.portletRowLabel = {
         left: OS === 'ipad' ? 92 : '77dp',

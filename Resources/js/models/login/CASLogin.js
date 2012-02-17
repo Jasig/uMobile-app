@@ -30,6 +30,7 @@ logoutUrl = config.CAS_URL + '/logout';
 var client;
 
 exports.login = function (credentials, opts) {
+    Ti.API.debug('login() in CASLogin');
     _credentials = credentials;
     _url = config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(serviceUrl);
     
@@ -45,6 +46,7 @@ exports.login = function (credentials, opts) {
 };
 
 exports.logout = function () {
+    Ti.API.debug('logout() in CASLogin');
     // Log out the network session, which also clears the webView session in iPhone
     client = Titanium.Network.createHTTPClient({
         onload: _onLogoutComplete,
@@ -56,6 +58,7 @@ exports.logout = function () {
 };
 
 function _onLogoutComplete (e) {
+    Ti.API.debug('_onLogoutComplete() in CASLogin');
     client = Titanium.Network.createHTTPClient({
         onload: function (e) {
             // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
@@ -80,6 +83,7 @@ function _onLogoutComplete (e) {
 };
 
 function _onLoginComplete (e) {
+    Ti.API.debug('_onLoginComplete() in CASLogin. responseText:'+client.responseText);
     // Examine the response to determine if authentication was successful.  If
     // we get back a CAS page, assume that the credentials were invalid.
     
@@ -95,15 +99,18 @@ function _onLoginComplete (e) {
 };
 
 function _onLoginError (e) {
+    Ti.API.debug('_onLoginError() in CASLogin');
     Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
 };
 
 function _onInitialError (e) {
+    Ti.API.debug('_onInitialError() in CASLogin');
     Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
 };
 
 function _onInitialResponse (e) {
-    var flowRegex, flowId, initialResponse, data, _parsedResponse;
+    Ti.API.debug('_onInitialResponse() in CASLogin. responseText:'+client.responseText);
+    var flowRegex, flowId, executionRegex, executionId, initialResponse, data, _parsedResponse;
     
     // CAS will redirect to layout.json if the user has already logged in, so we want 
     // to check if the base URL is what should only be returned after login
@@ -114,9 +121,11 @@ function _onInitialResponse (e) {
     initialResponse = client.responseText;
 
     flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
+    executionRegex = /input type="hidden" name="execution" value="([a-z0-9\-]*)?"/i
 
     try {
         flowId = flowRegex.exec(initialResponse)[1];
+        executionId = executionRegex.exec(initialResponse)[1];
         // Post the user credentials and other required webflow parameters to the 
         // CAS login page.  This step should accomplish authentication and redirect
         // to the portal if the user is successfully authenticated.
@@ -132,6 +141,7 @@ function _onInitialResponse (e) {
             username: _credentials.username, 
             password: _credentials.password, 
             lt: flowId, 
+            execution: executionId,
             _eventId: 'submit', 
             submit: 'LOGIN' 
         };
