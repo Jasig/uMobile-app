@@ -64,8 +64,9 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     //Let's create the UI elements.
     _drawUI(_isGuestLayout, _isPortalReachable);
     
-    //Now that the UI is created, let's render the user's layout
-    portletCollectionView.updateModules(_modules);
+    // The layout should never be ready at this point, let's wait until we receive an event
+    // telling us that it's ready.
+    // portletCollectionView.updateModules(_modules);
     
     //This view is done opening, so let's update the state
     setState(exports.states.OPENED);

@@ -43,7 +43,7 @@ exports.open = function () {
     
     Ti.App.addEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.addEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);
-    Ti.App.addEventListener(app.portalEvents['PORTLETS_LOADED'], _onPortletsLoaded);
+    if (firstTimeOpened) Ti.App.addEventListener(app.portalEvents['PORTLETS_LOADED'], _onPortletsLoaded);
     Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
     Ti.App.addEventListener(portalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
     Ti.App.addEventListener(app.loginEvents['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);
@@ -61,7 +61,7 @@ exports.close = function () {
     Ti.API.debug('exports.close() in PortalWindowController');
     Ti.App.removeEventListener(app.portalEvents['GETTING_PORTLETS'], onGettingPortlets);
     Ti.App.removeEventListener(app.portalEvents['NETWORK_ERROR'], onPortalProxyNetworkError);
-    Ti.App.removeEventListener(app.portalEvents['PORTLETS_LOADED'], _onPortletsLoaded);
+    
     Ti.App.removeEventListener(app.loginEvents['NETWORK_SESSION_SUCCESS'], onNetworkSessionSuccess);
     Ti.App.removeEventListener(portalWindowView.events['NOTIFICATION_CLICKED'], onPortalDownNotificationClicked);
     Ti.App.removeEventListener(app.loginEvents['NETWORK_SESSION_FAILURE'], onNetworkSessionFailure);

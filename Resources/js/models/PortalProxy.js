@@ -62,11 +62,14 @@ exports.getFolderList = function () {
         This method returns a list of folders, so the home view can 
         let the user choose which portlets they want to see.
     */
+    Ti.API.debug('getFolderList() in PortalProxy. folders: '+JSON.stringify(folders));
     return folders;
 };
 
 function _processFolderLayout (layout) {
+    Ti.API.debug('_processFolderLayout() in PortalProxy.');
     var _folders = layout["folders"], _portlets = {};
+    folders = [];
     //First, we'll populate the module's folders array
     var l = _folders.length, i=0, _currentFolder, _currentPortlet, j, pLength;
     while (i++ != l) {
@@ -110,16 +113,11 @@ function _processFolderLayout (layout) {
     
     /* Here we want to override any portlets from the portal with
     native modules if there is a matching fname */
-    Ti.API.debug('About to override portlets with native modules. nativeModules:'+JSON.stringify(nativeModules));
     for (var i = 0, iLength = portlets.length; i<iLength; i++ ) {
         if(nativeModules[portlets[i].fname]) {
-            Ti.API.debug('YES native module for '+portlets[i].fname);
             nativeModules[portlets[i].fname].folders = portlets[i].folders;
             portlets[i] = nativeModules[portlets[i].fname];
             nativeModules[portlets[i].fname].added = true;
-        }
-        else {
-            Ti.API.debug('No native module for '+portlets[i].fname);
         }
     }
     
@@ -143,8 +141,6 @@ function _processFolderLayout (layout) {
     }
     
     portlets.sort(_sortPortlets);
-    Ti.API.debug('Final folders: '+JSON.stringify(folders));
-    Ti.API.debug('Final portlets: '+JSON.stringify(portlets));
     
     //Set the state of the portal proxy. Assume local portlets only if layout.length < 1
     exports.setState(exports.states[portlets.length > 0 ? 'PORTLETS_LOADED' : 'PORTLETS_LOADED_LOCAL']);
@@ -152,7 +148,7 @@ function _processFolderLayout (layout) {
 }
 
 function _processFlatLayout (layout) {
-    Ti.API.debug('_processFlatLayout() in PortalProxy. layout: '+JSON.stringify(layout));
+    Ti.API.debug('_processFlatLayout() in PortalProxy');
     /*
         This method is called if the app is configured to to accept a layout
         from the portal without any folders, eg layout: [{portlet},{portlet}]

@@ -32,14 +32,16 @@ var client;
 exports.login = function (credentials, opts) {
     Ti.API.debug('login() in CASLogin');
     _credentials = credentials;
-    _url = config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(serviceUrl);
     
-    // Send an initial response to the CAS login page
+    //If there's no user name, let's skip a step and load the guest layout
+    if (!_credentials.username) return _onLogoutComplete();
+    
+    _url = config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(serviceUrl);
+    // Send an initial request to the CAS login page
     client = Titanium.Network.createHTTPClient({
         onload: _onInitialResponse,
         onerror: _onInitialError
     });
-    
     client.open('GET', _url, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
@@ -83,7 +85,7 @@ function _onLogoutComplete (e) {
 };
 
 function _onLoginComplete (e) {
-    Ti.API.debug('_onLoginComplete() in CASLogin. responseText:'+client.responseText);
+    Ti.API.debug('_onLoginComplete() in CASLogin.');
     // Examine the response to determine if authentication was successful.  If
     // we get back a CAS page, assume that the credentials were invalid.
     
@@ -92,7 +94,7 @@ function _onLoginComplete (e) {
     _failureRegex = new RegExp(/body id="cas"/);
     if (_failureRegex.exec(client.responseText)) {
         Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
-    } 
+    }
     else {
         Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response: client.responseText });
     }
@@ -109,7 +111,7 @@ function _onInitialError (e) {
 };
 
 function _onInitialResponse (e) {
-    Ti.API.debug('_onInitialResponse() in CASLogin. responseText:'+client.responseText);
+    Ti.API.debug('_onInitialResponse() in CASLogin.');
     var flowRegex, flowId, executionRegex, executionId, initialResponse, data, _parsedResponse;
     
     // CAS will redirect to layout.json if the user has already logged in, so we want 

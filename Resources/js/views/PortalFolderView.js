@@ -11,7 +11,7 @@ exports.events = {
 };
 
 var _state, _folders, portletListViewsByFolder = {}, view, activeFolder,
-styles, deviceProxy, _, app, portalProxy;
+styles, deviceProxy, _, app, portalProxy, rowContainer;
 
 exports.open = function () {
     Ti.API.debug('exports.open() in PortalFolderView');
@@ -21,7 +21,7 @@ exports.open = function () {
     app = require('/js/Constants');
     portalProxy = require('/js/models/PortalProxy');
     
-    view = Titanium.UI.createScrollView(styles.portalFolderView);
+    if (!view) view = Titanium.UI.createView(styles.portalFolderView);
 };
 
 exports.close = function () {
@@ -34,17 +34,26 @@ exports.rotate = function (orientation, specialLayout) {
     exports.resizeView(specialLayout);
 };
 
-function showPortletsByFolder (folderId) {
-    if (folderId === activeFolder) return;
+function showPortletsByFolder (folderId, force) {
+    Ti.API.debug('showPortletsByFolder in PortalFolderView. folderId: '+folderId+' and activeFolder: '+activeFolder);
+    if (folderId === activeFolder && !force) return;
     activeFolder = folderId;
+    
     for (var _view in portletListViewsByFolder) {
         if (portletListViewsByFolder.hasOwnProperty(_view)) {
             portletListViewsByFolder[_view].height = 0;
             portletListViewsByFolder[_view].hide();
         }
     }
-    portletListViewsByFolder[folderId].height = 'auto';
-    portletListViewsByFolder[folderId].show();
+    if (folderId in portletListViewsByFolder) {
+        portletListViewsByFolder[folderId].height = 'auto';
+        portletListViewsByFolder[folderId].show();
+    }
+    else {
+        portletListViewsByFolder[_folders[0].id].height = 'auto';
+        portletListViewsByFolder[_folders[0].id].show();
+        activeFolder = _folders[0].id;
+    }
 }
 function onFolderClick (e) {
     Ti.API.debug('onFolderClick() in PortalFolderView. folderId:'+e.source.folderId);
@@ -66,13 +75,25 @@ function updateFolderListView(folders, activeFolderId) {
     exports.setState(exports.states['LOADING']);
     
     //Remove all current views
-    var l, i = view.children ? view.children.length : 0, _folderLabel, _folderHeaderView;
+    /*var l, i=view.children ? view.children.length : 0, _folderLabel, _folderHeaderView;
+    Ti.API.debug('Getting ready to iterate through views. i:'+i);
+    while (--i > 0) {
+        Ti.API.debug('i is '+i+' and view.children.length: '+view.children.length);
+        if (view.children[0].folderId) view.children[0].removeEventListener('singletap', onFolderClick);
+        if (view.children[0].parentFolderId) {
+            var j = view.children[0].children ? view.children[0].children.length : 0;
+            while (--j != 0) {
+                view.children[0].children[0].removeEventListener('singletap', onPortletClick);
+                view.children[0].remove(view.children[0].children[0]);
+            }
+        }
+        view.remove(view.children[0]);
+    }*/
+    if (rowContainer) view.remove(rowContainer);
+    rowContainer = Ti.UI.createScrollView(styles.portalFolderView);
+    view.add(rowContainer);
     
-    while (i-- > 0) {
-        if (view.children[i].folderId) view.children[i].removeEventListener('singletap', onFolderClick);
-        if (view.children[i].portlet) view.children[i].removeEventListener('singletap', onPortletClick);
-        view.remove(view.children[i]);
-    }
+    portletListViewsByFolder = {};
     
     i = 0;
     l = folders.length;
@@ -81,7 +102,7 @@ function updateFolderListView(folders, activeFolderId) {
         _folderHeaderView = Ti.UI.createView(styles.portalFolderHeader);
         _folderHeaderView.folderId = folders[i-1].id;
         _folderHeaderView.addEventListener('singletap', onFolderClick);
-        view.add(_folderHeaderView);
+        rowContainer.add(_folderHeaderView);
         
         _folderLabel = Ti.UI.createLabel(styles.portalFolderLabel);
         _folderLabel.text = folders[i-1].title;
@@ -96,12 +117,13 @@ function updateFolderListView(folders, activeFolderId) {
             height: (styles.portletRow.rawHeight * folders[i-1].numChildren) + 'dp',
             parentFolderId: folders[i-1].id
         });
-        view.add(_folderPortletsView);
+        rowContainer.add(_folderPortletsView);
         
         
         portletListViewsByFolder[folders[i-1].id] = _folderPortletsView;
         
-        var j = 0, _portlets = portalProxy.getPortlets(folders[i-1].id), p = _portlets.length;
+        j = 0;
+        var _portlets = portalProxy.getPortlets(folders[i-1].id), p = _portlets.length;
 
         while (j++ != p) {
             var _portletRow = Ti.UI.createView(styles.portletRow);
@@ -125,15 +147,17 @@ function updateFolderListView(folders, activeFolderId) {
         }
     }
     
-    if (!activeFolder && folders[0]) showPortletsByFolder(folders[0].id);
+    showPortletsByFolder(activeFolder || folders[0].id, true);
     
     exports.setState(exports.states['COMPLETE']);
 }
 
 exports.updateModules = function (portlets) {
+    Ti.API.debug('updateModules() in PortalFolderView');
     //This method will be called whenever new portlets are loaded. 
     //The current view should be updated, but it should stay in the current context
     _folders = portalProxy.getFolderList();
+    Ti.API.debug('folders: '+JSON.stringify(_folders));
     updateFolderListView(_folders);
     
 };

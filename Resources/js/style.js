@@ -352,7 +352,7 @@ exports.updateStyles = function () {
         }
     };
     exports.portletRowArrow = {
-        width: '14dp',
+        width: '22dp',
         height: '22dp',
         right: '20dp',
         image: '/images/portlet-list-arrow.png',
