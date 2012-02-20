@@ -45,49 +45,45 @@ exports.rotateWindow = function (orientation) {
 function openWindow (windowKey, portlet, parameters) {
     var callback;
     
-    if (applicationWindows[windowKey] && exports.retrieveCurrentWindow() !== windowKey) {
-        //Make sure the requested window exists, and that it isn't the current window.
-        var _newWindowEvent = {
-            key: windowKey
-        };
-        if (portlet) _newWindowEvent.portlet = portlet;
-        Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
+    //Make sure the requested window exists, and that it isn't the current window.
+    if (!applicationWindows[windowKey] || exports.getCurrentWindow() === windowKey) return Ti.API.error("Error opening window. windowKey: "+windowKey);
+        
+    var _newWindowEvent = {
+        key: windowKey
+    };
+    if (portlet) _newWindowEvent.portlet = portlet;
+    Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
-        if (activityStack.length > 0) {
-            currentController.close();
-        }
-        
-        //If it's the first window, we assume it's home, and so define the currentController AND homeController
-        //Or if it's the home key, assign homeController to currentController
-        //Otherwise, just require() the appropriate controller.
-        if (activityStack.length === 0) {
-            currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
-            currentController.open(portlet ? portlet : null);
-            activityStack.push(windowKey);
-        }
-        else if (windowKey === config.HOME_KEY){
-            currentController = homeController;
-            // currentController.rotate(deviceProxy.retrieveCurrentOrientation());
-            currentController.open();
-            activityStack.push(windowKey);
-        }
-        else {
-            currentController = require('/js/controllers/' + applicationWindows[windowKey]);
-            //Parameters may be passed in from another portlet broadcasting a message to open another portlet.
-            currentController.open(portlet || parameters || null);
-            activityStack.push(windowKey);
-        }
-        
-        Ti.App.Properties.setString('lastWindow', windowKey);
-        
-        if (portlet) Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
-        Ti.App.fireEvent(exports.events['WINDOW_OPENED'], {key: windowKey});
+    if (activityStack.length > 0) {
+        currentController.close();
+    }
+    
+    //If it's the first window, we assume it's home, and so define the currentController AND homeController
+    //Or if it's the home key, assign homeController to currentController
+    //Otherwise, just require() the appropriate controller.
+    if (activityStack.length === 0) {
+        currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
+        currentController.open(portlet ? portlet : null);
+        activityStack.push(windowKey);
+    }
+    else if (windowKey === config.HOME_KEY){
+        currentController = homeController;
+        // currentController.rotate(deviceProxy.retrieveCurrentOrientation());
+        currentController.open();
+        activityStack.push(windowKey);
     }
     else {
-        Ti.API.error("Error opening window.");
-        Ti.API.error(" applicationWindows[windowKey]" + applicationWindows[windowKey]);
-        Ti.API.error("windowKey= " + windowKey + " & exports.retrieveCurrentWindow() = " + exports.retrieveCurrentWindow());
+        currentController = require('/js/controllers/' + applicationWindows[windowKey]);
+        //Parameters may be passed in from another portlet broadcasting a message to open another portlet.
+        currentController.open(portlet || parameters || null);
+        activityStack.push(windowKey);
     }
+    
+    Ti.App.Properties.setString('lastWindow', windowKey);
+    
+    if (portlet) Ti.App.Properties.setString('lastPortlet', JSON.stringify(portlet));
+    Ti.App.fireEvent(exports.events['WINDOW_OPENED'], {key: windowKey});
+    return true;
 };
 
 exports.goBack = function () {
@@ -98,20 +94,28 @@ exports.goBack = function () {
     }
 };
 
-exports.retrieveCurrentWindow = function (offset) {
+exports.setCurrentWindow = function (windowKey) {
+    if (!applicationWindows[windowKey]) return Ti.API.error('windowKey not found in applicationWindows');
+    activityStack.push(windowKey);
+    return true;
+};
+
+exports.getCurrentWindow = function (offset) {
 	// Returns key (string) of currently opened window, if possible
     return activityStack.length > 0 ? activityStack[activityStack.length - 1] : false;
 };
 
-exports.retrievePreviousWindow = function () {
+exports.getPreviousWindow = function () {
     return activityStack.length > 1 ? activityStack[activityStack.length - 2] : false;
 };
 
-exports.retrieveCurrentPortlet = function () {
+exports.getCurrentPortlet = function () {
     // var _currentPortlet = (activityStack.length > 0 && activityStack[activityStack.length -1].portlet) ? activityStack[activityStack.length - 1].portlet : false;
     var _currentPortlet = activityStack[activityStack.length -1].portlet;
     return _currentPortlet;
 };
+
+
 
 //Event Handlers
 function onAndroidBack (e) {

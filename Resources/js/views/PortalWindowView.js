@@ -59,7 +59,13 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     if (!win) win = Ti.UI.createWindow(styles.portalWindow);
     win[getState() === exports.states['INITIALIZED'] ? 'open' : 'show']();
     if (deviceProxy.isIOS()) win.visible = true;
-    win.addEventListener('android:search', _onAndroidSearch);
+    if (deviceProxy.isAndroid()) {
+        win.addEventListener('android:search', _onAndroidSearch);
+        win.addEventListener('focus', function (e) {
+            Ti.API.debug('home window has gained focus.');
+            require('/js/models/WindowManager').setCurrentWindow(config.HOME_KEY);
+        });
+    }
     
     //Let's create the UI elements.
     _drawUI(_isGuestLayout, _isPortalReachable);
@@ -199,7 +205,10 @@ function _specialLayoutIndicatorClick (e) {
             break;
         case notificationsView.states['NOTIFICATIONS_SUMMARY']:
             // notificationsView.showNotificationsList();
-            if (_emergencyNote = notificationsView.emergencyNote()) exports.alert(localDictionary.emergencyNotification, _emergencyNote.message);
+            if (notificationsView.emergencyNote) {
+                _emergencyNote = notificationsView.emergencyNote(); 
+                exports.alert(localDictionary.emergencyNotification, _emergencyNote.message);
+            }
             break;
         case notificationsView.states['NOTIFICATIONS_EXPANDED']:
             notificationsView.hideNotificationsList();
