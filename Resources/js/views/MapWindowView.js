@@ -298,12 +298,10 @@ var _createMainView = function() {
     if (deviceProxy.isIOS()) {
         bottomNavButtons = Ti.UI.iOS.createTabbedBar(styles.mapButtonBar);
         bottomNavButtons.labels = exports.navButtonValues;
-        bottomNavButtons.width = 225;
         bottomNavButtons.index = 0;        
     }
     else {
         bottomNavButtons = require('/js/views/UI/TabbedBar').createTabbedBar();
-        bottomNavButtons.doSetWidth(deviceProxy.retrieveWidth(true));
         bottomNavButtons.doSetLabels(exports.navButtonValues);
         bottomNavButtons.doSetIndex(0);
     }

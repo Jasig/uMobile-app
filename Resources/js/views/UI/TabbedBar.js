@@ -19,15 +19,19 @@ exports.createTabbedBar = function () {
             labels = newLabels;
             _numButtons = labels.length;
 
-            var _buttonWidth = Math.floor((styles.mapButtonBar.getWidth - 10) / _numButtons);
+            //Let's cause the buttons to evenly fill 90% of the parent
+            var _buttonWidth = Math.floor(90 / _numButtons) + '%';
+            Ti.API.debug('_buttonWidth in TabbedBar: '+_buttonWidth);
+            Ti.API.debug('button.left in TabbedBar: '+Math.floor((10 / (_numButtons + 1))) + '%');
 
             for (var i=0; i<_numButtons; i++) {
                 var _button = Ti.UI.createButton({
-                    width: _buttonWidth + 'dp',
+                    width: _buttonWidth,
                     color: "#000",
                     height: styles.mapButtonBar.getHeight - 5 + 'dp',
                     top: '5dp',
-                    left: (i * _buttonWidth) + ((i+1) * 10) + 'dp',
+                    // left: (i * _buttonWidth) + ((i+1) * 10) + 'dp',
+                    left: Math.floor((10 / (_numButtons + 1))) + '%',
                     title: labels[i],
                     index: i
                 });

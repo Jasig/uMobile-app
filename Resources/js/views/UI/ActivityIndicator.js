@@ -21,17 +21,6 @@ exports.createActivityIndicator = function () {
             Ti.API.error("Message isn't valid:" + m + ' ' + typeof m);
         }
     };
-    
-    indicator.rotate = function (orientation) {
-        indicator.resetDimensions();
-    };
-    
-    indicator.resetDimensions = function () {
-        styles = styles.updateStyles();
-        Ti.API.debug('styles.globalActivityIndicator.height: '+styles.globalActivityIndicator.height);
-        indicator.view.height = styles.globalActivityIndicator.height;
-        dialog.width = styles.activityIndicatorDialog.width;
-    };
-    
+        
     return indicator;
 };

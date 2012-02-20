@@ -534,12 +534,12 @@ exports.updateStyles = function () {
     };
     exports.mapButtonBar= {
         color: '#fff',
-        backgroundColor: defaults.SECONDARY_BAR_BACKGROUND_COLOR,
+        backgroundColor: deviceProxy.isIOS() ? defaults.SECONDARY_BAR_BACKGROUND_COLOR : 'transparent',
         style: OS === "iphone" ? Titanium.UI.iPhone.SystemButtonStyle.BAR : "",
         height: OS === "iphone" || OS === "ipad" ? 35 : '50dp',
         getHeight: OS === "iphone" ? 35 : 50,
-        width: deviceProxy.retrieveWidth(true) - 20 + 'dp',
-        getWidth: deviceProxy.retrieveWidth(true) - 20
+        layout: 'horizontal',
+        width: deviceProxy.isAndroid() ? '100%' : 225
     };
     exports.mapDetailTopView= {
         top: defaults.TITLEBAR_HEIGHT+'dp',
