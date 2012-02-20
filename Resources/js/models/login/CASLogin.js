@@ -42,6 +42,7 @@ exports.login = function (credentials, opts) {
         onload: _onInitialResponse,
         onerror: _onInitialError
     });
+    client.clearCookies && client.clearCookies(config.CAS_URL) && client.clearCookies(config.BASE_PORTAL_URL);
     client.open('GET', _url, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
@@ -123,7 +124,7 @@ function _onInitialResponse (e) {
     initialResponse = client.responseText;
 
     flowRegex = /input type="hidden" name="lt" value="([a-z0-9\-]*)?"/i;
-    executionRegex = /input type="hidden" name="execution" value="([a-z0-9\-]*)?"/i
+    executionRegex = /input type="hidden" name="execution" value="([a-z0-9\-]*)?"/i;
 
     try {
         flowId = flowRegex.exec(initialResponse)[1];
