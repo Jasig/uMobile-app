@@ -155,7 +155,7 @@ exports.showActivityIndicator = function (message) {
 
 exports.hideActivityIndicator = function () {
     Ti.API.debug('exports.hideActivityIndicator() in PortalWindowView');
-    activityIndicator.view.hide();
+    if (activityIndicator) activityIndicator.view.hide();
 };
 
 exports.alert = function (title, message) {

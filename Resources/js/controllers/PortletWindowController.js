@@ -273,7 +273,7 @@ function resizeAndPositionWebView () {
     }
     var _shouldNotShowBackBtn = _isHome() || _isPortal();
     styles = styles.updateStyles();
-    _navBar.view[_shouldNotShowBackBtn ? 'hide' : 'show']();
+    if (_navBar) _navBar.view[_shouldNotShowBackBtn ? 'hide' : 'show']();
     _webView.top = _shouldNotShowBackBtn ? styles.titleBar.height + 'dp': styles.titleBar.height + styles.secondaryNavBar.getHeight + 'dp' ;
     _webView.height = _shouldNotShowBackBtn ? styles.portletView.height : styles.portletView.heightWithSecondary;
 }

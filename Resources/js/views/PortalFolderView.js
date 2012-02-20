@@ -164,7 +164,10 @@ exports.updateModules = function (portlets) {
 
 exports.resizeView = function (_isSpecialLayout) {
     //Variable tells if the notifications bar is displayed or not
-    view.height = _isSpecialLayout ? styles.homeGrid.heightWithNote : styles.homeGrid.height;
+    styles = styles.updateStyles();
+    Ti.API.debug('resizeView() in PortalFolderView. styles.homeGrid.height: '+styles.homeGrid.height);
+    if (view) view.height = _isSpecialLayout ? styles.homeGrid.heightWithNote : styles.homeGrid.height;
+    if (rowContainer) rowContainer.height = _isSpecialLayout ? styles.portalFolderView.heightWithNote : styles.portalFolderView.height;
 };
 
 exports.getView = function () {
