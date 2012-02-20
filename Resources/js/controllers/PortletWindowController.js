@@ -71,7 +71,6 @@ exports.close = function () {
 
 exports.rotate = function (orientation) {
     resizeAndPositionWebView();
-    if (_activityIndicator) _activityIndicator.rotate();
 };
 
 function _createView (portlet) {
@@ -81,10 +80,15 @@ function _createView (portlet) {
     */
     _win = Titanium.UI.createWindow(styles.portletWindow);
     _win.open();
-    
+
+    _activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
+    _win.add(_activityIndicator.view);
+    _activityIndicator.view.hide();
+
     _titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     _titleBar.updateTitle(portlet.title);
     _titleBar.addHomeButton();
+    _win.add(_titleBar.view);
     
     // initialize navigation bar for URLs outside the portal
     _navBar = require('/js/views/UI/SecondaryNav').createSecondaryNav();
@@ -93,11 +97,7 @@ function _createView (portlet) {
     _navBar.rightButton.visible = false;
     _navBar.view.top = '40dp';
     _navBar.view.visible = false;
-
-    _activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
-    _activityIndicator.view.hide();
-
-    _win.add(_titleBar.view);
+    
     _win.add(_navBar.view);
     
     _webView = Titanium.UI.createWebView(styles.portletView);
@@ -116,7 +116,7 @@ function _createView (portlet) {
     
     _webView.hide();
 
-    _win.add(_activityIndicator.view);
+    
     
 };
 function _destroyView () {

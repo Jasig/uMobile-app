@@ -94,7 +94,6 @@ exports.rotateView = function (orientation) {
     }
     if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
     if (portletCollectionView) portletCollectionView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
-    if (activityIndicator) activityIndicator.rotate();
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
@@ -111,7 +110,6 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     Ti.App.addEventListener(notificationsView.events['EMERGENCY_NOTIFICATION'], _onEmergencyNotification);
     
     if (contentLayer) win.remove(contentLayer);
-    
     contentLayer = Ti.UI.createView(styles.portalContentLayer);
     win.add(contentLayer);
     contentLayer.add(portletCollectionView.getView());
@@ -122,7 +120,6 @@ function _drawUI (_isGuestLayout, _isPortalReachable) {
     win.add(activityIndicator.view);
 
     titleBar = require('/js/views/UI/TitleBar').createTitleBar();
-    
     win.add(titleBar.view);
     titleBar.addSettingsButton();
     titleBar.addInfoButton();

@@ -58,19 +58,16 @@ exports.open = function () {
     
     win.open();
     
+    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
+    win.add(activityIndicator.view);
+    activityIndicator.view.hide();
+    
     titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     titleBar.addHomeButton();
     titleBar.updateTitle(localDictionary.settings);
-    
     win.add(titleBar.view);
 
     createCredentialsForm();
-    
-    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
-    
-    win.add(activityIndicator.view);
-    activityIndicator.resetDimensions();
-    activityIndicator.view.hide();
 };
 
 exports.close = function (options) {

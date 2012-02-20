@@ -164,16 +164,15 @@ function drawDefaultView () {
     });
     win.add(searchBar.container);
     
+    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
+    win.add(activityIndicator.view);
+    activityIndicator.view.hide();
+    
     titleBar = require('/js/views/UI/TitleBar').createTitleBar();
     titleBar.updateTitle(localDictionary.directory);
     titleBar.addHomeButton();
     win.add(titleBar.view);
     titleBar.view.show();
-    
-    activityIndicator = require('/js/views/UI/ActivityIndicator').createActivityIndicator();
-    activityIndicator.resetDimensions();
-    win.add(activityIndicator.view);
-    activityIndicator.view.hide();
 };
 
 function createDefaultGroups () {

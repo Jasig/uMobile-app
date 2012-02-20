@@ -165,7 +165,7 @@ exports.updateStyles = function () {
     	height: defaults.TITLEBAR_HEIGHT,
         backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
         width: '100%',
-    	zIndex: 1
+    	zIndex: 10
     };
     //Titanium.UI.Button implemented in the GenericTitleBar
     exports.titleBarButton= {
@@ -300,7 +300,7 @@ exports.updateStyles = function () {
     };
     exports.portalContentLayer= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        width: OS === 'android' ? 'auto' : deviceProxy.retrieveWidth(),
+        width: '100%',
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
         backgroundColor: "#2A4F95"
     };
@@ -310,11 +310,13 @@ exports.updateStyles = function () {
         heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
         color: "#fff",
         contentHeight:'auto',
+        width: '100%',
         zIndex: 1
     };
     exports.portalFolderView = {
         top: 0,
         backgroundColor: '#fff',
+        width:'100%',
         height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
         heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
         layout: 'vertical',
@@ -332,7 +334,7 @@ exports.updateStyles = function () {
         touchEnabled: false,
         font: {
             fontWeight: 'bold',
-            fontSize: '14'
+            fontSize: '14dp'
         }
     };
     exports.portletRowIcon = {
@@ -362,7 +364,10 @@ exports.updateStyles = function () {
         left: OS === 'ipad' ? 92 : '77dp',
         color: '#333',
         textAlign: 'left',
-        touchEnabled: false
+        touchEnabled: false,
+        font: {
+            fontSize: '14dp'
+        }
     };
     
     exports.homeGuestNote = {
@@ -578,15 +583,14 @@ exports.updateStyles = function () {
     };
     // ACTIVITY INDICATOR STYLING
     exports.globalActivityIndicator= {
-        top: defaults.TITLEBAR_HEIGHT +'dp',
+        top: 0,
         width: '100%',
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT +'dp',
+        height: '100%',
         color: '#fff',
-        zIndex: 10,
         backgroundImage: '/images/bgActivityIndicator.png'
     };
     exports.activityIndicatorDialog= {
-        width: (deviceProxy.retrieveWidth(true) > 480 ? 360 : Math.round(deviceProxy.retrieveWidth(true) * 0.75)) + 'dp',
+        width: (deviceProxy.retrieveWidth(true) > 480) ? '360dp' : '75%',
         height: '75dp',
         borderRadius: 10,
         borderWidth: 1,
