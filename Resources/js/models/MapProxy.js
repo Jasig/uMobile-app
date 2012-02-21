@@ -67,56 +67,52 @@ exports.initialize = function () {
 
 exports.search = function (query, opts) {
     var result = [], _db, queryResult, _isFirstResult = true;
+    
+    if (!query || typeof query !== 'string') return _onEmptySearch();
 
-    //If a search isn't already executing
-    if(query != '' && typeof query == 'string') {
-        _onSearch(query);
-        query = query.toLowerCase();
-        query = query.replace(/[^a-zA-Z 0-9]+/g,'');
-        query = '%' + query + '%';
-        _db = Titanium.Database.open('umobile');
-        //Query the database for rows in the map_locations table that match the query
-        queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ?', query, query, query);
-        
-        //Iterate through the query result to add objects to the result array
-        while (queryResult.isValidRow()) {
-            if (_isFirstResult) {
-                _mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
-                _mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude')); 
-                _mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
-                _mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
-            }
-            result.push({
-                title: queryResult.fieldByName('title'),
-                address: queryResult.fieldByName('address'),
-                latitude: parseFloat(queryResult.fieldByName('latitude')),
-                longitude: parseFloat(queryResult.fieldByName('longitude')),
-                img: queryResult.fieldByName('img')
-            });
-            if (queryResult.fieldByName('latitude') < _mapCenter.latLow) {
-                _mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
-            }
-            else if (queryResult.fieldByName('latitude') > _mapCenter.latHigh) {
-                _mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude'));
-            }
-            if (queryResult.fieldByName('longitude') < _mapCenter.longLow) {
-                _mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
-            }
-            else if (queryResult.fieldByName('longitude') > _mapCenter.longHigh) {
-                _mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
-            }
-            _isFirstResult = false;
-            queryResult.next();
+    _onSearch(query);
+    query = query.toLowerCase();
+    query = query.replace(/[^a-zA-Z 0-9]+/g,'');
+    query = '%' + query + '%';
+    _db = Titanium.Database.open('umobile');
+    //Query the database for rows in the map_locations table that match the query
+    queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ?', query, query, query);
+    
+    //Iterate through the query result to add objects to the result array
+    while (queryResult.isValidRow()) {
+        if (_isFirstResult) {
+            _mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
+            _mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude')); 
+            _mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
+            _mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
         }
-        queryResult.close();
-        
-
-        _db.close();
-        _onSearchComplete(result);
-        
-    } else if (query === '') {
-        _onEmptySearch();
+        result.push({
+            title: queryResult.fieldByName('title'),
+            address: queryResult.fieldByName('address'),
+            latitude: parseFloat(queryResult.fieldByName('latitude')),
+            longitude: parseFloat(queryResult.fieldByName('longitude')),
+            img: queryResult.fieldByName('img')
+        });
+        if (queryResult.fieldByName('latitude') < _mapCenter.latLow) {
+            _mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
+        }
+        else if (queryResult.fieldByName('latitude') > _mapCenter.latHigh) {
+            _mapCenter.latHigh = parseFloat(queryResult.fieldByName('latitude'));
+        }
+        if (queryResult.fieldByName('longitude') < _mapCenter.longLow) {
+            _mapCenter.longLow = parseFloat(queryResult.fieldByName('longitude'));
+        }
+        else if (queryResult.fieldByName('longitude') > _mapCenter.longHigh) {
+            _mapCenter.longHigh = parseFloat(queryResult.fieldByName('longitude'));
+        }
+        _isFirstResult = false;
+        queryResult.next();
     }
+    queryResult.close();
+    
+
+    _db.close();
+    _onSearchComplete(result);
 };
 exports.retrieveAnnotationByAbbr = function (a, shouldRecenter) {
     var result = {}, resultSet, db;
@@ -409,11 +405,11 @@ exports._newPointsLoaded = function (e) {
                 }
                 
             }
-            _db.execute("COMMIT TRANSACTION");
             
-            for (var _category in _categories) {
+            for (_category in _categories) {
                 if (_categories.hasOwnProperty(_category)) _db.execute('REPLACE INTO map_categories (name) VALUES (?)', _category);
             }
+            _db.execute("COMMIT TRANSACTION");
             
             _db.close();
             _onPointsLoaded();
@@ -458,6 +454,7 @@ function _onSearch (query) {
 };
 
 function _onEmptySearch () {
+    Ti.API.debug('_onEmptySearch() in MapProxy');
     Ti.App.fireEvent(exports.events['EMPTY_SEARCH']);
 };
 

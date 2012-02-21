@@ -223,28 +223,18 @@ function _onProxyLoaded (e) {
 }
 
 function _onProxySearchComplete (e) {
+    Ti.API.debug('_onProxySearchComplete() in MapWindowController. e.points.length: '+e.points.length);
     var alertDialog;
     
     _mapWindowView.hideActivityIndicator();
     
-    if(e.points.length < 1) {
-        if (_win.visible || deviceProxy.isIOS()) {
-            try {
-                alertDialog = Titanium.UI.createAlertDialog({
-                    title: localDictionary.noResults,
-                    message: localDictionary.mapNoSearchResults,
-                    buttonNames: [localDictionary.OK]
-                });
-                alertDialog.show();
-            }
-            catch (e) {
-                Ti.API.error("Couldn't show alert in MapWindowController: " + e);
-            }
-        }
-    }
-    else {
-        _mapWindowView.plotPoints(e.points);
-    }
+    if(e.points.length > 0) return _mapWindowView.plotPoints(e.points);
+    alertDialog = Titanium.UI.createAlertDialog({
+            title: localDictionary.noResults,
+            message: localDictionary.mapNoSearchResults,
+            buttonNames: [localDictionary.OK]
+    });
+    return alertDialog.show();
 }
 
 function _onProxyEmptySearch (e) {
