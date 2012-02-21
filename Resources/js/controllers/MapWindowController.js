@@ -104,8 +104,7 @@ exports.close = function (options) {
 };
 
 exports.rotate = function (orientation) {
-    if (_mapWindowView) _mapWindowView.rotate(orientation);
-    if (_mapDetailView) _mapDetailView.rotate(orientation);
+    //Everything rotates itself.
 };
 
 function _loadDetail (_annotation) {

@@ -56,7 +56,7 @@ exports.close = function (options) {
 };
 
 exports.rotate = function (orientation) {
-    if (directoryWindowView) directoryWindowView.rotate(orientation);
+    // Everything rotates automatically
 };
 
 showUser = function (parameters) {

@@ -51,11 +51,6 @@ exports.hide = function () {
     _view = null;
 };
 
-exports.rotate = function (orientation) {
-    styles = styles.updateStyles();
-    if (_view) _view.height = styles.contactDetailView.height;
-};
-
 function constructPerson (attributes) {
     var person = {};
     person.address = {};

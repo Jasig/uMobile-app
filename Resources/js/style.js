@@ -87,11 +87,24 @@ exports.updateStyles = function () {
         width:'auto',
         color: '#000'
     };
+    //Settings Properties
     exports.settingsTable= {
-        top: defaults.TITLEBAR_HEIGHT,
+        top: defaults.TITLEBAR_HEIGHT + 'dp',
         style: OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0
     };
-    //Settings Properties
+    exports.settingsWindow = {
+        backgroundColor: exports.backgroundColor,
+        navBarHidden: true,
+        fullScreen: false,
+        orientationModes: [
+        	Titanium.UI.PORTRAIT,
+        	Titanium.UI.UPSIDE_PORTRAIT,
+        	Titanium.UI.LANDSCAPE_LEFT,
+        	Titanium.UI.LANDSCAPE_RIGHT,
+        	Titanium.UI.FACE_UP,
+        	Titanium.UI.FACE_DOWN
+        ]
+    };
     exports.settingsPasswordInput= {
       height: OS === 'iphone' ? '35' : '45dp',
     	borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -449,7 +462,7 @@ exports.updateStyles = function () {
         backgroundColor: defaults.DETAIL_TOP_BACKGROUND_COLOR,
         visible: false,
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT + 'dp',
+        bottom: 0,
         width: '100%',
         modal: true
     };

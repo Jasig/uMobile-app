@@ -76,15 +76,10 @@ exports.reset = function () {
     if (activityIndicator) { activityIndicator.view.hide(); }
 };
 
-exports.rotate = function (orientation) {
-    if (directoryDetailView) directoryDetailView.rotate(orientation);
-};
-
 exports.showDetail = function (person) {
     directoryDetailView = require('/js/views/DirectoryDetailView');
     win.add(directoryDetailView.retrieveDetailView());
     directoryDetailView.render(person, win);
-    directoryDetailView.rotate();
 };
 
 exports.alert = function (attributes) {
