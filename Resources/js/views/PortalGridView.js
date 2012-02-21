@@ -111,13 +111,12 @@ exports.updateModules = function (portlets) {
     _didLayoutCleanup = false;
 };
 
-exports.rotate = function (orientation, specialLayout) {
+exports.rotate = function (orientation) {
     styles = styles.updateStyles();
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
     _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
     _numColumns = Math.floor(deviceProxy.retrieveWidth(true) / _completeWidth);
     _leftPadding = Math.floor(((deviceProxy.retrieveWidth(true) - (_completeWidth * _numColumns))) / 2);
-    exports.resizeView(specialLayout);
     _rearrangeGrid();
 };
 
@@ -217,11 +216,6 @@ function _rearrangeGrid () {
     }
     
     exports.setState(_numGridItems > 0 ? exports.states.COMPLETE : exports.states.LOADING); 
-};
-
-exports.resizeView = function (_isSpecialLayout) {
-    //Variable tells if the notifications bar is displayed or not
-    _gridView.height = _isSpecialLayout ? styles.homeGrid.heightWithNote : styles.homeGrid.height;
 };
 
 function _onGridItemClick (e) {

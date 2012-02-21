@@ -300,14 +300,18 @@ exports.updateStyles = function () {
     };
     exports.portalContentLayer= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
+        bottom: 0,
+        bottomWithNote: '40dp',
         width: '100%',
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
+        // height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
         backgroundColor: "#2A4F95"
     };
     exports.homeGrid= {
         top: 0,
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
-        heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
+        // height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
+        // heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
+        heightWithNote: '100%',
+        height: '100%',
         color: "#fff",
         contentHeight:'auto',
         width: '100%',
@@ -317,10 +321,13 @@ exports.updateStyles = function () {
         top: 0,
         backgroundColor: '#fff',
         width:'100%',
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
-        heightWithNote: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT - 40 +'dp',
+        height: '100%'
+    };
+    exports.portalRowContainer = {
         layout: 'vertical',
-        contentHeight: 'auto'
+        height: '100%',
+        contentHeight: 'auto',
+        width: '100%'
     };
     exports.portalFolderHeader = {
         height: '40dp',
@@ -373,7 +380,7 @@ exports.updateStyles = function () {
     exports.homeGuestNote = {
         height: '40dp',
         rawHeight: 40,
-        top: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - 40 - defaults.STATUSBAR_HEIGHT + 'dp',
+        bottom: 0,
         backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT,
         emergencyBackgroundImage: '/images/secondarybarbg-emergency.png',
         emergencyBackgroundGradient: {

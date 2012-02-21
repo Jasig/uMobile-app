@@ -30,9 +30,7 @@ exports.close = function () {
 };
 
 exports.rotate = function (orientation, specialLayout) {
-    styles = styles.updateStyles();
-    //Just update the height of the main table.
-    exports.resizeView(specialLayout);
+
 };
 
 function showPortletsByFolder (folderId, force) {
@@ -91,7 +89,7 @@ function updateFolderListView(folders, activeFolderId) {
         view.remove(view.children[0]);
     }*/
     if (rowContainer) view.remove(rowContainer);
-    rowContainer = Ti.UI.createScrollView(styles.portalFolderView);
+    rowContainer = Ti.UI.createScrollView(styles.portalRowContainer);
     view.add(rowContainer);
     
     portletListViewsByFolder = {};
@@ -160,14 +158,6 @@ exports.updateModules = function (portlets) {
     if (_folders.length === 0) _folders = [{id:'no_folders', title: localDictionary.home, numChildren: portalProxy.getPortlets().length}];
     Ti.API.debug('folders: '+JSON.stringify(_folders));
     updateFolderListView(_folders);
-};
-
-exports.resizeView = function (_isSpecialLayout) {
-    //Variable tells if the notifications bar is displayed or not
-    styles = styles.updateStyles();
-    Ti.API.debug('resizeView() in PortalFolderView. styles.homeGrid.height: '+styles.homeGrid.height);
-    if (view) view.height = _isSpecialLayout ? styles.homeGrid.heightWithNote : styles.homeGrid.height;
-    if (rowContainer) rowContainer.height = _isSpecialLayout ? styles.portalFolderView.heightWithNote : styles.portalFolderView.height;
 };
 
 exports.getView = function () {

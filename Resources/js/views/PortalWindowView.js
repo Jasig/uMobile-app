@@ -87,13 +87,7 @@ exports.close = function () {
 };
 
 exports.rotateView = function (orientation) {
-    styles = styles.updateStyles();
-    if (contentLayer) {
-        contentLayer.width = styles.portalContentLayer.width;
-        contentLayer.height = styles.portalContentLayer.height;
-    }
-    if (isNotificationsViewInitialized) notificationsView.view().top = styles.homeGuestNote.top;
-    if (portletCollectionView) portletCollectionView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
+    portletCollectionView && portletCollectionView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
 };
 
 function _drawUI (_isGuestLayout, _isPortalReachable) {
@@ -181,8 +175,6 @@ exports.updateNotificationsView = function (notifications) {
     Ti.API.debug('exports.updateNotificationsView() in PortalWindowView');
     //Update the layout indicator with number of notifications, or emergency notification.
     if (isNotificationsViewInitialized) notificationsView.showNotificationSummary(notifications);
-    
-    portletCollectionView.resizeView(notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
 };
 
 function _onEmergencyNotification (e) {
@@ -230,7 +222,7 @@ function _controlNotificationsBar () {
 function _removeNotificationsBar () {
     Ti.API.debug('_removeNotificationsBar() in PortalWindowView');
     notificationsView.hide();
-    portletCollectionView.resizeView(false);
+    contentLayer.bottom = styles.portalContentLayer.bottom;
 };
 
 function _addNotificationsBar () {
@@ -242,14 +234,13 @@ function _addNotificationsBar () {
         
         isNotificationsViewInitialized = true;
         
-        contentLayer.add(notificationsView.view());
+        win.add(notificationsView.view());
     }
+    contentLayer.bottom = styles.portalContentLayer.bottomWithNote;
     notificationsView.show();
     
     _method = _layoutState === exports.indicatorStates['NO_PORTAL'] ? 'showPortalUnreachableNote' : _layoutState === exports.indicatorStates['GUEST'] ? 'showGuestNote' : 'showNotificationSummary';
     notificationsView[_method]();
-    
-    portletCollectionView.resizeView(notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
 };
 
 function _onAndroidSearch (e) {
