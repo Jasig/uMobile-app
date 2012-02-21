@@ -42,7 +42,9 @@ exports.login = function (credentials, opts) {
         onload: _onInitialResponse,
         onerror: _onInitialError
     });
-    client.clearCookies && client.clearCookies(config.CAS_URL) && client.clearCookies(config.BASE_PORTAL_URL);
+    var _casHost = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/).exec(config.CAS_URL)[3];
+    Ti.API.debug('_casHost: '+_casHost);
+    client.clearCookies && client.clearCookies(_casHost) && client.clearCookies(config.BASE_PORTAL_URL);
     client.open('GET', _url, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
