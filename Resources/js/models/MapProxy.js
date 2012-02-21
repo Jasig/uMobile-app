@@ -347,7 +347,8 @@ exports.retrieveLocationsByCategory = function (_catName, _numResults, _pageNum)
         _resultSet.next();
     }
     
-    _result.totalResults = parseInt(_db.execute("SELECT COUNT(*) FROM map_locations WHERE categories LIKE ?", _catNameQuery).field(0), 10);
+    // Not used yet, but was causing errors. totalResults would be useful for paging UI, which hasn't yet been implemented.
+    // _result.totalResults = parseInt(_db.execute("SELECT COUNT(*) FROM map_locations WHERE categories LIKE ?", _catNameQuery).field(0), 10) || 0;
     
     _resultSet.close();
     _db.close();

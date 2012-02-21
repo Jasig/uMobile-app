@@ -73,11 +73,6 @@ exports.saveActivityIndicatorMessage = function (message) {
 };
 
 exports.rotate = function (orientation) {
-    styles = styles.updateStyles();
-    if (mapView) mapView.height = styles.mapView.height;
-    if (bottomNavView) bottomNavView.top = styles.mapNavView.top;
-
-    if (categoryBrowsingView) categoryBrowsingView.height = styles.mapTableView.height;
 };
 
 exports.resetMapLocation = function () {
@@ -91,7 +86,7 @@ exports.searchBlur = function (e) {
 exports.openCategoryBrowsingView = function (categories) {
     _hideAllViews();
     
-    if (categories.length === 1) return exports.openCategoryLocationsListView(require('/js/models/MapProxy').retrieveLocationsByCategory(categories[0].name));
+    if (categories.length === 1) return exports.openCategoryLocationsListView(mapProxy.retrieveLocationsByCategory(categories[0].name));
     // If there isn't a categoryNavBar yet, go ahead and create one.
     if (!categoryNavBar) _createAndAddCategoryNav();
     
@@ -144,11 +139,8 @@ exports.openCategoryBrowsingView = function (categories) {
     })(categories);
     
     // Create the view to hold tableviews listing categories and locations.
-    categoryBrowsingView = Ti.UI.createTableView({
-        data: _categoryBrowsingData,
-        height: styles.mapTableView.height,
-        top: styles.mapTableView.top
-    });
+    categoryBrowsingView = Ti.UI.createTableView(styles.mapTableView);
+    categoryBrowsingView.setData(_categoryBrowsingData);
     view.add(categoryBrowsingView);
 };
 
@@ -167,7 +159,7 @@ exports.openCategoryLocationsListView = function (viewModel) {
     if (!categoryNavBar) _createAndAddCategoryNav();
     categoryNavBar.view.show();
     
-    categoryNavBar.leftButton[require('/js/models/MapProxy').retrieveTotalCategories() > 1 ? 'show' : 'hide']();
+    categoryNavBar.leftButton[mapProxy.retrieveTotalCategories() > 1 ? 'show' : 'hide']();
     categoryNavBar.titleLabel.text = viewModel.categoryName;
     categoryNavBar.rightButton.title = localDictionary.map;
     categoryNavBar.rightButton.show();

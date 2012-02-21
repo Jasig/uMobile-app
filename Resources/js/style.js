@@ -502,7 +502,8 @@ exports.updateStyles = function () {
     // MAP STYLES
     exports.mapView= {
         top: defaults.TITLEBAR_HEIGHT * 2 + 'dp',
-        height: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2 + defaults.STATUSBAR_HEIGHT + 50) + 'dp',
+        // height: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2 + defaults.STATUSBAR_HEIGHT + 50) + 'dp',
+        bottom: '50dp',
         mapType: Titanium.Map.STANDARD_TYPE,
         regionFit: true,
         animate: true,
@@ -513,7 +514,7 @@ exports.updateStyles = function () {
     };
     exports.mapTableView = {
         top: defaults.TITLEBAR_HEIGHT * 2 + 'dp',
-        height: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT + defaults.TITLEBAR_HEIGHT + defaults.STATUSBAR_HEIGHT + 50) + 'dp'
+        bottom: '50dp'
     };
     exports.mapCategoryRow= {
         font: {
@@ -535,7 +536,7 @@ exports.updateStyles = function () {
         textAlign: 'center'
     };
     exports.mapNavView= {
-        top: deviceProxy.retrieveHeight(true) - 50 - defaults.STATUSBAR_HEIGHT + 'dp',
+        bottom: 0,
         height : '50dp',
         backgroundGradient : defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
     };
