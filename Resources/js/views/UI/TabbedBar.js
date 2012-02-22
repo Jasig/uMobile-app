@@ -1,7 +1,7 @@
-var styles = require('/js/style');
+var styles = require('/js/style'), _ = require('/js/libs/underscore-min');
 
 exports.createTabbedBar = function () {
-    var bar = {}, labels = [], _listeners = [], _numButtons = 0;
+    var bar = {}, labels = [], _listeners = [], _numButtons = 0, _buttonsByIndex;
     
     function fireEvent (event, object) {
         for (var i=0, iLength = _listeners.length; i<iLength; i++) {
@@ -18,28 +18,24 @@ exports.createTabbedBar = function () {
         if (typeof newLabels === "object") {
             labels = newLabels;
             _numButtons = labels.length;
-
-            //Let's cause the buttons to evenly fill 90% of the parent
-            var _buttonWidth = Math.floor(90 / _numButtons) + '%';
-            Ti.API.debug('_buttonWidth in TabbedBar: '+_buttonWidth);
-            Ti.API.debug('button.left in TabbedBar: '+Math.floor((10 / (_numButtons + 1))) + '%');
-
+            var _buttonStyle = _.clone(styles.tabbedBarButton);
+            _buttonsByIndex = [];
+            
+            //Let's cause the buttons to evenly fill 100% of the parent width
+            var _buttonWidth = Math.floor(100 / _numButtons) + '%';
+            
             for (var i=0; i<_numButtons; i++) {
-                var _button = Ti.UI.createButton({
-                    width: _buttonWidth,
-                    color: "#000",
-                    height: styles.mapButtonBar.getHeight - 5 + 'dp',
-                    top: '5dp',
-                    // left: (i * _buttonWidth) + ((i+1) * 10) + 'dp',
-                    left: Math.floor((10 / (_numButtons + 1))) + '%',
-                    title: labels[i],
-                    index: i
+                _buttonStyle.width = _buttonWidth;
+                var _isLastButton = (i+1) === _numButtons ? true : false;
+                _buttonStyle[_isLastButton ? 'right' : 'left'] = _isLastButton ? 0 : Math.floor(i * parseInt(_buttonWidth.replace('%', ''), 10)) + '%';
+                _buttonStyle.title = labels[i];
+                _buttonStyle.index = i;
+                var _button = Ti.UI.createButton(_buttonStyle);
+                _buttonsByIndex[i] = _button;
+                
+                _button.addEventListener("click", function (e) {
+                    fireEvent("click", { index: e.source.index });
                 });
-                (function(index){
-                    _button.addEventListener("click", function (e) {
-                        fireEvent("click",{ index: index });
-                    });
-                })(i);
 
                 bar.view.add(_button);
             }
@@ -57,6 +53,11 @@ exports.createTabbedBar = function () {
         if (typeof newIndex === "number") {
             //TODO: Actually update the selected button based on the new index
             bar.index = parseInt(newIndex, 10);
+            var l = _buttonsByIndex.length;
+            while(l-- > 0) {
+                //Let's enable all the buttons, except the active one.
+                _buttonsByIndex[l].enabled = l == newIndex ? false : true;
+            }
         }
     };
 

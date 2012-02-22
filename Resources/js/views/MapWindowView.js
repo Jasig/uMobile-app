@@ -85,6 +85,7 @@ exports.searchBlur = function (e) {
 
 exports.openCategoryBrowsingView = function (categories) {
     _hideAllViews();
+    bottomNavButtons.doSetIndex(1);
     
     if (categories.length === 1) return exports.openCategoryLocationsListView(mapProxy.retrieveLocationsByCategory(categories[0].name));
     // If there isn't a categoryNavBar yet, go ahead and create one.
@@ -149,6 +150,7 @@ exports.openCategoryBrowsingView = function (categories) {
 
 exports.openCategoryLocationsListView = function (viewModel) {
     _hideAllViews();
+    bottomNavButtons.doSetIndex(1);
     
     if (!categoryLocationsListView) {
         categoryLocationsListView = Ti.UI.createTableView(styles.mapTableView);
@@ -172,6 +174,8 @@ exports.openCategoryLocationsListView = function (viewModel) {
 
 exports.openCategoryLocationsMapView = function (viewModel) {
     _hideAllViews();
+    bottomNavButtons.doSetIndex(1);
+    
     if (zoomButtonBar) zoomButtonBar.show();
     
     // If there isn't a categoryNavBar yet, go ahead and create one.
@@ -189,6 +193,7 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 
 exports.openSearchView = function () {
     _hideAllViews();
+    bottomNavButtons.doSetIndex(0);
     if (searchBar) searchBar.show();
     if (zoomButtonBar) zoomButtonBar.show();
     if (mapView) mapView.show();
@@ -197,11 +202,13 @@ exports.openSearchView = function () {
 exports.openFavoritesBrowsingView = function () {
     //TODO: Implement this view
     _hideAllViews();
+    bottomNavButtons.doSetIndex(2);
 };
 
 exports.openFavoritesMapView = function () {
     // TODO: Implement this view
     _hideAllViews();
+    bottomNavButtons.doSetIndex(2);
     if (zoomButtonBar) zoomButtonBar.show();
 };
 

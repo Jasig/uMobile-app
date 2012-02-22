@@ -178,7 +178,7 @@ exports.updateStyles = function () {
     	height: defaults.TITLEBAR_HEIGHT,
         backgroundGradient: defaults.PRIMARY_BAR_BACKGROUND_GRADIENT,
         width: '100%',
-    	zIndex: 10
+    	zIndex: 50
     };
     //Titanium.UI.Button implemented in the GenericTitleBar
     exports.titleBarButton= {
@@ -562,6 +562,18 @@ exports.updateStyles = function () {
         layout: 'horizontal',
         width: deviceProxy.isAndroid() ? '100%' : 225
     };
+    exports.tabbedBarButton = {
+        color: "#fff",
+        font: {
+            fontSize: '14dp',
+            fontWeight: 'bold'
+        },
+        height: '100%',
+        top: 0,
+        borderRadius: 0,
+        backgroundImage: '/images/secondarybarbg.png',
+        backgroundDisabledImage: '/images/secondarybarbtnbg_press.png'
+    };
     exports.mapDetailTopView= {
         top: defaults.TITLEBAR_HEIGHT+'dp',
         left: 0,
@@ -608,7 +620,8 @@ exports.updateStyles = function () {
         width: '100%',
         height: '100%',
         color: '#fff',
-        backgroundImage: '/images/bgActivityIndicator.png'
+        backgroundImage: '/images/bgActivityIndicator.png',
+        zIndex: 49
     };
     exports.activityIndicatorDialog= {
         width: (deviceProxy.retrieveWidth(true) > 480) ? '360dp' : '75%',
