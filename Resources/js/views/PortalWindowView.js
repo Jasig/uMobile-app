@@ -48,7 +48,7 @@ exports.open = function (_modules, _isGuestLayout, _isPortalReachable, _isFirstO
     Ti.API.debug('exports.open() in PortalWindowView');
     app = app || require('/js/Constants');
     config = config || require('/js/config');
-    styles = styles ? styles.updateStyles() : require('/js/style');
+    styles = styles || require('/js/style');
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
     localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     if (config.LAYOUT_VIEW === app.layoutTypes['GRID_LAYOUT']) portletCollectionView = require('/js/views/PortalGridView');

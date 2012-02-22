@@ -11,8 +11,6 @@ exports.createTitleBar = function () {
     var title, backButton, homeButtonContainer, homeButton, settingsButtonContainer, settingsButton, infoButton, infoButtonContainer, titleBarDefaults,
     titleBar = {};
     
-    styles = styles.updateStyles();
-    
     titleBarDefaults = _.clone(styles.titleBar);
     titleBarDefaults.left += 'dp';
     titleBarDefaults.height += 'dp';

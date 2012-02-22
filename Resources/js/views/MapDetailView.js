@@ -124,10 +124,6 @@ exports.events = {
     VIEW_ON_MAP_CLICK   : "MapDetailViewViewOnMapClick"
 };
 
-exports.rotate = function (orientation) {
-    
-};
-
 exports.hide = function () {
     exports.detailView.hide();
 };

@@ -36,7 +36,7 @@ app = require('/js/Constants'),
 portalProxy = require('/js/models/PortalProxy');
 
 exports.open = function () {
-    styles = require('/js/style').updateStyles();
+    styles = require('/js/style');
     deviceProxy = require('/js/models/DeviceProxy');
     
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
@@ -112,7 +112,6 @@ exports.updateModules = function (portlets) {
 };
 
 exports.rotate = function (orientation) {
-    styles = styles.updateStyles();
     _completeWidth = styles.gridItem.width + 2 * styles.gridItem.padding;
     _completeHeight = styles.gridItem.width + 2 * styles.gridItem.padding;
     _numColumns = Math.floor(deviceProxy.retrieveWidth(true) / _completeWidth);

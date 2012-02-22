@@ -4,7 +4,6 @@ localDictionary = require('/js/localization')[Ti.App.Properties.getString('local
 
 exports.createSecondaryNav = function () {
     var navBar = {}, leftButton, rightButton, titleLabel;
-    styles = styles.updateStyles();
     
     navBar.view = Titanium.UI.createView(styles.secondaryNavBar);
 
