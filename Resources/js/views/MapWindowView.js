@@ -109,7 +109,10 @@ exports.openCategoryBrowsingView = function (categories) {
             _data.push(Titanium.UI.createTableViewRow(_rowStyle));
             
             // Add a count to the row with number of children for category.
-            _labelStyle.text = c[i]['numChildren'];
+            Ti.API.debug(c[i]['numChildren']);
+            _labelStyle.text = c[i]['numChildren'].toString();
+            //Android is adding a decimal to this number for whatever reason, so we'll replace the string.
+            if (deviceProxy.isAndroid() && _labelStyle.text.indexOf('.0') > -1) _labelStyle.text = _labelStyle.text.replace('.0','');
             _data[i].add(Ti.UI.createLabel(_labelStyle));
             
             if (deviceProxy.isAndroid()) {

@@ -26,7 +26,7 @@ exports.events = {
 };
     
 var _locationDetailView, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win, localDictionary, deviceProxy, styles,
-_categoryResultsPerPage = 10;
+_categoryResultsPerPage = -1;
 
 exports.open = function (parameters) {
     _mapWindowView = require('/js/views/MapWindowView');

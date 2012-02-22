@@ -42,9 +42,14 @@ exports.login = function (credentials, opts) {
         onload: _onInitialResponse,
         onerror: _onInitialError
     });
-    var _casHost = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/).exec(config.CAS_URL)[3];
+    var _hostRegex = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/);
+    var _casHost = _hostRegex.exec(config.CAS_URL)[3];
+    Ti.API.debug('_hostRegex.exec(config.BASE_PORTAL_URL): '+JSON.stringify(_hostRegex.exec(config.BASE_PORTAL_URL + '/')));
+    var _portalHost = _hostRegex.exec(config.BASE_PORTAL_URL + '/cas')[3];
     Ti.API.debug('_casHost: '+_casHost);
-    client.clearCookies && client.clearCookies(_casHost) && client.clearCookies(config.BASE_PORTAL_URL);
+    Ti.API.debug('_portalHost: '+_portalHost);
+    if (client.clearCookies) client.clearCookies(_casHost) && client.clearCookies(_portalHost);
+    if (!client.clearCookies) Ti.API.error('HTTPClient.clearCookies is not defined');
     client.open('GET', _url, true);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
@@ -154,6 +159,7 @@ function _onInitialResponse (e) {
     }
     catch (e) {
         Ti.API.error("Couldn't get flowID from response");
+        Ti.API.debug('response: '+client.responseText);
         Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
     }
 };

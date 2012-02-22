@@ -286,8 +286,8 @@ exports.updateStyles = function () {
         height: '30dp',
         plainHeight: 30,
         optionalImage: '/images/back-icon.png',
-    	backgroundImage: 'img/secondarybarbtnbg.png',
-    	backgroundSelectedImage: 'img/secondarybarbtnbg_press.png',
+    	backgroundImage: '/images/secondarybarbtnbg.png',
+    	backgroundSelectedImage: '/images/secondarybarbtnbg_press.png',
     	color: '#fff',
     	selectedColor: "#fff",
         borderRadius: 10,
@@ -666,7 +666,6 @@ exports.updateStyles = function () {
         exports.mapNavView.backgroundImage = '/images/secondarybarbg.png';
         exports.secondaryNavBar.backgroundImage = '/images/secondarybarbg.png';
         exports.homeGuestNote.backgroundImage = '/images/secondarybarbg.png';
-        // exports.mapAnnotation.image = '/images/mapPin.png';
         exports.mapAnnotation.pincolor = Titanium.Map.ANNOTATION_RED;
     }
     
