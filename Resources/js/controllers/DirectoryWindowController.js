@@ -61,26 +61,22 @@ exports.rotate = function (orientation) {
 
 showUser = function (parameters) {
     directoryWindowView.showActivityIndicator(localDictionary.gettingContactInfo);
-    var _xhr = Ti.Network.createHTTPClient({
-        onload: function(e) {
-            directoryWindowView.hideActivityIndicator();
-            try {
-                directoryWindowView.showDetail(JSON.parse(_xhr.responseText).people[0].attributes);
-            }
-            catch (e) {
-                Ti.API.error('Could not load person in Directory.');
-                directoryWindowView.alert(localDictionary.couldNotLoadUser);
-            }
-        },
-        onerror: function (e) {
-            Ti.API.error('Could not load person in Directory.');
-            directoryWindowView.hideActivityIndicator();
+    function onload (e) {
+        directoryWindowView.hideActivityIndicator();
+        try {
+            directoryWindowView.showDetail(JSON.parse(e.responseText).person.attributes);
+        }
+        catch (err) {
+            Ti.API.error('Could not parse person in Directory.');
             directoryWindowView.alert(localDictionary.couldNotLoadUser);
         }
-    });
-    
-    _xhr.open('GET', config.DIRECTORY_SERVICE_URL + '?searchTerms[]=username&username='+ parameters.id);
-    _xhr.send();
+    }
+    function onerror (e) {
+        Ti.API.error('Could not load person in Directory.');
+        directoryWindowView.hideActivityIndicator();
+        directoryWindowView.alert(localDictionary.couldNotLoadUser);
+    }
+    directoryProxy.getUserById(parameters.id, onload, onerror);
 };
 
 resetHome = function () {

@@ -58,6 +58,15 @@ exports.retrieveEmergencyContacts = function () {
     return config.directoryEmergencyContacts || false;
 };
 
+exports.getUserById = function (id, onload, onerror) {
+    var _xhr = Ti.Network.createHTTPClient({
+        onload: function (e) {onload(_xhr);},
+        onerror: function (e) {onerror(_xhr);}
+    });
+    _xhr.open('GET', config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + '/api/people/' +id + '.json');
+    _xhr.send();
+};
+
 function doXhrSearch (query) {
     var url, separator;
     url = config.DIRECTORY_SERVICE_URL;

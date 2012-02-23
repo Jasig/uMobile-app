@@ -71,15 +71,18 @@ exports.close = function () {
 exports.reset = function () {
     blurSearch();
     if (searchBar) { searchBar.input.value = ''; }
-    directoryDetailView.hide();
+    if (directoryDetailView) directoryDetailView.hide();
     if (peopleListTable) { peopleListTable.setData(_viewModel.emergencyContacts || defaultTableData); }
     if (activityIndicator) { activityIndicator.view.hide(); }
 };
 
 exports.showDetail = function (person) {
-    directoryDetailView = require('/js/views/DirectoryDetailView');
-    win.add(directoryDetailView.retrieveDetailView());
-    directoryDetailView.render(person, win);
+    Ti.API.debug('showDetail() in DirectoryWindowView. person: '+JSON.stringify(person));
+    if (!directoryDetailView) {
+        directoryDetailView = require('/js/views/DirectoryDetailView');
+        win.add(directoryDetailView.retrieveDetailView());
+    }
+    directoryDetailView.render(person);
 };
 
 exports.alert = function (attributes) {
