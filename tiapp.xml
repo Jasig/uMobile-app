@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
     <property name="ti.android.runtime">v8</property>
-    <sdk-version>1.8.0.1-1_8_X</sdk-version>
+    <property name="ti.android.fastdev" type="bool">false</property>
+    <sdk-version>1.8.2</sdk-version>
     <deployment-targets>
         <target device="mobileweb">false</target>
         <target device="iphone">true</target>
