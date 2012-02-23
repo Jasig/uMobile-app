@@ -132,7 +132,7 @@ function _onInitialResponse (e) {
     // CAS will redirect to layout.json if the user has already logged in, so we want 
     // to check if the base URL is what should only be returned after login
     // if (client.responseText.indexOf('"layout": [') > -1) return Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], {response: client.responseText});
-    if (client.responseText.indexOf('{') === 0) return exports.login(_credentials, true);
+    if (client.responseText.indexOf('name="lt"') === -1) return exports.login(_credentials, true);
     
     // Parse the returned page, looking for the Spring Webflow ID.  We'll need
     // to post this token along with our credentials.
