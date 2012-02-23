@@ -27,7 +27,7 @@ win, peopleGroup, titleBar, searchBar, noSearchResultsSection, noSearchResultsRo
 styles, localDictionary, deviceProxy;
 
 exports.open = function (viewModel) {
-    styles = styles ? styles.updateStyles() : require('/js/style').updateStyles();
+    styles = styles || require('/js/style');
     localDictionary = localDictionary || require('/js/localization')[Ti.App.Properties.getString('locale')];
     deviceProxy = deviceProxy || require('/js/models/DeviceProxy');
     

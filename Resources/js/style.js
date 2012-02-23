@@ -61,8 +61,9 @@ exports.updateStyles = function () {
     };
     exports.portletView= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
-        heightWithSecondary: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2) - defaults.STATUSBAR_HEIGHT + 'dp'
+        bottom: 0
+        // height: deviceProxy.retrieveHeight(true) - defaults.TITLEBAR_HEIGHT - defaults.STATUSBAR_HEIGHT + 'dp',
+        // heightWithSecondary: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2) - defaults.STATUSBAR_HEIGHT + 'dp'
     };
     exports.portletWindow= {
         // url: 'js/views/WindowContext.js',

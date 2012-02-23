@@ -72,9 +72,6 @@ exports.saveActivityIndicatorMessage = function (message) {
     if (activityIndicator) activityIndicator.setLoadingMessage(message);
 };
 
-exports.rotate = function (orientation) {
-};
-
 exports.resetMapLocation = function () {
     if (mapView && mapProxy) mapView.setLocation(mapProxy.retrieveMapCenter(true));
 };

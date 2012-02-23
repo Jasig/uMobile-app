@@ -19,7 +19,7 @@
 
 var _view, personDetailTable, titleBar, secondaryNavBar, nameLabel, phoneLabel, attributeTable, backButton,
 directoryPerson = require('/js/models/VOs/DirectoryPersonVO'),
-styles = require('/js/style').updateStyles(),
+styles = require('/js/style'),
 config = require('/js/config');
 
 exports.retrieveDetailView = function () {

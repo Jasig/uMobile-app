@@ -1,8 +1,7 @@
 var deviceProxy = require('/js/models/DeviceProxy'),
-styles = require('/js/style').updateStyles();
+styles = require('/js/style');
 exports.createSearchBar = function (opts) {
     var searchBar, searchBarObject = {}, searchBarInput;
-    styles = styles.updateStyles();
     
     if (deviceProxy.isIOS()) {
         searchBar = Titanium.UI.createSearchBar(styles.searchBar);

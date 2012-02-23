@@ -70,7 +70,7 @@ exports.close = function () {
 };
 
 exports.rotate = function (orientation) {
-    resizeAndPositionWebView();
+    
 };
 
 function _createView (portlet) {
@@ -264,18 +264,11 @@ function _onAndroidBack (e) {
 	_webView.goBack();
 };
 function resizeAndPositionWebView () {
-    if (_isPortal()) Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
     _webView.externalModule = _isPortal() ? false : true;
-    if (_isHome()) {
-        _removeAndroidBackListener();
-    } else {
-        _addAndroidBackListener();
-    }
+
     var _shouldNotShowBackBtn = _isHome() || _isPortal();
-    styles = styles.updateStyles();
     if (_navBar) _navBar.view[_shouldNotShowBackBtn ? 'hide' : 'show']();
     _webView.top = _shouldNotShowBackBtn ? styles.titleBar.height + 'dp': styles.titleBar.height + styles.secondaryNavBar.getHeight + 'dp' ;
-    _webView.height = _shouldNotShowBackBtn ? styles.portletView.height : styles.portletView.heightWithSecondary;
 }
 function _onPortletLoad (e) {
     /*
@@ -283,10 +276,17 @@ function _onPortletLoad (e) {
         such as determining whether to reset the webview session timer,
         and show the nav bar with back button
     */
-
     _webView.show();
     
     _currentURL = e.url;
+    
+    if (_isPortal()) Ti.App.fireEvent(app.events['SESSION_ACTIVITY']);
+    
+    if (_isHome()) {
+        _removeAndroidBackListener();
+    } else {
+        _addAndroidBackListener();
+    }
     
     //We want to be able to open any video now, so we'll clear the YouTube workaround variable
     _lastVideoOpened = '';

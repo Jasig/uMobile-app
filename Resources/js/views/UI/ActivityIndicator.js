@@ -3,7 +3,6 @@ localDictionary = require('/js/localization')[Ti.App.Properties.getString('local
 
 exports.createActivityIndicator = function () {
     var messageLabel, indicator, dialog;
-    styles = styles.updateStyles();
     indicator = {view: Ti.UI.createView(styles.globalActivityIndicator)};
 
     dialog = Ti.UI.createView(styles.activityIndicatorDialog);
