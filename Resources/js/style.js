@@ -53,11 +53,63 @@ exports.updateStyles = function () {
         SECONDARY_BAR_COLOR: "#fff"
     };
 
-
     exports.backgroundColor = '#fff';
     exports.view = {
         backgroundColor: '#fff',
         top: defaults.TITLEBAR_HEIGHT + 'dp'
+    };
+    exports.tableView = {
+        top: 0,
+        bottom: 0,
+        layout: 'vertical',
+        contentHeight: 'auto'
+    };
+    exports.tableSectionHeader = {
+        height: '40dp',
+        width: '100%',
+        backgroundGradient: defaults.SECONDARY_BAR_BACKGROUND_GRADIENT
+    };
+    exports.tableSectionHeaderLabel = {
+        left: '10dp',
+        color: '#ffffff',
+        textAlign: 'left',
+        touchEnabled: false,
+        font: {
+            fontWeight: 'bold',
+            fontSize: '14dp'
+        }
+    };
+    exports.tableRowIcon = {
+        left: '10dp',
+        touchEnabled: false,
+        width: OS === 'ipad' ? 72 : '57dp',
+        height: OS === 'ipad' ? 72 : '57dp'
+    };
+    exports.tableRow = {
+        width: '100%',
+        height: OS === 'ipad' ? 82 : '67dp',
+        rawHeight: OS === 'ipad' ? 82 : 67,
+        backgroundColor: '#eee',
+        backgroundGradient: {
+            type: 'linear',
+            colors: ['#fff', '#eee']
+        }
+    };
+    exports.tableRowArrow = {
+        width: '22dp',
+        height: '22dp',
+        right: '20dp',
+        image: '/images/portlet-list-arrow.png',
+        touchEnabled: false
+    };
+    exports.tableRowLabel = {
+        left: OS === 'ipad' ? 92 : '77dp',
+        color: '#333',
+        textAlign: 'left',
+        touchEnabled: false,
+        font: {
+            fontSize: '14dp'
+        }
     };
     exports.portletView= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
