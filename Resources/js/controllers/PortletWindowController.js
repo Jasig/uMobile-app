@@ -51,6 +51,8 @@ exports.open = function (portlet) {
 
 exports.close = function () {
     //Set the webview to blank.html if Android, otherwise leave it.
+    _removeAndroidBackListener();
+	_destroyView();
     app = null;
     config = null;
     styles = null;
@@ -64,8 +66,6 @@ exports.close = function () {
     catch (e) {
         Ti.API.error("Couldn't remove events.");
     }
-	_removeAndroidBackListener();
-	_destroyView();
     _win.close();
 };
 
