@@ -12,7 +12,7 @@
     </deployment-targets>
     <id>org.jasig.portal.mobile.app</id>
     <name>uMobile</name>
-    <version>1.0</version>
+    <version>1.1-RC1</version>
     <publisher>athena</publisher>
     <url>http://www.jasig.org/uportal</url>
     <description>No description provided</description>
