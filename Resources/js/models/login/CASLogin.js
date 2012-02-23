@@ -29,30 +29,37 @@ logoutUrl = config.CAS_URL + '/logout';
 // XHR client
 var client;
 
-exports.login = function (credentials, opts) {
+exports.login = function (credentials, forceLogout) {
     Ti.API.debug('login() in CASLogin');
     _credentials = credentials;
     
     //If there's no user name, let's skip a step and load the guest layout
     if (!_credentials.username) return _onLogoutComplete();
     
-    _url = config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(serviceUrl);
-    // Send an initial request to the CAS login page
-    client = Titanium.Network.createHTTPClient({
-        onload: _onInitialResponse,
-        onerror: _onInitialError
-    });
-    var _hostRegex = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/);
-    var _casHost = _hostRegex.exec(config.CAS_URL)[3];
-    Ti.API.debug('_hostRegex.exec(config.BASE_PORTAL_URL): '+JSON.stringify(_hostRegex.exec(config.BASE_PORTAL_URL + '/')));
-    var _portalHost = _hostRegex.exec(config.BASE_PORTAL_URL + '/cas')[3];
-    Ti.API.debug('_casHost: '+_casHost);
-    Ti.API.debug('_portalHost: '+_portalHost);
-    if (client.clearCookies) client.clearCookies(_casHost) && client.clearCookies(_portalHost);
-    if (!client.clearCookies) Ti.API.error('HTTPClient.clearCookies is not defined');
-    client.open('GET', _url, true);
-    if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-    client.send();
+    function _login (e) {
+        _url = config.CAS_URL + '/login?service=' + Titanium.Network.encodeURIComponent(serviceUrl);
+        // Send an initial request to the CAS login page
+        client = Titanium.Network.createHTTPClient({
+            onload: _onInitialResponse,
+            onerror: _onInitialError
+        });
+
+        client.open('GET', _url, true);
+        if (client.clearCookies) client.clearCookies(config.BASE_PORTAL_URL) && client.clearCookies(config.CAS_URL);
+        if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        client.send();
+    }
+    if (forceLogout === true) {
+        client = Titanium.Network.createHTTPClient({
+            onload: _login,
+            onerror: _onInitialError
+        });
+        client.open('GET', logoutUrl, true);
+        if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        client.send();
+        return; 
+    }
+    _login();
 };
 
 exports.logout = function () {
@@ -124,8 +131,9 @@ function _onInitialResponse (e) {
     
     // CAS will redirect to layout.json if the user has already logged in, so we want 
     // to check if the base URL is what should only be returned after login
-    if (client.responseText.indexOf('"layout": [') > -1) return Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], {response: client.responseText});
-
+    // if (client.responseText.indexOf('"layout": [') > -1) return Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], {response: client.responseText});
+    if (client.responseText.indexOf('{') === 0) return exports.login(_credentials, true);
+    
     // Parse the returned page, looking for the Spring Webflow ID.  We'll need
     // to post this token along with our credentials.
     initialResponse = client.responseText;
