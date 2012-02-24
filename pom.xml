@@ -34,6 +34,8 @@
                 <configuration>
                     <aggregate>true</aggregate>
                     <excludes>
+                        <exclude>.gitignore</exclude>
+                        <exclude>README</exclude>
                         <exclude>build/**</exclude>
                         <exclude>build.log</exclude>
                         <exclude>pom.xml.*</exclude>
