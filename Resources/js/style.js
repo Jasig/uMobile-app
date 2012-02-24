@@ -504,7 +504,7 @@ exports.updateStyles = function () {
             fontWeight: "bold",
             textAlign: "center"
         },
-        top: '1dp',
+        top: 0,
         right: OS === 'ipad' ? 35 : '11dp',
         height: OS === 'ipad' ? 20 : '16dp',
         width: OS === 'ipad' ? 20 : '16dp',
