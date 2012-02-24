@@ -92,20 +92,6 @@ function updateFolderListView(folders, activeFolderId) {
     exports.setState(exports.states['LOADING']);
     
     //Remove all current views
-    /*var l, i=view.children ? view.children.length : 0, _folderLabel, _folderHeaderView;
-    Ti.API.debug('Getting ready to iterate through views. i:'+i);
-    while (--i > 0) {
-        Ti.API.debug('i is '+i+' and view.children.length: '+view.children.length);
-        if (view.children[0].folderId) view.children[0].removeEventListener('singletap', onFolderClick);
-        if (view.children[0].parentFolderId) {
-            var j = view.children[0].children ? view.children[0].children.length : 0;
-            while (--j != 0) {
-                view.children[0].children[0].removeEventListener('singletap', onPortletClick);
-                view.children[0].remove(view.children[0].children[0]);
-            }
-        }
-        view.remove(view.children[0]);
-    }*/
     if (rowContainer) view.remove(rowContainer);
     rowContainer = Ti.UI.createScrollView(styles.portalRowContainer);
     view.add(rowContainer);
@@ -151,12 +137,19 @@ function updateFolderListView(folders, activeFolderId) {
             
             var _portletLabel = Ti.UI.createLabel(styles.portletRowLabel);
             _portletLabel.text = _portlets[j-1].title;
-            
             _portletRow.add(_portletLabel);
             
             var _portletIcon = Ti.UI.createImageView(styles.portletRowIcon);
             _portletIcon.image = portalProxy.getIconUrl(_portlets[j-1]);
             _portletRow.add(_portletIcon);
+            
+            if (_portlets[j-1].newItemCount && _portlets[j-1].newItemCount > 0) {
+                var _portletBadgeBackground = Ti.UI.createImageView(styles.portletRowBadgeBackground);
+                var _portletBadgeNumber = Ti.UI.createLabel(styles.portletRowBadgeNumber);
+                _portletBadgeNumber.text = _portlets[j-1].newItemCount;
+                _portletBadgeBackground.add(_portletBadgeNumber);
+                _portletRow.add(_portletBadgeBackground);   
+            }
             
             var _arrow = Ti.UI.createImageView(styles.portletRowArrow);
             _portletRow.add(_arrow);

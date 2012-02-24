@@ -416,6 +416,26 @@ exports.updateStyles = function () {
         width: OS === 'ipad' ? 72 : '57dp',
         height: OS === 'ipad' ? 72 : '57dp'
     };
+    exports.portletRowBadgeBackground= {
+        top: '3dp', 
+        left: OS === 'ipad' ? 65 : '53dp',
+        height: OS === 'ipad' ? 20 : '16dp',
+        width: OS === 'ipad' ? 20 : '16dp',
+        image: OS === 'ipad' ? '/images/badgeBackground_72.png' : '/images/badgeBackground.png'
+    };
+    exports.portletRowBadgeNumber= {
+        textAlign: "center",
+        color: "#fff",
+        font: { 
+            fontSize: OS === 'ipad' ? '12dp' : '10dp',
+            fontWeight: "bold",
+            textAlign: "center"
+        },
+        height: OS === 'ipad' ? 20 : '16dp',
+        width: OS === 'ipad' ? 20 : '16dp',
+        touchEnabled: false
+
+    };
     exports.portletRow = {
         width: '100%',
         height: OS === 'ipad' ? 82 : '67dp',

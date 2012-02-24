@@ -39,7 +39,7 @@ exports.LAYOUT_VIEW = constants.layoutTypes['GRID_LAYOUT'];
 Ti.App.Properties.setInt('SERVER_SESSION_TIMEOUT', parseInt((2 * 60 * 60 * 1000), 10));
 
 //References value of LoginProxy.loginMethods constant.
-exports.LOGIN_METHOD = "LocalLogin";
+exports.LOGIN_METHOD = "Cas";
 
 exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
 exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";
