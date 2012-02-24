@@ -14,10 +14,10 @@
     <name>umobile-app</name>
 
     <scm>
-        <connection>scm:svn:https://source.jasig.org/sandbox/uMobile/trunk</connection>
-        <developerConnection>scm:svn:https://source.jasig.org/sandbox/uMobile/trunk</developerConnection>
-      <url>https://developer.jasig.org/source/browse/jasigsvn/jasig-parent/tags/jasig-parent-31/umobile-app</url>
-  </scm>
+        <connection>scm:git:git://github.com/Jasig/uMobile-app.git</connection>
+        <developerConnection>scm:git:git@github.com:Jasig/uMobile-app.git</developerConnection>
+        <url>https://github.com/Jasig/uMobile-app</url>
+    </scm>
 
     <build>
         <plugins>
