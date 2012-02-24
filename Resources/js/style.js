@@ -491,22 +491,23 @@ exports.updateStyles = function () {
     };
     exports.gridBadgeBackground= {
         top: 0, 
-        right: '11dp',
-        height: '20dp',
-        width: '20dp',
-        image: '/images/badgeBackground.png'
+        right: OS === 'ipad' ? 35 : '11dp',
+        height: OS === 'ipad' ? 20 : '16dp',
+        width: OS === 'ipad' ? 20 : '16dp',
+        image: OS === 'ipad' ? '/images/badgeBackground_72.png' : '/images/badgeBackground.png'
     };
     exports.gridBadgeNumber= {
         textAlign: "center",
         color: "#fff",
-        height: '16dp',
-        width: '16dp',
         font: { 
-            fontSize: '12dp',
-            fontWeight: "bold"
+            fontSize: OS === 'ipad' ? '14dp' : '12dp',
+            fontWeight: "bold",
+            textAlign: "center"
         },
         top: '1dp',
-        right: '13dp',
+        right: OS === 'ipad' ? 35 : '11dp',
+        height: OS === 'ipad' ? 20 : '16dp',
+        width: OS === 'ipad' ? 20 : '16dp',
         touchEnabled: false
 
     };
