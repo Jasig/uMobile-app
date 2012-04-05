@@ -201,5 +201,5 @@ exports.fr_FR = {
     directoryErrorFetching: "Il y a eu une erreur pour lire les résultats de votre requête. Essayez, s'il vous plaît, une requête différente."
 };
 exports.retrieveLocale = function (locale) {
-    return exports[locale] || exports['en_US'];
+    return exports[locale] || exports['en_US'] || exports['fr_FR'];
 };
