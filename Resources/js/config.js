@@ -30,7 +30,8 @@ Titanium.App.Properties.setString('locale', 'en_US');
 // Base url of the portal, which should be of the format
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a
 // trailing slash.
-exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+//exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+exports.BASE_PORTAL_URL = 'https://mydev.uchicago.edu';
 exports.PORTAL_CONTEXT = '';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
 exports.LAYOUT_VIEW = constants.layoutTypes['GRID_LAYOUT'];
@@ -39,12 +40,17 @@ exports.LAYOUT_VIEW = constants.layoutTypes['GRID_LAYOUT'];
 Ti.App.Properties.setInt('SERVER_SESSION_TIMEOUT', parseInt((2 * 60 * 60 * 1000), 10));
 
 //References value of LoginProxy.loginMethods constant.
-exports.LOGIN_METHOD = "Cas";
+//exports.LOGIN_METHOD = "Cas";
+exports.LOGIN_METHOD = "Shibboleth";
 
 exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
 exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";
-exports.SHIB_BASE_URL = "";
-exports.SHIB_POST_URL = exports.SHIB_BASE_URL + "/idp/Authn/UserPassword";
+exports.SHIB_BASE_URL = "https://shibboleth-dev2.uchicago.edu";
+//exports.SHIB_BASE_URL = "https://shibboleth2.uchicago.edu";
+//exports.SHIB_POST_URL = exports.SHIB_BASE_URL + "/idp/Authn/UserPassword";
+exports.SHIB_PROTECTED_URL = "https://mydev.uchicago.edu/shibboleth";
+exports.SHIB_POST_URL = exports.SHIB_BASE_URL + "/Shibboleth.sso/SAML2/POST";
+exports.SHIB_ECP_URL = exports.SHIB_BASE_URL + "/idp/profile/SAML2/SOAP/ECP";
 exports.ENCRYPTION_KEY = 'um0b1le';
 exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/p/forgot-password';
 

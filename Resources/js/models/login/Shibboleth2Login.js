@@ -16,97 +16,290 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/*
-This method is only known to work with Titanium SDK 1.7.5, 
-and logout only works if the Ti.Network.HTTPClient.clearCookies method
-has been implemented. It will be tested with later versions of the Titanium SDK
-*/
-var _credentials, _client,
-_loginURL = app.config.SHIB_URL,
-_postURL = app.config.SHIB_POST_URL,
-_logoutURL = app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + "/Logout";
 
-exports.login = function (credentials, options) {
+var _credentials, _client, responseConsumerURL, AssertionConsumerServiceURL,
+ecpResponse, ecpRelayState,
+config = require('/js/config'),
+deviceProxy = require('/js/models/DeviceProxy'),
+userProxy = require('/js/models/UserProxy'),
+app = require('/js/Constants'),
+refUrl = config.PORTAL_CONTEXT + '/layout.json',
+serviceUrl = config.SHIB_URL,
+shibECPUrl = config.SHIB_ECP_URL,
+_postURL = config.SHIB_POST_URL,
+shibProtectedUrl = config.SHIB_PROTECTED_URL,
+logoutUrl = config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + "/Logout";
+
+
+exports.login = function (credentials, forceLogout) {
+    Ti.API.debug('login() in Shibboleth');
     _credentials = credentials;
-    if (_credentials.username === '') return _onPortalSessionEstablished();
     
+    //If there's no user name, let's skip a step and load the guest layout
+    if (!_credentials.username) {
+    	return _onECPResponse3();
+    }
+    
+    function _login (e) {
+        
+        //ask the client to handle successes and errors.
+        _client = Titanium.Network.createHTTPClient({
+            onload: _onECPResponse1,
+            onerror: _onInitialError
+        });
+
+		// Send an initial request to the shibb protected resource
+		_client.open('GET',shibProtectedUrl);
+
+        //set the required ecp headers
+        _client.setRequestHeader('Accept','text/html; application/vnd.paos+xml');
+        _client.setRequestHeader('PAOS','ver="urn:liberty:paos:2003-08";"urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp"');
+        
+        if (deviceProxy.isAndroid()) {
+        	client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+		}
+		
+        _client.send();
+    }
+    if (forceLogout === true) {
+        _client = Titanium.Network.createHTTPClient({
+            onload: _login,
+            onerror: _onInitialError
+        });
+        _client.open('GET', logoutUrl, true);
+        if (deviceProxy.isAndroid()) {
+        	_client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+        }
+        _client.send();
+        return; 
+    }
+    _login();
+};
+
+
+function _onECPResponse1 () {
+	Ti.API.debug('_onECPResponse1()');
+	
+	//teh raw response
+	Ti.API.debug(_client.responseText);
+	
+    var sEnvelope = _client.responseXML.documentElement;
+    var sHeader = sEnvelope.getFirstChild();
+	var sBody = sHeader.getNextSibling();
+	
+	Ti.API.debug(sEnvelope + " root node: "+sEnvelope.nodeName);
+	Ti.API.debug(sHeader + " header node: "+sHeader.nodeName);
+	Ti.API.debug(sBody + " body node: "+sBody.nodeName);
+	
+	
+	//Get <ecp:RelayState> element
+	ecpRelayState = sHeader.getElementsByTagName("ecp:RelayState").item(0);
+	
+	Ti.API.debug(ecpRelayState + " ecpRelayState node: "+ecpRelayState.nodeName);
+	
+	//this will be used to check against an attribute in _onECPResponse2
+	responseConsumerURL = sHeader.getFirstChild().getAttributeNode("responseConsumerURL").value;
+	
+	Ti.API.debug("responseConsumerURL: "+responseConsumerURL);
+	
+	
+	//remove the header node
+	//which is the post data to be sent
+	sEnvelope.removeChild(sHeader);
+	
+	Ti.API.debug(Titanium.XML.serializeToString(sEnvelope));
+	
+	//reinitialize the client
+    _client = Titanium.Network.createHTTPClient({
+        onload: _onECPResponse2,
+        onerror: _onLoginError
+    });
+
+    _client.open('POST', shibECPUrl);
+    
+    if (deviceProxy.isAndroid()) {
+        _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+    }
+    
+    //add the credentials as a basic auth header
+    _client.setRequestHeader('Authorization', 'Basic ' +Titanium.Utils.base64encode(_credentials.username+':'+_credentials.password));
+   
+ 	//send the updated envelope	
+    _client.send(Titanium.XML.serializeToString(sEnvelope));
+        
+};
+
+function _onECPResponse2 () {
+    Ti.API.debug('_onECPResponse2()');
+	
+	//teh raw response
+	Ti.API.debug(_client.responseText);
+	
+    var sEnvelope = _client.responseXML.documentElement;
+    var sHeader = sEnvelope.getFirstChild();
+	var sBody = sHeader.getNextSibling();
+	
+	Ti.API.debug(sEnvelope + " root node: "+sEnvelope.nodeName);
+	Ti.API.debug(sHeader + " header node: "+sHeader.nodeName);
+	Ti.API.debug(sBody + " body node: "+sBody.nodeName);
+	
+	
+	//Get <ecp:RelayState> element
+	ecpResponse = sHeader.getElementsByTagName("ecp:Response").item(0);
+	
+	Ti.API.debug(ecpResponse + " ecpResponse node: "+ecpResponse.nodeName);
+	
+	//this will be used to check against an attribute in _onECPResponse1
+	AssertionConsumerServiceURL = sHeader.getFirstChild().getAttributeNode("AssertionConsumerServiceURL").value;
+	
+	Ti.API.debug("AssertionConsumerServiceURL: "+AssertionConsumerServiceURL);
+    
+    //if the relay and response attributes match, continue...
+    if (AssertionConsumerServiceURL == responseConsumerURL) {
+    	//replace the response element in the header with the relaystate element from _onECPResponse1
+		sHeader.removeChild(sHeader.getFirstChild());
+		sHeader.appendChild(ecpRelayState);
+    	
+    	Ti.API.debug(Titanium.XML.serializeToString(sEnvelope));
+    	
+    	//reinitialize the client
+	    _client = Titanium.Network.createHTTPClient({
+	        onload: _onECPResponse3,
+	        onerror: _onLoginError
+	    });
+	    
+        _client.open('POST', AssertionConsumerServiceURL);
+        
+        _client.setRequestHeader('Content-Type','application/vnd.paos+xml');
+        
+        //add the credentials as a basic auth header
+    	//_client.setRequestHeader('Authorization', 'Basic ' +Titanium.Utils.base64encode(_credentials.username+':'+_credentials.password));
+        
+        if (deviceProxy.isAndroid()) {
+	        _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+	    }
+        
+        //send the updated envelope	
+    	_client.send(Titanium.XML.serializeToString(sEnvelope));
+        
+       // _client.send({
+        //    SAMLResponse: _getSAMLResponse(_loginCompleteResponse),
+        //    RelayState: _getRelayState(_loginCompleteResponse)
+       // });
+    }
+    else {
+        Ti.API.error("!_isLoginSuccess()");
+        /*
+            Apparently the login process has stalled, so we're going to
+            attempt to just load the layout anyway and let the app
+            figure out how to let the user know.
+        */
+        _onECPResponse3();
+    }
+};
+
+
+function _onECPResponse3 () {
+	
+	Ti.API.debug('_onECPResponse3()');
+	
+	//teh raw response
+	if (typeof _client != 'undefined'){
+		
+		Ti.API.debug(_client.status);
+		Ti.API.debug(_client.responseText);
+		Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response : _client.responseText });
+		
+	}else{
     /*
-        First step is to load the HTML form, which sets the cookies
-        that will be used to complete the login process and login to
-        the portal.
+        Shibboleth has posted back to the portal to log the user in. Now
+        we just need to retrieve layout.json.
     */
     _client = Ti.Network.createHTTPClient({
         onload: function (e) {
-            _client = Ti.Network.createHTTPClient({
-                onload  : _onInitialResponse,
-                onerror : _onInitialError
-            });
-            _client.open('GET', _loginURL);
-            _client.send();
+        	Ti.API.debug('response: '+_client.responseText);
+            Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response : _client.responseText });
         },
         onerror: function (e) {
-            Ti.API.error("There was an error requesting the portal");
+            Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
         }
     });
-    _client.open("GET", app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT);
-    
-    if (_client.clearCookies) {
-        _client.clearCookies(app.config.BASE_PORTAL_URL);
-        _client.clearCookies(app.config.SHIB_BASE_URL);
-        _client.clearCookies(app.config.SHIB_BASE_URL + "/idp");
+
+    if (_credentials.username === '' && _client.clearCookies) {
+        _client.clearCookies(shibECPUrl);
+        _client.clearCookies(shibProtectedUrl);
+       	Ti.API.debug("cleared cookies");
     }
-    if (app.models.deviceProxy.isAndroid()) {
+    
+    _client.open("GET", config.BASE_PORTAL_URL + config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");
+    
+    if (deviceProxy.isAndroid()) {
         _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     }
-    _client.send();
+    _client.send({autoRedirect:true});
+    
+   }
 };
+
 
 exports.logout = function () {
-    _credentials = {
-        username: '',
-        password: ''
-    };
-    _client = Ti.Network.createHTTPClient({
-        onload  : _onPortalSessionEstablished,
-        onerror : _onPortalSessionEstablishedError
+    Ti.API.debug('logout() in ShibbolethLogin');
+    // Log out the network session, which also clears the webView session in iPhone
+    _client = Titanium.Network.createHTTPClient({
+        onload: _onLogoutComplete,
+        onerror: _onInitialError
     });
-    _client.open('GET', _logoutURL);
+    _client.open('GET', logoutUrl, true);
+    if (deviceProxy.isAndroid()) {
+    	_client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+   }
+   _client.send();
+};
+
+function _onLogoutComplete (e) {
+    Ti.API.debug('_onLogoutComplete() in ShibbLogin');
+    _client = Titanium.Network.createHTTPClient({
+        onload: function (e) {
+            // If it's Android, we'll use our custom clearcookies method to clear the webview cookies
+            if (deviceProxy.isAndroid() && _client.clearCookies) _client.clearCookies(config.BASE_PORTAL_URL);
+            // Logout process complete, now let's get the user's layout and process the response.
+            _client = Titanium.Network.createHTTPClient({
+                onload: _onECPResponse3,
+                onerror: _onLoginError
+            });
+            
+           _client.open('GET', config.LAYOUT_URL, true);
+            if (deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
+            _client.send();
+        },
+        onerror: _onInitialError
+    });
+    _client.open('GET', serviceUrl, true);
+    if (deviceProxy.isAndroid()) _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     _client.send();
+    
+    
 };
 
-exports.retrieveLoginURL = function (url) {
-    return _loginURL;
-};
 
-function _onInitialResponse (e) {
-    var initialResponse = _client.responseText;
 
-    try {
-        _client = Titanium.Network.createHTTPClient({
-            onload: _onLoginComplete,
-            onerror: _onLoginError
-        });
-
-        _client.open('POST', _postURL, true);
-        if (app.models.deviceProxy.isAndroid()) {
-            _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-        }
-        
-        data = { 
-            j_username: _credentials.username, 
-            j_password: _credentials.password
-        };
-        _client.send(data);
-    }
-    catch (e) {
-        Ti.API.error("Couldn't log in with Shibboleth");
-        Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
-    }
+function _onLoginError (e) {
+	Ti.API.debug('_onLoginError() in ShibbLogin');
+	Ti.API.debug(_client.status);
+	Ti.API.debug(_client.responseText);
+    Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
 };
 
 function _onInitialError (e) {
-    Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
+	Ti.API.debug('_onInitialError() in ShibbLogin');
+	Ti.API.debug(_client.status);
+	Ti.API.debug(e.error);
+    Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_ERROR']);
 };
+
+
+
+
 
 function _getRedirectURL (responseText) {
     //https://mysandbox.uchicago.edu/Shibboleth.sso/SAML2/POST
@@ -132,35 +325,6 @@ function _getRelayState (responseText) {
     return _relayRegex.exec(responseText)[1].replace('&#x3a;',':');
 };
 
-_onPortalSessionEstablished = function (e) {
-    /*
-        Shibboleth has posted back to the portal to log the user in. Now
-        we just need to retrieve layout.json.
-    */
-    _client = Ti.Network.createHTTPClient({
-        onload: function (e) {
-            Ti.App.fireEvent(app.loginEvents['LOGIN_METHOD_COMPLETE'], { response : _client.responseText });
-        },
-        onerror: function (e) {
-            Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
-        }
-    });
-
-    if (_credentials.username === '' && _client.clearCookies) {
-        _client.clearCookies(app.config.BASE_PORTAL_URL);
-        _client.clearCookies(app.config.SHIB_BASE_URL);
-        _client.clearCookies(app.config.SHIB_BASE_URL + "/idp");
-    }
-    else if (_client.clearCookies) {
-        Ti.API.error("client.clearCookies() isn't defined.");
-    }
-    _client.open("GET", app.config.BASE_PORTAL_URL + app.config.PORTAL_CONTEXT + "/Login?refUrl=/layout.json");
-    
-    if (app.models.deviceProxy.isAndroid()) {
-        _client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
-    }
-    _client.send({autoRedirect:true});
-};
 
 function _onPortalSessionEstablishedError (e) {
     Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
@@ -177,31 +341,4 @@ function _isLoginSuccess (responseText) {
     return false;
 };
 
-function _onLoginComplete (e) {
-    var _loginCompleteResponse = _client.responseText;
-    
-    if (_isLoginSuccess(_loginCompleteResponse)) {
-        _client = Titanium.Network.createHTTPClient({
-            onload: _onPortalSessionEstablished,
-            onerror: _onPortalSessionEstablishedError
-        });
-        _client.open("POST", _getRedirectURL(_loginCompleteResponse));
-        _client.send({
-            SAMLResponse: _getSAMLResponse(_loginCompleteResponse),
-            RelayState: _getRelayState(_loginCompleteResponse)
-        });
-    }
-    else {
-        Ti.API.error("!_isLoginSuccess()");
-        /*
-            Apparently the login process has stalled, so we're going to
-            attempt to just load the layout anyway and let the app
-            figure out how to let the user know.
-        */
-        _onPortalSessionEstablished(e);
-    }
-};
 
-function _onLoginError (e) {
-    Ti.App.fireEvent(app.loginEvents["LOGIN_METHOD_ERROR"]);
-};
