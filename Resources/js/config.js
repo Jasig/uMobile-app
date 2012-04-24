@@ -46,11 +46,32 @@ exports.LOGIN_METHOD = "Shibboleth";
 exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
 exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";
 exports.SHIB_BASE_URL = "https://shibboleth-dev2.uchicago.edu";
-//exports.SHIB_BASE_URL = "https://shibboleth2.uchicago.edu";
-//exports.SHIB_POST_URL = exports.SHIB_BASE_URL + "/idp/Authn/UserPassword";
 exports.SHIB_PROTECTED_URL = "https://mydev.uchicago.edu/shibboleth";
-exports.SHIB_POST_URL = exports.SHIB_BASE_URL + "/Shibboleth.sso/SAML2/POST";
 exports.SHIB_ECP_URL = exports.SHIB_BASE_URL + "/idp/profile/SAML2/SOAP/ECP";
+/* our apache configuration to support the ecp exchange between uMobile and shibb.
+ * our portal context is at the root / context in ROOT.war
+ * 
+ * ...
+ * ProxyPass /shibboleth !
+ * ...
+ * <Location "/Login">
+		AuthType shibboleth
+		ShibRequireSession Off
+		ShibUseHeaders On
+		Require shibboleth
+		Order Allow,Deny
+		Allow from ...
+		...
+	</Location>
+	<Location "/shibboleth">
+		AuthType shibboleth
+		ShibRequireSession On
+		ShibUseHeaders On
+		ShibRequestSetting target "https://mydev.uchicago.edu/Login?refUrl=/layout.json"
+		...
+	</Location>
+
+ */
 exports.ENCRYPTION_KEY = 'um0b1le';
 exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/p/forgot-password';
 
@@ -66,7 +87,7 @@ exports.NOTIFICATIONS_SERVICE = (Titanium.Platform.name == 'android' ? 'http://1
 //------- DIRECTORY SERVICE -------
 
 exports.DIRECTORY_SERVICE_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/api/people.json';
-exports.DIRECTORY_SERVICE_SEARCH_FIELDS = ['given', 'sn'];
+exports.DIRECTORY_SERVICE_SEARCH_FIELDS = ['givenName', 'sn','uid','displayName',];
 exports.DIRECTORY_SERVICE_RESULT_FIELDS = {
 	fullName : 'displayName',
 	nickname : 'nickname',
@@ -91,11 +112,13 @@ exports.DIRECTORY_SERVICE_RESULT_FIELDS = {
 
 exports.LOCAL_MODULES = [];
 
+
 exports.LOCAL_MODULES.map = {
 	title : 'Map',
 	fname : 'map',
 	window : 'map'
 };
+
 
 exports.LOCAL_MODULES.directory = {
 	title : 'Directory',
@@ -103,6 +126,7 @@ exports.LOCAL_MODULES.directory = {
 	doesRequireLayout : true,
 	window : 'directory'
 };
+
 
 exports.LOCAL_MODULES.transit = {
 	title : 'Transit',
@@ -120,6 +144,7 @@ exports.LOCAL_MODULES.library = {
 	externalModule : true
 };
 
+
 exports.retrieveLocalModules = function() {
 	return exports.LOCAL_MODULES;
 };
@@ -134,7 +159,7 @@ exports.DEFAULT_MAP_REGION = {
 exports.WINDOW_CONTROLLERS = {
     portlet: 'PortletWindowController',
     home: 'PortalWindowController',
-    map: 'MapWindowController',
+ //   map: 'MapWindowController',
     directory: 'DirectoryWindowController',
     settings: 'SettingsWindowController'
 };
