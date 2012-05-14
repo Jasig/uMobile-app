@@ -45,6 +45,7 @@ exports.login = function (creds, options) {
     });
     
     client.open('GET', url, true);
+    if (client.clearCookies) client.clearCookies(config.BASE_PORTAL_URL) && client.clearCookies(config.CAS_URL);
     if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
     client.send();
 };
@@ -65,6 +66,7 @@ exports.logout = function () {
                 onerror: onLoginError
             });
             client.open('GET', config.LAYOUT_URL, true);
+            
             if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
             client.send();
         },

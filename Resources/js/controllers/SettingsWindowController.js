@@ -28,6 +28,7 @@ wasFormSubmitted = false,
 wasLogOutClicked = false;
 
 exports.open = function () {
+    Ti.API.debug('open in SettingsWindowController');
     isOpen = true;
     app = require('/js/Constants');
     _ = require('/js/libs/underscore-min');
@@ -78,6 +79,7 @@ exports.close = function (options) {
     localDictionary = null;
     config = null;
     deviceProxy = null;
+    activityIndicator = null;
     
     win.close();
     onWindowBlur();
@@ -302,7 +304,8 @@ function onSessionSuccess (e) {
 
 function onPortalProxyPortletsLoaded (e) {
     Ti.API.debug('onPortalProxyPortletsLoaded() in SettingsWindowController');
-    if (!wasFormSubmitted) return onSessionError(e);;
+    activityIndicator.view.hide();
+    if (!wasFormSubmitted) return onSessionError(e);
     Ti.App.fireEvent(app.events['SHOW_WINDOW'], {newWindow: config.HOME_KEY});
     wasFormSubmitted = false;
     wasLogOutClicked = false;
