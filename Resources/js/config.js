@@ -30,8 +30,7 @@ Titanium.App.Properties.setString('locale', 'en_US');
 // Base url of the portal, which should be of the format
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a
 // trailing slash.
-//exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-exports.BASE_PORTAL_URL = 'https://dev-uportal-showcase.unicon.net';
+exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
 exports.PORTAL_CONTEXT = '/uPortal';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
 exports.LAYOUT_VIEW = constants.layoutTypes['FOLDER_LAYOUT'];
