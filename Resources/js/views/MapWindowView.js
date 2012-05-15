@@ -36,12 +36,15 @@
 */
 
 var view, mapProxy, activityIndicator, mapView, searchBar, titleBar, bottomNavView, bottomNavButtons, zoomButtonBar, categoryBrowsingView, categoryNavBar, categoryLocationsListView, favoritesBar,
-_ = require('/js/libs/underscore-min'),
-app = require('/js/Constants'),
-styles = require('/js/style'),
-localDictionary = require('/js/localization').retrieveLocale(Ti.App.Properties.getString('locale')),
-deviceProxy = require('/js/models/DeviceProxy'),
-config = require('/js/config');
+    _ = require('/js/libs/underscore-min'),
+    app = require('/js/Constants'),
+    styles = require('/js/style'),
+    localDictionary = require('/js/localization').retrieveLocale(Ti.App.Properties.getString('locale')),
+    deviceProxy = require('/js/models/DeviceProxy'),
+    config = require('/js/config'),
+    //"activityStack" consists of objects containing the view and data associated with each state, for back buttons. Doesn't persist between uses of app module.
+    activityStack = []
+;
 
 // Public methods
 exports.open = function () {
@@ -49,6 +52,12 @@ exports.open = function () {
     view = Ti.UI.createView();
     _createMainView();
     exports.resetMapLocation();
+
+    //Temporary map browsing history
+    activityStack.push({
+        view: exports.views.SEARCH,
+        model: {}
+    });
     
     return view;
 };
@@ -56,6 +65,17 @@ exports.close = function () {
     categoryNavBar = null;
     categoryBrowsingView = null;
     categoryLocationsListView = null;
+    activityStack = [];
+};
+
+exports.goBack = function (){
+    Ti.API.debug('Go back in MapWindowView');
+    //Let's clear the current view in the activity stack
+    activityStack.pop();
+    var _prev = activityStack[activityStack.length - 1];
+    Ti.API.debug(JSON.stringify(_prev));
+    
+    exports.doSetView(_prev.view, _prev.model);
 };
 
 exports.plotPoints = function (points) {
@@ -98,7 +118,17 @@ exports.searchBlur = function (e) {
     searchBar.input.blur();
 };
 
+exports.openDetailView = function (location){
+    //Open a detail view.
+};
+
 exports.openCategoryBrowsingView = function (categories) {
+    //Track history
+    activityStack.push({
+        view: views.ALL_CATEGORIES_LIST,
+        model: categories
+    });
+
     _hideAllViews();
     deviceProxy.isAndroid() && bottomNavButtons.doSetIndex(1);
     
@@ -163,6 +193,10 @@ exports.openCategoryBrowsingView = function (categories) {
 };
 
 exports.openCategoryLocationsListView = function (viewModel) {
+    activityStack.push({
+        view: exports.views.CATEGORY_LOCATIONS_LIST,
+        model: {}
+    });
     _hideAllViews();
     deviceProxy.isAndroid() && bottomNavButtons.doSetIndex(1);
     
@@ -187,6 +221,10 @@ exports.openCategoryLocationsListView = function (viewModel) {
 };
 
 exports.openCategoryLocationsMapView = function (viewModel) {
+    activityStack.push({
+        view: exports.views.CATEGORY_LOCATIONS_MAP,
+        model: viewModel
+    });
     _hideAllViews();
     deviceProxy.isAndroid() && bottomNavButtons.doSetIndex(1);
     
@@ -206,6 +244,11 @@ exports.openCategoryLocationsMapView = function (viewModel) {
 };
 
 exports.openSearchView = function () {
+    activityStack.push({
+        view: exports.views.SEARCH,
+        model: {}
+    });
+    //TODO: Support opening with a query
     _hideAllViews();
     deviceProxy.isAndroid() && bottomNavButtons.doSetIndex(0);
     if (searchBar) searchBar.show();
@@ -214,12 +257,20 @@ exports.openSearchView = function () {
 };
 
 exports.openFavoritesBrowsingView = function () {
+    activityStack.push({
+        view: exports.views.FAVORITES_BROWSING,
+        model: {}
+    });
     //TODO: Implement this view
     _hideAllViews();
     deviceProxy.isAndroid() && bottomNavButtons.doSetIndex(2);
 };
 
 exports.openFavoritesMapView = function () {
+    activityStack.push({
+        view: exports.views.FAVORITES_MAP,
+        model: {}
+    });
     // TODO: Implement this view
     _hideAllViews();
     deviceProxy.isAndroid() && bottomNavButtons.doSetIndex(2);
@@ -392,7 +443,7 @@ var _createAndAddCategoryNav = function () {
     categoryNavBar.view.top = styles.titleBar.height + 'dp';
     
     categoryNavBar.leftButton.addEventListener('click', function (e) {
-        Ti.App.fireEvent(exports.events['CATEGORY_LEFT_BTN_CLICK']);
+        exports.goBack();
     });
     categoryNavBar.rightButton.addEventListener('click', function (e) {
         Ti.App.fireEvent(exports.events['CATEGORY_RIGHT_BTN_CLICK']);
@@ -420,6 +471,7 @@ exports.views = {
     CATEGORY_BROWSING       : "MapWindowCategoryBrowsing",
     CATEGORY_LOCATIONS_LIST : "MapWindowCategoryLocationsList",
     CATEGORY_LOCATIONS_MAP  : "MapWindowCategoryMap",
+    LOCATION_DETAIL         : "MapWindowLocationDetail",
     FAVORITES_BROWSING      : "MapWindowFavoritesBrowsing",
     FAVORITES_MAP           : "MapWindowFavoritesMap"
 };

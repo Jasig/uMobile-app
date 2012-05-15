@@ -62,7 +62,6 @@ exports.open = function (parameters) {
     Ti.App.addEventListener(_mapWindowView.events['NAV_BUTTON_CLICK'], _onNavButtonClick);
     Ti.App.addEventListener(_mapWindowView.events['CATEGORY_ROW_CLICK'], _onCategoryRowClick);
     Ti.App.addEventListener(_mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _onCategoryRightBtnClick);
-    Ti.App.addEventListener(_mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _onCategoryLeftBtnClick);
     Ti.App.addEventListener(_mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _onCategoryListItemClick);
     Ti.App.addEventListener(_mapDetailView.events['VIEW_ON_MAP_CLICK'], _onViewDetailOnMap);
     _win.addEventListener('android:search', _onAndroidSearch);
@@ -90,7 +89,6 @@ exports.close = function (options) {
     Ti.App.removeEventListener(_mapWindowView.events['NAV_BUTTON_CLICK'], _onNavButtonClick);
     Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_ROW_CLICK'], _onCategoryRowClick);
     Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _onCategoryRightBtnClick);
-    Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _onCategoryLeftBtnClick);
     Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _onCategoryListItemClick);
     Ti.App.removeEventListener(_mapDetailView.events['VIEW_ON_MAP_CLICK'], _onViewDetailOnMap);
     _win.removeEventListener('android:search', _onAndroidSearch);
