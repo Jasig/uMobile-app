@@ -69,10 +69,6 @@ exports.close = function () {
     _win.close();
 };
 
-exports.rotate = function (orientation) {
-    
-};
-
 function _createView (portlet) {
     /*
         This method creates and arranges the view for the Controller, to keep the 

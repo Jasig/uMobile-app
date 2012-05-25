@@ -47,10 +47,6 @@ exports.close = function () {
     
 };
 
-exports.rotate = function (orientation, specialLayout) {
-
-};
-
 function showPortletsByFolder (folderId, force) {
     Ti.API.debug('showPortletsByFolder in PortalFolderView. folderId: '+folderId+' and activeFolder: '+activeFolder);
     if (folderId === activeFolder && !force) return;

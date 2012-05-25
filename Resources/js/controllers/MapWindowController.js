@@ -20,295 +20,114 @@
 /* map_window.js contains setup information for the
  * map tab.
  */
-
-exports.events = {
-    LOAD_DETAIL : 'loaddetail'
-};
     
-var _locationDetailView, _activeCategory, _mapWindowView, _mapDetailView, _mapProxy, _win, localDictionary, deviceProxy, styles,
-_categoryResultsPerPage = -1;
+var mapWindowView, 
+    mapProxy, 
+    localDictionary, 
+    _onProxyLoadError, 
+    _onProxyEmptySearch, 
+    _onProxySearchComplete, 
+    _onProxyLoaded, 
+    _onProxyLoading, 
+    _onProxySearching
+;
 
 exports.open = function (parameters) {
-    _mapWindowView = require('/js/views/MapWindowView');
-    _mapDetailView = require('/js/views/MapDetailView');
-    _mapProxy = require('/js/models/MapProxy');
+    Ti.API.debug('open() in MapWindowController');
+    mapWindowView = require('/js/views/MapWindowView');
+    mapProxy = require('/js/models/MapProxy');
     localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')];
-    deviceProxy = require('/js/models/DeviceProxy');
-    styles = require('/js/style');
-
-    _win = Titanium.UI.createWindow({
-        // url: 'js/views/WindowContext.js',
-        backgroundColor: styles.backgroundColor,
-        exitOnClose: false,
-        navBarHidden: true,
-        orientationModes: [
-        	Titanium.UI.PORTRAIT,
-        	Titanium.UI.UPSIDE_PORTRAIT,
-        	Titanium.UI.LANDSCAPE_LEFT,
-        	Titanium.UI.LANDSCAPE_RIGHT
-        ]
-    });
-    _win.open();
     
-    Ti.App.addEventListener(_mapProxy.events['SEARCHING'], _onProxySearching);
-    Ti.App.addEventListener(_mapProxy.events['SEARCH_COMPLETE'], _onProxySearchComplete);
-    Ti.App.addEventListener(_mapProxy.events['EMPTY_SEARCH'], _onProxyEmptySearch);
-    Ti.App.addEventListener(_mapProxy.events['LOAD_ERROR'], _onProxyLoadError);
-    Ti.App.addEventListener(_mapProxy.events['LOADING'], _onProxyLoading);
-    Ti.App.addEventListener(_mapProxy.events['POINTS_LOADED'], _onProxyLoaded);
-    Ti.App.addEventListener(_mapWindowView.events['SEARCH_SUBMIT'], _onMapSearch);
-    Ti.App.addEventListener(_mapWindowView.events['MAPVIEW_CLICK'], _onMapViewClick);
-    Ti.App.addEventListener(_mapWindowView.events['DETAIL_CLICK'], _loadDetail);
-    Ti.App.addEventListener(_mapWindowView.events['NAV_BUTTON_CLICK'], _onNavButtonClick);
-    Ti.App.addEventListener(_mapWindowView.events['CATEGORY_ROW_CLICK'], _onCategoryRowClick);
-    Ti.App.addEventListener(_mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _onCategoryRightBtnClick);
-    Ti.App.addEventListener(_mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _onCategoryLeftBtnClick);
-    Ti.App.addEventListener(_mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _onCategoryListItemClick);
-    Ti.App.addEventListener(_mapDetailView.events['VIEW_ON_MAP_CLICK'], _onViewDetailOnMap);
-    _win.addEventListener('android:search', _onAndroidSearch);
+    Ti.App.addEventListener(mapProxy.events.SEARCHING, _onProxySearching);
+    Ti.App.addEventListener(mapProxy.events.SEARCH_COMPLETE, _onProxySearchComplete);
+    Ti.App.addEventListener(mapProxy.events.EMPTY_SEARCH, _onProxyEmptySearch);
+    Ti.App.addEventListener(mapProxy.events.LOAD_ERROR, _onProxyLoadError);
+    Ti.App.addEventListener(mapProxy.events.LOADING, _onProxyLoading);
+    Ti.App.addEventListener(mapProxy.events.POINTS_LOADED, _onProxyLoaded);
     
-    _mapProxy.initialize();
+    mapProxy.initialize();
+    mapWindowView.open();
     
-    _win.add(_mapWindowView.open());
     //If we're supposed to directly open a detail view, let's get the info from map proxy and show it.
-    if (parameters && parameters.id) _loadDetail(_mapProxy.retrieveAnnotationByAbbr(parameters.id));
-    _mapWindowView.hideActivityIndicator();
+    if (parameters && parameters.id) {
+        mapWindowView.loadDetail(mapProxy.retrieveAnnotationByAbbr(parameters.id));
+    }
+    mapWindowView.hideActivityIndicator();
 };
 
 exports.close = function (options) {
-    _mapWindowView.searchBlur();
+    Ti.API.debug('close() in MapWindowController');
+    Ti.App.removeEventListener(mapProxy.events.SEARCHING, _onProxySearching);
+    Ti.App.removeEventListener(mapProxy.events.SEARCH_COMPLETE, _onProxySearchComplete);
+    Ti.App.removeEventListener(mapProxy.events.EMPTY_SEARCH, _onProxyEmptySearch);
+    Ti.App.removeEventListener(mapProxy.events.LOAD_ERROR, _onProxyLoadError);
+    Ti.App.removeEventListener(mapProxy.events.LOADING, _onProxyLoading);
+    Ti.App.removeEventListener(mapProxy.events.POINTS_LOADED, _onProxyLoaded);
     
-    Ti.App.removeEventListener(_mapProxy.events['SEARCHING'], _onProxySearching);
-    Ti.App.removeEventListener(_mapProxy.events['SEARCH_COMPLETE'], _onProxySearchComplete);
-    Ti.App.removeEventListener(_mapProxy.events['EMPTY_SEARCH'], _onProxyEmptySearch);
-    Ti.App.removeEventListener(_mapProxy.events['LOAD_ERROR'], _onProxyLoadError);
-    Ti.App.removeEventListener(_mapProxy.events['LOADING'], _onProxyLoading);
-    Ti.App.removeEventListener(_mapProxy.events['POINTS_LOADED'], _onProxyLoaded);
-    Ti.App.removeEventListener(_mapWindowView.events['SEARCH_SUBMIT'], _onMapSearch);
-    Ti.App.removeEventListener(_mapWindowView.events['MAPVIEW_CLICK'], _onMapViewClick);
-    Ti.App.removeEventListener(_mapWindowView.events['DETAIL_CLICK'], _loadDetail);
-    Ti.App.removeEventListener(_mapWindowView.events['NAV_BUTTON_CLICK'], _onNavButtonClick);
-    Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_ROW_CLICK'], _onCategoryRowClick);
-    Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_RIGHT_BTN_CLICK'], _onCategoryRightBtnClick);
-    Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_LEFT_BTN_CLICK'], _onCategoryLeftBtnClick);
-    Ti.App.removeEventListener(_mapWindowView.events['CATEGORY_LIST_ITEM_CLICK'], _onCategoryListItemClick);
-    Ti.App.removeEventListener(_mapDetailView.events['VIEW_ON_MAP_CLICK'], _onViewDetailOnMap);
-    _win.removeEventListener('android:search', _onAndroidSearch);
-    
-    _mapWindowView.close();
-    
-    _locationDetailView = null;
-    _mapDetailView = null;
-    
-    _win.close();
+    mapWindowView.close();
 };
-
-exports.rotate = function (orientation) {
-    //Everything rotates itself.
-};
-
-function _loadDetail (_annotation) {
-    //Create and open the view for the map detail
-    _mapWindowView.saveActivityIndicatorMessage(localDictionary.loading);
-    _mapWindowView.showActivityIndicator();
-    _mapWindowView.searchBlur();
-
-    if (!_locationDetailView) {
-        _locationDetailView = _mapDetailView.detailView;
-        _win.add(_locationDetailView);
-    }
-    _mapDetailView.render(_annotation);
-    
-    _locationDetailView.show();
-
-    _mapWindowView.hideActivityIndicator();
-}
-
-// Mapview events
-function _onMapSearch (e) {
-    _mapProxy.search(e.value);
-}
-
-function _onMapViewClick (e) {
-    var _annotation;
-    if (e.clicksource !== 'title' || !e.title) return;
-    // _mapWindowView.searchBlur(); //Search should already be blurred...
-    _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
-    _loadDetail(_annotation);
-}
-
-function _onNavButtonClick (e) {
-    switch (e.buttonName) {
-        case _mapWindowView.navButtonValues[0]:
-            _mapWindowView.doSetView(_mapWindowView.views['SEARCH']);
-            break;
-        case _mapWindowView.navButtonValues[1]:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.retrieveCategoryList());
-            break;
-        default:
-            Ti.API.error("No case matched in _handleNavButtonClick");
-    }
-}
-
-function _onCategoryRowClick (e) {
-    // Will receive an event, with "category" string property
-    // Tell the map window view to open the locations list, and pass 
-    // collection of locations for that category
-    _activeCategory = e.category;
-    _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _mapProxy.retrieveLocationsByCategory(e.category, _categoryResultsPerPage));
-}
-
-function _onCategoryListItemClick (e) {
-    //Called when the user clicks a specific location in a category 
-    //list view, such as "10 W Amistad". Opens detail view
-    var _annotation = _mapProxy.retrieveAnnotationByTitle(e.title);
-    _loadDetail(_annotation);
-}
-
-function _onCategoryRightBtnClick (e) {
-    // Will respond when user presses the right-side button in 
-    // map category view navigation
-    
-    // Will get the current active view, and determine what view
-    // Should be shown.
-    switch (_mapWindowView.doGetView()) {
-        case _mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_MAP'], _mapProxy.retrieveLocationsByCategory(_activeCategory || '', _categoryResultsPerPage));
-            break;
-        case _mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_LIST'], _mapProxy.retrieveLocationsByCategory(_activeCategory, _categoryResultsPerPage));
-            break;
-        default:
-            return;
-    }
-}
-
-function _onCategoryLeftBtnClick (e) {
-    // Will respond when user presses the left-side button in 
-    // map category view navigation
-    
-    // Will get the current active view, and determine what view
-    // Should be shown. Presumably, it should go back one step.
-    switch (_mapWindowView.doGetView()) {
-        case _mapWindowView.views['CATEGORY_LOCATIONS_LIST']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.retrieveLocationsByCategory(_activeCategory || '', _categoryResultsPerPage));
-            break;
-        case _mapWindowView.views['CATEGORY_LOCATIONS_MAP']:
-            _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_BROWSING'], _mapProxy.retrieveLocationsByCategory(_activeCategory, _categoryResultsPerPage));
-            break;
-        default:
-            return;
-    }
-}
-
-function _onViewDetailOnMap (e) {
-    _mapWindowView.doSetView(_mapWindowView.views['CATEGORY_LOCATIONS_MAP'], {locations: [_mapProxy.retrieveAnnotationByTitle(e.title, true)]});
-    _mapDetailView.hide();
-}
 
 //Proxy Events
-function _onProxySearching (e) {
-    _mapWindowView.saveActivityIndicatorMessage(localDictionary.searching);
-    _mapWindowView.showActivityIndicator();
-}
-
-function _onProxyLoading (e) {
-    _mapWindowView.saveActivityIndicatorMessage(localDictionary.mapLoadingLocations);
-    _mapWindowView.showActivityIndicator();
-}
-
-function _onProxyLoaded (e) {
-    _mapWindowView.resetMapLocation();
-    _mapWindowView.hideActivityIndicator();
-}
-
-function _onProxySearchComplete (e) {
-    Ti.API.debug('_onProxySearchComplete() in MapWindowController. e.points.length: '+e.points.length);
-    var alertDialog;
-    
-    _mapWindowView.hideActivityIndicator();
-    
-    if(e.points.length > 0) return _mapWindowView.plotPoints(e.points);
-    alertDialog = Titanium.UI.createAlertDialog({
-            title: localDictionary.noResults,
-            message: localDictionary.mapNoSearchResults,
-            buttonNames: [localDictionary.OK]
-    });
-    return alertDialog.show();
-}
-
-function _onProxyEmptySearch (e) {
-    _mapWindowView.hideActivityIndicator();
-}
-
-function _onAndroidSearch (e) {
-	if (_mapWindowView._searchBar && _mapWindowView._searchBar.input) {
-		_mapWindowView._searchBar.input.focus();
-	}
-	if (_mapDetailView.detailView) {
-		_mapDetailView.detailView.hide();
-	}
+_onProxySearching = function (e) {
+    Ti.API.debug('_onProxySearching() in MapWindowController');
+    Ti.API.debug(JSON.stringify(e));
+    mapWindowView.saveActivityIndicatorMessage(localDictionary.searching);
+    mapWindowView.showActivityIndicator();
 };
 
-function _onProxyLoadError (e) {
-    var alertDialog;
+_onProxyLoading = function (e) {
+    Ti.API.debug('_onProxyLoading() in MapWindowController');
+    mapWindowView.saveActivityIndicatorMessage(localDictionary.mapLoadingLocations);
+    mapWindowView.showActivityIndicator();
+};
+
+_onProxyLoaded = function (e) {
+    Ti.API.debug('_onProxyLoaded() in MapWindowController');
+    mapWindowView.resetMapLocation();
+    mapWindowView.hideActivityIndicator();
+};
+
+_onProxySearchComplete = function (e) {
+    Ti.API.debug('_onProxySearchComplete() in MapWindowController. e.points.length: '+e.points.length);
     
-    _mapWindowView.hideActivityIndicator();
+    mapWindowView.hideActivityIndicator();
     
-    if (_win.visible || deviceProxy.isIOS()) {
-        try {
-            switch (e.errorCode) {
-                case _mapProxy.requestErrors.NETWORK_UNAVAILABLE:
-                    alertDialog = Titanium.UI.createAlertDialog({
-                        title: localDictionary.error,
-                        message: localDictionary.map_NETWORK_UNAVAILABLE,
-                        buttonNames: [localDictionary.OK]
-                    });
-                    alertDialog.show();
-                    break;
-                case _mapProxy.requestErrors.REQUEST_TIMEOUT:
-                    alertDialog = Titanium.UI.createAlertDialog({
-                        title: localDictionary.error,
-                        message: localDictionary.map_REQUEST_TIMEOUT,
-                        buttonNames: [localDictionary.OK]
-                    });
-                    alertDialog.show();
-                    break;
-                case _mapProxy.requestErrors.SERVER_ERROR:
-                    alertDialog = Titanium.UI.createAlertDialog({
-                        title: localDictionary.error,
-                        message: localDictionary.map_SERVER_ERROR,
-                        buttonNames: [localDictionary.OK]
-                    });
-                    alertDialog.show();
-                    break;
-                case _mapProxy.requestErrors.NO_DATA_RETURNED:
-                    alertDialog = Titanium.UI.createAlertDialog({
-                        title: localDictionary.error,
-                        message: localDictionary.map_NO_DATA_RETURNED,
-                        buttonNames: [localDictionary.OK]
-                    });
-                    alertDialog.show();
-                    break;
-                case _mapProxy.requestErrors.INVALID_DATA_RETURNED: 
-                    alertDialog = Titanium.UI.createAlertDialog({
-                        title: localDictionary.error,
-                        message: localDictionary.map_INVALID_DATA_RETURNED,
-                        buttonNames: [localDictionary.OK]
-                    });
-                    alertDialog.show();
-                    break;
-                default:
-                    alertDialog = Titanium.UI.createAlertDialog({
-                        title: localDictionary.error,
-                        message: localDictionary.map_GENERAL_ERROR,
-                        buttonNames: [localDictionary.OK]
-                    });
-                    alertDialog.show();
-            }
-        }
-        catch (e) {
-            Ti.API.error("Couldn't show alert in MapWindowController: " + e);
-        }
+    if(e.points.length > 0) return mapWindowView.plotPoints(e.points);
+    mapWindowView.showAlert(localDictionary.mapNoSearchResults, localDictionary.noResults);
+};
+
+_onProxyEmptySearch = function (e) {
+    Ti.API.debug('_onProxyEmptySearch() in MapWindowController');
+    Ti.API.debug(JSON.stringify(e));
+    mapWindowView.hideActivityIndicator();
+};
+
+_onProxyLoadError = function (e) {
+    Ti.API.debug('_onProxyLoadError() in MapWindowController');
+    Ti.API.debug(JSON.stringify(e));
+    mapWindowView.hideActivityIndicator();
+    switch (e.errorCode) {
+        case mapProxy.requestErrors.NETWORK_UNAVAILABLE:
+            mapWindowView.showAlert(localDictionary.map_NETWORK_UNAVAILABLE);
+            break;
+
+        case mapProxy.requestErrors.REQUEST_TIMEOUT:
+            mapWindowView.showAlert(localDictionary.map_REQUEST_TIMEOUT);
+            break;
+
+        case mapProxy.requestErrors.SERVER_ERROR:
+            mapWindowView.showAlert(localDictionary.map_SERVER_ERROR);
+            break;
+
+        case mapProxy.requestErrors.NO_DATA_RETURNED:
+            mapWindowView.showAlert(localDictionary.map_NO_DATA_RETURNED);
+            break;
+
+        case mapProxy.requestErrors.INVALID_DATA_RETURNED:
+            mapWindowView.showAlert(localDictionary.map_INVALID_DATA_RETURNED);
+            break;
+
+        default:
+        mapWindowView.showAlert(localDictionary.map_GENERAL_ERROR);
     }
-}
+};

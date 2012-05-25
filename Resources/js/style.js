@@ -587,6 +587,17 @@ exports.updateStyles = function () {
         width: deviceProxy.retrieveWidth(true) - (10 * 2) + 'dp'
     };
     // MAP STYLES
+    exports.mapWindow = {
+        backgroundColor: exports.backgroundColor,
+        exitOnClose: false,
+        navBarHidden: true,
+        orientationModes: [
+            Titanium.UI.PORTRAIT,
+            Titanium.UI.UPSIDE_PORTRAIT,
+            Titanium.UI.LANDSCAPE_LEFT,
+            Titanium.UI.LANDSCAPE_RIGHT
+        ]
+    };
     exports.mapView= {
         top: defaults.TITLEBAR_HEIGHT * 2 + 'dp',
         // height: deviceProxy.retrieveHeight(true) - (defaults.TITLEBAR_HEIGHT * 2 + defaults.STATUSBAR_HEIGHT + 50) + 'dp',
@@ -601,7 +612,8 @@ exports.updateStyles = function () {
     };
     exports.mapTableView = {
         top: defaults.TITLEBAR_HEIGHT * 2 + 'dp',
-        bottom: '50dp'
+        bottom: '50dp',
+        rowHeight: '50dp'
     };
     exports.mapCategoryRow= {
         font: {

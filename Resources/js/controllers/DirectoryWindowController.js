@@ -55,10 +55,6 @@ exports.close = function (options) {
     directoryWindowView.close();
 };
 
-exports.rotate = function (orientation) {
-    // Everything rotates automatically
-};
-
 showUser = function (parameters) {
     directoryWindowView.showActivityIndicator(localDictionary.gettingContactInfo);
     function onload (e) {

@@ -33,13 +33,13 @@ Titanium.App.Properties.setString('locale', 'en_US');
 exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
 exports.PORTAL_CONTEXT = '';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
-exports.LAYOUT_VIEW = constants.layoutTypes['GRID_LAYOUT'];
+exports.LAYOUT_VIEW = constants.layoutTypes['FOLDER_LAYOUT'];
 
 //------- AUTHENTICATION -------
 Ti.App.Properties.setInt('SERVER_SESSION_TIMEOUT', parseInt((2 * 60 * 60 * 1000), 10));
 
 //References value of LoginProxy.loginMethods constant.
-exports.LOGIN_METHOD = "Cas";
+exports.LOGIN_METHOD = "LocalLogin";
 
 exports.CAS_URL = exports.BASE_PORTAL_URL + '/cas';
 exports.SHIB_URL = exports.BASE_PORTAL_URL + "/Shibboleth.sso/Login?target=" + exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + "/Login";

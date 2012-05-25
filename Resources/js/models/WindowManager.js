@@ -55,6 +55,7 @@ function openWindow (windowKey, portlet, parameters) {
     Ti.App.fireEvent(exports.events['WINDOW_OPENING'], _newWindowEvent);
 
     if (activityStack.length > 0) {
+        Ti.API.debug('Going to close current window');
         currentController.close();
     }
     
@@ -62,17 +63,21 @@ function openWindow (windowKey, portlet, parameters) {
     //Or if it's the home key, assign homeController to currentController
     //Otherwise, just require() the appropriate controller.
     if (activityStack.length === 0) {
+        Ti.API.debug('activityStack.length === 0');
         currentController = homeController = require('/js/controllers/' + applicationWindows[windowKey]);
-        currentController.open(portlet ? portlet : null);
+        currentController.open();
+        Ti.API.debug('Opened home window.');
         activityStack.push(windowKey);
     }
     else if (windowKey === config.HOME_KEY){
+        Ti.API.debug('windowKey === config.HOME_KEY');
         currentController = homeController;
-        // currentController.rotate(deviceProxy.retrieveCurrentOrientation());
         currentController.open();
+        Ti.API.debug('opened home');
         activityStack.push(windowKey);
     }
     else {
+        Ti.API.debug('Did not match home window criteria.');
         currentController = require('/js/controllers/' + applicationWindows[windowKey]);
         //Parameters may be passed in from another portlet broadcasting a message to open another portlet.
         currentController.open(portlet || parameters || null);
