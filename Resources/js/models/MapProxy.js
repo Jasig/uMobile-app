@@ -59,6 +59,9 @@ exports.initialize = function () {
         //Apparently an outdated schema, from a previous version.
         _db.execute('ALTER TABLE "map_locations" ADD COLUMN "categories" TEXT');
     }
+    if (!checkForColumn("map_locations", "description")) {
+        _db.execute('ALTER TABLE "map_locations" ADD COLUMN "description" TEXT');
+    }
     _db.execute('CREATE TABLE IF NOT EXISTS "map_categories" ("name" TEXT UNIQUE)');
 
     _db.close();
@@ -76,7 +79,7 @@ exports.search = function (query, opts) {
     query = '%' + query + '%';
     _db = Titanium.Database.open('umobile');
     //Query the database for rows in the map_locations table that match the query
-    queryResult = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ?', query, query, query);
+    queryResult = _db.execute('SELECT title, address, latitude, longitude, img, description FROM map_locations WHERE title LIKE ? OR searchText LIKE ? or abbreviation LIKE ? or description LIKE ?', query, query, query, query);
     
     //Iterate through the query result to add objects to the result array
     while (queryResult.isValidRow()) {
@@ -91,7 +94,8 @@ exports.search = function (query, opts) {
             address: queryResult.fieldByName('address'),
             latitude: parseFloat(queryResult.fieldByName('latitude')),
             longitude: parseFloat(queryResult.fieldByName('longitude')),
-            img: queryResult.fieldByName('img')
+            img: queryResult.fieldByName('img'),
+            description: queryResult.fieldByName('description')
         });
         if (queryResult.fieldByName('latitude') < _mapCenter.latLow) {
             _mapCenter.latLow = parseFloat(queryResult.fieldByName('latitude'));
@@ -126,7 +130,8 @@ exports.retrieveAnnotationByAbbr = function (a, shouldRecenter) {
             latitude: parseFloat(resultSet.fieldByName('latitude')),
             longitude: parseFloat(resultSet.fieldByName('longitude')),
             zip: resultSet.fieldByName('zip'),
-            img: resultSet.fieldByName('img')
+            img: resultSet.fieldByName('img'),
+            description: resultSet.fieldByName('description')
         };
         
         if (shouldRecenter) {
@@ -167,7 +172,8 @@ exports.retrieveAnnotationByTitle = function(t, shouldRecenter) {
             latitude: parseFloat(resultSet.fieldByName('latitude')),
             longitude: parseFloat(resultSet.fieldByName('longitude')),
             zip: resultSet.fieldByName('zip'),
-            img: resultSet.fieldByName('img')
+            img: resultSet.fieldByName('img'),
+            description: resultSet.fieldByName('description')
         };
         
         if (shouldRecenter) {
@@ -300,10 +306,10 @@ exports.retrieveLocationsByCategory = function (_catName, _numResults, _pageNum)
     _db = Titanium.Database.open('umobile');
     if (_catName !== '' && _catName !== exports.alternateCategories['UNCATEGORIZED']) {
         _catNameQuery = '%' + _catName + '%';
-        _resultSet = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE categories LIKE ? ORDER BY title ASC LIMIT ? OFFSET ? ', _catNameQuery, _resultLimit, _resultOffset);
+        _resultSet = _db.execute('SELECT title, address, latitude, longitude, img, description FROM map_locations WHERE categories LIKE ? ORDER BY title ASC LIMIT ? OFFSET ? ', _catNameQuery, _resultLimit, _resultOffset);
     }
     else {
-        _resultSet = _db.execute('SELECT title, address, latitude, longitude, img FROM map_locations WHERE categories IS NULL ORDER BY title ASC LIMIT ? OFFSET ? ', _resultLimit, _resultOffset);
+        _resultSet = _db.execute('SELECT title, address, latitude, longitude, img, description FROM map_locations WHERE categories IS NULL ORDER BY title ASC LIMIT ? OFFSET ? ', _resultLimit, _resultOffset);
     }
     
     _result.returnedResultNum = _resultSet.rowCount;
@@ -333,7 +339,8 @@ exports.retrieveLocationsByCategory = function (_catName, _numResults, _pageNum)
                 address     : _resultSet.fieldByName('address'),
                 latitude    : parseFloat(_resultSet.fieldByName('latitude')),
                 longitude   : parseFloat(_resultSet.fieldByName('longitude')),
-                img         : _resultSet.fieldByName('img')
+                img         : _resultSet.fieldByName('img'),
+                description : _resultSet.fieldByName('description')
             });
         }
         catch (e) {
@@ -380,7 +387,7 @@ exports._newPointsLoaded = function (e) {
                     building.latitude = parseFloat(building.latitude);
                     building.longitude = parseFloat(building.longitude);
                     
-                    _db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img, categories) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    _db.execute("REPLACE INTO map_locations (title, abbreviation, accuracy, address, alternateName, latitude, longitude, searchText, zip, img, categories, description) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                         building.name ? building.name : '',
                         building.abbreviation ? building.abbreviation : '',
                         building.accuracy ? building.accuracy : '',
@@ -391,7 +398,9 @@ exports._newPointsLoaded = function (e) {
                         building.searchText ? building.searchText : '',
                         building.zip || '',
                         building.img || '',
-                        building.categories ? building.categories.toString() : null
+                        building.categories ? building.categories.toString() : null,
+                        building.description ? building.description.toString() : null
+
                         );
                     
                 }

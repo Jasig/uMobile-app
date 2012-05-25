@@ -50,7 +50,7 @@ exports.open = function (parameters) {
     
     //If we're supposed to directly open a detail view, let's get the info from map proxy and show it.
     if (parameters && parameters.id) {
-        mapWindowView.loadDetail(mapProxy.retrieveAnnotationByAbbr(parameters.id));
+        mapWindowView.openDetailView(mapProxy.retrieveAnnotationByAbbr(parameters.id));
     }
     mapWindowView.hideActivityIndicator();
 };

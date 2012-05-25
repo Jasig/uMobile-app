@@ -69,7 +69,6 @@ var win,
     _onMapSearch, 
     _onCategoryRightBtnClick, 
     _onCategoryListItemClick, 
-    _onMapViewClick, 
     _onNavButtonClick, 
 
     //Module Singletons
@@ -224,13 +223,15 @@ exports.openDetailView = function (location){
         view: exports.views.LOCATION_DETAIL,
         model: location
     });
+    Ti.API.debug('activityStack');
+    Ti.API.debug(JSON.stringify(activityStack));
+
     mapDetailView.render(location);
     mapDetailView.detailView.show();
 };
 
 exports.openCategoryBrowsingView = function (categories) {
     Ti.API.debug('openCategoryBrowsingView() in MapWindowView');
-    Ti.API.debug(JSON.stringify(categories));
     //Track history
     activityStack.push({
         view: exports.views.CATEGORY_BROWSING,
@@ -303,7 +304,6 @@ exports.openCategoryBrowsingView = function (categories) {
 
 exports.openCategoryLocationsListView = function (viewModel) {
     Ti.API.debug('openCategoryLocationsListView() in MapWindowView');
-    Ti.API.debug(JSON.stringify(viewModel));
     activityStack.push({
         view: exports.views.CATEGORY_LOCATIONS_LIST,
         model: viewModel
@@ -489,10 +489,12 @@ _onCategoryListItemClick = function (e) {
 _onMapViewClick = function (e) {
     Ti.API.debug('_onMapViewClick() in MapWindowView');
     Ti.API.debug(JSON.stringify(e));
+    exports.searchBlur();
     var _annotation;
     if (e.clicksource !== 'title' || !e.title) return;
-    // _mapWindowView.searchBlur(); //Search should already be blurred...
+    
     _annotation = mapProxy.retrieveAnnotationByTitle(e.title);
+
     exports.openDetailView(_annotation);
 };
 
@@ -517,7 +519,6 @@ _onAndroidSearch = function (e) {
 
 _onViewDetailOnMap = function (e) {
     Ti.API.debug('_onViewDetailOnMap() in MapWindowView');
-    Ti.API.debug(JSON.stringify(e));
     exports.doSetView(exports.views.CATEGORY_LOCATIONS_MAP, {locations: [mapProxy.retrieveAnnotationByTitle(e.title, true)]});
     mapDetailView.hide();
 };
@@ -611,15 +612,6 @@ _searchSubmit = function (e) {
     exports.searchBlur();
     Ti.App.fireEvent(exports.events.SEARCH_SUBMIT,{
         value: searchBar.input.value
-    });
-};
-
-_onMapViewClick = function (e) {
-    Ti.API.debug('_onMapViewClick() in MapWindowView');
-    exports.searchBlur();
-    Ti.App.fireEvent(exports.events.MAPVIEW_CLICK, {
-        clicksource : e.clicksource,
-        title       : e.title
     });
 };
 
