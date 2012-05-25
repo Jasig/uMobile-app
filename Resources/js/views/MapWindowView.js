@@ -94,6 +94,7 @@ exports.open = function () {
 
     view = Ti.UI.createView();
     _createMainView();
+
     exports.resetMapLocation();
 
     activityStack = [];
@@ -114,6 +115,8 @@ exports.open = function () {
     Ti.App.addEventListener(exports.events.CATEGORY_ROW_CLICK, _onCategoryRowClick);
 
     win.add(view);
+    win.add(mapDetailView.detailView);
+    mapDetailView.hide();
 };
 
 exports.close = function () {
@@ -132,6 +135,15 @@ exports.close = function () {
     Ti.App.removeEventListener(exports.events.CATEGORY_RIGHT_BTN_CLICK, _onCategoryRightBtnClick);
     Ti.App.removeEventListener(exports.events.SEARCH_SUBMIT, _onMapSearch);
     Ti.App.removeEventListener(exports.events.CATEGORY_ROW_CLICK, _onCategoryRowClick);
+    
+    try {
+        win.remove(mapDetailView.detailView);
+        win.remove(view);
+    }
+    catch (e) {
+        Ti.API.error("Couldn't remove views from map window");
+        Ti.API.error(e);
+    }
 
     win.close();
 };
@@ -151,7 +163,7 @@ exports.goBack = function (){
     Ti.API.debug(JSON.stringify(activityStack));
     //Let's clear the current view in the activity stack
     activityStack.pop();
-    var _prev = activityStack[activityStack.length - 1];
+    var _prev = activityStack.pop();
     Ti.API.debug(JSON.stringify(_prev));
     
     exports.doSetView(_prev.view, _prev.model);
@@ -210,10 +222,10 @@ exports.openDetailView = function (location){
     Ti.API.debug('openDetailView() in MapWindowView');
     activityStack.push({
         view: exports.views.LOCATION_DETAIL,
-        model: {}
+        model: location
     });
     mapDetailView.render(location);
-    //Open a detail view.
+    mapDetailView.detailView.show();
 };
 
 exports.openCategoryBrowsingView = function (categories) {
@@ -221,7 +233,7 @@ exports.openCategoryBrowsingView = function (categories) {
     Ti.API.debug(JSON.stringify(categories));
     //Track history
     activityStack.push({
-        view: exports.views.CATEGORY_LOCATIONS_LIST,
+        view: exports.views.CATEGORY_BROWSING,
         model: categories
     });
 
@@ -291,9 +303,10 @@ exports.openCategoryBrowsingView = function (categories) {
 
 exports.openCategoryLocationsListView = function (viewModel) {
     Ti.API.debug('openCategoryLocationsListView() in MapWindowView');
+    Ti.API.debug(JSON.stringify(viewModel));
     activityStack.push({
         view: exports.views.CATEGORY_LOCATIONS_LIST,
-        model: {}
+        model: viewModel
     });
     _hideAllViews();
     if (deviceProxy.isAndroid()) bottomNavButtons.doSetIndex(1);
@@ -615,6 +628,7 @@ _hideAllViews = function () {
     // This method hides all of the different views within this context,
     // so that the different methods don't have to worry about what views to close
     if (searchBar) searchBar.hide();
+    if (mapDetailView) mapDetailView.hide();
     if (mapView) mapView.hide();
     if (zoomButtonBar) zoomButtonBar.hide();
     if (favoritesBar) favoritesBar.hide();

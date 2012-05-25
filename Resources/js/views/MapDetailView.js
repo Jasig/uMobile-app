@@ -118,8 +118,8 @@ exports.render = function (viewModel) {
     mapDetailTableView = Ti.UI.createTableView(styles.mapDetailTableView);
     exports.detailView.add(mapDetailTableView);
     mapDetailTableView.setData(_tableViewData);
-    
 };
+
 exports.events = {
     VIEW_ON_MAP_CLICK   : "MapDetailViewViewOnMapClick"
 };

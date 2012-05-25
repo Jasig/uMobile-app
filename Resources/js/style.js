@@ -668,7 +668,8 @@ exports.updateStyles = function () {
     };
     exports.mapDetailTableView= {
         top: defaults.TITLEBAR_HEIGHT + 'dp',
-        style: OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0
+        style: OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0,
+        rowHeight: '50dp'
     };
     exports.mapDetailImageRow= {
         height: '220dp'
