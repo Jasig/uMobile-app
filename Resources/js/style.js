@@ -660,6 +660,9 @@ exports.updateStyles = function () {
         backgroundImage: '/images/secondarybarbg.png',
         backgroundDisabledImage: '/images/secondarybarbtnbg_press.png'
     };
+    exports.mapDetailView = {
+        top: defaults.TITLEBAR_HEIGHT+'dp'
+    };
     exports.mapDetailTopView= {
         top: defaults.TITLEBAR_HEIGHT+'dp',
         left: 0,
@@ -667,7 +670,6 @@ exports.updateStyles = function () {
         height: '206dp'
     };
     exports.mapDetailTableView= {
-        top: defaults.TITLEBAR_HEIGHT + 'dp',
         style: OS === 'iphone' || OS === 'ipad' ? Titanium.UI.iPhone.TableViewStyle.GROUPED : 0,
         rowHeight: '50dp'
     };

@@ -22,7 +22,7 @@ _ = require('/js/libs/underscore-min'),
 localDictionary = require('/js/localization')[Ti.App.Properties.getString('locale')],
 styles = require('/js/style');
 
-exports.detailView = Titanium.UI.createView(styles.view);
+exports.detailView = Titanium.UI.createView(styles.mapDetailView);
 
 exports.render = function (viewModel) {
     var mapImageGroup, mapGroupAddress, directionsButton, directionsButtonRow, detailImageRow, detailImage,
