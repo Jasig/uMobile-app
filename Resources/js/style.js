@@ -661,7 +661,7 @@ exports.updateStyles = function () {
         backgroundDisabledImage: '/images/secondarybarbtnbg_press.png'
     };
     exports.mapDetailView = {
-        top: defaults.TITLEBAR_HEIGHT+'dp'
+        top: defaults.TITLEBAR_HEIGHT + defaults.TITLEBAR_HEIGHT +'dp'
     };
     exports.mapDetailTopView= {
         top: defaults.TITLEBAR_HEIGHT+'dp',

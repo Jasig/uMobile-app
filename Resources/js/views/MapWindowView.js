@@ -161,11 +161,16 @@ exports.goBack = function (){
     Ti.API.debug('Go back in MapWindowView');
     Ti.API.debug(JSON.stringify(activityStack));
     //Let's clear the current view in the activity stack
-    activityStack.pop();
-    var _prev = activityStack.pop();
-    Ti.API.debug(JSON.stringify(_prev));
-    
-    exports.doSetView(_prev.view, _prev.model);
+    if (activityStack.length > 1) {
+        activityStack.pop();
+        var _prev = activityStack.pop();
+        Ti.API.debug(JSON.stringify(_prev));
+        
+        exports.doSetView(_prev.view, _prev.model);
+    }
+    else {
+        Ti.API.debug('Nothing to go back to.');
+    }
 };
 
 exports.plotPoints = function (points) {
@@ -435,6 +440,9 @@ exports.doSetView = function (newView, viewModel) {
                 break;
             case exports.views.FAVORITES_BROWSING:
                 exports.openFavoritesBrowsingView();
+                break;
+            case exports.views.LOCATION_DETAIL:
+                exports.openDetailView(viewModel);
                 break;
             case exports.views.FAVORITES_MAP:
                 exports.openFavoritesMapView();
