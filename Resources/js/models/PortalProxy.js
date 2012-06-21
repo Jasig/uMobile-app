@@ -29,6 +29,7 @@ isPortalReachable,
 app = require('/js/Constants'),
 config = require('/js/config'),
 resourceProxy = require('/js/models/ResourceProxy'),
+StringUtils = require('/js/StringUtils'),
 pathToRoot = '../../',
 portlets = [], //Portlet model: {fname:"unique", title:"Human Readable", url: "portal_url", description: "...", newItemCount: 0, iconUrl: "/path/on/portal.png", folders: ["id1","id2"]};
 folders = []; //Folder model: {id: "u12345", title: "Campus", numChildren: 2 }
@@ -78,7 +79,7 @@ function _processFolderLayout (layout) {
         pLength = _currentFolder.portlets.length;
         folders.push({
             id: _currentFolder.id, 
-            title: _currentFolder.title, 
+            title: StringUtils.unescapeHTML(_currentFolder.title), 
             numChildren: pLength
         });
         //Let's add this folder's portlets to the _portlets Object. 
