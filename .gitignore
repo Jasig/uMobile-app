@@ -4,3 +4,5 @@ build/
 build.log
 .project
 .settings/
+Resources/js/config.js
+Resources/js/config.*
