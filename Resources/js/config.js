@@ -30,8 +30,8 @@ Titanium.App.Properties.setString('locale', 'en_US');
 // Base url of the portal, which should be of the format
 // http[s]://server[:port][/context]. This URL is *not* expected to contain a
 // trailing slash.
-exports.BASE_PORTAL_URL = Titanium.Platform.name == 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-exports.PORTAL_CONTEXT = '';
+exports.BASE_PORTAL_URL = 'https://up4.tacomacc.edu';
+exports.PORTAL_CONTEXT = '/uPortal';
 exports.LAYOUT_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/layout.json';
 exports.LAYOUT_VIEW = constants.layoutTypes['FOLDER_LAYOUT'];
 
@@ -70,7 +70,7 @@ exports.SHIB_ECP_URL = exports.SHIB_BASE_URL + "/idp/profile/SAML2/SOAP/ECP";
 	</Location>
 
  */
-exports.ENCRYPTION_KEY = 'um0b1le';
+exports.ENCRYPTION_KEY = 'bIgb0n#';
 exports.FORGOT_PASSWORD_URL = exports.BASE_PORTAL_URL + exports.PORTAL_CONTEXT + '/p/forgot-password';
 
 //------- MAP SERVICE -------
@@ -136,8 +136,8 @@ exports.LOCAL_MODULES.transit = {
 
 exports.LOCAL_MODULES.library = {
 	title : "Library",
-	fname : "library",
-	url : 'http://mobile.lib.uchicago.edu/',
+	fname : "Library",
+	url : 'http://library.tacomacc.edu/',
 	doesRequireLayout : true,
 	externalModule : true
 };
@@ -148,8 +148,8 @@ exports.retrieveLocalModules = function() {
 };
 
 exports.DEFAULT_MAP_REGION = {
-	latitude : 34.052819,
-	longitude : -118.256407,
+	latitude : 47.245372,
+	longitude : -122.522106,
 	latitudeDelta : 0.005,
 	longitudeDelta : 0.005
 };
@@ -157,7 +157,7 @@ exports.DEFAULT_MAP_REGION = {
 exports.WINDOW_CONTROLLERS = {
     portlet: 'PortletWindowController',
     home: 'PortalWindowController',
- //   map: 'MapWindowController',
+    map: 'MapWindowController',
     directory: 'DirectoryWindowController',
     settings: 'SettingsWindowController'
 };
@@ -191,10 +191,10 @@ exports.nativeIcons = {
 
 exports.directoryEmergencyContacts = [
     {
-	    displayName : ["OUPD"],
-	    telephoneNumber : ['(740) 593-1911'],
-	    postalAddress : ['135 Scott Quad$Athens, Ohio 45701'],
-	    url : ['http://www.ohio.edu/police/alerts/']
+	    displayName : ["Campus Public Safety"],
+	    telephoneNumber : ['253.566.5111'],
+	    postalAddress : ['6501 S 19th St, Tacoma, WA'],
+	    url : ['https://my.tacomacc.edu/uPortal/p/SecurityStudent']
     },
     {
 	    displayName : ["Fire"],
@@ -208,4 +208,4 @@ exports.directoryEmergencyContacts = [
     }
 ];
 
-exports.phoneDirectoryNumber = "(740) 593-1000";
+exports.phoneDirectoryNumber = "(253) 566-5000";
