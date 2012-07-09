@@ -143,7 +143,10 @@ function _onInitialResponse (e) {
 
     try {
         flowId = flowRegex.exec(initialResponse)[1];
-        executionId = executionRegex.exec(initialResponse)[1];
+        if(executionRegex.test(initialResponse)) 
+        	executionId = executionRegex.exec(initialResponse)[1];
+        else
+         	executionId = null;
         // Post the user credentials and other required webflow parameters to the 
         // CAS login page.  This step should accomplish authentication and redirect
         // to the portal if the user is successfully authenticated.
@@ -155,14 +158,26 @@ function _onInitialResponse (e) {
         client.open('POST', _url, true);
         if (deviceProxy.isAndroid()) client.setRequestHeader('User-Agent', "Mozilla/5.0 (Linux; U; Android 1.0.3; de-de; A80KSC Build/ECLAIR) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530");
         
-        data = { 
-            username: _credentials.username, 
-            password: _credentials.password, 
-            lt: flowId, 
-            execution: executionId,
-            _eventId: 'submit', 
-            submit: 'LOGIN' 
-        };
+        if(executionId!=null) {
+	        data = { 
+	            username: _credentials.username, 
+	            password: _credentials.password, 
+	            lt: flowId, 
+	            execution: executionId,
+	            _eventId: 'submit', 
+	            submit: 'LOGIN' 
+	        };
+	    }
+	    else {
+	    	data = { 
+	            username: _credentials.username, 
+	            password: _credentials.password, 
+	            lt: flowId,
+	            _eventId: 'submit', 
+	            submit: 'LOGIN' 
+	        };
+	    }
+        
         client.send(data);
     }
     catch (e) {
