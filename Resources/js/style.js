@@ -203,8 +203,8 @@ exports.updateStyles = function () {
         },
         height: '40dp',
         width: '100dp',
-        backgroundGradient: {},
-        backgroundGradientPress: {}
+//        backgroundGradient: {},
+//        backgroundGradientPress: {}
     };
     //Global search bar properties
     exports.searchBar= {
