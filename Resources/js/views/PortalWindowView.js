@@ -86,17 +86,12 @@ exports.close = function () {
     portletCollectionView.close();
 };
 
-exports.rotateView = function (orientation) {
-    portletCollectionView && portletCollectionView.rotate(orientation, notificationsView.currentState() === notificationsView.states['HIDDEN'] ? false : true);
-};
-
 function _drawUI (_isGuestLayout, _isPortalReachable) {
     Ti.API.debug('_drawUI() in PortalWindowView. _isGuestLayout: '+_isGuestLayout+', _isPortalReachable: '+_isPortalReachable);
     // This method should only be concerned with drawing the UI, not with any other logic. Leave that to the caller.
     
     if (getState() !== exports.states['INITIALIZED']) {
         exports.updateLayout(_isPortalReachable, _isGuestLayout);
-        exports.rotateView();
         return;
     }
     
