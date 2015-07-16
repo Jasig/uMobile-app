@@ -46,7 +46,9 @@ function openWindow (windowKey, portlet, parameters) {
     var callback;
     
     //Make sure the requested window exists, and that it isn't the current window.
-    if (!applicationWindows[windowKey] || exports.getCurrentWindow() === windowKey) return Ti.API.error("Error opening window. windowKey: "+windowKey);
+    if (!applicationWindows[windowKey]) {  //  || exports.getCurrentWindow() === windowKey
+    	return Ti.API.error("Error opening window. windowKey: "+windowKey);
+    }
         
     var _newWindowEvent = {
         key: windowKey
